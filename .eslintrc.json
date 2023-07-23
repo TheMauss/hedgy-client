@@ -1,0 +1,18 @@
+{
+  "extends": [
+    "next",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    "react/jsx-no-target-blank": [
+      "error",
+      {
+        "allowReferrer": true,
+        "enforceDynamicLinks": "always"
+      }
+    ]
+  },
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  }
+}
