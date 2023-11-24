@@ -9,7 +9,7 @@ const NetworkSwitcher: FC = () => {
   const [label, setLabel] = useState("Papertrading");
 
   useEffect(() => {
-    setLabel(networkConfiguration === "mainnet-beta" ? "Mainnet" : "Papertrading (Devnet)");
+    setLabel(networkConfiguration === "mainnet-beta" ? "Mainnet" : "Devnet");
   }, [networkConfiguration]);
 
   const toggleNetwork = (e) => {
@@ -32,7 +32,6 @@ const NetworkSwitcher: FC = () => {
           className="toggle"
         />
       </label>
-      {networkConfiguration === "devnet" && <RequestAirdrop />}
     </>
   );
 };

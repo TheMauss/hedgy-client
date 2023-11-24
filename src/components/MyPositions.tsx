@@ -1,11 +1,18 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState, useRef } from "react";
 import { useWallet } from '@solana/wallet-adapter-react';
 import socketIOClient from 'socket.io-client';
-import { FaAngleUp, FaAngleDown, FaWallet, FaStream } from 'react-icons/fa';
+import { useConnection } from '@solana/wallet-adapter-react';
+import { Connection, PublicKey, clusterApiUrl} from '@solana/web3.js';
+import { FaAngleDoubleUp, FaAngleDoubleDown, FaWallet, FaStream, FaShareAlt } from 'react-icons/fa';
 import { notify } from "../utils/notifications";
+import domtoimage from 'dom-to-image';
+import Modal from 'react-modal';
+import { UserAccount  } from "../out/accounts/UserAccount";
+import { PROGRAM_ID } from '../out/programId';
 
-const ENDPOINT = 'https://frozen-hamlet-77237-31263ec4359d.herokuapp.com/'
-const ENDPOINT2 = 'https://fast-tundra-88970.herokuapp.com/'
+
+const ENDPOINT1 = process.env.NEXT_PUBLIC_ENDPOINT1;
+const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
 
 
 
@@ -18,6 +25,7 @@ interface Position {
   priceDirection: number;
   symbol: number;
   resolved: boolean;
+  payout: number;
   winner: string | null;
   expiration: number;
   expirationTime: number;
@@ -30,12 +38,43 @@ interface Position {
 interface MyPositionsProps {
   latestOpenedPosition: Record<string, Position | null>;
   setLatestOpenedPosition: React.Dispatch<React.SetStateAction<Record<string, Position | null>>>;
+  handleTotalBetAmountChange: (total: number) => void; // add this line
+  prices: { [key: string]: { price: number, timestamp: string } };
+
 }
 
 const LAMPORTS_PER_SOL = 1_000_000_000;
 const ITEMS_PER_PAGE = 10;
 
-const MyPositions: FC<MyPositionsProps> = ({ latestOpenedPosition, setLatestOpenedPosition }) => {
+const MyPositions: FC<MyPositionsProps> = ({ prices, latestOpenedPosition, setLatestOpenedPosition, handleTotalBetAmountChange }) => {
+  async function isUserAccountInitialized(account: PublicKey, connection: Connection): Promise<{ isInitialized: boolean; usedAffiliate: Uint8Array; myAffiliate: Uint8Array }> {
+    const accountInfo = await connection.getAccountInfo(account);
+  
+    if (!accountInfo) {
+      console.error("Account not found or not fetched properly.");
+      // You'll need to decide on an appropriate default return here.
+      return { isInitialized: false, usedAffiliate: new Uint8Array(8).fill(0), myAffiliate: new Uint8Array(8).fill(0)};
+    }
+  
+    const bufferData = Buffer.from(accountInfo.data);
+  
+    let userAcc;
+    try {
+      userAcc = UserAccount.decode(bufferData);
+    } catch (error) {
+      console.error("Failed to decode user account data:", error);
+      return { isInitialized: false, usedAffiliate: new Uint8Array(8).fill(0), myAffiliate: new Uint8Array(8).fill(0) };
+    }
+  
+
+    return {
+      isInitialized: userAcc.isInitialized,
+      usedAffiliate: userAcc.usedAffiliate,
+      myAffiliate: userAcc.myAffiliate,
+    };
+  }
+  
+  const { connection } = useConnection();
   const [position, setPosition] = useState(true);
   const [positions, setPositions] = useState<Position[]>([]);
   const [resolvedPositions, setResolvedPositions] = useState<Position[]>([]);
@@ -45,14 +84,36 @@ const MyPositions: FC<MyPositionsProps> = ({ latestOpenedPosition, setLatestOpen
   const walletAddress = publicKey?.toString() || '';
   const [currentPage, setCurrentPage] = useState(1);
   const [previousPrice, setPreviousPrice] = useState<number | null>(null);
+  const [isInit, setisInit] = useState<{ isInitialized: boolean; usedAffiliate: Uint8Array, myAffiliate: Uint8Array }>(null);
   const symbolMap = {
     0: "Crypto.SOL/USD",
     1: "Crypto.BTC/USD"
     // Add more symbols as needed
   };
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [currentItem, setCurrentItem] = useState(null);
+  const socket2Ref = useRef(null);
+
 
   useEffect(() => {
-    const socket = socketIOClient(ENDPOINT);
+    const total = positions.reduce((total, position) => total + position.betAmount, 0);
+    handleTotalBetAmountChange(total);  // This line passes the total back to the parent
+  }, [positions]);
+
+  useEffect(() => {
+    let socket;
+    let socket2;
+    let isMounted = true;
+
+    const fetchSolanaTime = async () => {
+      const currentSolanaTimestamp = await getSolanaTimestamp();
+      if (isMounted) {
+          setSolanaTimestamp(currentSolanaTimestamp);
+      }
+  };
+
+    function setupSocket1() {
+    socket = socketIOClient(ENDPOINT2);
     socket.emit('registerWallet', walletAddress);
 
     socket.on('positions', (positions: Position[]) => {
@@ -72,107 +133,156 @@ const MyPositions: FC<MyPositionsProps> = ({ latestOpenedPosition, setLatestOpen
       setPositions(unresolvedPositions);
       setResolvedPositions(resolvedPositions);
       setIsLoading(false);
+      fetchSolanaTime();
     });
 
     socket.on('connect_error', (err) => {
       setError(err.message);
       setIsLoading(false);
     });
+  }
+  function setupSocket2() {
+    socket2Ref.current = socketIOClient(ENDPOINT1);
 
-    const socket2 = socketIOClient(ENDPOINT2);
-    socket2.emit('registerWallet', walletAddress);
-    socket2.on('position', (updatedPosition: Position, latestPrice: number) => {
+    if (socket2Ref.current) {
+      socket2Ref.current.off('position');
+      socket2Ref.current.off('connect_error');
+    }
+    
+    socket2Ref.current.emit('registerWallet', walletAddress);
+    
+    socket2Ref.current.on('position', (updatedPosition: Position, latestPrice: number) => {
       setPreviousPrice(latestPrice);
-
+  
       setPositions((prevState) => {
         const positionExists = prevState.some((position) => position._id === updatedPosition._id);
-
+  
         if (positionExists) {
-          // Update the remaining time for the updated position
-          const updatedPositions = prevState.map((position) =>
+          // Update the existing position
+          return prevState.map((position) =>
             position._id === updatedPosition._id
               ? { ...updatedPosition, currentPrice: latestPrice, remainingTime: calculateRemainingTime(updatedPosition.expirationTime) }
               : position
           );
-          notify({ type: 'success', message: `Option resolved`, description: `Your option ${updatedPosition.binaryOption.slice(0, 4)}...${updatedPosition.binaryOption.slice(-4)} has been resolved.` });
-          return updatedPositions;
+        } else if (!updatedPosition.resolved) {
+          // Add the new position only if it's not resolved
+          return [{ ...updatedPosition, currentPrice: latestPrice }, ...prevState];
         } else {
-          // Calculate the remaining time for all positions, including the new one
-          const updatedPositions = prevState.map((position) => ({
-            ...position,
-            remainingTime: calculateRemainingTime(position.expirationTime),
-          }));
-          updatedPosition.remainingTime = calculateRemainingTime(updatedPosition.expirationTime);
-          notify({ type: 'success', message: `Option created`, description: `A new option ${updatedPosition.binaryOption.slice(0, 4)}...${updatedPosition.binaryOption.slice(-4)} has been created with entry price: ${(updatedPosition.initialPrice/100000000).toFixed(3)} USD` });
-
-          setLatestOpenedPosition((prevPositions) => {
-            const updatedPositions = {
-              ...prevPositions,
-              [updatedPosition.symbol.toString()]: { ...updatedPosition, currentPrice: latestPrice },
-            };
-            return updatedPositions;
-          });
-
-          return [{ ...updatedPosition, currentPrice: latestPrice }, ...updatedPositions];
+          // If the position is resolved, don't add it to the positions array
+          return prevState;
         }
       });
-
-      // Update the resolved positions array if needed
+  
       if (updatedPosition.resolved) {
         setResolvedPositions((prevState) => [...prevState, updatedPosition]);
-        setPositions((prevState) => prevState.filter((position) => position._id !== updatedPosition._id));
-      
-        setLatestOpenedPosition((prevPositions) => {
-          if (prevPositions[updatedPosition.symbol.toString()]?._id === updatedPosition._id) {
-            return { ...prevPositions, [updatedPosition.symbol.toString()]: updatedPosition };
-          } else {
-            return prevPositions;
-          }
+        
+        setPositions(prevState => prevState.filter(position => position._id !== updatedPosition._id));
+  
+        setLatestOpenedPosition(prevPositions => {
+          const nonResolvedSameSymbolPositions = positions.filter(
+            position => position.symbol === updatedPosition.symbol && !position.resolved
+          );
+  
+          // Sort by least remaining time
+          nonResolvedSameSymbolPositions.sort((a, b) => {
+            return calculateRemainingTimeInSeconds(a.remainingTime) - calculateRemainingTimeInSeconds(b.remainingTime);
+          });
+  
+          const latestSameSymbolPosition = nonResolvedSameSymbolPositions.length 
+              ? nonResolvedSameSymbolPositions[0]
+              : null;
+  
+          return {
+            ...prevPositions,
+            [updatedPosition.symbol.toString()]: latestSameSymbolPosition
+          };
+        });
+      } else {
+        // Update the latest opened position for the symbol if the position is not resolved
+        setLatestOpenedPosition(prevPositions => {
+          return {
+            ...prevPositions,
+            [updatedPosition.symbol.toString()]: { ...updatedPosition, currentPrice: latestPrice }
+          };
         });
       }
-    });
-
-        socket.on('connect_error', (err) => {
-      setError(err.message);
-      setIsLoading(false);
-    });
-
-
-
-// Listener for 'priceUpdate' event
-socket2.on('priceUpdate', (updatedPrices) => {
-
-  setPositions((positions) =>
-    positions.map((pos) => {
-      const symbol = symbolMap[pos.symbol];
-      const updatedPrice = updatedPrices.find((price) => price.symbol === symbol);
-
-      if (updatedPrice) {
-        const currentPrice = updatedPrice.price;
-        return {
-          ...pos,
-          currentPrice,
-        };
+  
+      // Notify the user
+      if (updatedPosition.resolved) {
+        notify({ type: 'success', message: `Option resolved`, description: `Your option ${updatedPosition.binaryOption.slice(0, 4)}...${updatedPosition.binaryOption.slice(-4)} has been resolved with payout of ${updatedPosition.payout/LAMPORTS_PER_SOL} SOL.` });
       } else {
-        return pos;
+        notify({ type: 'success', message: `Option created`, description: `A new option ${updatedPosition.binaryOption.slice(0, 4)}...${updatedPosition.binaryOption.slice(-4)} has been created with entry price: ${(updatedPosition.initialPrice/100000000).toFixed(3)} USD` });
+        fetchSolanaTime();
       }
-    })
+    });
+  
+
+    
+  }
+  
+function handleVisibilityChange() {
+  if (document.visibilityState === 'visible') {
+    if (!socket || !socket.connected) {
+      setupSocket1();
+    }
+    if (!socket2Ref.current || !socket2Ref.current.connected) {
+      setupSocket2();
+    }
+     }
+}
+    // Initial setup
+    setupSocket1();
+    setupSocket2();
+
+
+
+    // Reconnect logic when the app comes back to the foreground
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // Cleanup on component unmount
+    return () => {
+      isMounted = false;
+      if (socket) socket.disconnect();
+      if (socket2Ref.current) {
+        socket2Ref.current.disconnect();
+        socket2Ref.current.off('position');
+        socket2Ref.current.off('connect_error');
+      }
+      
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+}, [walletAddress]);
+
+
+// Price updates
+useEffect(() => {
+  setPositions((positions) =>
+      positions.map((pos) => {
+          const symbol = symbolMap[pos.symbol];
+          const updatedPrice = prices[symbol];
+
+          if (updatedPrice) {
+              const currentPrice = updatedPrice.price;
+              return {
+                  ...pos,
+                  currentPrice,
+              };
+          } else {
+              return pos;
+          }
+      })
   );
 
   setPreviousPrice((previousPrice) => {
-    const previousSymbol = symbolMap[previousPrice];
-    const updatedPrice = updatedPrices.find((price) => price.symbol === previousSymbol);
-    return updatedPrice ? updatedPrice.price : (previousPrice || 0);
+      const previousSymbol = symbolMap[previousPrice];
+      const updatedPrice = prices[previousSymbol];
+      return updatedPrice ? updatedPrice.price : (previousPrice || 0);
   });
-});
+}, [prices]);
 
 
 
-// Disconnect the socket when the component unmounts
-return () => {
-  socket.disconnect();
-};
-}, [walletAddress]);
+
 
   const selectPosition = () => {
     setPosition(true);
@@ -182,28 +292,61 @@ return () => {
     setPosition(false);
   };
 
+
+  const getSolanaTimestamp = async (): Promise<number | null> => {
+    // Connect to the Solana cluster (mainnet in this case)
+    const connection = new Connection('https://sparkling-warmhearted-water.solana-mainnet.quiknode.pro/9750bfc7335111091f9d0629dc8ffcb57d2939b0', 'processed');
+    const slot = await connection.getSlot();
+    // Fetch the recent blockhash and its associated details
+    const recentBlockhash = await connection.getBlockTime(slot);
+    console.log("time blockchain",recentBlockhash)
+    // Return the block time
+    return recentBlockhash;
+  };
+
+  const [solanaTimestamp, setSolanaTimestamp] = useState<number | null>(null);
+
+  useEffect(() => {
+    // Fetch the current Solana timestamp
+    const fetchSolanaTime = async () => {
+      const currentSolanaTimestamp = await getSolanaTimestamp(); // You'll need to implement this function
+      setSolanaTimestamp(currentSolanaTimestamp);
+    };
+  
+    fetchSolanaTime();
+  }, []);
+  
   useEffect(() => {
     const timer = setInterval(() => {
-      setPositions((positions) =>
-        positions.map((position) => ({
-          ...position,
-          remainingTime: calculateRemainingTime(position.expirationTime),
-        }))
-      );
+      if (solanaTimestamp !== null) {
+        // Increment the solanaTimestamp by 1 second
+        setSolanaTimestamp(prevTimestamp => prevTimestamp + 1);
 
-      setResolvedPositions((resolvedPositions) =>
-        resolvedPositions.map((position) => ({
-          ...position,
-          remainingTime: calculateRemainingTime(position.expirationTime),
-        }))
-      );
+        setPositions((positions) =>
+          positions.map((position) => ({
+            ...position,
+            remainingTime: calculateRemainingTime(position.expirationTime),
+          }))
+        );
+  
+        setResolvedPositions((resolvedPositions) =>
+          resolvedPositions.map((position) => ({
+            ...position,
+            remainingTime: calculateRemainingTime(position.expirationTime),
+          }))
+        );
+      }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+}, [solanaTimestamp]);
 
   const calculateRemainingTime = (expirationTime: number): string => {
-    const remainingTime = expirationTime - Math.floor(Date.now() / 1000);
+    if (!solanaTimestamp) {
+      return ''; // or some other placeholder
+    }
+
+    const remainingTime = expirationTime - solanaTimestamp;
     if (remainingTime <= 0) {
       return 'Expired';
     } else if (remainingTime <= 60) {
@@ -235,6 +378,20 @@ return () => {
     }
   };
 
+  const downloadAsPng = () => {
+    const modal = document.getElementById('my-modal');
+    domtoimage.toPng(modal)
+        .then(function (dataUrl) {
+            const link = document.createElement('a');
+            link.download = 'PopFi-trade.png';
+            link.href = dataUrl;
+            link.click();
+        })
+        .catch(function (error) {
+            console.error('oops, something went wrong!', error);
+        });
+}
+
   const totalPages = Math.ceil(resolvedPositions.length / ITEMS_PER_PAGE);
 
   const nextPage = () => {
@@ -257,6 +414,40 @@ return () => {
     setCurrentPage(totalPages);
   };
 
+  const fetchcheckuserdata = async () => {
+    if (!publicKey) {
+      setisInit(null);  // Reset the userAffiliateData if publicKey is not defined
+        return;
+    }
+  
+  const seedsUser = [Buffer.from(publicKey.toBytes())];
+  const [userAcc] = await PublicKey.findProgramAddress(seedsUser, PROGRAM_ID);
+  
+  // Check if the user has an affiliate code when the component mounts
+  if (publicKey) {
+      const result = await isUserAccountInitialized(userAcc, connection);
+      setisInit(result);
+  }
+  };
+  useEffect(() => {
+    fetchcheckuserdata();
+  }, [publicKey, connection]);
+
+  const [decodedString, setDecodedString] = useState("");
+
+  useEffect(() => {
+    // Check if userAffiliateData exists and has the 'myAffiliate' property with a length greater than 0
+    if (isInit && isInit.myAffiliate.length > 0) {
+        const decoded = Array.from(isInit.myAffiliate)
+                             .filter(byte => byte !== 0)
+                             .map(byte => String.fromCharCode(byte))
+                             .join('');
+        setDecodedString(decoded);
+    } else {
+        setDecodedString("");
+    }
+}, [isInit]);
+
   const renderPositions = (positionsToRender: Position[]) => {
     const unresolvedPositions = positionsToRender.filter((item) => !item.resolved);
     // Reverse the array to show positions from newest to oldest
@@ -266,16 +457,107 @@ return () => {
       return aRemainingTime - bRemainingTime;
     });
 
+    const pnl = currentItem ? 
+    currentItem.priceDirection === 0
+      ? currentItem.initialPrice < currentItem.currentPrice
+        ? ((currentItem.payout - currentItem.betAmount) / currentItem.betAmount)
+        : -currentItem.betAmount/currentItem.betAmount
+      : currentItem.initialPrice > currentItem.currentPrice
+      ? ((currentItem.payout - currentItem.betAmount) / currentItem.betAmount)
+      : -currentItem.betAmount/currentItem.betAmount
+  : 0;
+      
+
+    const ModalDetails1 = (
+      <Modal
+      className="custom-scrollbar"
+        isOpen={modalIsOpen}
+        onRequestClose={() => setModalIsOpen(false)}
+        style={{
+          overlay: {
+            backgroundColor: 'transparent'
+          },
+          content: {
+            color: 'lightsteelblue',
+            width: '1020px',  // default width for desktop
+            height: '1380px', // default height for desktop
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%) scale(0.333)',
+            border: '2px solid black', // add border here
+            padding: '0', // remove padding here
+            boxSizing: 'border-box', // ensure padding and border are included in width/height calculations
+          }
+        }}
+      >
+      
+      {currentItem && (
+        <div className="custom-scrollbar h-full w-full p-0 m-0 box-border" id="my-modal" style={{
+        backgroundImage: `url("/promo.png")`,
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}>
+                <div className="h-[50%]"></div>
+                <div className="h-[50%] flex justify-center">
+                <div className="ml-24 w-[50%]">
+                <div className="flex items-center text-[5.2rem] text-white font-bold font-sans">
+                  {currentItem.symbol === 0 ?
+                    <p className="">{`SOLUSD`}</p>  :
+                  currentItem.symbol === 1 ?
+                  <p className="">{`BTCUSD`}</p>  : 
+                  null
+                  }
+                </div>
+                <div className="flex items-center text-[3.3rem] text-white font-semibold font-sans">
+                <p>
+          {currentItem.priceDirection === 0 ? (
+              <>
+                  <span className="">LONG</span>
+              </>
+          ) : (
+              <>
+                  <span className="">SHORT</span>
+              </>
+          )}
+      </p>     <p className="ml-3">BINARY</p></div>
+                  
+      
+                {/* Adjust the pnl calculation according to your application's needs */}
+                <p className={pnl > 0 ? "ml-3 text-[6.6rem] font-bold font-sans text-[#34C796]" : "text-[6.6rem] font-bold font-sans text-red-500"}>
+  {((pnl)*100).toFixed(1)}%
+</p>
+{decodedString ? (
+  <div className="ml-3 flex items-center text-[3.3rem] text-white font-semibold font-sans">
+    <p className="text-[#8A99AD]">CODE<span className="ml-3 text-white">{decodedString}</span></p>
+  </div>
+) : null}
+
+                </div>          
+                <div className="ml-24 w-[50%]">         
+                <p className="mt-1.5 flex items-center text-[3.6rem] text-[#8A99AD] font-semibold font-sans">ENTRY</p>  
+                <p className="mt-1.5 flex items-center text-[4.2rem] text-white font-semibold font-sans"> {currentItem.symbol === 1 ? (currentItem.initialPrice / 100000000).toFixed(1) : (currentItem.initialPrice / 100000000).toFixed(3)}</p>              
+                <p className="mt-1.5 flex items-center text-[3.6rem] text-[#8A99AD] font-semibold font-sans">MARK</p>
+                <p className="mt-1.5 flex items-center text-[4.2rem] text-white font-semibold font-sans">{currentItem.symbol === 1 ? (currentItem.currentPrice / 100000000).toFixed(1) : (currentItem.currentPrice / 100000000).toFixed(3)}</p>              
+                </div></div></div>
+      
+                
+            )}      <div className="w-[100%] bg-[#1A1A25] border-2 border-black">  <button className="ml-2 text-[3rem] text-white font-semibold" onClick={downloadAsPng}>Download as PNG</button></div>
+          </Modal>
+        );
+
+
     return (
-      <tbody>
+      <div>
         {unresolvedPositions.map((item, index) => {
           const pnl =
             item.priceDirection === 0
               ? item.initialPrice < item.currentPrice
-                ? (item.betAmount * 1.8) / LAMPORTS_PER_SOL
+                ? (item.payout) / LAMPORTS_PER_SOL
                 : -item.betAmount / LAMPORTS_PER_SOL
               : item.initialPrice > item.currentPrice
-              ? (item.betAmount * 1.8) / LAMPORTS_PER_SOL
+              ? (item.payout) / LAMPORTS_PER_SOL
               : -item.betAmount / LAMPORTS_PER_SOL;
 
           const isEvenRow = index % 2 === 0;
@@ -283,59 +565,78 @@ return () => {
           const timeStr = item.remainingTime || '';
 
           return (
-            <tr key={item._id} style={rowStyle}>
-              <td className="w-1/5 text-start text-[0.84rem] xl:text-[0.9rem] lg:text-[0.9rem] md:text-[0.9rem] sm:text-[0.84rem] text-slate-300 font-semibold pb-1.5 pt-1.5 lg:pl-5 md:pl-5 sm:pl-2 pl-2 " colSpan={2}>
+            <div key={item._id} className="mt-2 flex flex  flex-row text-start rounded">
+              <div className="rounded-l bg-[#1a1a25] pl-2 w-[22%] min-w-[150px] text-start text-[0.9rem] text-slate-300 font-semibold  ">
                 <a
-                  href={`https://solscan.io/account/${item.binaryOption}?cluster=devnet`}
+                  href={`https://solscan.io/account/${item.binaryOption}`}
                   target="_blank"
                   rel="noreferrer"
                   className="hover:underline"
                 >
                   <div className="flex items-center">
   {item.symbol === 0 ?
-    <img src="/sol.png" alt="Logo" width="24" height="24" /> :
+    <img src="/sol.png" alt="Logo" width="24" height="24" className="pt-0.5"/> :
   item.symbol === 1 ?
-    <img src="/Bitcoin.png" alt="Logo" width="24" height="24" /> : 
+    <img src="/Bitcoin.png" alt="Logo" width="24" height="24" className="pt-0.5"/> : 
   null
   }
-  <p className="ml-2">{`${item.binaryOption.slice(0, 4)}...${item.binaryOption.slice(-4)}`}</p> 
-  </div>
+  <p className="pt-3 pb-2.5 ml-2">{`${item.binaryOption.slice(0, 4)}...${item.binaryOption.slice(-4)}`}</p> 
+</div>   
                 </a>
-              </td>
-              <td className="w-1/6 text-start text-[0.84rem] xl:text-[0.9rem] lg:text-[0.9rem] md:text-[0.9rem] sm:text-[0.84rem] text-slate-300 font-semibold pb-1.5 pt-1.5 ">
-                <p>{(item.initialPrice / 100000000).toFixed(3)}</p>
-              </td>
-              <td className="w-1/6 text-start text-[0.84rem] xl:text-[0.9rem] lg:text-[0.9rem] md:text-[0.9rem] sm:text-[0.84rem] text-slate-300 font-semibold pb-1.5 pt-1.5 ">
-<p>{item.symbol === 1 ? (item.currentPrice / 100000000).toFixed(1) : (item.currentPrice / 100000000).toFixed(3)}</p>              </td>
-              <td className="w-1/6 text-start text-[0.84rem] xl:text-[0.9rem] lg:text-[0.9rem] md:text-[0.9rem] sm:text-[0.84rem] text-slate-300 font-semibold pb-1.5 pt-1.5 ">
-                <p className={item.priceDirection === 0 ? 'text-green-600 ' : 'text-red-500'}>
+              </div>
+              <div className="bg-[#1a1a25] pt-3 pb-2.5 w-[13%] min-w-[90px] text-start text-[0.9rem] text-slate-300 font-semibold">
+              <p>{item.symbol === 1 ? (item.initialPrice / 100000000).toFixed(1) : (item.initialPrice / 100000000).toFixed(3)}</p>              
+              </div>
+              <div className="bg-[#1a1a25] pt-3 pb-2.5 w-[13%] min-w-[90px] text-start text-[0.9rem] text-slate-300 font-semibold">
+              <p>{item.symbol === 1 ? (item.currentPrice / 100000000).toFixed(1) : (item.currentPrice / 100000000).toFixed(3)}</p>              
+                </div>
+                <div className="bg-[#1a1a25] pt-3 pb-2.5 w-[13%] min-w-[90px] text-start text-[0.9rem] text-slate-300 font-semibold">
+                <p className={item.priceDirection === 0 ? 'font-semibold text-[#34c796]' : 'font-semibold text-red-500'}>
                   <div className="flex items-center">
                     {item.priceDirection === 0 ? (
                       <>
-                        <FaAngleUp className="text-green-600" />
-                        <span className="ml-1">Pump</span>
+                        <FaAngleDoubleUp className="text-[#34c796]" />
+                        <span className="ml-1">LONG</span>
                       </>
                     ) : (
                       <>
-                        <FaAngleDown className="text-red-500" />
-                        <span className="ml-1">Dump</span>
+                        <FaAngleDoubleDown className="text-red-500" />
+                        <span className="ml-1">SHORT</span>
                       </>
                     )}
                   </div>
                 </p>
-              </td>
-              <td className="w-1/6 text-start text-[0.84rem] xl:text-[0.9rem] lg:text-[0.9rem] md:text-[0.9rem] sm:text-[0.84rem] text-slate-300 font-semibold pb-1.5 pt-1.5 ">
+              </div>
+              <div className="bg-[#1a1a25] pt-3 pb-2.5 w-[15%] min-w-[140px] text-start text-[0.9rem] text-slate-300 font-semibold">
                 <p>{timeStr}</p>
-              </td>
-              <td className="w-1/6 text-start text-[0.84rem] xl:text-[0.9rem] lg:text-[0.9rem] md:text-[0.9rem] sm:text-[0.84rem] text-slate-300 font-semibold pb-1.5 pt-1.5">
-                <p className={pnl >= 0 ? 'text-green-500 font-semibold' : 'text-red-500 font-semibold'}>
+              </div>
+              <div className="bg-[#1a1a25] pt-3 pb-2.5 w-[10%]  min-w-[90px] text-start text-[0.9rem] text-slate-300 font-semibold">
+                <p className={pnl >= 0 ? 'text-[#34c796] font-semibold' : 'text-red-500 font-semibold'}>
                   {pnl.toFixed(2)} SOL
                 </p>
-              </td>
-            </tr>
+              </div>
+              <div className="rounded-r items-center bg-[#1a1a25] py-2.5 w-[14%] min-w-[140px] text-[0.9rem] text-slate-300 font-semibold">
+
+<div className="flex items-center justify-center md:flex-row flex-col w-[100%]" >
+<div className="flex items-center flex-row justify-center w-[70%] min-w-[140px]">
+<button
+  className="min-w-[100px] h-[26px] bg-[#484c6d] hover:bg-[#484c6d5b] text-[0.9rem] font-semibold py-0.5 px-4 rounded flex items-center justify-center"
+  onClick={() => {
+    setCurrentItem(item); 
+    setModalIsOpen(true);
+  }}
+>
+  Share <FaShareAlt size={12} className="ml-1 " />
+</button>
+</div>
+</div>
+
+</div>
+            </div>
           );
         })}
-      </tbody>
+        {ModalDetails1}
+      </div>
     );
   };
 
@@ -350,16 +651,105 @@ return () => {
 
     // Get only the data for the current page
     const currentPageData = resolvedPositionsToShow.slice(startIndex, endIndex);
+    const pnl = currentItem ? 
+    currentItem.priceDirection === 0
+      ? currentItem.initialPrice < currentItem.finalPrice
+        ? ((currentItem.payout - currentItem.betAmount) / currentItem.betAmount)
+        : -currentItem.betAmount / currentItem.betAmount
+      : currentItem.initialPrice > currentItem.finalPrice
+      ? ((currentItem.payout - currentItem.betAmount) / currentItem.betAmount)
+      : -currentItem.betAmount / currentItem.betAmount
+  : 0;
+      
+    const ModalDetails = (
+      <Modal
+      className="custom-scrollbar"
+        isOpen={modalIsOpen}
+        onRequestClose={() => setModalIsOpen(false)}
+        style={{
+          overlay: {
+            backgroundColor: 'transparent'
+          },
+          content: {
+            color: 'lightsteelblue',
+            width: '1020px',  // default width for desktop
+            height: '1380px', // default height for desktop
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%) scale(0.333)',
+            border: '2px solid black', // add border here
+            padding: '0', // remove padding here
+            boxSizing: 'border-box', // ensure padding and border are included in width/height calculations
+          }
+        }}
+      >
+      
+      {currentItem && (
+        <div className="custom-scrollbar h-full w-full p-0 m-0 box-border" id="my-modal" style={{
+        backgroundImage: `url("/promo.png")`,
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}>
+                <div className="h-[46.5%]"></div>
+                <div className="h-[52.5%] flex justify-center">
+                <div className="ml-24 w-[50%]">
+                <div className="ml-3  flex items-center text-[5.2rem] text-white font-bold font-sans">
+                  {currentItem.symbol === 0 ?
+                    <p className="">{`SOLUSD`}</p>  :
+                  currentItem.symbol === 1 ?
+                  <p className="">{`BTCUSD`}</p>  : 
+                  null
+                  }
+                </div>
+                <div className="ml-3  flex items-center text-[3.3rem] text-white font-semibold font-sans">
+                <p>
+          {currentItem.priceDirection === 0 ? (
+              <>
+                  <span className="">LONG</span>
+              </>
+          ) : (
+              <>
+                  <span className="">SHORT</span>
+              </>
+          )}
+      </p>     <p className="ml-3">BINARY</p></div>
+                  
+      
+                {/* Adjust the pnl calculation according to your application's needs */}
+                <p className={pnl > 0 ? "ml-3 text-[6.6rem] font-bold font-sans text-[#34C796]" : "text-[6.6rem] font-bold font-sans text-red-500"}>
+                {((pnl)*100).toFixed(1)}%
+</p>
+{decodedString ? (
+  <div className="ml-3 flex items-center text-[3.3rem] text-white font-semibold font-sans">
+    <p className="text-[#8A99AD]">CODE<span className="ml-3 text-white">{decodedString}</span></p>
+  </div>
+) : null}
+
+                </div>          
+                <div className="ml-24 w-[50%]">         
+                <p className="mt-1.5 flex items-center text-[3.6rem] text-[#8A99AD] font-semibold font-sans">ENTRY</p>  
+                <p className="mt-1.5 flex items-center text-[4.2rem] text-white font-semibold font-sans"> {currentItem.symbol === 1 ? (currentItem.initialPrice / 100000000).toFixed(1) : (currentItem.initialPrice / 100000000).toFixed(3)}</p>              
+                <p className="mt-1.5 flex items-center text-[3.6rem] text-[#8A99AD] font-semibold font-sans">EXIT</p>
+                <p className="mt-1.5 flex items-center text-[4.2rem] text-white font-semibold font-sans">{currentItem.symbol === 1 ? (currentItem.finalPrice / 100000000).toFixed(1) : (currentItem.finalPrice / 100000000).toFixed(3)}</p>              
+                </div></div></div>
+      
+                
+            )}      <div className="w-[100%] bg-[#1A1A25] border-2 border-black">  <button className="ml-2 text-[3rem] text-white font-semibold" onClick={downloadAsPng}>Download as PNG</button></div>
+          </Modal>
+        );
+
     return (
-      <tbody>
+      <div>
         {currentPageData.map((item, index) => {
           const pnl =
             item.priceDirection === 0
               ? item.initialPrice < item.finalPrice
-                ? (item.betAmount * 1.8) / LAMPORTS_PER_SOL
+                ? (item.payout) / LAMPORTS_PER_SOL
                 : -item.betAmount / LAMPORTS_PER_SOL
               : item.initialPrice > item.finalPrice
-              ? (item.betAmount * 1.8) / LAMPORTS_PER_SOL
+              ? (item.payout) / LAMPORTS_PER_SOL
               : -item.betAmount / LAMPORTS_PER_SOL;
 
           const date = new Date(item.expirationTime * 1000);
@@ -374,67 +764,85 @@ return () => {
           const rowStyle = { backgroundColor: isEvenRow ? '#232332' : '#1a1a25' };
 
           return (
-            <tr key={item._id} style={rowStyle} >
-              <td className="text-slate-300 text-[0.84rem] xl:text-[0.9rem] lg:text-[0.9rem] md:text-[0.9rem] sm:text-[0.84rem] font-semibold pb-1.5 pt-1.5 lg:pl-5 md:pl-5 sm:pl-2 pl-2" colSpan={2}>
+            <div key={item._id} className="flex flex flex-row mt-2 text-start rounded">
+              <div className="rounded-l bg-[#1a1a25] pl-2 w-[22%] min-w-[150px] text-start text-[0.9rem] text-slate-300 font-semibold  ">
                 <a
-                  href={`https://solscan.io/account/${item.binaryOption}?cluster=devnet`}
+                  href={`https://solscan.io/account/${item.binaryOption}`}
                   target="_blank"
                   rel="noreferrer"
                   className="hover:underline"
                 >
                   <div className="flex items-center">
   {item.symbol === 0 ?
-    <img src="/sol.png" alt="Logo" width="24" height="24" /> :
+    <img src="/sol.png" alt="Logo" width="24" height="24" className="pt-0.5"/> :
   item.symbol === 1 ?
-    <img src="/Bitcoin.png" alt="Logo" width="24" height="24" /> : 
+    <img src="/Bitcoin.png" alt="Logo" width="24" height="24" className="pt-0.5"/> : 
   null
   }
-  <p className="ml-2">{`${item.binaryOption.slice(0, 4)}...${item.binaryOption.slice(-4)}`}</p> 
+  <p className="pt-3 pb-2.5 ml-2">{`${item.binaryOption.slice(0, 4)}...${item.binaryOption.slice(-4)}`}</p> 
 </div>   
                 </a>
-              </td>
-              <td className="text-slate-300 text-[0.84rem] xl:text-[0.9rem] lg:text-[0.9rem] md:text-[0.9rem] sm:text-[0.84rem] font-semibold pb-1.5 pt-1.5 ">
+              </div>
+              <div className="bg-[#1a1a25] pt-3 pb-2.5 w-[13%] min-w-[90px] text-start text-[0.9rem] text-slate-300 font-semibold">
               <p>{item.symbol === 1 ? (item.initialPrice / 100000000).toFixed(1) : (item.initialPrice / 100000000).toFixed(3)}</p>              
-              </td>
-              <td className="text-slate-300 text-[0.84rem] xl:text-[0.9rem] lg:text-[0.9rem] md:text-[0.9rem] sm:text-[0.84rem]  font-semibold pb-1.5 pt-1.5 ">
+              </div>
+              <div className="bg-[#1a1a25] pt-3 pb-2.5 w-[13%] min-w-[90px] text-start text-[0.9rem] text-slate-300 font-semibold">
               <p>{item.symbol === 1 ? (item.finalPrice / 100000000).toFixed(1) : (item.finalPrice / 100000000).toFixed(3)}</p>              
-                </td>
-              <td className="text-slate-300 text-[0.84rem] xl:text-[0.9rem] lg:text-[0.9rem] md:text-[0.9rem] sm:text-[0.84rem] font-semibold pb-1.5 pt-1.5 ">
-                <p className={item.priceDirection === 0 ? 'font-semibold text-green-500' : 'font-semibold text-red-500'}>
+                </div>
+                <div className="bg-[#1a1a25] pt-3 pb-2.5 w-[13%] min-w-[90px] text-start text-[0.9rem] text-slate-300 font-semibold">
+                <p className={item.priceDirection === 0 ? 'font-semibold text-[#34c796]' : 'font-semibold text-red-500'}>
                   <div className="flex items-center">
                     {item.priceDirection === 0 ? (
                       <>
-                        <FaAngleUp className="text-green-600" />
-                        <span className="ml-1">Pump</span>
+                        <FaAngleDoubleUp className="text-[#34c796]" />
+                        <span className="ml-1">LONG</span>
                       </>
                     ) : (
                       <>
-                        <FaAngleDown className="text-red-500" />
-                        <span className="ml-1">Dump</span>
+                        <FaAngleDoubleDown className="text-red-500" />
+                        <span className="ml-1">SHORT</span>
                       </>
                     )}
                   </div>
                 </p>
-              </td>
-              <td className="text-slate-300 text-[0.84rem] xl:text-[0.9rem] lg:text-[0.9rem] md:text-[0.9rem] sm:text-[0.84rem]  font-semibold pb-1.5 pt-1.5 ">
+              </div>
+              <div className="bg-[#1a1a25] pt-3 pb-2.5 w-[15%] min-w-[140px] text-start text-[0.9rem] text-slate-300 font-semibold">
                 <p>{formattedDate}</p>
-              </td>
-              <td className="text-slate-300 text-[0.84rem] xl:text-[0.9rem] lg:text-[0.9rem] md:text-[0.9rem] sm:text-[0.84rem]   font-semibold pb-1.5 pt-1.5 ">
-                <p className={pnl >= 0 ? 'text-green-500 font-semibold' : 'text-red-500 font-semibold'}>
+              </div>
+              <div className="bg-[#1a1a25] pt-3 pb-2.5 w-[10%]  min-w-[90px] text-start text-[0.9rem] text-slate-300 font-semibold">
+                <p className={pnl >= 0 ? 'min-w-[90px] text-[#34c796] font-semibold' : 'text-red-500 font-semibold'}>
                   {pnl.toFixed(2)} SOL
                 </p>
-              </td>
-            </tr>
+              </div>
+              <div className="rounded-r items-center bg-[#1a1a25] py-2.5 w-[14%] min-w-[140px] text-[0.9rem] text-slate-300 font-semibold">
+
+<div className="flex items-center justify-center md:flex-row flex-col w-[100%]" >
+<div className="flex items-center flex-row justify-center w-[70%] min-w-[140px]">
+<button
+  className="min-w-[100px] h-[26px] bg-[#484c6d] hover:bg-[#484c6d5b] text-[0.9rem] font-semibold py-0.5 px-4 rounded flex items-center justify-center"
+  onClick={() => {
+    setCurrentItem(item); 
+    setModalIsOpen(true);
+  }}
+>
+  Share <FaShareAlt size={12} className="ml-1 " />
+</button>
+</div>
+</div>
+
+</div>
+            </div>
           );
         })}
-      </tbody>
+        {ModalDetails}
+      </div>
     );
   };
 
   if (!connected) {
     return (
-      <div className="custom-scrollbar w-[100%] 2xl:w-[69.75%] xl:w-[69.75%] lg:w-[69.75%] md:w-[100%] order-4 md:order-4 h-[280px] md:h-[26vh] overflow-y-auto lg:overflow-y-auto bg-[#232332] py-3 mt-2 rounded shadow-component border-t-2 border-gray-500">
-        <div>
+      <div className="px-2 custom-scrollbar w-[100%] 2xl:w-[69.75%] xl:w-[69.75%] lg:w-[69.75%] md:w-[100%] order-4 md:order-4 h-[280px] md:h-[26vh] lg:h-[26vh] md:h-[28vh] overflow-x-scroll overflow-y-hidden lg:overflow-y-auto bg-[#232332] py-3 mt-2 rounded shadow-component border-t-2 border-gray-500">
+            <div className="mb-2">
           <span
             className={`text-lg transition-colors duration-300 ease-in-out ${
               position ? 'font-bold cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-slate-300 font-semibold'
@@ -452,9 +860,9 @@ return () => {
             My History
           </span>
         </div>
-        <div className="flex flex-col items-center justify-center md:h-[18vh] h-[225px]">
+        <div className="flex flex-col items-center justify-center md:h-[18vh] h-full overflow-hidden pb-6 md:pb-0">
   <FaWallet className="text-4xl text-slate-300 mb-2" />
-  <div className="text-[0.95rem] text-slate-300 font-semibold text-center">
+  <div className="text-[0.95rem] text-slate-300 font-semibold text-center overflow-hidden">
     Connect your wallet to see your positions.
   </div>
 </div>
@@ -463,8 +871,8 @@ return () => {
     );
   } else if (positions.length === 0 && resolvedPositions.length === 0) {
     return (
-      <div className="custom-scrollbar w-[100%] 2xl:w-[69.75%] xl:w-[69.75%] lg:w-[69.75%] md:w-[100%] order-4 md:order-4 h-[280px] md:h-[26vh] overflow-y-auto lg:overflow-y-auto bg-[#232332] py-3 mt-2 rounded shadow-component border-t-2 border-gray-500">
-        <div>
+      <div className="px-2 custom-scrollbar w-[100%] 2xl:w-[69.75%] xl:w-[69.75%] lg:w-[69.75%] md:w-[100%] order-4 md:order-4 h-[280px] md:h-[26vh] lg:h-[26vh] md:h-[28vh] overflow-x-scroll overflow-y-hidden lg:overflow-y-auto bg-[#232332] py-3 mt-2 rounded shadow-component border-t-2 border-gray-500">
+      <div className="sticky top-0 z-10 mb-2">
           <span
             className={`text-lg transition-colors duration-300 ease-in-out ${
               position ? 'font-bold cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-slate-300 font-semibold'
@@ -482,9 +890,9 @@ return () => {
             My History
           </span>
         </div>
-        <div className="flex flex-col items-center justify-center md:h-[18vh] h-[225px]">
+        <div className="flex flex-col items-center justify-center md:h-[18vh] h-full overflow-hidden pb-6 md:pb-0">
           <FaStream className="text-4xl text-slate-300 mb-2" />
-          <p className="text-[0.95rem] text-slate-300 font-semibold text-center">
+          <p className="text-[0.95rem] text-slate-300 font-semibold text-center overflow-hidden">
           You don&apos;t have any opened positions yet.
           </p>
         </div>
@@ -493,8 +901,9 @@ return () => {
   } else if ( positions.length === 0 && resolvedPositions.length !== 0 ) {
     
     return (
-      <div className="custom-scrollbar w-[100%] 2xl:w-[69.75%] xl:w-[69.75%] lg:w-[69.75%] md:w-[100%] order-4 md:order-4 h-[280px] md:h-[26vh] overflow-y-auto lg:overflow-y-auto bg-[#232332] py-3 mt-2 rounded shadow-component border-t-2 border-gray-500">
-        <div>
+<div className="px-2 custom-scrollbar w-[100%] 2xl:w-[69.75%] xl:w-[69.75%] lg:w-[69.75%] md:w-[100%] order-4 md:order-4 h-[280px] md:h-[26vh] lg:h-[26vh] md:h-[28vh] bg-[#232332] py-3 mt-2 rounded shadow-component border-t-2 border-gray-500">
+  <div style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+    <div className="custom-scrollbar sticky top-0 z-10 mb-2">
           <span
             className={`text-lg transition-colors duration-300 ease-in-out ${
               position ? 'font-bold cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-slate-300 font-semibold'
@@ -512,38 +921,37 @@ return () => {
             My History
           </span>
         </div>
-        {position ? (
-          <div className="flex flex-col items-center justify-center md:h-[18vh] h-[225px]">
-            <FaStream className="text-4xl text-slate-300 mb-2" />
-            <p className="text-[0.95rem] text-slate-300 font-semibold text-center">
+        <div className="custom-scrollbar overflow-y-auto rounded" style={{flexGrow: 1}}> {/* This div is your new scrolling area */}
+      {position ? (
+        <div className="flex flex-col items-center justify-center md:h-[18vh] h-full overflow-hidden">
+        <FaStream className="text-4xl text-slate-300 mb-2" />
+            <p className="text-[0.95rem] text-slate-300 font-semibold text-center overflow-hidden">
   You don&apos;t have any opened positions yet.
 </p>
 
           </div>
         ) : (
-          <table className="w-full mt-2 w-[100%] bg-[#232332] text-[0.9rem] xl:text-[1rem] lg:text-[1rem] md:text-[1rem] sm:text-[0.9rem] overflow-x-hidden overflow-y-auto">
-            <thead>
-              <tr>
-                <th className="w-1/5 text-start font-semibold pb-1.5 lg:pl-5 md:pl-5 sm:pl-2 pl-2" colSpan={2}>
+          <div className="custom-scrollbar overflow-y-auto rounded" style={{flexGrow: 1}}> {/* This div is your new scrolling area */}
+          <div className="custom-scrollbar  w-full flex flex-row  rounded  text-slate-600">
+                      <div className="w-[22%] min-w-[150px] text-start font-semibold pl-6 bg-[#1a1a25] py-1.5 rounded-l">
                   Option
-                </th>
-                <th className="w-1/6  text-start font-semibold pb-1.5">
-                  Initial Price
-                </th>
-                <th className="w-1/6  text-start font-semibold pb-1.5">
-                  {position ? 'Actual Price' : 'Expiration Price'}
-                </th>
-                <th className="w-1/6  text-start font-semibold pb-1.5">Direction</th>
-                <th className="w-1/6  text-start font-semibold pb-1.5">
+                </div>
+            <div className="w-[13%]  min-w-[90px] text-start font-semibold bg-[#1a1a25] py-1.5">
+                  Entry Price
+                </div>
+            <div className="w-[13%] min-w-[90px] text-start font-semibold bg-[#1a1a25] py-1.5">
+                  {position ? 'Mark Price' : 'Exit Price'}
+                </div>
+            <div className="w-[13%] min-w-[90px] text-start font-semibold bg-[#1a1a25] py-1.5">Direction</div>
+            <div className="w-[15%] min-w-[140px] text-start font-semibold bg-[#1a1a25] py-1.5">
                   Expiration Time
-                </th>
-                <th className="w-1/6  text-start font-semibold pb-1.5">PnL</th>
-              </tr>
-            </thead>
+                </div>
+                <div className="w-[10%]  min-w-[90px] text-start font-semibold bg-[#1a1a25] py-1.5">Payout</div>
+                <div className="w-[14%] min-w-[140px] text-[0.9rem] text-slate-300 font-semibold bg-[#1a1a25] py-1.5 rounded-r"></div>
+
+              </div>
             {renderHistoryPositions()}
-          </table>
-        )}
-        {position ? null : (
+            {position ? null : (
           <div className="flex justify-end mt-1 text-[0.95rem] xl:text-[1rem] lg:text-[1rem] md:text-[1rem] sm:text-[0.95rem]">
             <button
               className="text-slate-300 font-semibold rounded bg-transparent mr-2"
@@ -578,13 +986,19 @@ return () => {
             </button>
           </div>
         )}
+          </div>
+        )}
+        </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="custom-scrollbar w-[100%] 2xl:w-[69.75%] xl:w-[69.75%] lg:w-[69.75%] md:w-[100%] order-4 md:order-4 h-[280px] md:h-[26vh] lg:h-[26vh] md:h-[28vh] overflow-x-hidden overflow-y-auto lg:overflow-y-auto bg-[#232332] py-3 mt-2 rounded shadow-component border-t-2 border-gray-500">
-      <div>
+    <div className="px-2 custom-scrollbar w-[100%] 2xl:w-[69.75%] xl:w-[69.75%] lg:w-[69.75%] md:w-[100%] order-4 md:order-4 h-[280px] md:h-[26vh] lg:h-[26vh] md:h-[28vh] overflow-x-scroll overflow-y-auto lg:overflow-y-auto bg-[#232332] py-3 mt-2 rounded shadow-component border-t-2 border-gray-500">
+      <div style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+
+    <div className="custom-scrollbar sticky top-0 z-10 mb-2">
         <span
           className={`text-lg transition-colors duration-300 ease-in-out ${
             position ? 'font-bold cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-slate-300 font-semibold'
@@ -602,28 +1016,29 @@ return () => {
           My History
         </span>
       </div>
+      <div className="custom-scrollbar overflow-y-auto rounded" style={{flexGrow: 1}}> {/* This div is your new scrolling area */}
 
-      <table className="w-full mt-2 w-[100%] bg-[#232332] text-[0.9rem] xl:text-[1rem] lg:text-[1rem] md:text-[1rem] sm:text-[0.9rem] overflow-x-hidden overflow-y-auto">
-        <thead>
-          <tr>
-            <th className="w-1/5 text-start font-semibold  pb-3 lg:pl-5 md:pl-5 sm:pl-2 pl-2" colSpan={2}>
-              Option
-            </th>
-            <th className="w-1/6 text-start font-semibold  pb-3 ">
-              Initial Price
-            </th>
-            <th className="w-1/6 text-start font-semibold  pb-3">
-              {position ? 'Actual Price' : 'Expiration Price'}
-            </th>
-            <th className="w-1/6 text-start font-semibold  pb-3 ">Direction</th>
-            <th className="w-1/6 text-start font-semibold  pb-3 ">
-              Expiration Time
-            </th>
-            <th className="w-1/6 text-start font-semibold  pb-3 ">PnL</th>
-          </tr>
-        </thead>
+      <div className="custom-scrollbar w-full w-[100%] rounded bg-[#232332] text-[0.9rem] xl:text-[1rem] lg:text-[1rem] md:text-[1rem] sm:text-[0.9rem]">
+          <div className="w-full flex flex-row  text-slate-600 rounded">
+              <div className="w-[22%] min-w-[150px] text-start font-semibold pl-6  bg-[#1a1a25] py-1.5 rounded-l">
+                  Option
+                </div>
+            <div className="w-[13%]  min-w-[90px] text-start font-semibold  bg-[#1a1a25] py-1.5">
+                  Entry Price
+                </div>
+            <div className="w-[13%] min-w-[90px] text-start font-semibold  bg-[#1a1a25] py-1.5">
+                  {position ? 'Mark Price' : 'Exit Price'}
+                </div>
+            <div className="w-[13%] min-w-[90px] text-start font-semibold  bg-[#1a1a25] py-1.5">Direction</div>
+            <div className="w-[15%] min-w-[140px] text-start font-semibold bg-[#1a1a25] py-1.5">
+                  Expiration Time
+                </div>
+                <div className="w-[10%]  min-w-[90px] text-start font-semibold bg-[#1a1a25] py-1.5">Payout</div>
+                <div className="w-[14%] min-w-[140px] text-[0.9rem] text-slate-300 font-semibold bg-[#1a1a25] py-1.5 rounded-r"></div>
+
+              </div>
         {position ? renderPositions(positions) : renderHistoryPositions()}
-      </table>
+      </div>
 
       {position ? null : (
         <div className="flex justify-end mt-1 text-[0.95rem]">
@@ -659,7 +1074,10 @@ return () => {
             &gt;&gt;
           </button>
         </div>
+        
       )}
+       </div>
+    </div>
     </div>
   );
 };

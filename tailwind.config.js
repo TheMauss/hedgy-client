@@ -6,6 +6,35 @@ module.exports = {
     extend: {
       colors: {
         customGreen: "#22c55e",
+        "layer-1": "#151722",
+        "layer-3": "#434665",
+        "layer-2": "#1d202f",
+        "gray-500": "#9E9E9E",
+        grey: "#434665",
+        white: "#fff",
+        "grey-text": "#a9aab7",
+        short: "#ff4c4c",
+        primary: "#23eaa4",
+        deepskyblue: "#58b9ff",
+        tomato: {
+          "100": "#ff4d4d",
+          "200": "rgba(255, 76, 76, 0.05)",
+        },
+        fuchsia: "#fb51ff",
+        goldenrod: "#ffbc58",
+        palegreen: "#8fff74",
+        mediumpurple: "#b080ff",
+        gray: "#77787e",
+        lightseagreen: "#26a69a",
+        silver: "#b2b5be",
+        darkslategray: "#434651",
+        mediumseagreen: "#29b577",
+        base: "#0b111b",
+        black: "#000",
+        royalblue: "#3470f3",
+        blueviolet: "#9747ff",
+        mediumspringgreen: "rgba(35, 234, 164, 0.05)",
+        lightsteelblue: "#b4b5c7",
       },
       fontSize: {
         'between-md-lg': '1.15rem',
@@ -14,6 +43,7 @@ module.exports = {
       fontFamily: {
         display: ['PT Mono, monospace'],
         body: ['Inter, sans-serif'],
+        
       },
       spacing: {
         '72': '18rem',
@@ -26,6 +56,13 @@ module.exports = {
         "3/4": "75%",
         "80p": "60%",
         "full": "100%",
+      },
+      scale: {
+        '160': '1.7',
+        '200': '1.85',
+        '250': '2.5',
+        '300': '3',
+        // ... You can add more scales as needed
       },
       keyframes: {
         floatXY: {

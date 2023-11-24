@@ -6,10 +6,10 @@ const Home: NextPage = () => {
   return (
     <div>
       <Head>
-        <title>Binary Finance</title>
+        <title>PopFi</title>
         <meta
           name="description"
-          content="Binary Finance"
+          content="PopFi"
         />
       </Head>
       <HomeView/>

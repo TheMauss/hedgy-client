@@ -3,8 +3,6 @@ import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react
 import {
     PhantomWalletAdapter,
     SolflareWalletAdapter,
-    SolletExtensionWalletAdapter,
-    SolletWalletAdapter,
     TorusWalletAdapter,
     LedgerWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
@@ -14,6 +12,9 @@ import { AutoConnectProvider, useAutoConnect } from './AutoConnectProvider';
 import { notify } from "../utils/notifications";
 import { NetworkConfigurationProvider, useNetworkConfiguration } from './NetworkConfigurationProvider';
 import dynamic from "next/dynamic";
+
+const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT5;
+
 
 const ReactUIWalletModalProviderDynamic = dynamic(
   async () =>
@@ -25,16 +26,20 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const { autoConnect } = useAutoConnect();
     const { networkConfiguration } = useNetworkConfiguration();
     const network = networkConfiguration as WalletAdapterNetwork;
-    const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-
-    console.log(network);
-
+    const endpoint = useMemo(() => {
+        if (network === 'mainnet-beta') {
+            return ENDPOINT;
+            } else if (network === 'devnet') {
+            // Replace with your specific devnet URL if needed.
+            return clusterApiUrl('devnet');
+        }
+        return clusterApiUrl(network); // Fallback to the standard URL for the network
+    }, [network]);
+    
     const wallets = useMemo(
         () => [
             new PhantomWalletAdapter(),
             new SolflareWalletAdapter(),
-            new SolletWalletAdapter({ network }),
-            new SolletExtensionWalletAdapter({ network }),
             new TorusWalletAdapter(),
             new LedgerWalletAdapter(),
         ],

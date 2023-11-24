@@ -17,8 +17,8 @@
     "jsx": "preserve",
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", ".next"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "../dapp2 - kopie/src/components/MyPositionsFutures copy.tsx", "../dapp2 - kopie/src/components/MyPositions copy.tsx"],
+  "exclude": ["public", "src/charting_library","src/charting_library","/src/charting_library","node_modules", ".next"],
   "ts-node": {
     "require": ["tsconfig-paths/register"],
     "compilerOptions": {

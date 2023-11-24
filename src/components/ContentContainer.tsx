@@ -1,30 +1,78 @@
 import { RequestAirdrop } from "./RequestAirdrop";
 import Text from "./Text";
+import Link from 'next/link';
+
 import NavElement from "./nav-element";
+import React, { useRef, useEffect, Dispatch, SetStateAction } from 'react';
+import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
+
 interface Props {
   children: React.ReactNode;
+  isNavOpen: boolean;
+  setIsNavOpen: (isOpen: boolean) => void;
+  setIsContentContainerOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export const ContentContainer: React.FC<Props> = ({ children }) => {
+
+export const ContentContainer: React.FC<Props> = ({ setIsContentContainerOpen, children, isNavOpen, setIsNavOpen }) => {  
+  const drawerRef = useRef(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (!drawerRef.current.contains(event.target)) {
+        setIsNavOpen(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleOutsideClick);
+    
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
+
+  const checkboxRef = useRef(null);
+  
+
+  useEffect(() => {
+    const checkbox = checkboxRef.current;
+    
+    if (checkbox) {
+      const handleChange = () => {
+        setIsContentContainerOpen(checkbox.checked);
+      };
+      
+      checkbox.addEventListener('change', handleChange);
+  
+      // Initialize the state on mount
+      handleChange();
+      
+      // Clean up the event listener on unmount
+      return () => {
+        checkbox.removeEventListener('change', handleChange);
+      };
+    }
+  }, []);
+  
+
+  
+  
   return (
-    <div className="flex-1 drawer min-h-[210px]">
-      <input id="my-drawer" type="checkbox" className="grow drawer-toggle" />
+
+    <div ref={drawerRef} className="flex-1 drawer overflow-hidden">
+      <input id="my-drawer" type="checkbox" className="grow drawer-toggle" ref={checkboxRef} />
       <div className="items-center drawer-content">{children}</div>
       {/* SideBar / Drawer */}
-      <div className="drawer-side">
+      <div className="drawer-side ]">
         <label htmlFor="my-drawer" className="drawer-overlay gap-6"></label>
 
-        <ul className="p-4 menu w-80 bg-[#232332] gap-10 sm:flex items-center">
+        <ul className="p-2 menu w-48 bg-layer-2 sm:flex items-start">
           <li>
-            <Text
-              variant="heading"
-              className="font-extrabold tracking-tighter text-center text-transparent bg-clip-text bg-gradient-to-br from-[#9c3fee] to-[#ef4628] mt-10"
-            >
-              Menu
-            </Text>
-          </li>
-          <li>
-            <NavElement label="Home" href="/" />
+          <div className="flex w-16 pt-2 mb-1">
+    <Link href="/">
+        <div>
+            <img src="/broslaf.png" alt="Logo" className='min-w-[130px]'/>
+        </div>
+    </Link>
+</div>         
           </li>
           <li>
             <NavElement label="Options" href="/trade" />
@@ -35,7 +83,12 @@ export const ContentContainer: React.FC<Props> = ({ children }) => {
           <li>
             <NavElement label="Stats" href="/stats" />
           </li>
-          < RequestAirdrop/>
+          <li>
+            <NavElement label="Referral" href="/referral" />
+          </li>
+          <li>
+            <NavElement label="Vault" href="/vault" />
+          </li>
         </ul>
       </div>
     </div>

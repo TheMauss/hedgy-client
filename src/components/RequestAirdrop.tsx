@@ -21,15 +21,11 @@ export const RequestAirdrop: FC = () => {
         try {
             signature = await connection.requestAirdrop(publicKey, LAMPORTS_PER_SOL);
 
-            // Get the lates block hash to use on our transaction and confirmation
-            const latestBlockhash = await connection.getLatestBlockhash()
-            await connection.confirmTransaction({ signature, ...latestBlockhash }, 'confirmed');
-
             notify({ type: 'success', message: 'Airdrop successful!', txid: signature });
 
             getUserSOLBalance(publicKey, connection);
         } catch (error: any) {
-            notify({ type: 'error', message: `Airdrop failed!`, description: error?.message, txid: signature });
+            notify({ type: 'error', message: `Airdrop failed!`, description: "You have requested too many airdrops. Wait a few minutes for a refill.", txid: signature });
             console.log('error', `Airdrop failed! ${error?.message}`, signature);
         }
     }, [publicKey, connection, getUserSOLBalance]);
@@ -38,11 +34,8 @@ export const RequestAirdrop: FC = () => {
 
         <div className="flex flex-row justify-center">
             
-                        <button
-                            className="w-[150px] h-[32px] btn-sm text-navbig font-semibold rounded-full bg-gradient-to-tr from-[#EF4628] to-[#9845E1]"
-                            onClick={onClick}
-                            >
-                                <span>Airdrop SOL </span>
+            <button className="gradient-button h-[32px] w-[150px]" onClick={onClick}>
+                                <span className='font-semibold'>Airdrop SOL </span>
                 
                         </button>
         </div>

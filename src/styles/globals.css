@@ -2,6 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
+
+.theme-dark:root {
+  --tv-color-platform-background: #d1c4e9;
+  --tv-color-pane-background: rgb(251, 223, 244);
+  --tv-color-toolbar-button-background-hover: rgb(244, 143, 177);
+  --tv-color-toolbar-button-background-expanded: rgb(244, 143, 177);
+  --tv-color-toolbar-button-background-active: rgb(249, 185, 233);
+  --tv-color-toolbar-button-background-active-hover: rgb(244, 143, 177);
+  --tv-color-toolbar-button-text: rgb(136, 24, 79);
+  --tv-color-toolbar-button-text-hover: rgb(74, 20, 140);
+  --tv-color-toolbar-button-text-active: red;
+  --tv-color-toolbar-button-text-active-hover: red;
+  --tv-color-item-active-text: rgb(6, 255, 6);
+  --tv-color-toolbar-toggle-button-background-active: red;
+  --tv-color-toolbar-toggle-button-background-active-hover: magenta;
+  --tv-color-toolbar-divider-background: rgb(251, 223, 244);
+  --tv-color-toolbar-save-layout-loader: rgb(134, 137, 147);
+
+  --tv-color-popup-background: rgb(241, 188, 225);
+  --tv-color-popup-element-text: rgb(136, 24, 79);
+  --tv-color-popup-element-text-hover: rgb(74, 20, 140);
+  --tv-color-popup-element-background-hover: rgb(244, 143, 177);
+  --tv-color-popup-element-divider-background: rgb(251, 223, 244);
+  --tv-color-popup-element-secondary-text: rgb(74, 20, 140);
+  --tv-color-popup-element-hint-text: rgb(74, 20, 140);
+  --tv-color-popup-element-text-active: rgb(6, 6, 255);
+  --tv-color-popup-element-background-active: red;
+  --tv-color-popup-element-toolbox-text: rgb(136, 24, 79);
+  --tv-color-popup-element-toolbox-text-hover: rgb(74, 20, 140);
+  --tv-color-popup-element-toolbox-text-active-hover: rgb(74, 20, 140);
+  --tv-color-popup-element-toolbox-background-hover: rgb(222, 89, 132);
+  --tv-color-popup-element-toolbox-background-active-hover: magenta;
+}
+
 html,
 body {
   padding: 0;
@@ -11,9 +45,182 @@ body {
   background-image: linear-gradient(#484c6d, #0e0d17);
 }
 
+/* Enable native scrolling on iOS */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
 .mr-50 {
   margin-right: 50px;
 }
+
+.layout__area--top {
+  background-color: #b6afaf !important; /* New background color */
+  color: #beb6b6 !important; /* New text color */
+}
+
+
+/* CSS file */
+
+.rc-slider {
+  position: relative;
+  width: 100%;
+  height: 14px;
+  padding: 5px 0;
+  border-radius: 6px;
+  touch-action: none;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+/* Converted Nested Rules */
+.rc-slider-rail {
+  position: absolute;
+  width: 100%;
+  height: 10px;
+  background-color: #292c41;
+  border-radius: 2px;
+}
+
+.rc-slider-track {
+  position: absolute;
+  height: 10px;
+  background-image: linear-gradient(#34c796b4, #0b7a55be);
+  border-radius: 10px;
+}
+
+.rc-slider-track:hover {
+  position: absolute;
+  height: 10px;
+  background-image: linear-gradient(#34c796, #0b7a55);
+  border-radius: 10px;
+}
+
+.rc-slider-handle {
+  position: absolute;
+  z-index: 1;
+  width: 19px;
+  height: 19px;
+  margin-top: -5px;
+  background-color: #cbd5e1;
+  border-radius: 50%;
+  touch-action: pan-x;
+  /* ... other styles ... */
+}
+
+.rc-slider-handle:hover {
+  position: absolute;
+  z-index: 1;
+  width: 19px;
+  height: 19px;
+  margin-top: -5px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  touch-action: pan-x;
+  /* ... other styles ... */
+}
+
+
+
+
+
+
+@font-face {
+  font-family: 'BankGothic';
+  src: url('../../public/gothic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.bankGothic {
+  font-family: 'BankGothic', 'Arial', sans-serif;
+}
+
+@font-face {
+  font-family: 'BankGothicc';
+  src: url('../../public/gothicc.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.bankGothicc {
+  font-family: 'BankGothicc', 'Arial', sans-serif;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('../../public/Poppins-Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-poppins {
+  font-family: 'Poppins', 'Arial', sans-serif;
+}
+
+
+.gradient-center-big {
+  background-color: #1a1a25;
+  background-image: linear-gradient(to right, #1a1a25, #232332, #1a1a25);
+  background-size: 100%;
+  background-position: 50% 0;
+}
+
+.slider-container {
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+}
+
+.slide {
+  min-width: 100%;
+  transition: transform 0.5s ease-in-out;
+}
+
+
+
+
+.gradient-center-l {
+  background-color: #1a1a25;
+  background-image: linear-gradient(to right, #232332, #1a1a25, #232332);
+  background-size: 200% 100%;
+  background-position: -100% 0;
+  transition: background-position 0.5s;
+}
+
+.gradient-center-l:hover {
+  background-position: 0% 0;
+}
+
+.gradient-center-c {
+  background-color: #1a1a25;
+  background-image: linear-gradient(to right, #232332, #1a1a25, #232332);
+  background-size: 100%;
+  background-position: 50% 0;
+  transition: background-size 0.5s;
+}
+
+.gradient-center-c:hover {
+  background-size: 200%;
+}
+
+.gradient-center-r {
+  background-color: #1a1a25;
+  background-image: linear-gradient(to left, #232332, #1a1a25, #232332);
+  background-size: 200% 100%;
+  background-position: 0 0;
+  transition: background-position 0.5s;
+}
+
+.gradient-center-r:hover {
+  background-position: -100% 0;
+}
+
+
+
+
+
+
+
 
 a {
   color: inherit;
@@ -61,7 +268,7 @@ html::-webkit-scrollbar {
 /* Handle */
 body::-webkit-scrollbar-thumb,
 html::-webkit-scrollbar-thumb {
-  background: #e73662;
+  background: #66676d;
 }
 
 /* Handle on hover */
@@ -73,12 +280,13 @@ html::-webkit-scrollbar-thumb:hover {
 /* The scrollbar rail */
 .custom-scrollbar::-webkit-scrollbar {
   scroll-behavior: smooth;
-  width: 3px;
+  width: 0px;
+  height: 3px;
 }
 
 /* Handle */
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #66676d;
+  background: #66676d;  
 }
 
 /* Handle on hover */
@@ -95,7 +303,7 @@ html::-webkit-scrollbar-thumb:hover {
   background-color: #1a1a25;
   width: 100%;
   height: 2.3rem; /* Set the height to the desired value, e.g., 3rem */
-  border-radius: 1.5rem; /* Set half of the height value to achieve fully rounded corners */
+  border-radius: 0.5rem; /* Set half of the height value to achieve fully rounded corners */
   cursor: pointer;
   display: flex;
   justify-content: space-between;
@@ -132,7 +340,7 @@ html::-webkit-scrollbar-thumb:hover {
   align-items: center;
   background: #fff;
   color: #ffffff;
-  border-radius: 50px;
+  border-radius: 0.5rem;
   transition: all 0.3s ease-in-out;
 }
 
@@ -141,12 +349,22 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 .toggle-state.bg-green-500 {
-  background-color: #10b981;
+  background-color: #484c6d;
+}
+
+.toggle-state.bg-green-500:hover {
+  background-color: #2d2f44; /* replace with the color you want on hover */
 }
 
 .toggle-state.bg-red-500 {
-  background-color: #ef4444;
+  background-color: #484c6d;
 }
+
+.toggle-state.bg-red-500:hover {
+  background-color: #2b2e42; /* replace with the color you want on hover */
+}
+
+
 
 .custom-button {
   width: 100%;
@@ -174,14 +392,34 @@ html::-webkit-scrollbar-thumb:hover {
   color: white;
   padding: 0.5rem 1rem;
   height: 3rem; /* Set the same height as the toggle-button */
-  border-radius: 1.5rem; /* Set half of the height value to achieve fully rounded corners */
-  background-image: linear-gradient(to top right, #ef4628, #9845e1);
-  transition: transform 0.3s ease-in-out;
-}
+  border-radius: 0.5rem; /* Set half of the height value to achieve fully rounded corners */
+  background-image: linear-gradient(to top right, #34C796, #0b7a55);
+  transition: background 0.3s ease-in-out, transform 0.3s ease-in-out; /* Modified this line */}
 
 
 .custom-futures:hover {
-  background-image: linear-gradient(to bottom left, #ef4628, #9845e1);
+  background: linear-gradient(to top right, #279772, #085a3f); 
+  border:1px solid #cfa6b4;
+  transition: background 0.3s ease-in-out, transform 0.3s ease-in-out; /* Modified this line */
+}
+
+.custom-futuresed {
+  width: 100%;
+  font-weight: 600;
+  font-size: 1rem;
+  text-align: center;
+  color: white;
+  padding: 0.5rem 1rem;
+  height: 3rem; /* Set the same height as the toggle-button */
+  border-radius: 0.5rem; /* Set half of the height value to achieve fully rounded corners */
+  background-image: linear-gradient(to top right, #c44141, #7a3636);
+  transition: background 0.3s ease-in-out, transform 0.3s ease-in-out; /* Modified this line */}
+
+
+.custom-futuresed:hover {
+  background: linear-gradient(to top right, #a33636, #612b2b); 
+  border:1px solid #cfa6b4;
+  transition: background 0.3s ease-in-out, transform 0.3s ease-in-out; /* Modified this line */
 }
 
 
@@ -190,7 +428,7 @@ html::-webkit-scrollbar-thumb:hover {
   height: 2.3rem;
   display: flex;
   align-items: center;
-  border-radius: 1.5rem;
+  border-radius: 0.25rem;
   background-color: #1a1a25;
   transition: transform 0.3s ease-in-out;
   overflow: hidden; /* Add this line to hide any overflowing content */
@@ -200,12 +438,39 @@ html::-webkit-scrollbar-thumb:hover {
   flex-grow: 1;
   border: none;
   padding: 0.5rem;
+  color: #ffffff;
+  background-color: transparent;
+  text-align: left;
+  outline: none; /* Add this line to remove the default input border */
+}
+
+.input-capsule__inputs {
+  flex-grow: 1;
+  border: none;
+  padding: 0.5rem;
   font-weight: 600;
   font-size: 1rem;
   color: #ffffff;
   background-color: transparent;
-  text-align: right;
+  text-align: center;
   outline: none; /* Add this line to remove the default input border */
+}
+
+.input-capsule__inputss {
+  flex-grow: 1;
+  border: none;
+  padding: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #ffffff;
+  background-color: transparent;
+  text-align: center;
+  outline: none; /* Add this line to remove the default input border */
+}
+
+.input-capsule__input::placeholder {
+  color: #434665; /* Replace with the color you want */
+  opacity: 1; /* Firefox lowers the opacity by default, so set it to 1 if needed */
 }
 
 .input-capsule__text {
@@ -213,15 +478,110 @@ html::-webkit-scrollbar-thumb:hover {
   margin-right: 0rem;
   background-color: #484c6d;
   padding: 0.81rem; /* Adjust padding as needed */
-  border-top-right-radius: 1.5rem; /* Apply rounded border only to the right side */
-  border-bottom-right-radius: 1.5rem; /* Apply rounded border only to the right side */
+  border-top-right-radius: 0.5rem; /* Apply rounded border only to the right side */
+  border-bottom-right-radius: 0.5rem; /* Apply rounded border only to the right side */
 }
+
+.input5-capsule {
+  width: 100%;
+  height: 1.75rem;
+  display: flex;
+  align-items: center;
+  border-radius: 0.25rem;
+  background-color: #1a1a25;
+  transition: transform 0.3s ease-in-out;
+  overflow: hidden; /* Add this line to hide any overflowing content */
+}
+
+.input5-capsule__input {
+  flex-grow: 1;
+  width: 100%;
+  border: none;
+  padding: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #ffffff;
+  background-color: transparent;
+  text-align: right;
+  outline: none; /* Add this line to remove the default input border */
+}
+
+.input3-capsule {
+  width: 47%;
+  height: 1.75rem;
+  display: flex;
+  align-items: center;
+  border-radius: 0.25rem;
+  background-color: #1a1a25;
+  transition: transform 0.3s ease-in-out;
+  overflow: hidden; /* Add this line to hide any overflowing content */
+}
+
+.input3-capsule__input {
+  flex-grow: 1;
+  width: 47%;
+  border: none;
+  padding: 0rem;
+  color: #a9aab7;
+  background-color: transparent;
+  text-align: left;
+  outline: none; /* Add this line to remove the default input border */
+}
+
+.input3-capsule__input::placeholder {
+  color: #434665; /* Replace with the color you want */
+  opacity: 1; /* Firefox lowers the opacity by default, so set it to 1 if needed */
+}
+
+.input3-capsule__text {
+  color: white; /* Replace with your desired color */
+  flex-shrink: 0;
+  margin-right: 0rem;
+  padding: 0.25rem; /* Adjust padding as needed */
+  border-top-right-radius: 0.25rem; /* Apply rounded border only to the right side */
+  border-bottom-right-radius: 0.25rem; /* Apply rounded border only to the right side */
+}
+
+.input4-capsule {
+  width: 47%;
+  height: 1.75rem;
+  display: flex;
+  align-items: center;
+  border-radius: 0.25rem;
+  background-color: #1a1a25;
+  transition: transform 0.3s ease-in-out;
+  overflow: hidden; /* Add this line to hide any overflowing content */
+}
+
+.input4-capsule__input {
+  flex-grow: 1;
+  width: 47%;
+  border: none;
+  padding: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #ffffff;
+  background-color: transparent;
+  text-align: right;
+  outline: none; /* Add this line to remove the default input border */
+}
+
+.input4-capsule__text {
+  color: white; /* Replace with your desired color */
+  flex-shrink: 0;
+  margin-right: 0rem;
+  background-color: #1a1a25;
+  padding: 0.25rem; /* Adjust padding as needed */
+  border-top-right-radius: 0.25rem; /* Apply rounded border only to the right side */
+  border-bottom-right-radius: 0.25rem; /* Apply rounded border only to the right side */
+}
+
 
 .input2-capsule {
   height: 2rem;
   display: flex;
   align-items: center;
-  border-radius: 1.5rem;
+  border-radius: 0.5rem;
   background-color: #1a1a25;
   transition: transform 0.3s ease-in-out;
   overflow: hidden; /* Add this line to hide any overflowing content */
@@ -251,7 +611,7 @@ html::-webkit-scrollbar-thumb:hover {
 
 .border-gradient {
   border-bottom: 2px solid transparent;
-  border-image: linear-gradient(to bottom left, #9c3fee, #ef4628) 15;
+  border-image: linear-gradient(to bottom left, #55af2e, #0099a7) 15;
 }
 
 .drawer-content {
@@ -283,11 +643,11 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 .gradient-text {
-  background: linear-gradient(90deg, #75ed60, #99fa3e);
+  background: linear-gradient(90deg, #d4b940, #42da06);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  font-weight: 600;
-  font-size: 0.84rem;
+  font-weight: 700;
+  font-size: 0.9rem;
 }
 .gradient-text1 {
   background: linear-gradient(90deg, #75ed60, #99fa3e);
@@ -332,6 +692,47 @@ html::-webkit-scrollbar-thumb:hover {
   border-top-right-radius: 1.5rem; /* Apply rounded border only to the right side */
   border-bottom-right-radius: 1.5rem; /* Apply rounded border only to the right side */
 }
+
+
+
+.input-cap2 {
+  width: 100%;
+  height: 2.2rem;
+  display: flex;
+  align-items: center;
+  border-radius: 0.5rem;
+  background-color: #1d202f;
+  transition: transform 0.3s ease-in-out;
+  overflow: hidden; /* Add this line to hide any overflowing content */
+}
+
+.input-cap2__input {
+  flex-grow: 1;
+  border: none;
+  padding: 0.25rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #ffffff;
+  background-color: transparent;
+  text-align: left;
+  outline: none; /* Add this line to remove the default input border */
+}
+
+.input-cap2__input::placeholder {
+  color: #434665; /* Replace with the color you want */
+  opacity: 1; /* Firefox lowers the opacity by default, so set it to 1 if needed */
+}
+
+.input-cap2__text {
+  color: white; /* Replace with your desired color */
+  margin-right: 0rem;
+  font-size: 0.9rem;
+  background-color: #1d202f;
+  padding: 0.81rem; /* Adjust padding as needed */
+  border-top-right-radius: 0.25rem; /* Apply rounded border only to the right side */
+  border-bottom-right-radius: 0.25rem; /* Apply rounded border only to the right side */
+}
+
 
 .chat-input-container {
   display: flex;
@@ -397,3 +798,459 @@ html::-webkit-scrollbar-thumb:hover {
 .rotate-180 {
   transform: rotate(180deg);
 }
+
+@media (min-width: 1024px) and (max-width: 1600px) {
+  .hide-in-overflow {
+    display: none;
+  }
+}
+
+.fixed-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000; /* High z-index to ensure it stays above other content */
+}
+
+/* This class will be added when the element should become fixed */
+@media (max-width: 767px) {
+  .sticky-top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* Ensure it's above other content */
+  }
+}
+
+@media (max-width: 767px) {
+.spacer-active {
+  height: 63px; /* replace with actual height */
+  }
+}
+
+.negative {
+  text-indent: -0.3em;
+}
+
+
+.messageContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.messageText {
+  flex-grow: 1;
+}
+
+.muteButton {
+  display: none;
+  margin-left: 10px;
+}
+
+.messageContainer:hover .muteButton {
+  display: block;
+}
+
+.divClass {
+  height: calc(var(--vh, 1vh) * 100);
+}
+
+.gradient-button {
+  color: white;
+  background: linear-gradient(to right, #c44141, #7a3636);
+  border: none;
+  border-radius: 4px;
+  text-align: center;
+  transition: all 0.5s;
+}
+
+.gradient-button:hover {
+  border:1px solid #cfa6b4;
+}
+
+.candle-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.circle {
+  width: 20px;
+  height: 20px;
+  background-color: red; /* Set the color of the circle */
+  border-radius: 50%;
+}
+
+.rectangle {
+  width: 10px;
+  height: 40px;
+  background-color: grey; /* Set the color of the rectangle */
+}
+
+
+.custom-borders::before {
+  content: "";
+  height: 80%;
+  width: 100%;
+  border-left: 2px solid #232332; /* #D1D5DB is the color for border-gray-300 */
+  position: absolute;
+  left: 0%;
+  top: 10%; /* to center the border */
+}
+
+.display-inline-block {
+  display: inline-block;
+}
+
+.container {
+  white-space: nowrap;
+}
+
+.container > div {
+  flex-shrink: 0;
+}
+
+
+
+.custom-borderosak::before {
+  content: "";
+  height: 60%;
+  width: 100%;
+  border-left: 2px solid #232332; /* #D1D5DB is the color for border-gray-300 */
+  position: absolute;
+  top: 20%;
+  right: 0.8%;
+}
+
+.custom-border::before {
+  content: "";
+  height: 100%;
+  width: 80%;
+  border-top: 2px solid #232332; /* #D1D5DB is the color for border-gray-300 */
+  position: absolute;
+  left: 10%;
+  top: 0%; /* to center the border */
+}
+
+@media (min-width: 768px) {
+  .custom-border::before {
+    content: "";
+    height: 80%;
+    width: 100%;
+    border-top: 0px;
+    border-left: 2px solid #232332; /* #D1D5DB is the color for border-gray-300 */
+    position: absolute;
+    left: 0%;
+    top: 10%; /* to center the border */
+  }
+}
+
+.custom-borderer::before {
+  content: "";
+  height: 100%;
+  width: 80%;
+  border-top: 2px solid #232332; /* #D1D5DB is the color for border-gray-300 */
+  position: absolute;
+  left: 10%;
+  top: 0%; /* to center the border */
+}
+
+@media (min-width: 768px) {
+  .custom-borderer::before {
+    content: "";
+    height: 80%;
+    width: 100%;
+    border-top: 0px;
+    border-left: 0px;; /* #D1D5DB is the color for border-gray-300 */
+    position: absolute;
+    left: 0%;
+    top: 10%; /* to center the border */
+  }
+}
+
+.tradingcard {
+  box-shadow: 0 0 5px #F7931A;
+}
+
+.tradingcardtrade {
+  box-shadow: 0 0 5px 2px #dfcebb;
+}
+
+.tradingcardbo {
+  box-shadow: 0 0 5px #0ac587;
+
+}
+
+.tradingcardsol {
+  box-shadow: 0 0 5px #03E1FF;
+
+}
+
+
+.tradingcard:hover {
+  box-shadow: 0 0 20px #F7931A;
+  transform: scale(1.05);
+}
+
+.tradingcardbo:hover {
+  box-shadow: 0 0 20px #0ac587;
+  transform: scale(1.05);
+}
+
+
+.tradingcardsol:hover {
+  box-shadow: 0 0 20px #03E1FF    ;
+  transform: scale(1.05);
+}
+
+
+.keyfeaturescard:hover {
+  box-shadow: 0 0 15px 3px  #505855    ;
+}
+
+
+.gradient-bg {
+    background: linear-gradient(to top right, #c44141, #7a3636);
+    transition: background 0.3s; /* Smooth transition for the hover effect */
+}
+
+.gradient-bg:hover {
+    background: linear-gradient(to top right, #a33636, #612b2b); 
+    /* Adjust these colors to your liking for the hover effect */
+}
+
+
+.gradient-bgtrade {
+  background: linear-gradient(to top right, #ce8a36, #7a501d);
+  transition: background 0.3s; /* Smooth transition for the hover effect */
+}
+
+.gradient-bgtrade:hover {
+  background: linear-gradient(to top right, #af752e, #5e3d16); 
+  /* Adjust these colors to your liking for the hover effect */
+}
+
+.gradient-bgg {
+  background: linear-gradient(to top right, #34C796, #0b7a55);
+  transition: opacity 0.3s ease-out;
+}
+
+.gradient-bgg:hover {
+  background: linear-gradient(to top right, #2dac81, #0a724f);
+
+
+}
+
+.gradient-bggnew {
+  background: linear-gradient(to top right, #34C796, #0b7a55);
+  background-color: #0b7a55;
+  transition: opacity 0.3s ease-out;
+}
+
+.gradient-bggnew:hover {
+  background: #258d6a;
+  background-color: #258d6a;
+  transition: background-color 0.3s ease-out;
+
+}
+
+.inside_shadow:hover {
+  box-shadow: inset 0 0 10px #434665; /* Adjust the color and other values as per your requirements */
+  transition: box-shadow 0.15s ease-out;
+
+}
+
+
+.gradient-bgggg {
+  background: transparent;
+  opacity: 1;
+}
+
+.gradient-bgggg:hover {
+  background-color: #27977234;
+  transition: background-color 0.3s ease-out;
+}
+
+
+.gradient-bggs {
+  position: relative;
+  background: transparent; /* Make the background transparent */
+  border: 2px solid #34C796; 
+  transition: background 0.3s;
+}
+
+:root {
+  --gradient-size: 50%;
+}
+
+.topg {
+  background-image: radial-gradient(circle var(--gradient-size) at center top, #434665, #0B111B);
+}
+
+
+.topgg {
+  background-image: radial-gradient(ellipse at bottom, #434665, #0B111B 60%, transparent 100%);
+}
+
+
+
+.rellax {
+  transition: transform 0.1s ease-out;
+}
+
+
+
+/* Adjust gradient for smaller devices */
+@media only screen and (max-width: 776px) {
+  .topg {
+    background-image: radial-gradient(circle 100vh at center top, #434665, #0B111B 70%);
+  }
+  .topgg {
+    background-image: radial-gradient(ellipse at bottom, #2f3046, #0B111B 60%);
+  }
+}
+
+
+/* Adjust gradient for larger devices */
+@media only screen and (min-width: 777px) {
+  .topg {
+    background-image: radial-gradient(circle 100vh at center top, #434665, #0B111B 70%);
+  }
+  .topgg {
+    background-image: radial-gradient(ellipse at bottom, #2f3046, #0B111B 70%);
+  }
+}
+
+/* Adjust gradient for specific width and height */
+@media only screen and (max-width: 1350px) and (min-height: 1300px) {
+  .topg {
+    background-image: radial-gradient(circle 100vh at center top, #434665, #0B111B 50%);
+  }
+  .topgg {
+    background-image: radial-gradient(ellipse at bottom, #2f3046, #0B111B 60%);
+  }
+}
+
+
+
+
+
+/* Create a pseudo-element for the gradient background */
+.gradient-bggs::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1; /* Place it behind the content */
+  background: linear-gradient(to top right, #34C796, #0b7a55);
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+}
+
+/* Adjust the size of the pseudo-element to create the border effect */
+.gradient-bggs {
+  padding: 2px; /* Adjust padding to match the border width */
+}
+
+
+
+
+
+.fa-icon {
+  color: #279772;  /* For regular text-based icons or if SVG uses the "color" property */
+  fill: #279772;   /* For SVGs which use the "fill" property for color */
+}
+
+.fa-icon-red {
+  color: #c44141;  /* For regular text-based icons or if SVG uses the "color" property */
+  fill: #c44141;   /* For SVGs which use the "fill" property for color */
+}
+
+
+
+
+
+.tooltip-container {
+  position: absolute;
+  top: 100%;  /* positions the tooltip just below the parent */
+  left: 50%;  /* centers the tooltip horizontally */
+  transform: translateX(-50%);  /* adjusts for true centering */
+}
+
+
+.wide-tooltip {
+  width: 200px;
+  max-width: 100%;
+}
+
+
+
+
+/* Styling the tooltip */
+.bg-black {
+  background-color: black;
+}
+
+.text-white {
+  color: white;
+}
+
+.p-2 {
+  padding: 0.5rem;
+}
+
+.rounded {
+  border-radius: 0.25rem;
+}
+
+.scroll-animated-contents {
+  transition: all 0.7s ease-out;
+  transform: scale(0.8);
+  opacity: 0;
+}
+
+.scroll-animated-contents.move {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.scroll-animated-content {
+  transition: all 0.5s ease-out;
+  transform: scale(0.8);
+  opacity: 0;
+}
+
+.scroll-animated-content.move {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.scroll-animated-content2 {
+  transition: all 0.5s ease-out;
+  transform: scale(0.8);
+  opacity: 0;
+}
+
+.scroll-animated-content2.move {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.scroll-animated-content1 {
+  transition: all 0.5s ease-out;
+  transform: scale(0.8);
+  opacity: 0;
+}
+
+.scroll-animated-content1.move {
+  transform: scale(1);
+  opacity: 1;
+}
+
+
+

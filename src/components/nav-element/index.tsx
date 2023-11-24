@@ -3,6 +3,7 @@ import Text from '../Text';
 import { cn } from '../../utils';
 import { useRouter } from 'next/router';
 import { useEffect, useRef } from 'react';
+import { ReactNode } from 'react';
 
 type NavElementProps = {
     label: string;
@@ -12,6 +13,7 @@ type NavElementProps = {
     chipLabel?: string;
     disabled?: boolean;
     navigationStarts?: () => void;
+    icon?: ReactNode;
 };
 
 const NavElement = ({
@@ -21,9 +23,11 @@ const NavElement = ({
     scroll,
     disabled,
     navigationStarts,
+    icon,
 }: NavElementProps) => {
     const router = useRouter();
-    const isActive = href === router.asPath || (as && as === router.asPath);
+    const isActive = (href === router.asPath || (as && as === router.asPath)) || 
+    (router.asPath.startsWith(href) && (router.query.crypto === 'sol' || router.query.crypto === 'btc'));
     const divRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
@@ -31,8 +35,8 @@ const NavElement = ({
             divRef.current.className = cn(
                 'h-0.5 w-1/4 transition-all duration-300 ease-out',
                 isActive
-                    ? '!w-full bg-gradient-to-l from-[#9c3fee] to-[#ef4628] '
-                    : 'group-hover:w-1/2 group-hover:bg-gradient-to-l from-[#9c3fee] to-[#ef4628]',
+                    ? '!w-full bg-gradient-to-l from-[#34C796] to-[#0b7a55]'
+                    : 'group-hover:w-1/2 group-hover:bg-gradient-to-l from-[#34C796] to-[#0b7a55]',
             );
         }
     }, [isActive]);
@@ -44,13 +48,14 @@ const NavElement = ({
             scroll={scroll}
             passHref
             className={cn(
-                'group flex h-full flex-col items-center justify-between',
+                'mt-1 bankGothicc group flex h-full flex-col items-center justify-between hover:bg-layer-2 px-2.5 py-0.5 rounded duration-300 ease-out text-[1rem]',
                 disabled &&
                     'pointer-events-none cursor-not-allowed opacity-50',
             )}
             onClick={navigationStarts ?? undefined}
         >
             <div className="flex flex-row items-center gap-3">
+                {icon}
                 <Text variant="nav"> {label} </Text>
             </div>
             <div ref={divRef} />

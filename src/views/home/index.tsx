@@ -1,25 +1,33 @@
-import { FC, useEffect, useState } from 'react';
+import React from "react";
 import Link from 'next/link';
-import { FaAngleUp, FaAngleDown, FaHourglassHalf } from 'react-icons/fa';
-import { FaShield, FaUserCheck, FaWallet, FaPlay } from 'react-icons/fa6';
-import { useSpring, animated, config, useTransition } from 'react-spring';
-import { useWindowScrollPosition } from '../../components/getwindowscroll';
-import { useInView } from "react-intersection-observer";
-import { useMediaQuery } from 'react-responsive';
+import {useState, useEffect, useRef, FC } from 'react';
+import ResizeDetector from 'react-resize-detector';
+import PopFiLandingPageColumnvector from "components/PopFiLandingPageColumnvector";
+import socketIOClient from 'socket.io-client';
+import Rellax from 'rellax';
+
+
+
+const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT1;
+const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
+
+
 
 export const HomeView: FC = ({ }) => {
-  const [toggleState, setToggleState] = useState('PUMP');
-  
+  const refSecondDiv = React.useRef(null);
+  const reffirstDiv = React.useRef(null);
+  const refthirdDiv = React.useRef(null);
+  const refforthDiv = React.useRef(null);
+  const [prices, setPrices] = useState({});
+  const [openPrices, setopenPrices] = useState({});
 
-  const handleToggleChange = () => {
-    if (toggleState === 'PUMP') {
-      setToggleState('DUMP');
-    } else {
-      setToggleState('PUMP');
-    }
-  };
+  const imgRef1 = useRef(null);
+  const imgRef2 = useRef(null);
 
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+  const imageRefs = useRef(null);
+  const imageRefsd = useRef(null);
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
     const handleResize = () => {
@@ -32,343 +40,660 @@ export const HomeView: FC = ({ }) => {
     };
   }, []);
 
-  const scrollPos = useWindowScrollPosition();
-  const scale = 0.6 + scrollPos / 1000 > 1 ? 1 - ((0.6 + scrollPos / 1000 - 1) * 0.3) : 0.6 + scrollPos / 1000;
-
-  const springProps = useSpring({
-    from: { 
-      transform: 'scale(0.6) translate3d(0,0,0)', 
-      WebkitTransform: 'scale(0.6) translate3d(0,0,0)' 
-    },
-    to: { 
-      transform: `scale(${scale}) translate3d(0,0,0)`,
-      WebkitTransform: `scale(${scale}) translate3d(0,0,0)` 
-    },
-    config: config.gentle,
-  });
-
-  const { ref: ref1, inView: inView1 } = useInView({
-    threshold: 0.8, 
-    rootMargin: '0px 0px 0px 0px', 
-    triggerOnce: true, 
-  });
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!imageRefs.current) return;
   
-  const props1 = useSpring({
-    opacity: inView1 ? 1 : 0,
-    transform: inView1 ? "translateY(0)" : "translateY(-100px)",
-  });
+      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+      const scrollTotal = scrollHeight - clientHeight;
+      const scrollPercent = scrollTop / scrollTotal;
   
-    // Second div animation
-    const { ref: refs, inView: inViews } = useInView({
-      threshold: 0.7, 
-      rootMargin: '0px 0px 0px 0px', 
-      triggerOnce: true, 
-    });
-    
-    const propss = useSpring({
-      opacity: inViews ? 1 : 0,
-      transform: inViews ? "translateY(0)" : "translateY(-100px)",
-    });
-
-  // Second div animation
-  const { ref: ref2, inView: inView2 } = useInView({
-    threshold: 0.5, 
-    rootMargin: '0px 0px 0px 0px', 
-    triggerOnce: true, 
-  });
+      // Calculate scale based on scroll position
+      let scale = isMobile ? 0.5 + 3 * scrollPercent : 0.1 + 2.7 * scrollPercent;
   
-  const props2 = useSpring({
-    opacity: inView2 ? 1 : 0,
-    transform: inView2 ? "translateY(0)" : "translateY(-100px)",
-  });
-
-  const transformValueDesktop = "translateY(-100px)";
-  const transformValueMobile1 = "translateX(100px)";
-  const transformValueMobile2 = "translateX(-100px)";
-
-    // Second div animation
-    const { ref: ref3, inView: inView3 } = useInView({
-      threshold: 0.5, 
-      rootMargin: '0px 0px 0px 0px', 
-      triggerOnce: true, 
-    });
+      // Set a max scale value
+      const maxScale = 1;  // Adjust as necessary
+      scale = Math.min(scale, maxScale);
+  
+      imageRefs.current.style.transform = `translateX(-50%) scale(${scale})`;
+    };
+  
+    window.addEventListener('scroll', handleScroll);
     
-    const props3 = useSpring({
-      opacity: inView3 ? 1 : 0,
-      transform: inView3 ? "translateY(0)" : (isMobile ? transformValueMobile1 : transformValueDesktop),
-    });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+  
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!imageRefsd.current) return;
+  
+      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+      const scrollTotal = scrollHeight - clientHeight;
+      const scrollPercent = scrollTop / scrollTotal;
+  
+      // Scale the image between 1 (no scale) to 2 based on scroll position
+      let scale = isMobile ? 0.5 + 3 * scrollPercent : 0.1 + 2.7 * scrollPercent;
+  
+      // Set a max scale value
+      const maxScale = 1;  // Adjust as necessary
+      scale = Math.min(scale, maxScale);
 
-
-
-
-
-
-        // Second div animation
-        const { ref: ref4, inView: inView4 } = useInView({
-          threshold: 0.5, 
-          rootMargin: '0px 0px 0px 0px', 
-          triggerOnce: true, 
-        });
-        
-        const props4 = useSpring({
-          opacity: inView4 ? 1 : 0,
-          transform: inView4 ? "translateY(0)" : (isMobile ? transformValueMobile2 : transformValueDesktop),
-        });
-
-        const { ref: ref5, inView: inView5 } = useInView({
-          threshold: 0.5, 
-          rootMargin: '0px 0px 0px 0px', 
-          triggerOnce: true, 
-        });
-        
-        const props5 = useSpring({
-          opacity: inView5 ? 1 : 0,
-          transform: inView5 ? "translateY(0)" : (isMobile ? transformValueMobile1 : transformValueDesktop),
-        });
-        
-    const { ref: ref6, inView: inView6 } = useInView({
-      threshold: 0.5, 
-      rootMargin: '0px 0px 0px 0px', 
-      triggerOnce: true, 
-    });
+      imageRefsd.current.style.transform = `translateX(-50%) scale(${scale})`;
+    };
+  
+    window.addEventListener('scroll', handleScroll);
     
-    const props6 = useSpring({
-      opacity: inView6 ? 1 : 0,
-      transform: inView6 ? "translateY(0)" : (isMobile ? transformValueMobile2 : transformValueDesktop),
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+  
+
+  
+  useEffect(() => {
+    // Logic that you want to run after the component has mounted goes here.
+  
+    // Get screen width
+    const screenWidth = window.innerWidth;
+  
+    // Set data-rellax-speed based on screen size
+    if (screenWidth <= 768) {  
+      imgRef1.current.setAttribute('data-rellax-speed', '-3');
+      imgRef2.current.setAttribute('data-rellax-speed', '2');
+    } else {  
+      imgRef1.current.setAttribute('data-rellax-speed', '-3');
+      imgRef2.current.setAttribute('data-rellax-speed', '2');
+    }
+  
+    // Initialize Rellax
+    const rellaxInstance = new Rellax('.rellax', {
+      center: true,
+      wrapper: null,
+      round: true,
+      vertical: true,
+      horizontal: false
     });
+
+    rellaxInstance.refresh();
+  
+    // Cleanup
+    return () => {
+      rellaxInstance.destroy();
+    };
+  
+    // The empty dependency array means this effect will only run once, similar to componentDidMount.
+  }, []);
+
+  
+  
+
+  useEffect(() => {
+    const socket = socketIOClient(ENDPOINT);
+
+    socket.on('priceUpdate', (updatedPrices) => {
+
+      const newPrices = { ...prices };
+      updatedPrices.forEach((updatedPrice) => {
+        newPrices[updatedPrice.symbol] = updatedPrice.price;
+      });
+
+     setPrices(newPrices);
+    });
+
+    // Disconnect the socket when the component unmounts
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    const socket = socketIOClient(ENDPOINT2);
+
+    socket.on('openingprice', (openingPrices) => {
+      const openingPricess = { ...openPrices };
+      openingPrices.forEach((openingPrices) => {
+        openingPricess[openingPrices.symbol] = openingPrices.price;
+      });
+      setopenPrices(openingPricess);
+    });
+
+    // Disconnect the socket when the component unmounts
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  const btcPrice = Number(prices['Crypto.BTC/USD'] / 100000000) || 35432.2;
+  const openBtcPrice = Number(openPrices['Crypto.BTC/USD'] / 100000000) || 35502.2;
+
+  const change = ((btcPrice - openBtcPrice) / openBtcPrice) * 100;
+  const displayChange = change > 0 ? `${change.toFixed(2)}` : change.toFixed(2);
+
+  const color = change > 0 ? 'bankGothic bg-clip-text bg-gradient-to-t from-[#0B7A55] to-[#34C796]   text-5xl md:text-6xl text-center text-transparent uppercase' : 'bankGothic bg-clip-text bg-clip-text bg-gradient-to-t from-[#7A3636] to-[#C44141]  text-5xl md:text-6xl text-center text-transparent uppercase';
+
+
+  const solPrice = Number(prices['Crypto.SOL/USD'] / 100000000) || 34.35;
+  const openSolPrice = Number(openPrices['Crypto.SOL/USD'] / 100000000) || 34;
+
+  const changesol = ((solPrice - openSolPrice) / openSolPrice) * 100;
+  const displayChangesol = changesol > 0 ? `${changesol.toFixed(2)}` : changesol.toFixed(2);
+
+  const colorsol = changesol > 0 ? 'bankGothic bg-clip-text bg-gradient-to-t from-[#0B7A55] to-[#34C796]  text-5xl md:text-6xl text-center text-transparent uppercase' : 'bankGothic bg-clip-text bg-clip-text bg-gradient-to-t from-[#7A3636] to-[#C44141]   text-5xl md:text-6xl text-center text-transparent uppercase';
+  const colorsolsmall = changesol > 0 ? 'bankGothic bg-clip-text bg-gradient-to-t from-[#0B7A55] to-[#34C796] md:text-3xl text-[28px] sm:text-[32px] text-center text-transparent tracking-[-2.56px] uppercase w-auto' : 'bankGothic bg-clip-text bg-gradient-to-t from-[#7A3636] to-[#C44141] md:text-3xl text-[28px] sm:text-[32px] text-center text-transparent tracking-[-2.56px] uppercase w-auto';
+
+
+  
+
+  const handleResize4 = (width, height) => {
+    // Check the viewport width; if it's under 640px, exit early and ignore resizing.
+    if (window.innerWidth <= 768) {
+      return;
+    }
+  
+    if (refforthDiv.current) {
+      // Adjust the height based on any border or padding on the second div
+      const computedStyle = getComputedStyle(refforthDiv.current);
+      const totalPadding = parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
+      const totalBorder = parseFloat(computedStyle.borderTopWidth) + parseFloat(computedStyle.borderBottomWidth);
       
-        const { ref: ref7, inView: inView7 } = useInView({
-          threshold: 0.5, 
-          rootMargin: '0px 0px 0px 0px', 
-          triggerOnce: true, 
-        });
-        
-        const props7 = useSpring({
-          opacity: inView7 ? 1 : 0,
-          transform: inView7 ? "translateY(0)" : (isMobile ? transformValueMobile1 : transformValueDesktop),
-        });
+      refforthDiv.current.style.height = `${(height - totalPadding - totalBorder )/2 + 19.5 }px`;
+      refthirdDiv.current.style.height = `${(height - totalPadding - totalBorder )/2 + 19.5 }px`;
 
-                // Second div animation
-                const { ref: ref8, inView: inView8 } = useInView({
-                  threshold: 0.5, 
-                  rootMargin: '0px 0px 0px 0px', 
-                  triggerOnce: true, 
-                });
-                
-                const props8 = useSpring({
-                  opacity: inView8 ? 1 : 0,
-                  transform: inView8 ? "translateY(0)" : (isMobile ? transformValueMobile2 : transformValueDesktop),
-                });
+    }
+  };
 
-                        // Second div animation
-        const { ref: ref9, inView: inView9 } = useInView({
-          threshold: 0.5, 
-          rootMargin: '0px 0px 0px 0px', 
-          triggerOnce: true, 
-        });
-        
-        const props9 = useSpring({
-          opacity: inView9 ? 1 : 0,
-          transform: inView9 ? "translateY(0)" : "translateY(-100px)",
-        });
-
-
+  const handleResize = (width, height) => {
+    // Check the viewport width; if it's under 640px, exit early and ignore resizing.
+    if (window.innerWidth <= 768) {
+      return;
+    }
   
+    if (refSecondDiv.current) {
+      // Adjust the height based on any border or padding on the second div
+      const computedStyle = getComputedStyle(refSecondDiv.current);
+      const totalPadding = parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
+      const totalBorder = parseFloat(computedStyle.borderTopWidth) + parseFloat(computedStyle.borderBottomWidth);
+      
+      refSecondDiv.current.style.height = `${height - totalPadding - totalBorder}px`;
+    }
+  };
+
+  const handleResize1 = (width, height) => {
+    // Check the viewport width; if it's under 640px, exit early and ignore resizing.
+    if (window.innerWidth <= 768) {
+      return;
+    }
+  
+    if (reffirstDiv.current) {
+      // Adjust the height based on any border or padding on the second div
+      const computedStyle = getComputedStyle(reffirstDiv.current);
+      const totalPadding = parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
+      const totalBorder = parseFloat(computedStyle.borderTopWidth) + parseFloat(computedStyle.borderBottomWidth);
+      
+      reffirstDiv.current.style.height = `${height - totalPadding - totalBorder}px`;
+    }
+  };
+  
+  
+
+
+  const popFiLandingPageColumnvectorPropList = [
+    { userimage: "images/img_vector.png" },
+    {
+      usertext:
+        "Engage in a thrilling trading experience, wrapped in a gamified environment.",
+        userimage: "images/bitcoin-convert.png",
+    },
+    {
+      usertext:
+        "Navigate effortlessly. Our intuitive design makes everyone feel like at home.",
+        userimage: "images/flash.png",
+    },
+    { usertext: "Trade directly and securely from your wallet",
+    userimage: "images/empty-wallet.png", },
+    {
+      usertext:
+        "Connect, discuss, and grow. Chat with the community on our platform.",
+        userimage: "images/messages-2.png",
+    },
+    { usertext: "Rest easy knowing your trades are backed by smart contract.",
+    userimage: "images/shield-tick.png", },
+  ];
+
   return (
-    <div className="flex justify-center">
-    <div className="w-[97%] xl:w-[75%] lg:w-[75%] md:w-[75%] sm:w-[75%] md:min-w-[800px] sm:min-w-[97%] md:pt-24 pt-16">
-    <div className="custom-scrollbar w-[100%] bg-transparent rounded">
-  <div className="flex flex-col sm:flex-row justify-center items-center h-[100%] ">
-    <div className="w-[98%] md:w-[45%]  flex flex-col justify-center items-center text-center text-lg md:text-xl text-slate-300 bg-transparent rounded sm:pt-0 pt-3 sm:order-1">
-      <h1 className="text-center text-[4.05rem] font-bold text-transparent bg-clip-text bg-slate-300 pt-4 pb-8">
-        PopFi
-      </h1>
-      <h2 className="text-center text-2xl mt-4 font-bold text-transparent bg-clip-text bg-slate-300 ml-5 mr-5">
-      Pop Your Potential in Every Trade with Solana-Built Binary Options.
-      </h2>
-      <div className="text-center text-3xl mt-4 font-bold text-[#1a1a25] bg-green-500 rounded-full hover:bg-green-500 hover:text-[#1a1a25] transform hover:scale-110 shadow component order-1 sm:block hidden">
-          <Link href="/trade">
-            <button className="mr-4 ml-4 mt-1 mb-2">Experience Now</button>
-          </Link>
-      </div>
-    </div>
-    <div className="w-[98%] md:w-[45%] h-[450px] flex flex-col justify-center items-center text-center text-lg md:text-xl text-slate-300 bg-transparent rounded order-2">
-      <h1 className="justify-center items-center">
-        <img src="/2.png" alt="Logo" className="w-80 h-80 sm:w-[100%] sm:h-[100%] max-w-[420px]" />
-      </h1>
-      <div className="mb-12 text-center text-3xl font-bold text-[#1a1a25] bg-green-500 rounded-full hover:bg-green-500 hover:text-[#1a1a25] transform hover:scale-110 shadow component order-1 sm:hidden block">
-          <Link href="/trade">
-            <button className="mr-4 ml-4 mt-1 mb-2">Experience Now</button>
-          </Link>
-      </div>
-    </div>
-  </div>
-</div>
-<div 
-  className="flex justify-center items-center mt-16" 
->
-<animated.div style={springProps}>
-      <div className="bg-transparent">
-        <div className="rounded-xl md:border-8 border-2 border-slate-300 flex justify-center items-center">
-        <img src="/trading.png" alt="Logo" style={{ height: 'auto' }} className="w-full h-full rounded-xl" />
-        </div>
-      </div>
-    </animated.div>
-</div>
+    <>
+      <div className="flex flex-col font-poppins items-start justify-start mx-auto w-auto sm:w-full md:w-full">
+        <div className="topg flex flex-col md:gap-10 gap-[79px] items-center justify-start w-full pb-14">
+        <div className=" flex flex-col gap-[55px] inset-x-[0] items-center justify-center mx-auto  w-auto">
+              <div
+                className="pt-16 bankGothic bg-clip-text bg-white  leading-[90.69%] max-w-full md:max-w-[900px] md:text-6xl text-5xl text-center bg-clip-text text-transparent bg-gradient-to-b from-[#FFFFFF] to-[#9697a7]"
+              >
+                Trade Binary Options and High Leverage Futures on-chain.
+              </div>
+              <div className="flex sm:flex-row flex-col  gap-4 items-center justify-center w-auto sm:w-full">
+              <Link href="/trade">
+                <button
+                  className="py-2.5 rounded border-2 border-[#34C796] gradient-bgggg cursor-pointer font-semibold leading-[normal] min-w-[189px] bg-clip-text text-lg text-[#34C796]"
 
+                >
+                  
+                  TRADE OPTIONS
+                </button>
+                </Link>
+                <Link href="/futures">
+                <button
+                  className="py-3 rounded gradient-bggnew cursor-pointer font-semibold leading-[normal] min-w-[189px] text-center text-lg"
 
-  <div className="flex justify-center items-center pt-20">
-  <div className="custom-scrollbar w-[98%] md:[80%] md:h-[400px] bg-transparent mt-2 rounded">
-    <div className="flex flex-col md:flex-row justify-center items-center">
+                >
+                  TRADE FUTURES
+                </button>
+                </Link>
+              </div>
 
-      <div className="md:w-[60%] w-[98%] h-[400px] flex flex-col justify-center items-center text-center text-lg md:text-xl text-slate-300  bg-transparent rounded order-1 md:order-2">
-      <animated.div ref={ref1} style={props1}> <h2 className="text-center text-3xl ml-2 mt-2 mb-6 font-bold text-transparent bg-clip-text bg-slate-300">
-          Why PopFi?
-        </h2>
-        <div className="flex justify-center items-center">
-          <h2 className="text-start text-2xl font-semibold text-transparent bg-clip-text bg-slate-300 ml-5 mr-5">
-            Because we simplify trading. Just determine whether the price of a specific cryptocurrency will go up or down within a specific timeframe and <span className="text-transparent bg-clip-text bg-[#D4AF37]">make it pop.</span>
-          </h2>
-        </div>
-        <div className="w-[65%] mt-6 flex justify-between items-center gap-4 font-semibold text-sm md:text-base text-white">
-          <div className="toggle-button" onClick={handleToggleChange}>
-            <div className="text-state">
-              <>
-                <FaAngleUp className="text-green-500" />
-                <span>PUMP</span>
-              </>
             </div>
-            <div className="text-state" style={{ left: "50%" }}>
-              <>
-                <FaAngleDown className="text-red-500" />
-                <span className="ml-1">DUMP</span>
-              </>
+          <div className="font-bankgothicmdbt md:px-5 relative w-full pt-5 mb-16">
+            <div className="absolute  flex md:flex-row flex-col gap-3.5 h-max inset-[0] items-start justify-between m-auto w-full">
+              <img
+                ref={imgRef1}
+                className="rellax  absolute md:h-auto w-[22%]  inset-y-[0] my-auto object-cover left-[0] z-0  md:mb-2 mb-10 md:pt-[100px] pt-[60px] z-5"
+                src="images/img_grid4.png"
+                alt="gridFour"
+
+              />
+                <img
+                  ref={imgRef2}
+                  className="rellax  absolute md:h-auto w-[22%] inset-y-[0] my-auto object-cover right-[0] z-0 md:mt-24 mt-24 md:pb-[300px] pb-[150px] z-5"
+                  src="images/img_abstract07.png"
+                  alt="abstractSeven"
+
+                />
+                <div className="h-[159px] top-[29%] w-[67%]"></div>
             </div>
-            <div
-              className={`toggle-state ${
-                toggleState === "PUMP" ? "bg-green-500" : "bg-red-500 right-0"
-              }`}
-            >
-              {toggleState}
+
+            <img
+              className="relative z-10 bottom-[10%] h-[718px] h-auto  inset-x-[0] mx-auto object-cover rounded-[16px] w-[80%] z-2 border-2 md:border-4  border-layer-3 flex justify-center items-center"
+              src="trading.png"
+              alt="imageFive_One"
+            />
+
+          </div>
+
+        </div>
+        <div className="w-full h-full bg-[#0B111B] flex flex-col items-center justify-start px-14 pb-14 md:px-10 sm:px-5 w-full ">
+          <div
+            className="bankGothic mt-0.5 text-[40px] sm:text-[46px] md:text-[50px] text-center text-white-A700 uppercase z-10"
+          >
+            TRADE CRYPTO PERPETUALS
+          </div>
+          <div
+            className="mt-[22px] sm:p-[] md:pb-[40px] sm:pb-[120px] pb-[160px] text-[#B4B5C7] text-center text-xl z-10"
+          >
+            With low fees, deep liquidity, and up to 200x Leverage.
+          </div>
+          <div
+            className="md:mt-8 flex md:flex-row flex-col flex justify-center items-center  md:w-[60%] w-[100%] relative z-1 md:gap-16 gap-32"
+          >
+
+            <div className="bg-[#0B111B] h-[370px] md:w-[50%] w-[100%] md:max-w-[450px] sm:max-w-[370px] min-w-[300px] relative  z-10">
+            <Link href="/futures?crypto=btc">
+              <div className="inside_shadow bg-[#0B111B]  border border-[#434665] border-solid bottom-[0]  inset-x-[0] items-center justify-end mx-auto p-[42px] sm:px-5  rounded-[32px] w-full">
+                <div
+                  className="bankGothic mt-[93px] text-[38px] md:text-[50px] text-center text-white-A700 uppercase"
+                >
+                  BITCOIN
+                </div>
+                <div>
+                <div
+                  className={color}
+                >
+                 {displayChange}%
+                </div>
+                <div
+                  className="bankGothic text-[34px] sm:text-[40px] text-[#B4B5C7] text-center tracking-[-2.40px] uppercase"
+                >
+                  ${isNaN(prices['Crypto.BTC/USD'] / 100000000) 
+            ? '35432.2' 
+            : (prices['Crypto.BTC/USD'] / 100000000).toFixed(1)}
+                </div></div>
+                <img
+                  ref={imageRefs}
+                  className="absolute top-[-75px] left-1/2 transform -translate-x-1/2 h-[229px] object-cover w-[229px]"
+                  src="images/img_bitcoin3d.png"
+                alt="bitcoin3d"
+              />
+              </div>
+              </Link>
+
+            </div>
+            <div className=" bg-[#0B111B] h-[370px] relative md:max-w-[450px] min-w-[300px] sm:max-w-[370px] md:w-[50%] w-[100%] z-10">
+            <Link href="/futures?crypto=sol">
+              <div className="inside_shadow bg-[#0B111B] border border-[#434665] border-solid bottom-[0] inset-x-[0] items-center justify-end mx-auto p-[42px] sm:px-5 rounded-[32px] w-full">
+                <div
+                  className="bankGothic mt-[93px] text-[38px] md:text-[50px] text-center text-white-A700 uppercase"
+                >
+                  SOLANA
+                </div>
+                <div
+                  className={colorsol}
+                >
+                  {displayChangesol}%
+                </div>
+                <div
+                  className="bankGothic text-[34px] sm:text-[40px] text-[#B4B5C7] text-center tracking-[-2.40px] uppercase"
+                >
+                  ${isNaN(prices['Crypto.SOL/USD'] / 100000000) 
+                ? '34.35' 
+                : (prices['Crypto.SOL/USD'] / 100000000).toFixed(3)}
+                </div>
+                <img
+                                  ref={imageRefsd}
+
+                  className="absolute top-[-75px] left-1/2 transform -translate-x-1/2 h-[229px] object-cover w-[229px]"
+                  src="images/img_solana3d.png"
+                  alt="solana3d"
+                  />
+              </div>
+              </Link>
             </div>
           </div>
         </div>
-        <h2 className="text-start text-2xl font-semibold text-transparent bg-clip-text bg-slate-300 ml-3 mr-3 mt-6">
-          Say goodbye to complicated trading strategies and hello to effortless profitability.
-        </h2>      </animated.div>
-      </div>
+        <div className="bg-[#0B111B] flex flex-col font-bankgothicmdbt items-center justify-start pt-[84px] pb-14  sm:px-10 px-5 w-full">
 
+          <div className="flex flex-col gap-[22px] items-start justify-start max-w-[1400px] mb-[7px] mx-auto w-full">
+          <ResizeDetector handleHeight onResize={handleResize4}>
 
-      <div className="md:w-[40%] w-[98%] h-[400px] md:mt-0 mt-6 flex flex-col justify-center items-center text-center text-lg md:text-xl text-slate-300  bg-transparent rounded order-2 md:order-1">
-      <animated.div ref={refs} style={propss}><div className="mr-32 flex justify-center items-center floating text-2xl font-bold text-green-500">
-          <FaAngleUp className=" text-green-500 text-[11.05rem] " /> PUMP
-        </div>
-        <h2 className="text-center text-3xl font-bold text-transparent bg-clip-text bg-slate-300">
-          BTC/USD - 30521
-        </h2>
-        <div className="ml-32 flex justify-center items-center floatingg text-2xl font-bold text-red-500">
-          DUMP
-          <FaAngleDown className="text-red-500 text-[11.05rem]" />
-        </div>      </animated.div>
-      </div>
+            <div className="w-full flex md:flex-row flex-col gap-[22px] items-start justify-start">
 
-    </div>
-    
-  </div>
-</div>
+              <div className="bg-[#151722] border border-[#434665] border-solid flex flex-col items-start justify-start md:p-11 p-8 rounded-[32px] w-full h-full md:w-[64%] z-10">
+                <div className="flex flex-col gap-[22px] items-start justify-start w-auto md:w-full">
+                  <div
+                    className="bankGothic sm:text-[32px] md:text-[38px] text-[42px] text-white-A700 uppercase w-auto"
+                  >
+                    WHY POPFI?
+                  </div>
+                  <div
+                    className="leading-[140.00%] text-blue_gray-200 text-lg"
+                  >
+                    <span className="text-[#B4B5C7] font-poppins text-left font-light">
+                      Because we simplify trading: Execute trades directly from
+                      your wallet with just one click. Whether you are
+                      predicting price movements on options or delving into
+                      futures,{" "}
+                    </span>
+                    <span className="text-white-A700 font-poppins text-left font-light">
+                      <>
+                        make your trading decisions pop.
+                        <br />
+                      </>
+                    </span>
+                    <span className="text-[#B4B5C7] font-poppins text-left font-light">
+                      <>
+                        <br />
+                        Say goodbye to complicated trading strategies and hello
+                        to effortless profitability.
+                      </>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="relative w-full md:w-[38%]">
+                <div className="flex flex-col items-center justify-between m-auto w-full  gap-[22px] ">
+                  <div className="w-full">
+                    <div   className="bg-gradient-to-t from-[#0B7A55] to-[#34C796] rounded-[24px] w-full p-[1px]  ">
+                    <div ref={refthirdDiv} className="bg-[#0B111B] bg-opacity-90 flex flex-1 flex-row md:h-full items-center justify-between  md:p-[33px] p-[34px] sm:px-5 rounded-[24px] w-full">
+                      <div
+                        className="bankGothic bg-clip-text bg-gradient-to-t from-[#34C796] to-[#0B7A55]  text-3xl sm:text-[26px] md:text-[28px] text-transparent uppercase"
+                      >
+                        Long
+                      </div>
+                      <div className="h-[47px] sm:h-[66px] md:h-[73px] mb-4 mt-[3px] relative w-[60px]">
+                        <img
+                          className="h-[39px] sm:mt-[15px] md:m-[] m-auto md:mt-[15px] w-[39px]"
+                          src="images/img_user.svg"
+                          alt="user"
+                        />
+                        <img
+                          className="absolute h-[60px] w-[60px] inset-[0] justify-center m-auto object-cover "
+                          src="images/arrow-up.png"
+                          alt="arrowup"
+                        />
+                      </div>
+                    </div>
+                    </div>
+                    </div>
+                    <div className="w-full">
+                    <div className="bg-gradient-to-t from-[#7A3636] to-[#C44141] rounded-[24px] w-full p-[1px] ">
+                    <div ref={refforthDiv} className="bg-[#0B111B] bg-opacity-90 flex flex-1 flex-row md:h-full items-center justify-between  md:p-[33px] p-[34px] sm:px-5 rounded-[24px] w-full">
+                      <div
+                        className="bankGothic bg-clip-text bg-gradient-to-t from-[#7A3636] to-[#C44141]  text-3xl sm:text-[26px] md:text-[28px] text-transparent uppercase"
+                      >
+                        SHORT
+                      </div>
+                      <div className="h-[47px] sm:h-[66px] md:h-[73px] mb-4 mt-[3px] relative w-[60px]">
+                        <img
+                          className="h-[39px] sm:mt-[15px]  md:m-[] m-auto md:mt-[15px] w-[39px]"
+                          src="images/img_user.svg"
+                          alt="user"
+                        />
+                        <img
+                          className="absolute h-[60px] w-[60px] inset-[0] justify-center m-auto object-cover "
+                          src="images/arrow-down.png"
+                          alt="arrowup"
+                        />
+                      </div>
+                      </div>
 
+                </div>
+                <div className="min-w-[190px] absolute bg-[#0B111B] border border-[#434665] border-solid flex flex-col font-bankgothicltbt h-[100px] inset-[0] items-center justify-center m-auto  px-[42px] rounded-[16px] w-1/2 md:w-2/">
+                  <div className="flex flex-row gap-2 items-center justify-center w-auto ">
+                    <button
+                      className="flex h-[39px] items-center justify-center rounded-[19px] w-[39px] bg-gradient-to-bl from-[#11EEAA] to-[#D229FB]"
+                    >
+                      <img src="images/img_volume.svg" alt="volume" />
+                    </button>
+                    <div
+                      className="bankGothicc text-2xl md:text-[22px] text-center  sm:text-xl tracking-[-1.92px] uppercase w-auto"
+                    >
+                      SOLANA
+                    </div>
+                  </div>
+                  <div
+                    className={colorsolsmall}
+                  >
+                                      ${isNaN(prices['Crypto.SOL/USD'] / 100000000) 
+                ? '34.35' 
+                : (prices['Crypto.SOL/USD'] / 100000000).toFixed(3)}
+                  </div>
+                </div>
+              </div>
+            </div>
+            </div>
+            </div>
+            </ResizeDetector>
 
-<animated.div ref={ref2} style={props2}>
-        <h2 className="pt-8 text-center text-3xl mt-32 font-bold text-transparent bg-clip-text bg-slate-300">
-            Key Features
-        </h2>
-        </animated.div>
-        <div className="flex justify-center items-center overflow-x-hidden mt-8">
-        <div className="w-[98%] md:w-[80%] md:h-[260px] bg-transparent mt-2 rounded  ">
-        <div className="flex md:flex-row flex-col  justify-center items-center">
-        <animated.div ref={ref3} style={props3} className="md:w-1/3 w-[70%] min-w-[240px] h-[260px] md:mt-0 mt-12">
-        <div className="flex flex-col justify-center items-center custom-scrollbar  bg-[#1a1a25] rounded  md:mr-3 md:mt-0  h-[260px]">
-        <svg width="100%" height="48.8" viewBox="-10.6 -9.8 121.2 105.6" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M100.48 69.3817L83.8068 86.8015C83.4444 87.1799 83.0058 87.4816 82.5185 87.6878C82.0312 87.894 81.5055 88.0003 80.9743 88H1.93563C1.55849 88 1.18957 87.8926 0.874202 87.6912C0.558829 87.4897 0.31074 87.2029 0.160416 86.8659C0.0100923 86.529 -0.0359181 86.1566 0.0280382 85.7945C0.0919944 85.4324 0.263131 85.0964 0.520422 84.8278L17.2061 67.408C17.5676 67.0306 18.0047 66.7295 18.4904 66.5234C18.9762 66.3172 19.5002 66.2104 20.0301 66.2095H99.0644C99.4415 66.2095 99.8104 66.3169 100.126 66.5183C100.441 66.7198 100.689 67.0067 100.84 67.3436C100.99 67.6806 101.036 68.0529 100.972 68.415C100.908 68.7771 100.737 69.1131 100.48 69.3817ZM83.8068 34.3032C83.4444 33.9248 83.0058 33.6231 82.5185 33.4169C82.0312 33.2108 81.5055 33.1045 80.9743 33.1048H1.93563C1.55849 33.1048 1.18957 33.2121 0.874202 33.4136C0.558829 33.6151 0.31074 33.9019 0.160416 34.2388C0.0100923 34.5758 -0.0359181 34.9482 0.0280382 35.3103C0.0919944 35.6723 0.263131 36.0083 0.520422 36.277L17.2061 53.6968C17.5676 54.0742 18.0047 54.3752 18.4904 54.5814C18.9762 54.7875 19.5002 54.8944 20.0301 54.8952H99.0644C99.4415 54.8952 99.8104 54.7879 100.126 54.5864C100.441 54.3849 100.689 54.0981 100.84 53.7612C100.99 53.4242 101.036 53.0518 100.972 52.6897C100.908 52.3277 100.737 51.9917 100.48 51.723L83.8068 34.3032ZM1.93563 21.7905H80.9743C81.5055 21.7907 82.0312 21.6845 82.5185 21.4783C83.0058 21.2721 83.4444 20.9704 83.8068 20.592L100.48 3.17219C100.737 2.90357 100.908 2.56758 100.972 2.2055C101.036 1.84342 100.99 1.47103 100.84 1.13408C100.689 0.79713 100.441 0.510296 100.126 0.308823C99.8104 0.107349 99.4415 1.24074e-05 99.0644 0L20.0301 0C19.5002 0.000878397 18.9762 0.107699 18.4904 0.313848C18.0047 0.519998 17.5676 0.821087 17.2061 1.19848L0.524723 18.6183C0.267681 18.8866 0.0966198 19.2223 0.0325185 19.5839C-0.0315829 19.9456 0.0140624 20.3177 0.163856 20.6545C0.31365 20.9913 0.561081 21.2781 0.875804 21.4799C1.19053 21.6817 1.55886 21.7896 1.93563 21.7905Z" fill="#22c55e" />
-</svg>
+            <ResizeDetector handleHeight onResize={handleResize1}>
 
+            <div className="flex md:flex-row md:grid-cols-2 flex md:flex-row flex-col gap-[22px] items-start justify-start w-full md:pt-[0px] pt-[22px] z-10">
+            <div ref={reffirstDiv} className="bg-gradient-to-t from-[#7A3636] to-[#C44141] w-full md:w-[38%] p-[1px] rounded-[32px] md:max-h-[400px] max-h-[300px]">
+              <div className="w-full h-full bg-[#0B111B] bg-opacity-90  flex md:flex-1 flex-col items-center justify-start md:p-11 p-8 rounded-[32px] sm:top-[] w-full">
 
-        Non-Custodial</div>
-        </animated.div>
-        <animated.div ref={ref4} style={props4} className="md:w-1/3 w-[70%] min-w-[240px] h-[260px] md:mt-0 mt-12 relative">
-  <FaPlay className="text-green-500 text-[4rem] absolute top-[-2rem] left-1/2 transform -translate-x-1/2" />
-  <div className="flex flex-col justify-center items-center custom-scrollbar h-[260px] bg-[#1a1a25] rounded md:ml-3 md:mr-3 ">
-    Gamified
-  </div>
-</animated.div>
+                <div className="h-full flex flex-col gap-8 items-center justify-start w-auto">
+                  <div
+                    className="bankGothic md:text-3xl sm:text-[28px] text-[32px] text-center text-[#B4B5C7] uppercase w-auto"
+                  >
+                    AUDITED BY
+                  </div>
+                  <div className="flex flex-col items-center justify-start w-auto">
+                    <img
+                      className="h-[86px] sm:h-[] md:h-auto object-cover w-[67px] sm:w-[]"
+                      src="images/img_image7.png"
+                      alt="imageSeven"
+                    />
+                    <img
+                      className="h-[61px] md:h-auto object-cover w-[191px]"
+                      src="images/img_image9.png"
+                      alt="imageNine"
+                    />
+                  </div>
+                </div>
+              </div>
+              </div>
+              <div className="bg-[#151722] border border-[#434665] border-solid flex flex-row items-start justify-start md:p-11 p-8 rounded-[32px] w-full md:w-[62%] min-h-[305px]">
+                <div className=" flex flex-col gap-[26px] items-start justify-start my-1 w-auto md:w-full">
+                  <div
+                    className="bankGothic leading-[90.69%] text-[32px] sm:text-[38px] md:text-[42px] text-white-A700 uppercase"
+                  >
+                    <>
+                      Try <br />
+                      Binary Options.
+                    </>
+                  </div>
+                  <div
+                    className="text-[#B4B5C7] text-lg w-auto"
+                  >
+                    Predict Crypto price in a short timeframe and make it pop.
+                  </div>
+                  <Link href="/trade">
 
+                  <button
+                  className="py-3 rounded gradient-bggnew cursor-pointer font-semibold leading-[normal] min-w-[189px] text-center text-lg"
+                >
+                  TRADE OPTIONS
+                </button>
+                </Link>
+                </div>
+              </div>
+            </div>
+            </ResizeDetector>
 
+            <ResizeDetector handleHeight onResize={handleResize}>
+            <div className="flex md:flex-row flex-col gap-[22px] justify-start w-full md:pt-[0px] pt-[22px] z-10">
 
-        <animated.div ref={ref5} style={props5} className="md:w-1/3 w-[70%] min-w-[240px] h-[260px]  md:mt-0 mt-12">
-        <FaUserCheck className="text-green-500 text-[4rem] absolute top-[-2rem] left-1/2 transform -translate-x-1/2" />
-        <div className="flex flex-col justify-center items-center custom-scrollbar h-[260px] bg-[#1a1a25] rounded  md:ml-3 md:mt-0">
-        <div >
-        User Friendly</div></div>
-        </animated.div>
+            <div className="md:order-1 order-2 md:max-h-[500px] min-h-[280px] bg-[#151722] border border-[#434665] border-solid flex flex-col items-start justify-start md:p-11 p-8 rounded-[32px] w-full md:w-[62%] flex-shrink-0">
+           <div className="flex flex-col gap-[22px] items-start justify-start  w-auto md:w-full ">
+            <div className="bankGothic leading-[90.69%] max-w-[560px] md:max-w-full text-[32px] sm:text-[36px] md:text-[42px] text-white-A700 uppercase">
+                Built on Solana, Powered by Pyth.
+            </div>
+            <div className="leading-[140.00%] max-w-[622px] md:max-w-full text-[#B4B5C7] text-lg">
+                Experience the synergy of Solana’s speed and Pyth’s accuracy, redefining trading efficiency and reliability.
+            </div>
+             </div>
+          </div>
 
-
-        </div>
-        </div>
-        </div>
-
-
-        <div className="flex justify-center items-center">
-        <div className="w-[98%] md:w-[80%] md:h-[260px] bg-transparent md:mt-6 rounded  ">
-        <div className="flex md:flex-row flex-col justify-center items-center overflow-x-hidden">
-        <animated.div ref={ref6} style={props6} className="md:w-1/3 w-[70%] min-w-[240px] h-[260px] mt-12">
-        <FaWallet className="text-green-500 text-[4rem] absolute top-[-2rem] left-1/2 transform -translate-x-1/2" />
-        <div className="flex flex-col justify-center items-center  h-[260px] bg-[#1a1a25] rounded   md:mr-3 ">
-        </div>        </animated.div>
-        <animated.div ref={ref7} style={props7} className="md:w-1/3 w-[70%] min-w-[240px] h-[260px] mt-12">
-        <FaShield className="text-green-500 text-[4rem] absolute top-[-2rem] left-1/2 transform -translate-x-1/2" />
-        <div className="flex flex-col justify-center items-center h-[260px] bg-[#1a1a25] rounded  md:ml-3 md:mr-3 ">
-       </div></animated.div>
-        <animated.div ref={ref8} style={props8} className="md:w-1/3 w-[70%] min-w-[240px] h-[260px] mt-12">
-        <FaShield className="text-green-500 text-[4rem] absolute top-[-2rem] left-1/2 transform -translate-x-1/2" />
-        <div className="flex flex-col justify-center items-center h-[260px] bg-[#1a1a25] rounded  md:ml-3">
-       </div></animated.div>
-
-        </div>
-        </div>
-        </div>
-
-        <animated.div ref={ref9} style={props9}>
-        <h2 className="text-center text-3xl ml-2 mt-24 font-bold text-transparent bg-clip-text bg-slate-300">
-            Join our Community
-        </h2>
-        <div className="flex justify-center items-center">
-        <div className="custom-scrollbar w-[98%] md:w-[80%] h-[260px] bg-[#1a1a25] mt-2 rounded mb-8">
-        <div className="flex justify-center items-center">
-        <div className="flex justify-center items-center" style={{ backgroundImage: `url(/Comm.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-
-        <div className=" w-[74%] h-[260px] sm:flex-col flex flex-col justify-center items-center text-center text-2xl md:text-3xl text-slate-300  bg-transparent rounded">
-        Choose your direction now and join our community of traders.
-        <div className="flex md:pt-4 pt-0 sm:flex-row flex-col justify-center items-center">
-
-        <div className="w-[200px] sm:mr-2 mr-0 text-center text-xl mt-4 font-bold text-[#1a1a25] bg-green-500 rounded-full hover:bg-green-500 hover:text-[#1a1a25] transform hover:scale-110 shadow component">
-          <Link href="/trade">
-            <button className="mt-1 mb-2">Start Trading</button>
-          </Link>
-      </div>
-      
-      <div className="w-[200px] sm:ml-2 ml-0 sm:mb-0 mb-2 text-center text-xl mt-4 font-bold text-[#1a1a25] bg-[#7289da] rounded-full hover:bg-[#7289da] hover:text-[#1a1a25] transform hover:scale-110 shadow component">
-          <Link href="/trade">
-            <button className="mt-1 mb-2">Discord</button>
-          </Link>
-      </div></div></div>
-</div>
-        </div>
-        </div>
-        </div>
-        </animated.div>
-        </div>
+            <div ref={refSecondDiv} className="md:order-2 order-1 md:max-h-[450px] max-h-[280px] bg-gradient-to-t from-[#0B7A55] to-[#34C796] w-full md:w-[38%] p-[1px] rounded-[32px] flex-shrink">
+                 <div className="bg-[#0B111B] h-full bg-opacity-90 rounded-[32px] w-full overflow-hidden md:max-h-[450px] max-h-[280px]">
+            <img className="w-full h-full object-cover scale-200 sm:scale-160  -translate-x-1/8 md:-translate-y-1/5 overflow-hidden md:max-h-[450px] max-h-[260px]" src="images/img_grid3.svg" alt="gridThree" />
+                    </div>
         
+                      </div>
+    
+              </div>
+            </ResizeDetector>
+
+            </div>
+            
         </div>
+        <div className="bg-[#0B111B] flex flex-col font-bankgothicmdbt md:gap-10 gap-[79px] items-center justify-end p-5 w-full pb-[42px]">
+          <div
+            className="bankGothic mt-[52px] text-[40px] sm:text-[46px] md:text-[50px] text-center text-white-A700 uppercase"
+          >
+            KEY FEATURES
+          </div>
+          <div className="flex flex-col font-poppins items-start justify-between max-w-[1229px] mx-auto md:px-5 w-full z-10">
+            <div className="flex flex-col items-center justify-start w-full">
+              <div className="md:gap-16 gap-5 grid sm:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 justify-center min-h-[auto] w-full">
+                {popFiLandingPageColumnvectorPropList.map((props, index) => (
+                  <React.Fragment key={`PopFiLandingPageColumnvector${index}`}>
+                    <PopFiLandingPageColumnvector
+                      className="flex flex-1 flex-col gap-[30px] h-[214px] md:h-auto items-center justify-start w-full"
+                      {...props}
+                    />
+                  </React.Fragment>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="bg-[#0B111B] flex flex-col items-center justify-start md:m-[] md:mt-[] md:px-[58px] md:pt-[88px] sm:px-10 px-5 w-full ">
+        <div className="bg-gradient-to-t from-[#0B7A55] to-[#34C796] max-w-[1232px] md:mb-[21px]  p-[1px]   rounded-[32px] z-10">
+          <div className="bg-[#151722] flex flex-col md:flex-row items-center justify-start   w-full sm:px-[60px] px-[30px] md:py-[20px] py-[30px] rounded-[32px]">
+            <div className="flex md:flex-row flex-col md:gap-10 items-center justify-between w-[95%] md:w-full overflow-hidden">
+              <div className="flex flex-col items-start justify-start">
+                <div
+                  className="bankGothicc text-[32px] sm:text-[38px] md:text-[42px] text-white-A700 uppercase"
+                >
+                  join our community
+                </div>
+                <div
+                  className="leading-[140.00%] mt-[7px] text-[#B4B5C7] text-xl w-[88%] sm:w-full"
+                >
+                  Choose your direction now and join our community of traders.
+                </div>
+                <Link
+            href="https://discord.gg/jXCbWwD5s8"
+            target="_blank"
+            rel="noopener noreferrer"
+            passHref
+            className="text-secondary hover:text-white"
+          >
+                <button
+                  className="py-3 rounded gradient-bggnew cursor-pointer font-semibold leading-[normal] min-w-[219px] mt-[31px] text-center text-white text-lg"
+                >
+                  JOIN OUR DISCORD
+                </button>
+                </Link>
+              </div>
+              
+              <img
+                className="h-[279px] md:h-auto object-cover md:w-2/5 translate-y-[15%] overflow-hidden"
+                src="images/img_maskgroup.png"
+                alt="maskgroup"
+              />
+            </div>
+          </div>
+        </div>
+        <div className="relative topgg bg-gradient7  flex flex-row  items-center justify-between  sm:w-[80%] w-[100%] pt-[21px] mt-[42px]">
+        <Link href="/">       
+          <img
+            className="h-[45px] object-cover mb-1.5"
+            src="images/img_image5.png"
+            alt="imageFive_Two"
+          />
+          </Link>
+          <div className="flex flex-row gap-3 mb-1.5">
+          <Link
+            href="https://twitter.com/PopFi_io"
+            target="_blank"
+            rel="noopener noreferrer"
+            passHref
+            className="text-secondary hover:text-white"
+          >
+          <img
+            className=" h-[22px] object-cover "
+            src="images/x.png"
+            alt="videocamera"
+          /></Link>
+                  <Link
+            href="https://discord.gg/jXCbWwD5s8"
+            target="_blank"
+            rel="noopener noreferrer"
+            passHref
+            className="text-secondary hover:text-white"
+          >
+                    <img
+            className=" h-[22px] object-cover "
+            src="images/dc.png"
+            alt="videocamera"
+          /></Link>
+          </div>
+
+        </div>
+        </div>
+      </div>
+    </>
   );
-}
+};

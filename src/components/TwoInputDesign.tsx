@@ -53,7 +53,21 @@ const TwoDigitInput: React.FC<TwoDigitInputProps> = ({ value, onValueChange, for
     if (onValueChange) {
       onValueChange(newValue); // Notify parent component of value change
     }
+  
+    const scrollY = document.body.style.top;
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = ''; // Add this line
+    window.scrollTo(0, parseInt(scrollY || '0') * -1);
   };
+
+  const handleFocus: React.FocusEventHandler<HTMLInputElement> = (event) => {
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%'; // Add this line
+  };
+  
   
 
   return (
@@ -63,6 +77,7 @@ const TwoDigitInput: React.FC<TwoDigitInputProps> = ({ value, onValueChange, for
       className="bg-transparent outline-none border-none text-lg"
       onChange={handleInput}
       onBlur={handleBlur}
+      onFocus={handleFocus}
     />
   );
 };

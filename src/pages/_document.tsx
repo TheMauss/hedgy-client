@@ -12,6 +12,10 @@ class MyDocument extends Document {
       <Html>
         <Head>
         <link rel="shortcut icon" href="/favicon.ico"/>
+        <script defer src="charting_library/charting_library.standalone.js" />
+        <script defer src="datafeeds/udf/dist/bundle.js" />
+        <script defer src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js" />
+        
         </Head>
         <body>
           <Main />

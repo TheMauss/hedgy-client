@@ -80,18 +80,27 @@ const Notification = ({ type, message, description, txid, onHide, isMobile }) =>
     };
   }, [onHide]);
 
-  const notificationClasses = `max-w-sm ${
-    isMobile ? 'w-[200%] h-[50%]' : 'w-80 h-auto'
-  } bg-bkg-1 shadow-lg rounded-md mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 p-2 mx-4 mb-12 overflow-hidden`;
 
+
+  // Define gradient backgrounds for different notification types
+  const gradientBackgrounds = {
+    success: 'linear-gradient(to right, #0B7A55, #34C796)', // replace with success gradient
+    info: 'linear-gradient(to right, #633640, #4b4e9d)', // replace with info gradient
+    error: 'linear-gradient(to right, #7A3636, #C44141)', // replace with error gradient
+  };
+
+
+  const notificationClasses = `max-w-sm ${
+    isMobile ? 'w-full' : 'w-80 h-auto'
+  } bg-bkg-1 rounded-md mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 p-2 mx-4 mb-12 overflow-hidden`;
 
   return (
     <div className={notificationClasses}>
       <div
-        className={`p-4 rounded-md bg-gradient-to-r from-purple-900 via-purple-600 to-emerald-500`}
-        style={{ background: 'linear-gradient(to right, #633640, #4b4e9d)' }}
+        className={`rounded-md p-[1px]`}
+        style={{ background: gradientBackgrounds[type] }}
       >
-        <div className={`flex items-center`}>
+        <div className={`p-4 rounded-md bg-base bg-opacity-90  flex items-center`}>
           <div className={`flex-shrink-0`}>
             {type === 'success' ? (
               <CheckCircleIcon className={`h-8 w-8 mr-1 text-green`} />
@@ -101,7 +110,7 @@ const Notification = ({ type, message, description, txid, onHide, isMobile }) =>
             )}
             {type === 'error' && <XCircleIcon className={`h-8 w-8 mr-1`} />}
           </div>
-          <div className={`ml-2 w-0 flex-1`}>
+          <div className={`ml-2 flex-1`}>
             <div className={`font-bold text-fgd-1`}>{message}</div>
             {description ? (
               <p className={`mt-0.5 text-sm text-fgd-2`}>{description}</p>
@@ -109,13 +118,13 @@ const Notification = ({ type, message, description, txid, onHide, isMobile }) =>
             {txid ? (
               <div className="flex flex-row">
                 <a
-                  href={`https://explorer.solana.com/tx/${txid}?cluster=${networkConfiguration}`}
+                  href={`https://solscan.io/tx/${txid}?cluster=${networkConfiguration}`}
                   target="_blank"
                   rel="noreferrer"
                   className="flex flex-row link link-accent text-emerald-200"
                 >
                   <svg
-                    className="flex-shrink-0 h-4 ml-2 mt-0.5 text-primary-light w-4"
+                    className="flex-shrink-0 h-4 ml-2 mt-1 text-primary-light w-4"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -129,14 +138,14 @@ const Notification = ({ type, message, description, txid, onHide, isMobile }) =>
                     ></path>
                   </svg>
                   <div className="flex mx-4">
-                    {txid.slice(0, 8)}...
-                    {txid.slice(txid.length - 8)}
+                    {txid.slice(0, 3)}...
+                    {txid.slice(txid.length - 3)}
                   </div>
                 </a>
               </div>
             ) : null}
           </div>
-          <div className={`ml-4 flex-shrink-0 self-start flex`}>
+          <div className={`flex-shrink-0 self-start flex`}>
             <button
               onClick={() => onHide()}
               className={`bg-bkg-2 default-transition rounded-md inline-flex text-fgd-3 hover:text-fgd-4 focus:outline-none`}

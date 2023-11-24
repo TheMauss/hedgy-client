@@ -1,6 +1,6 @@
 import { PublicKey, Connection } from "@solana/web3.js"
 import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as borsh from "@project-serum/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
+import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
 export interface BinaryOptionFields {
@@ -11,9 +11,9 @@ export interface BinaryOptionFields {
   priceDirection: number
   symbol: number
   expirationTime: BN
-  winner: PublicKey | null
   playerAcc: PublicKey
   resolved: boolean
+  payout: BN
 }
 
 export interface BinaryOptionJSON {
@@ -24,9 +24,9 @@ export interface BinaryOptionJSON {
   priceDirection: number
   symbol: number
   expirationTime: string
-  winner: string | null
   playerAcc: string
   resolved: boolean
+  payout: string
 }
 
 export class BinaryOption {
@@ -37,9 +37,9 @@ export class BinaryOption {
   readonly priceDirection: number
   readonly symbol: number
   readonly expirationTime: BN
-  readonly winner: PublicKey | null
   readonly playerAcc: PublicKey
   readonly resolved: boolean
+  readonly payout: BN
 
   static readonly discriminator = Buffer.from([115, 1, 78, 208, 48, 220, 57, 9])
 
@@ -51,9 +51,9 @@ export class BinaryOption {
     borsh.u8("priceDirection"),
     borsh.u8("symbol"),
     borsh.u64("expirationTime"),
-    borsh.option(borsh.publicKey(), "winner"),
     borsh.publicKey("playerAcc"),
     borsh.bool("resolved"),
+    borsh.u64("payout"),
   ])
 
   constructor(fields: BinaryOptionFields) {
@@ -64,21 +64,22 @@ export class BinaryOption {
     this.priceDirection = fields.priceDirection
     this.symbol = fields.symbol
     this.expirationTime = fields.expirationTime
-    this.winner = fields.winner
     this.playerAcc = fields.playerAcc
     this.resolved = fields.resolved
+    this.payout = fields.payout
   }
 
   static async fetch(
     c: Connection,
-    address: PublicKey
+    address: PublicKey,
+    programId: PublicKey = PROGRAM_ID
   ): Promise<BinaryOption | null> {
     const info = await c.getAccountInfo(address)
 
     if (info === null) {
       return null
     }
-    if (!info.owner.equals(PROGRAM_ID)) {
+    if (!info.owner.equals(programId)) {
       throw new Error("account doesn't belong to this program")
     }
 
@@ -87,7 +88,8 @@ export class BinaryOption {
 
   static async fetchMultiple(
     c: Connection,
-    addresses: PublicKey[]
+    addresses: PublicKey[],
+    programId: PublicKey = PROGRAM_ID
   ): Promise<Array<BinaryOption | null>> {
     const infos = await c.getMultipleAccountsInfo(addresses)
 
@@ -95,7 +97,7 @@ export class BinaryOption {
       if (info === null) {
         return null
       }
-      if (!info.owner.equals(PROGRAM_ID)) {
+      if (!info.owner.equals(programId)) {
         throw new Error("account doesn't belong to this program")
       }
 
@@ -118,9 +120,9 @@ export class BinaryOption {
       priceDirection: dec.priceDirection,
       symbol: dec.symbol,
       expirationTime: dec.expirationTime,
-      winner: dec.winner,
       playerAcc: dec.playerAcc,
       resolved: dec.resolved,
+      payout: dec.payout,
     })
   }
 
@@ -133,9 +135,9 @@ export class BinaryOption {
       priceDirection: this.priceDirection,
       symbol: this.symbol,
       expirationTime: this.expirationTime.toString(),
-      winner: (this.winner && this.winner.toString()) || null,
       playerAcc: this.playerAcc.toString(),
       resolved: this.resolved,
+      payout: this.payout.toString(),
     }
   }
 
@@ -148,9 +150,9 @@ export class BinaryOption {
       priceDirection: obj.priceDirection,
       symbol: obj.symbol,
       expirationTime: new BN(obj.expirationTime),
-      winner: (obj.winner && new PublicKey(obj.winner)) || null,
       playerAcc: new PublicKey(obj.playerAcc),
       resolved: obj.resolved,
+      payout: new BN(obj.payout),
     })
   }
 }

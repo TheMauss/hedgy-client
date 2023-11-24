@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 
 function SolanaTPS() {
   const [tps, setTPS] = useState(null);
+  const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT2;
+
 
   useEffect(() => {
     const intervalId = setInterval(fetchTPS, 60000); // update TPS every 15 seconds
 
     async function fetchTPS() {
         try {
-          const response = await fetch('https://frozen-hamlet-77237-31263ec4359d.herokuapp.com/tps');  // Replace with your server's URL
+          const response = await fetch(`${ENDPOINT}/tps`);  // Replace with your server's URL
           const json = await response.json();
           setTPS(json.tps);
         } catch (error) {
@@ -25,7 +27,7 @@ function SolanaTPS() {
   const tpsColor = tps > 3000 ? 'text-green-500' : 'text-red-500';
 
   return (
-    <div className="text-slate-300 ml-2">
+    <div className="font-poppins text-slate-300 ml-2">
       <span className={`${tpsColor} mr-1`}>&#9679;</span> 
       TPS: {tps ? tps.toFixed(0) : '-'} 
     </div>
