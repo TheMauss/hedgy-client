@@ -13,6 +13,8 @@ export interface LiquidityProviderAccountFields {
   lastKnownCumulativeFeeRate: BN
   lastKnownPnlRate: BN
   isActive: boolean
+  withdrawalRequestAmount: BN
+  withdrawalRequestEpoch: BN
 }
 
 export interface LiquidityProviderAccountJSON {
@@ -25,6 +27,8 @@ export interface LiquidityProviderAccountJSON {
   lastKnownCumulativeFeeRate: string
   lastKnownPnlRate: string
   isActive: boolean
+  withdrawalRequestAmount: string
+  withdrawalRequestEpoch: string
 }
 
 export class LiquidityProviderAccount {
@@ -37,6 +41,8 @@ export class LiquidityProviderAccount {
   readonly lastKnownCumulativeFeeRate: BN
   readonly lastKnownPnlRate: BN
   readonly isActive: boolean
+  readonly withdrawalRequestAmount: BN
+  readonly withdrawalRequestEpoch: BN
 
   static readonly discriminator = Buffer.from([
     37, 78, 108, 229, 124, 38, 135, 141,
@@ -52,6 +58,8 @@ export class LiquidityProviderAccount {
     borsh.u64("lastKnownCumulativeFeeRate"),
     borsh.i64("lastKnownPnlRate"),
     borsh.bool("isActive"),
+    borsh.u64("withdrawalRequestAmount"),
+    borsh.u64("withdrawalRequestEpoch"),
   ])
 
   constructor(fields: LiquidityProviderAccountFields) {
@@ -64,6 +72,8 @@ export class LiquidityProviderAccount {
     this.lastKnownCumulativeFeeRate = fields.lastKnownCumulativeFeeRate
     this.lastKnownPnlRate = fields.lastKnownPnlRate
     this.isActive = fields.isActive
+    this.withdrawalRequestAmount = fields.withdrawalRequestAmount
+    this.withdrawalRequestEpoch = fields.withdrawalRequestEpoch
   }
 
   static async fetch(
@@ -119,6 +129,8 @@ export class LiquidityProviderAccount {
       lastKnownCumulativeFeeRate: dec.lastKnownCumulativeFeeRate,
       lastKnownPnlRate: dec.lastKnownPnlRate,
       isActive: dec.isActive,
+      withdrawalRequestAmount: dec.withdrawalRequestAmount,
+      withdrawalRequestEpoch: dec.withdrawalRequestEpoch,
     })
   }
 
@@ -133,6 +145,8 @@ export class LiquidityProviderAccount {
       lastKnownCumulativeFeeRate: this.lastKnownCumulativeFeeRate.toString(),
       lastKnownPnlRate: this.lastKnownPnlRate.toString(),
       isActive: this.isActive,
+      withdrawalRequestAmount: this.withdrawalRequestAmount.toString(),
+      withdrawalRequestEpoch: this.withdrawalRequestEpoch.toString(),
     }
   }
 
@@ -147,6 +161,8 @@ export class LiquidityProviderAccount {
       lastKnownCumulativeFeeRate: new BN(obj.lastKnownCumulativeFeeRate),
       lastKnownPnlRate: new BN(obj.lastKnownPnlRate),
       isActive: obj.isActive,
+      withdrawalRequestAmount: new BN(obj.withdrawalRequestAmount),
+      withdrawalRequestEpoch: new BN(obj.withdrawalRequestEpoch),
     })
   }
 }

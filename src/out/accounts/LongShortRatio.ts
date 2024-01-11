@@ -30,6 +30,20 @@ export interface LongShortRatioFields {
   btcLong240: BN
   btcShort240: BN
   totalCollateral: BN
+  longCollateral: BN
+  shortCollateral: BN
+  bonkLong: BN
+  bonkShort: BN
+  bonkLong1: BN
+  bonkShort1: BN
+  pythLong: BN
+  pythShort: BN
+  pythLong1: BN
+  pythShort1: BN
+  jupLong: BN
+  jupShort: BN
+  jupLong1: BN
+  jupShort1: BN
 }
 
 export interface LongShortRatioJSON {
@@ -59,6 +73,20 @@ export interface LongShortRatioJSON {
   btcLong240: string
   btcShort240: string
   totalCollateral: string
+  longCollateral: string
+  shortCollateral: string
+  bonkLong: string
+  bonkShort: string
+  bonkLong1: string
+  bonkShort1: string
+  pythLong: string
+  pythShort: string
+  pythLong1: string
+  pythShort1: string
+  jupLong: string
+  jupShort: string
+  jupLong1: string
+  jupShort1: string
 }
 
 export class LongShortRatio {
@@ -88,6 +116,20 @@ export class LongShortRatio {
   readonly btcLong240: BN
   readonly btcShort240: BN
   readonly totalCollateral: BN
+  readonly longCollateral: BN
+  readonly shortCollateral: BN
+  readonly bonkLong: BN
+  readonly bonkShort: BN
+  readonly bonkLong1: BN
+  readonly bonkShort1: BN
+  readonly pythLong: BN
+  readonly pythShort: BN
+  readonly pythLong1: BN
+  readonly pythShort1: BN
+  readonly jupLong: BN
+  readonly jupShort: BN
+  readonly jupLong1: BN
+  readonly jupShort1: BN
 
   static readonly discriminator = Buffer.from([
     18, 172, 89, 131, 240, 106, 141, 203,
@@ -120,6 +162,20 @@ export class LongShortRatio {
     borsh.u64("btcLong240"),
     borsh.u64("btcShort240"),
     borsh.u64("totalCollateral"),
+    borsh.u64("longCollateral"),
+    borsh.u64("shortCollateral"),
+    borsh.u64("bonkLong"),
+    borsh.u64("bonkShort"),
+    borsh.u64("bonkLong1"),
+    borsh.u64("bonkShort1"),
+    borsh.u64("pythLong"),
+    borsh.u64("pythShort"),
+    borsh.u64("pythLong1"),
+    borsh.u64("pythShort1"),
+    borsh.u64("jupLong"),
+    borsh.u64("jupShort"),
+    borsh.u64("jupLong1"),
+    borsh.u64("jupShort1"),
   ])
 
   constructor(fields: LongShortRatioFields) {
@@ -149,6 +205,20 @@ export class LongShortRatio {
     this.btcLong240 = fields.btcLong240
     this.btcShort240 = fields.btcShort240
     this.totalCollateral = fields.totalCollateral
+    this.longCollateral = fields.longCollateral
+    this.shortCollateral = fields.shortCollateral
+    this.bonkLong = fields.bonkLong
+    this.bonkShort = fields.bonkShort
+    this.bonkLong1 = fields.bonkLong1
+    this.bonkShort1 = fields.bonkShort1
+    this.pythLong = fields.pythLong
+    this.pythShort = fields.pythShort
+    this.pythLong1 = fields.pythLong1
+    this.pythShort1 = fields.pythShort1
+    this.jupLong = fields.jupLong
+    this.jupShort = fields.jupShort
+    this.jupLong1 = fields.jupLong1
+    this.jupShort1 = fields.jupShort1
   }
 
   static async fetch(
@@ -221,6 +291,20 @@ export class LongShortRatio {
       btcLong240: dec.btcLong240,
       btcShort240: dec.btcShort240,
       totalCollateral: dec.totalCollateral,
+      longCollateral: dec.longCollateral,
+      shortCollateral: dec.shortCollateral,
+      bonkLong: dec.bonkLong,
+      bonkShort: dec.bonkShort,
+      bonkLong1: dec.bonkLong1,
+      bonkShort1: dec.bonkShort1,
+      pythLong: dec.pythLong,
+      pythShort: dec.pythShort,
+      pythLong1: dec.pythLong1,
+      pythShort1: dec.pythShort1,
+      jupLong: dec.jupLong,
+      jupShort: dec.jupShort,
+      jupLong1: dec.jupLong1,
+      jupShort1: dec.jupShort1,
     })
   }
 
@@ -252,6 +336,20 @@ export class LongShortRatio {
       btcLong240: this.btcLong240.toString(),
       btcShort240: this.btcShort240.toString(),
       totalCollateral: this.totalCollateral.toString(),
+      longCollateral: this.longCollateral.toString(),
+      shortCollateral: this.shortCollateral.toString(),
+      bonkLong: this.bonkLong.toString(),
+      bonkShort: this.bonkShort.toString(),
+      bonkLong1: this.bonkLong1.toString(),
+      bonkShort1: this.bonkShort1.toString(),
+      pythLong: this.pythLong.toString(),
+      pythShort: this.pythShort.toString(),
+      pythLong1: this.pythLong1.toString(),
+      pythShort1: this.pythShort1.toString(),
+      jupLong: this.jupLong.toString(),
+      jupShort: this.jupShort.toString(),
+      jupLong1: this.jupLong1.toString(),
+      jupShort1: this.jupShort1.toString(),
     }
   }
 
@@ -283,6 +381,20 @@ export class LongShortRatio {
       btcLong240: new BN(obj.btcLong240),
       btcShort240: new BN(obj.btcShort240),
       totalCollateral: new BN(obj.totalCollateral),
+      longCollateral: new BN(obj.longCollateral),
+      shortCollateral: new BN(obj.shortCollateral),
+      bonkLong: new BN(obj.bonkLong),
+      bonkShort: new BN(obj.bonkShort),
+      bonkLong1: new BN(obj.bonkLong1),
+      bonkShort1: new BN(obj.bonkShort1),
+      pythLong: new BN(obj.pythLong),
+      pythShort: new BN(obj.pythShort),
+      pythLong1: new BN(obj.pythLong1),
+      pythShort1: new BN(obj.pythShort1),
+      jupLong: new BN(obj.jupLong),
+      jupShort: new BN(obj.jupShort),
+      jupLong1: new BN(obj.jupLong1),
+      jupShort1: new BN(obj.jupShort1),
     })
   }
 }

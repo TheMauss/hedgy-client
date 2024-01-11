@@ -11,6 +11,9 @@ import Notifications from '../components/Notification';
 import { useRouter } from 'next/router';
 import ReactGA from 'react-ga';
 import { Analytics } from '@vercel/analytics/react';
+import { AllowlistProvider } from '../contexts/AllowlistContext';
+import { useAllowlist } from '../contexts/AllowlistContext';
+import WhiteList from '../pages/whitelist'; 
 
 
 require('@solana/wallet-adapter-react-ui/styles.css');
@@ -46,9 +49,6 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
     };
   }, [isContentContainerOpen]);
 
-  
-
-  
 
 
 
@@ -58,8 +58,8 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
             <title>PopFi</title>
             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
           </Head>
-
           <ContextProvider>
+            
             <div className="flex flex-col min-h-screen overflow-hidden">
               <Notifications />
               <Analytics />

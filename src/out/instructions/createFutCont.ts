@@ -17,11 +17,12 @@ export interface CreateFutContArgs {
 }
 
 export interface CreateFutContAccounts {
+  futCont: PublicKey
   playerAcc: PublicKey
   userAcc: PublicKey
   ratioAcc: PublicKey
   houseAcc: PublicKey
-  futCont: PublicKey
+  nftAcc: PublicKey
   oracleAccount: PublicKey
   pdaHouseAcc: PublicKey
   affilAcc: PublicKey
@@ -51,11 +52,12 @@ export function createFutCont(
   programId: PublicKey = PROGRAM_ID
 ) {
   const keys: Array<AccountMeta> = [
+    { pubkey: accounts.futCont, isSigner: false, isWritable: true },
     { pubkey: accounts.playerAcc, isSigner: true, isWritable: true },
     { pubkey: accounts.userAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.ratioAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.houseAcc, isSigner: false, isWritable: true },
-    { pubkey: accounts.futCont, isSigner: false, isWritable: true },
+    { pubkey: accounts.nftAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.oracleAccount, isSigner: false, isWritable: false },
     { pubkey: accounts.pdaHouseAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.affilAcc, isSigner: false, isWritable: true },

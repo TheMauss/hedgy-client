@@ -15,11 +15,12 @@ export interface CreateBinOptArgs {
 }
 
 export interface CreateBinOptAccounts {
+  binOpt: PublicKey
   playerAcc: PublicKey
   userAcc: PublicKey
   ratioAcc: PublicKey
+  nftAcc: PublicKey
   houseAcc: PublicKey
-  binOpt: PublicKey
   oracleAccount: PublicKey
   pdaHouseAcc: PublicKey
   affilAcc: PublicKey
@@ -47,11 +48,12 @@ export function createBinOpt(
   programId: PublicKey = PROGRAM_ID
 ) {
   const keys: Array<AccountMeta> = [
+    { pubkey: accounts.binOpt, isSigner: false, isWritable: true },
     { pubkey: accounts.playerAcc, isSigner: true, isWritable: true },
     { pubkey: accounts.userAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.ratioAcc, isSigner: false, isWritable: true },
+    { pubkey: accounts.nftAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.houseAcc, isSigner: false, isWritable: true },
-    { pubkey: accounts.binOpt, isSigner: false, isWritable: true },
     { pubkey: accounts.oracleAccount, isSigner: false, isWritable: false },
     { pubkey: accounts.pdaHouseAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.affilAcc, isSigner: false, isWritable: true },

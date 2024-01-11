@@ -24,7 +24,7 @@ function SolanaTPS() {
     return () => clearInterval(intervalId); // clear interval on component unmount
   }, []);
 
-  const tpsColor = tps > 3000 ? 'text-green-500' : 'text-red-500';
+  const tpsColor = tps > 2000 ? 'text-green-500' : 'text-red-500';
 
   return (
     <div className="font-poppins text-slate-300 ml-2">

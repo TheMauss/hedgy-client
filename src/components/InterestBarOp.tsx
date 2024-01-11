@@ -4,45 +4,62 @@ import { FC, useEffect, useState } from "react";
 
 interface InterestBarProps {
         openingPrice: number; // Add openingPrice here
-        isSoliditySelected: boolean;
         prices: { [key: string]: { price: number, timestamp: string } };
         EMAprice: number;
         symbol: string;
+        selectedCryptos: { [key: string]: boolean };
       }  
       
-  const InterestBar: React.FC<InterestBarProps> = ({ isSoliditySelected, symbol, prices, EMAprice, openingPrice }) => { // You forgot to add latestOpenedPosition here
+  const InterestBar: React.FC<InterestBarProps> = ({selectedCryptos, symbol, prices, EMAprice, openingPrice }) => { // You forgot to add latestOpenedPosition here
     // Safely access the properties of prices
-    const solPrice = prices?.['Crypto.SOL/USD']?.price;
-    const btcPrice = prices?.['Crypto.BTC/USD']?.price;
 
     const [initialPrice, setInitialPrice] = useState(0);
 
     useEffect(() => {
-      const initialPrice = isSoliditySelected
-        ? prices['Crypto.SOL/USD']?.price / 100000000
-        : prices['Crypto.BTC/USD']?.price / 100000000;
+      const selectedCrypto = Object.keys(selectedCryptos).find(key => selectedCryptos[key]);
+    
+      // Get the price for the selected cryptocurrency
+      const selectedCryptoPrice = prices?.[`Crypto.${selectedCrypto}/USD`]?.price;
+    
+      // Function to determine the number of decimal places
+      const getDecimalPlaces = (crypto) => {
+        switch (crypto) {
+          case 'BTC':
+            return 1; // One decimal place for BTC
+          case 'SOL':
+            return 3; // Three decimal places for SOL
+          // Add other cases as necessary
+          case 'PYTH':
+            return 4;
+          case 'BONK':
+            return 8;
+          default:
+            return 2; // Default number of decimal places
+        }
+      };
+    
+      let initialPrice = 0;
+    
+      if (selectedCryptoPrice) {
+        const price = selectedCryptoPrice / 100000000;
+        const decimalPlaces = getDecimalPlaces(selectedCrypto);
+        
+        // Convert to fixed-point notation before applying toFixed()
+        const fixedPrice = Number(price.toPrecision(15));
+        initialPrice = parseFloat(fixedPrice.toFixed(decimalPlaces));
+      }
     
       setInitialPrice(initialPrice);
-    }, [isSoliditySelected, prices]);
+    }, [selectedCryptos, prices]);
+    
 
     const percentage = (((initialPrice - openingPrice) / openingPrice) * 100).toFixed(2);
     const color = Number(percentage) < 0 ? 'text-red-500' : 'text-primary';
     const displayedPercentage = isNaN(Number(percentage)) ? '-' : Number(percentage) < 0 ? percentage : `+${percentage}`;
-  
-    // Check if solPrice and btcPrice are numbers before dividing and fixing
-    const displayPrice = isSoliditySelected
-      ? solPrice && !isNaN(solPrice)
-        ? (solPrice / 100000000).toFixed(3)
-        : '-'
-      : btcPrice && !isNaN(btcPrice)
-        ? (btcPrice / 100000000).toFixed(1)
-        : '-';
 
     const MAX_NOTIONAL_POSITIONS = 1000;
 
 const SCALE = 10000; // Define SCALE according to your requirements
-const MAX_SPREAD_RATIO = 200; // 0.015 in your scale
-const MIN_SPREAD_RATIO = 100; // This is the minimum spread ratio you set
 
 const calculateSpreadPrice = (currentPrice, EMAprice) => {
   let spreadRatio = 0;
@@ -81,7 +98,7 @@ const calculateSpreadPrice = (currentPrice, EMAprice) => {
       <div className="font-poppins custom-scrollbar rounded-lg bg-layer-1 w-full h-[55px] flex flex-row items-center justify-start  text-xs md:border border-t border-b border-layer-3 overflow-auto">
         <div className="flex flex-row items-center justify-between py-0 px-4 box-border">
           <div className="md:flex hidden min-w-[150px] flex flex-row items-center justify-start py-0 pr-8 pl-0 box-border gap-[12px] text-2xl text-white">
-            <div className=" leading-[18px] font-medium pb-1">${displayPrice}</div>
+            <div className=" leading-[18px] font-medium pb-1">${initialPrice}</div>
             <div className={`text-base leading-[16px] font-medium ${color}`}>
               {displayedPercentage}%
             </div>
@@ -90,7 +107,7 @@ const calculateSpreadPrice = (currentPrice, EMAprice) => {
             <div className="self-stretch flex flex-col md:pl-4 items-start justify-center gap-[4px]">
               <div className="relative leading-[12px] text-grey-text">Multiplier</div>
               <div className="relative text-sm leading-[16px] font-dm-sans text-white">
-              1.70x
+              1.85x
               </div>
             </div>
           </div>

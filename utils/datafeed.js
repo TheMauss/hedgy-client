@@ -16,12 +16,29 @@ const datafeed = {
     resolveSymbol: (symbolName, onSymbolResolvedCallback, onResolveErrorCallback) => {
       let description;
       if (symbolName === 'Crypto.SOL/USD') {
-        description = 'SOLUSD';
+        description = 'SOL/USD';
       } else if (symbolName === 'Crypto.BTC/USD') {
-        description = 'BTCUSD';
+        description = 'BTC/USD';
+      } else if (symbolName === 'Crypto.BONK/USD') {
+        description = 'BONK/USD';
+      } else if (symbolName === 'Crypto.PYTH/USD') {
+        description = 'PYTH/USD';
       } else {
         // Handle other cases or set a default description
         description = symbolName;
+      }
+      let pricescale;
+      if (symbolName === 'Crypto.SOL/USD') {
+        pricescale = 1000;
+      } else if (symbolName === 'Crypto.BTC/USD') {
+        pricescale = 10;
+      } else if (symbolName === 'Crypto.BONK/USD') {
+        pricescale = 100000000;
+      } else if (symbolName === 'Crypto.PYTH/USD') {
+        pricescale = 1000;
+      } else {
+        // Handle other cases or set a default description
+        pricescale = 100;
       }
         setTimeout(() => {
           onSymbolResolvedCallback({
@@ -33,7 +50,7 @@ const datafeed = {
             timezone: 'Etc/UTC',
             exchange: 'PopFi',
             minmov: 1,
-            pricescale: 100,
+            pricescale: pricescale,
             has_intraday: true,
             has_no_volume: true,
             has_weekly_and_monthly: true,

@@ -1,4 +1,3 @@
-import { RequestAirdrop } from "./RequestAirdrop";
 import Text from "./Text";
 import Link from 'next/link';
 

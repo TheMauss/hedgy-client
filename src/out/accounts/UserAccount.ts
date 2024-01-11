@@ -13,6 +13,12 @@ export interface UserAccountFields {
   userBetAmountSol: BN
   userBinaryBetAmountBtc: BN
   userBinaryBetAmountSol: BN
+  userBetAmountBonk: BN
+  userBinaryBetAmountBonk: BN
+  userBetAmountPyth: BN
+  userBinaryBetAmountPyth: BN
+  userBetAmountJup: BN
+  userBinaryBetAmountJup: BN
 }
 
 export interface UserAccountJSON {
@@ -25,6 +31,12 @@ export interface UserAccountJSON {
   userBetAmountSol: string
   userBinaryBetAmountBtc: string
   userBinaryBetAmountSol: string
+  userBetAmountBonk: string
+  userBinaryBetAmountBonk: string
+  userBetAmountPyth: string
+  userBinaryBetAmountPyth: string
+  userBetAmountJup: string
+  userBinaryBetAmountJup: string
 }
 
 export class UserAccount {
@@ -37,6 +49,12 @@ export class UserAccount {
   readonly userBetAmountSol: BN
   readonly userBinaryBetAmountBtc: BN
   readonly userBinaryBetAmountSol: BN
+  readonly userBetAmountBonk: BN
+  readonly userBinaryBetAmountBonk: BN
+  readonly userBetAmountPyth: BN
+  readonly userBinaryBetAmountPyth: BN
+  readonly userBetAmountJup: BN
+  readonly userBinaryBetAmountJup: BN
 
   static readonly discriminator = Buffer.from([
     211, 33, 136, 16, 186, 110, 242, 127,
@@ -52,6 +70,12 @@ export class UserAccount {
     borsh.u64("userBetAmountSol"),
     borsh.u64("userBinaryBetAmountBtc"),
     borsh.u64("userBinaryBetAmountSol"),
+    borsh.u64("userBetAmountBonk"),
+    borsh.u64("userBinaryBetAmountBonk"),
+    borsh.u64("userBetAmountPyth"),
+    borsh.u64("userBinaryBetAmountPyth"),
+    borsh.u64("userBetAmountJup"),
+    borsh.u64("userBinaryBetAmountJup"),
   ])
 
   constructor(fields: UserAccountFields) {
@@ -64,6 +88,12 @@ export class UserAccount {
     this.userBetAmountSol = fields.userBetAmountSol
     this.userBinaryBetAmountBtc = fields.userBinaryBetAmountBtc
     this.userBinaryBetAmountSol = fields.userBinaryBetAmountSol
+    this.userBetAmountBonk = fields.userBetAmountBonk
+    this.userBinaryBetAmountBonk = fields.userBinaryBetAmountBonk
+    this.userBetAmountPyth = fields.userBetAmountPyth
+    this.userBinaryBetAmountPyth = fields.userBinaryBetAmountPyth
+    this.userBetAmountJup = fields.userBetAmountJup
+    this.userBinaryBetAmountJup = fields.userBinaryBetAmountJup
   }
 
   static async fetch(
@@ -119,6 +149,12 @@ export class UserAccount {
       userBetAmountSol: dec.userBetAmountSol,
       userBinaryBetAmountBtc: dec.userBinaryBetAmountBtc,
       userBinaryBetAmountSol: dec.userBinaryBetAmountSol,
+      userBetAmountBonk: dec.userBetAmountBonk,
+      userBinaryBetAmountBonk: dec.userBinaryBetAmountBonk,
+      userBetAmountPyth: dec.userBetAmountPyth,
+      userBinaryBetAmountPyth: dec.userBinaryBetAmountPyth,
+      userBetAmountJup: dec.userBetAmountJup,
+      userBinaryBetAmountJup: dec.userBinaryBetAmountJup,
     })
   }
 
@@ -133,6 +169,12 @@ export class UserAccount {
       userBetAmountSol: this.userBetAmountSol.toString(),
       userBinaryBetAmountBtc: this.userBinaryBetAmountBtc.toString(),
       userBinaryBetAmountSol: this.userBinaryBetAmountSol.toString(),
+      userBetAmountBonk: this.userBetAmountBonk.toString(),
+      userBinaryBetAmountBonk: this.userBinaryBetAmountBonk.toString(),
+      userBetAmountPyth: this.userBetAmountPyth.toString(),
+      userBinaryBetAmountPyth: this.userBinaryBetAmountPyth.toString(),
+      userBetAmountJup: this.userBetAmountJup.toString(),
+      userBinaryBetAmountJup: this.userBinaryBetAmountJup.toString(),
     }
   }
 
@@ -147,6 +189,12 @@ export class UserAccount {
       userBetAmountSol: new BN(obj.userBetAmountSol),
       userBinaryBetAmountBtc: new BN(obj.userBinaryBetAmountBtc),
       userBinaryBetAmountSol: new BN(obj.userBinaryBetAmountSol),
+      userBetAmountBonk: new BN(obj.userBetAmountBonk),
+      userBinaryBetAmountBonk: new BN(obj.userBinaryBetAmountBonk),
+      userBetAmountPyth: new BN(obj.userBetAmountPyth),
+      userBinaryBetAmountPyth: new BN(obj.userBinaryBetAmountPyth),
+      userBetAmountJup: new BN(obj.userBetAmountJup),
+      userBinaryBetAmountJup: new BN(obj.userBinaryBetAmountJup),
     })
   }
 }

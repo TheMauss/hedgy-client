@@ -11,6 +11,12 @@ import PairPicker from "components/PairPicker";
 import Footer  from "components/Footernew";
 import InterestBar from "components/InterestBarOp";
 import { priceDataState } from "components/globalStatse";
+import { FaChevronLeft, FaChevronUp } from 'react-icons/fa';
+
+
+import { useAllowlist } from '../contexts/AllowlistContext';
+
+
 
 
 
@@ -40,11 +46,18 @@ const Transaction: FC = () => {
   const [divHeight, setDivHeight] = useState('60vh');
   const [totalBetAmount, setTotalBetAmount] = useState(0);
   const [latestOpenedPosition, setLatestOpenedPosition] = useState<Record<string, Position | null>>({});
-  const [isBitcoinSelected, setIsBitcoinSelected] = useState(false);
-  const [isSoliditySelected, setIsSoliditySelected] = useState(true); 
-  const [prices, setPrices] = useState({});
+  const [selectedCryptos, setSelectedCryptos] = useState({
+    BTC: false,
+    SOL: true,
+    PYTH: false,
+    BONK: false
+    // Add other cryptocurrencies as needed
+  });
+    const [prices, setPrices] = useState({});
   const [EMAprice, setEMAprice] = useState(null);
   const [openingPrice, setOpeningPrice] = useState(0);
+  const [isBitcoinSelected, setIsBitcoinSelected] = useState(false);
+  const [isSoliditySelected, setIsSoliditySelected] = useState(true); 
 
   const [isSticky, setIsSticky] = useState(false);
   const ref = useRef(null); // Ref for the element that will become sticky
@@ -138,24 +151,34 @@ if (bottomRef.current) {
   const { crypto } = router.query; // could be 'btc' or 'sol'
   
   useEffect(() => {
-    console.log('Crypto value: ', crypto); // Log the current value of crypto
-    
-    if (crypto === 'btc') {
-      setIsBitcoinSelected(true);
-      setIsSoliditySelected(false);
-      setSymbol('Crypto.BTC/USD');
-      console.log('isBitcoinSelected is set to true');
-      console.log('isSoliditySelected is set to false');
-      console.log('Symbol is set to Crypto.BTC/USD');
-    } else if (crypto === 'sol') {
-      setIsSoliditySelected(true);
-      setIsBitcoinSelected(false);
-      setSymbol('Crypto.SOL/USD');
-      console.log('isSoliditySelected is set to true');
-      console.log('isBitcoinSelected is set to false');
-      console.log('Symbol is set to Crypto.SOL/USD');
+    const cryptoKey = Array.isArray(crypto) ? crypto[0] : crypto; // Or handle arrays differently
+  
+    const newSelectedCryptos = { ...selectedCryptos };
+    Object.keys(newSelectedCryptos).forEach(key => {
+      newSelectedCryptos[key] = key === cryptoKey;
+    });
+  
+    setSelectedCryptos(newSelectedCryptos);
+  
+    const symbolMap = {
+      btc: 'Crypto.BTC/USD',
+      sol: 'Crypto.SOL/USD',
+      // Add other mappings as necessary
+    };
+  
+    if (symbolMap[cryptoKey]) {
+      setSymbol(symbolMap[cryptoKey]);
+      console.log(`is${cryptoKey.toUpperCase()}Selected is set to true`);
+      Object.keys(symbolMap).forEach(key => {
+        if (key !== cryptoKey) {
+          console.log(`is${key.toUpperCase()}Selected is set to false`);
+        }
+      });
+      console.log(`Symbol is set to ${symbolMap[cryptoKey]}`);
     }
-}, [crypto]);
+  }, [crypto]);
+  
+  
 
 
   const handleTotalBetAmountChange = (totalBetAmount) => {
@@ -203,6 +226,20 @@ if (bottomRef.current) {
     }
   }, []);  
 
+  const [showSidePanel, setShowSidePanel] = useState(true);
+
+  const toggleSidePanel = () => {
+    setShowSidePanel(prevShowSidePanel => !prevShowSidePanel);
+  };
+  
+  const [showBottomPanel, setshowBottomPanel] = useState(true);
+
+  const toggleBottomPanel = () => {
+    setshowBottomPanel(prevshowBottomPanel => !prevshowBottomPanel);
+  };
+
+
+
   return (
     <div>
       <Head>
@@ -210,6 +247,20 @@ if (bottomRef.current) {
         <meta name="description" content="PopFi" />
       </Head>
       <div className="bg-base w-full flex justify-center flex-col">
+      <div className="relative lg:block hidden"> {/* Ensure the parent has relative positioning */}
+      <button 
+  onClick={toggleSidePanel}
+  className="z-50 fixed right-0 top-1/2 transform -translate-y-1/2 text-sm text-white  rounded lg:block hidden"
+>
+<FaChevronLeft className={`ml-2 transition-transform duration-300 text-layer-3 ${showSidePanel ? 'rotate-180' : ''}`} />
+</button>
+<button 
+  onClick={toggleBottomPanel}
+  className="z-50 fixed right-1/2 bottom-0 transform -translate-y-1/2 text-sm text-white  rounded lg:block hidden"
+>
+<FaChevronUp className={`ml-2 transition-transform duration-300 text-layer-3 ${showBottomPanel ? 'rotate-180' : ''}`} />
+</button>
+</div>
         <div className="w-full md:px-4 h-full lg:h-[calc(100vh-94px)] bg-base overflow-hidden ">
           <div className="w-full">
             {/* right content */}
@@ -222,22 +273,20 @@ if (bottomRef.current) {
                     <div className="md:w-[330px] w-full">
                       <div ref={ref} className={`${isSticky && ActiveButton === 1 ? 'sticky-top' : ''}`}>
                       <PairPicker
-                                                        onSymbolChange={handleSymbolChange} 
-                                    isBitcoinSelected={isBitcoinSelected}
-                                    isSoliditySelected={isSoliditySelected}
-                                    setIsBitcoinSelected={setIsBitcoinSelected}
-                                    setIsSoliditySelected={setIsSoliditySelected}
-                                    openingPrice={openingPrice}
-                                    prices={prices}
-                                    /></div>
+  onSymbolChange={handleSymbolChange}
+  selectedCryptos={selectedCryptos}
+  setSelectedCryptos={setSelectedCryptos}
+  openingPrice={openingPrice}
+  prices={prices}
+/></div>
                                     <div className={`${isSticky && ActiveButton === 1 ? 'spacer-active pt-[64px] md:pt-0' : ''}`}></div>
                                                                                              <div className={`overflow-auto w-full md:hidden md:order-1 order-2 ${ActiveButton === 1 ? '' : 'hidden'}`}>
                                                                                              <InterestBar
                                 openingPrice={openingPrice}
+                                selectedCryptos={selectedCryptos}
                                 symbol={symbol}
                                 prices={prices}
                                 EMAprice={EMAprice}
-                                isSoliditySelected={isSoliditySelected}
 
                                       />
                                                       <div className="w-full flex flex-col md:order-1 order-2 md:mt-2 mt-2">
@@ -261,6 +310,7 @@ if (bottomRef.current) {
                     EMAprice={EMAprice}
                     isBitcoinSelected={isBitcoinSelected}
                     isSoliditySelected={isSoliditySelected}
+                    selectedCryptos={selectedCryptos}
                     />
                   </div>
                       </div>
@@ -268,20 +318,21 @@ if (bottomRef.current) {
                                    <div className="w-full md:block hidden lg:h-[calc(100vh-108px)] overflow-auto">
                                    <InterestBar
                                 openingPrice={openingPrice}
+                                selectedCryptos={selectedCryptos}
                                 symbol={symbol}
                                 prices={prices}
                                 EMAprice={EMAprice}
-                                isSoliditySelected={isSoliditySelected}
-
                                       />
-                                                      <div className=" w-full md:block flex-col hidden md:order-2 order-1 md:h-[629px] lg:h-[calc((100vh-108px)-(40vh+26px))] mt-2">
-                  <Graph 
+<div className={`w-full md:block flex-col hidden md:order-2 order-1 mt-2 md:h-[629px] ${
+    showBottomPanel ? "lg:h-[calc((100vh-108px)-(40vh+26px))]" : "lg:h-[calc(100vh-108px-65px)] "
+}`}>                  <Graph 
                     symbol={symbol}
                     latestOpenedPosition={latestOpenedPosition} 
                     prices={prices}
                     
-                    /></div>
-                                  <div className="w-full lg:flex lg:flex-col hidden order-3   lg:h-[calc((100vh-126px)-(60vh-79px))] mt-2">
+                    />
+                    </div>                                    <div className={`w-full lg:flex lg:flex-col hidden order-3   lg:h-[calc((100vh-126px)-(60vh-79px))] mt-2 ${showBottomPanel ? '' : 'lg:hidden'}`}>
+
                                     <MyPositions       
                      latestOpenedPosition={latestOpenedPosition}
                      setLatestOpenedPosition={setLatestOpenedPosition}
@@ -289,17 +340,17 @@ if (bottomRef.current) {
                      prices={prices}
                      />
                      
-                     </div>
-                          
+                     </div>             
                                       </div>
-                                      <div className="lg:block hidden md:w-[315px] flex flex-col lg:h-[calc(100vh-118px)]">
+                                      
+ <div className={`lg:block hidden md:w-[315px] flex flex-col lg:h-[calc(100vh-118px)] ${showSidePanel ? '' : 'lg:hidden'}`}>
                                       <div className="w-full flex flex-col h-[60%]">
                                       <RecentPredictions divHeight={divHeight} /></div>
                                       <div className="h-[40%] mt-2">
                                       <Chat/>
                                       </div>
                                       </div>
-                        {/* left sidebar */}
+   
                     </div></div> 
                 </div> 
               </div>

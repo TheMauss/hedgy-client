@@ -1,7 +1,6 @@
 import { FC, useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useNetworkConfiguration } from '../contexts/NetworkConfigurationProvider';
-import { RequestAirdrop } from './RequestAirdrop';
 
 const NetworkSwitcher: FC = () => {
   const { networkConfiguration, setNetworkConfiguration } = useNetworkConfiguration();

@@ -12,6 +12,8 @@ import { notify } from "utils/notifications";
 import useUserSOLBalanceStore from '../../src/stores/useUserSOLBalanceStore';
 
 
+import { useAllowlist } from '../contexts/AllowlistContext';
+import { useRouter } from 'next/router';
 
 
 
@@ -287,7 +289,7 @@ const onClick1 = useCallback(async () => {// Create the instruction to initializ
         const accounts = {
             affilAcc: AffilAcc,
             playerAcc: publicKey,
-            pdaHouseAcc: new PublicKey("9EcaMSw2fqjxHLtKjWEWgoMjXAL6fYn94ot6tz4DGEo6"),
+            pdaHouseAcc: new PublicKey("3MRKR5tYQeUT8CXYkTjvzR6ivEpaqFLqK9CsNbMFvoHB"),
           systemProgram: SystemProgram.programId,
         };
         // Create a new transaction to initialize the user account and send it
@@ -377,14 +379,14 @@ notify({ type: 'info', message: `Trying to create the referral...`, txid: initSi
                                     maxLength={8}
                                     placeholder="Enter 8 letters" /></div>
                           <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px] md:w-1/4 w-full h-10   box-border text-center text-lg">
-                            <button 
+                            <div 
                             onClick={onClick}
                             className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg">
                                 <button 
                                 
                                 className="font-semibold bg-clip-text text-transparent bg-gradient-to-t from-[#34C796] to-[#0B7A55]">
                               CREATE
-                            </button></button>
+                            </button></div>
                           </div>
                         </div>
                       </div>
@@ -467,14 +469,14 @@ notify({ type: 'info', message: `Trying to create the referral...`, txid: initSi
                       </div>
                     </div>
                     <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px] w-full w-full h-10   box-border text-center text-lg">
-                                <button 
+                                <div 
                                 onClick={onClick1}
                                 className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg">
                                     <button 
                                     
                                     className="font-semibold bg-clip-text text-transparent bg-gradient-to-t from-[#34C796] to-[#0B7A55]">
                                   CLAIM
-                                </button></button>
+                                </button></div>
                               </div>
     
                    

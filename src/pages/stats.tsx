@@ -13,6 +13,11 @@ import { Connection, SystemProgram, Transaction, TransactionSignature, PublicKey
 import useUserSOLBalanceStore from '../../src/stores/useUserSOLBalanceStore';
 
 
+import { useAllowlist } from '../contexts/AllowlistContext';
+import { useRouter } from 'next/router';
+
+
+
 const WalletMultiButtonDynamic = dynamic(
     async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
     { ssr: false }
@@ -114,7 +119,11 @@ const Stats: FC = () => {
     const balance = useUserSOLBalanceStore((s) => s.balance);
     const { getUserSOLBalance } = useUserSOLBalanceStore();
 
-    
+    const [isCompetition, setIsCompetition] = useState(false);
+    const [isTeamCompetition, setIsTeamCompetition] = useState(false);
+    const [leaderboardCompetetion, setLeaderboardCompetetion] = useState([]);
+    const [teamLeaderboard, setTeamLeaderboard] = useState([]);
+
 
 
     const LAMPORTS_PER_SOL = 1_000_000_000;
@@ -158,7 +167,11 @@ const Stats: FC = () => {
     
 
     const onClick = useCallback(async () => {// Create the instruction to initialize the user account    const handleAffiliateTransaction = async () => {
-            const seedsUser = [
+      if (!publicKey) {
+        notify({ type: 'info', message: `Wallet not connected`, description: "Connect the wallet in the top panel" });
+        return;
+      }
+      const seedsUser = [
             Buffer.from(publicKey.toBytes()),
             ];
 
@@ -248,12 +261,20 @@ const Stats: FC = () => {
     useEffect(() => {
         const fetchLeaderboards = async () => {
             try {
+                const resCompetition = await fetch(`${ENDPOINT}/leaderboard/competition`);
+                const leaderboardCompetetion = await resCompetition.json();
+
+                const teamCompetition = await fetch(`${ENDPOINT}/leaderboard/team`);
+                const teamCompetitions = await teamCompetition.json();
+
                 const res1Day = await fetch(`${ENDPOINT}/leaderboard/1`);
                 const leaderboard1Day = await res1Day.json();
     
                 const res7Days = await fetch(`${ENDPOINT}/leaderboard/7`);
                 const leaderboard7Days = await res7Days.json();
     
+
+
                 const res30Days = await fetch(`${ENDPOINT}/leaderboard/30`);
                 const leaderboard30Days = await res30Days.json();
     
@@ -267,8 +288,12 @@ const Stats: FC = () => {
                 setLeaderboard1Day(leaderboard1Day);
                 setLeaderboard7Days(leaderboard7Days);
                 setLeaderboard30Days(leaderboard30Days);
+                setLeaderboardCompetetion(leaderboardCompetetion);
                 setLeaderboardallDays(leaderboardallDays);
-                setCurrentLeaderboard(leaderboard30Days);
+                setTeamLeaderboard(teamCompetitions);
+                if (!isCompetition) {
+                setCurrentLeaderboard(leaderboard30Days)}
+                else {setCurrentLeaderboard(leaderboardCompetetion)}
             } catch (error) {
                 console.error('Failed to fetch leaderboard data:', error);
             }
@@ -360,8 +385,6 @@ const showProtocol = () => setActiveSection('protocol');
 
 
   
-
-
 
     return (
         <div>
@@ -528,24 +551,103 @@ const showProtocol = () => setActiveSection('protocol');
 </div>
 
 )}
+                {isTeamCompetition && (
+      <h1 className="pt-6 bankGothic md:text-start md:text-left text-center text-4xl lg:text-5xl text-transparent bg-clip-text bg-white">
+                    DAO WARS
+                </h1> )}
+                {isTeamCompetition && (               
+<div 
+
+className="md:px-0 px-2 mt-4 flex flex md:flex-row flex-col items-start justify-start gap-[8px] text-5xl text-white">
+        {teamLeaderboard.slice(0,3).map((item, index) => {
+  
+  return (
+  <div 
+  key={item}
+  className="w-full text-3xl flex flex-col md:flex-row items-start justify-start gap-[8px]">
+    <div className="z-10 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-col items-center justify-center pt-4 px-4 pb-6 gap-[16px] border-[1px] border-solid border-layer-3">
+      <div className="flex flex-col items-center justify-center gap-[4px]">
+      <img
+                className="relative w-[84.7px] h-[80.9px]"
+                alt=""
+                src={`/${item.teamName}.png`}
+              />
+        <div 
+        
+        className="relative leading-[100%] font-medium flex flex-row items-center justify-center gap-2">
+             <img
+    className=" w-[24px] h-[24px]"
+    alt=""
+    src={`/sheesh/${24 + index}.svg`}
+  /><a
+    >        {`${item.teamName}`}</a>
+        </div>
+      </div>
+      <div className="self-stretch flex flex-row items-center justify-between text-right text-xs text-grey-text font-poppins">
+        <div className="flex flex-col items-start justify-center gap-[16px]">
+          <div className="flex flex-col items-start justify-center gap-[4px]">
+            <div className="relative leading-[12px]">Total Trades</div>
+            <div className="relative text-[15px] leading-[12px] text-white">
+            {item.totalTrades}
+            </div>
+          </div>
+          <div className="flex flex-col items-start justify-center gap-[4px]">
+            <div className="relative leading-[12px]">Total Volume</div>
+            <div className="relative text-[15px] leading-[12px] text-white">
+            {(item.totalVolume / LAMPORTS_PER_SOL).toFixed(1)} SOL
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col items-end justify-center gap-[16px]">
+          <div className="flex flex-col items-end justify-center gap-[4px]">
+            <div className="relative leading-[12px]">Win Ratio</div>
+            <div className="relative text-[15px] leading-[12px] text-white">
+            {Number.isInteger(100 * item.winRate) ? 
+     (100 * item.winRate) : 
+      (100 * item.winRate).toFixed(1)
+        } %
+            </div>
+          </div>
+          <div className="flex flex-col items-end justify-center gap-[4px]">
+            <div className="relative leading-[12px]">PnL</div>
+            <div className="relative text-[15px] leading-[12px] text-white">
+            {(item.PnL / LAMPORTS_PER_SOL).toFixed(2)} SOL
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>)})}
+  </div>)}
+
       <div className="flex flex-col md:items-start items-center text-13xl text-white">
       <h1 className="pt-6 bankGothic md:text-start md:text-left text-center text-4xl lg:text-5xl text-transparent bg-clip-text bg-white">
                     Leaderboard
                 </h1>          <div className="flex flex-row items-start justify-start gap-[16px] text-lg text-grey-text">
+                {!isCompetition && (
           <button className="flex flex-row items-center justify-center py-1 px-0 text-white">
             <div 
             onClick={() => setCurrentLeaderboard(leaderboard1Day)}
             className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
                 currentLeaderboard === leaderboard1Day ? ' cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-grey-text '
               } ${currentLeaderboard == leaderboard1Day ? 'text-white' : 'text-gray-text'} `}>1 DAY</div>
-          </button>
+          </button>)}
+          {!isCompetition && (
           <button className="flex flex-row items-center justify-center py-1 px-0">
             <div 
             onClick={() => setCurrentLeaderboard(leaderboard7Days)}
             className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
                 currentLeaderboard === leaderboard7Days ? ' cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-grey-text '
               } ${currentLeaderboard == leaderboard7Days ? 'text-white' : 'text-gray-text'} `}>7 DAYS</div>
-          </button>
+          </button>)}
+          {isCompetition && (
+  <button className="flex flex-row items-center justify-center py-1 px-0 text-white">
+    <div 
+      onClick={() => setCurrentLeaderboard(leaderboardCompetetion)}
+      className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
+          currentLeaderboard === leaderboardCompetetion ? ' cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-grey-text '
+        } ${currentLeaderboard == leaderboardCompetetion ? 'text-white' : 'text-gray-text'} `}>COMPETITION</div>
+  </button>
+)}
           <button className="flex flex-row items-center justify-center py-1 px-0">
             <div 
                 onClick={() => setCurrentLeaderboard(leaderboard30Days)}
@@ -562,6 +664,7 @@ const showProtocol = () => setActiveSection('protocol');
                     currentLeaderboard === leaderboardallDays ? ' cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-grey-text '
                   } ${currentLeaderboard == leaderboardallDays ? 'text-white' : 'text-gray-text'} `}>ALL TIME</div>
           </button>
+
         </div>
       </div>
 

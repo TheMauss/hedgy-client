@@ -27,7 +27,7 @@ const NavElement = ({
 }: NavElementProps) => {
     const router = useRouter();
     const isActive = (href === router.asPath || (as && as === router.asPath)) || 
-    (router.asPath.startsWith(href) && (router.query.crypto === 'sol' || router.query.crypto === 'btc'));
+    (router.asPath.startsWith(href) && (router.query.crypto === 'SOL' || router.query.crypto === 'BTC' || router.query.crypto === 'PYTH' || router.query.crypto === 'BONK'));
     const divRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {

@@ -22,6 +22,7 @@ import { components } from 'react-select';
 import Modal from 'react-modal';
 import { useFastTrade  } from '../contexts/FastTradeContext';
 import dynamic from 'next/dynamic';
+import { LiquidityPoolAccount  } from "../out/accounts/LiquidityPoolAccount";
 
 
 
@@ -34,6 +35,7 @@ type TradeBarProps = {
   EMAprice: number;
   setEMAPrice: (EMAprice: number) => void;  // assuming it's a function that accepts a number
   isSoliditySelected: boolean;
+  selectedCryptos: { [key: string]: boolean };
 
   prices: { [key: string]: { price: number, timestamp: string } };
   setPrices: React.Dispatch<React.SetStateAction<{ [key: string]: { price: number, timestamp: string } }>>;
@@ -46,6 +48,47 @@ const WalletMultiButtonDynamic = dynamic(
   { ssr: false }
 );
 
+async function checkLPdata(lpAcc: PublicKey, connection: Connection): Promise<{ IsInitialized: boolean, locked: boolean, epoch: number, totalDeposits: number, lpFees: number, pnl: number, cumulativeFeeRate: number, cumulativePnlRate: number   }> {
+  const accountInfo = await connection.getAccountInfo(lpAcc);
+  
+  if (!accountInfo) {
+      return { 
+          IsInitialized: false,     
+          locked: false,
+          epoch: 0,
+          totalDeposits: 0,
+          lpFees: 0,
+          pnl: 0,
+          cumulativeFeeRate: 0,
+          cumulativePnlRate: 0,
+      
+      };
+  }
+
+  // Convert the buffer from Solana into a Buffer type that's used by Borsh
+  const bufferData = Buffer.from(accountInfo.data);
+
+  let LpAccount;
+  try {
+      // Use the AffiliateAccount class to decode the data
+      LpAccount = LiquidityPoolAccount.decode(bufferData);
+  } catch (error) {
+      console.error("Failed to decode affiliate account data:", error);
+      throw error;
+  }
+
+  return {
+      IsInitialized: LpAccount.isInitialized,
+      locked: LpAccount.locked,
+      epoch: LpAccount.epoch.toNumber(),
+      totalDeposits: LpAccount.totalDeposits.toNumber(),
+      lpFees: LpAccount.lpFees.toNumber(),
+      pnl: LpAccount.pnl.toNumber(),
+      cumulativeFeeRate:LpAccount.cumulativeFeeRate.toNumber(),
+      cumulativePnlRate: LpAccount.cumulativePnlRate.toNumber(),
+
+  };
+}
 
 
 async function isUserAccountInitialized(account: PublicKey, connection: Connection): Promise<{ isInitialized: boolean; usedAffiliate: Uint8Array; myAffiliate: Uint8Array }> {
@@ -117,7 +160,7 @@ const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
 
 
 
-const TradeBar: React.FC<TradeBarProps & { setParentDivHeight: (height: string) => void }> = ({setOpeningPrice, openingPrice, totalBetAmount, isBitcoinSelected, prices, setPrices, setEMAPrice, EMAprice,
+const TradeBar: React.FC<TradeBarProps & { setParentDivHeight: (height: string) => void }> = ({selectedCryptos, setOpeningPrice, openingPrice, totalBetAmount, isBitcoinSelected, prices, setPrices, setEMAPrice, EMAprice,
   isSoliditySelected,
  }) => {
   const { connection } = useConnection();
@@ -194,6 +237,27 @@ const setToggleChangeLong = () => {
 const setToggleChangeShort = () => {
   setToggleState('SHORT');
 };
+
+const [LPdata, setLPdata] = useState<{ IsInitialized: boolean, locked: boolean, epoch: number, totalDeposits: number, lpFees: number, pnl: number, cumulativeFeeRate: number, cumulativePnlRate: number } | null>(null);
+
+
+useEffect(() => {
+  const fetchLpstatus = async () => {
+
+      const houseHarcodedkey = new PublicKey("HME9CUNgcsVZti5x1MdoBeUuo1hkGnuKMwP4xuJHQFtQ");
+      const signerWalletAccount = new PublicKey("Fb1ABWjtSJVtoZnqogFptAAgqhBCPFY1ZcbEskF8gD1C");
+      const seedsLpAcc = [Buffer.from(houseHarcodedkey.toBytes()), Buffer.from(signerWalletAccount.toBytes())];
+    const [lpAcc] = await PublicKey.findProgramAddress(seedsLpAcc, PROGRAM_ID);
+
+    // Check if the user has an affiliate code when the component mounts
+    if (lpAcc) {
+        const results = await checkLPdata(lpAcc, connection);
+        setLPdata(results);
+    }
+  };
+
+  fetchLpstatus();
+}, [connection]);
 
 
   const handleCustomSlippageChange = (event) => {
@@ -292,10 +356,6 @@ useEffect(() => {
   let longShortRatio;
   const THRESHOLD_BET_AMOUNT = 5000; // Replace with your threshold value
   
-  const computeLongShortRatio = (long, short) => {
-      const totalBetAmount = parseInt(long) + parseInt(short);
-      return totalBetAmount !== 0 ? parseInt(long) / totalBetAmount : 0.5;
-  };
 
   let expiration;
   if (activeButton === 1) {
@@ -310,50 +370,6 @@ useEffect(() => {
       expiration = (inputValue * 60 * 60) + (inputValue2 * 60); // Custom time in seconds
   }
 
-  
-
-
-
-
-  const selectDataBasedOnExpiration = (currency) => {
-      let longKey = currency + 'Long';
-      let shortKey = currency + 'Short';
-
-      if (expiration <= 180) {
-          longKey += '1';
-          shortKey += '1';
-      } else if (expiration <= 300) {
-          longKey += '5';
-          shortKey += '5';
-      } else if (expiration <= 900) {
-        longKey += '15';
-        shortKey += '15';
-      }
-      else if (expiration <= 3600) {
-          longKey += '60';
-          shortKey += '60';
-      } else if (expiration <= 14400) {
-          longKey += '240';
-          shortKey += '240';
-      } 
-
-      return {
-          long: data[longKey],
-          short: data[shortKey]
-      };
-  };
-
-  if (isSoliditySelected) {
-      const { long, short } = selectDataBasedOnExpiration('sol');
-      longShortRatio = computeLongShortRatio(long, short);
-  } else if (isBitcoinSelected) {
-      const { long, short } = selectDataBasedOnExpiration('btc');
-      longShortRatio = computeLongShortRatio(long, short);
-  }
-
-  const totalBetAmount = isSoliditySelected 
-      ? (parseInt(selectDataBasedOnExpiration('sol').long) + parseInt(selectDataBasedOnExpiration('sol').short))
-      : (parseInt(selectDataBasedOnExpiration('btc').long) + parseInt(selectDataBasedOnExpiration('btc').short));
 
       const priceDirection = toggleState === 'LONG' ? 0 : toggleState === 'SHORT' ? 1 : -1;
       if (priceDirection === -1) {
@@ -373,12 +389,12 @@ useEffect(() => {
       setPayout(calculatedPayout);
 
     
-    }, [data, isSoliditySelected, isBitcoinSelected, toggleState, activeButton, inputValue, inputValue2]);
+    }, [data, toggleState, activeButton, inputValue, inputValue2]);
 
 
 const determinePayout = (ratio, priceDirection) => {
-  const minimumPayout = 1.7;
-  const maximumPayout = 1.7;
+  const minimumPayout = 1.85;
+  const maximumPayout = 1.85;
 
   if (priceDirection === 0) { // Increase (Long)
       if (ratio === 0.0) {
@@ -410,18 +426,25 @@ useEffect(() => {
   socket.on('priceUpdate', (updatedPrices) => {
 
     const newPrices = { ...prices };
+    const selectedCryptosSafe = selectedCryptos || {};
+  
+    const selectedCrypto = Object.keys(selectedCryptosSafe).find(key => selectedCryptosSafe[key]);
+
 
     updatedPrices.forEach((updatedPrice) => {
       newPrices[updatedPrice.symbol] = {
         price: updatedPrice.price,
         timestamp: updatedPrice.timestamp};
 
-        if (isSoliditySelected && updatedPrice.symbol === 'Crypto.SOL/USD') {
-          setEMAPrice(updatedPrice.EMA);
-      } else if (!isSoliditySelected && updatedPrice.symbol === 'Crypto.BTC/USD') {
-          setEMAPrice(updatedPrice.EMA);
+        if (updatedPrice && selectedCrypto) {
+          const selectedCryptoSymbol = `Crypto.${selectedCrypto.toUpperCase()}/USD`;
+          
+          if (updatedPrice.symbol === selectedCryptoSymbol) {
+            setEMAPrice(updatedPrice.EMA);
+            console.log(updatedPrice.EMA, "emaaaaaaa");
+          }
+        }
 
-      }
     });
 
     setPrices(newPrices);
@@ -431,7 +454,7 @@ useEffect(() => {
   return () => {
     socket.disconnect();
   };
-}, [isSoliditySelected]);
+}, [selectedCryptos]);
 
 const calculateSpreadPrice = (currentPrice, EMAprice, toggleState) => {
   let spreadRatio = 0;
@@ -456,20 +479,45 @@ const calculateSpreadPrice = (currentPrice, EMAprice, toggleState) => {
 
 useEffect(() => {
   if (prices && EMAprice) {
-      const currentPrice = isSoliditySelected ? prices['Crypto.SOL/USD']?.price : prices['Crypto.BTC/USD']?.price;
+      const currentPrice = initialPrice * 100000000;
+      const selectedCryptosSafe = selectedCryptos || {};
+      const selectedCrypto = Object.keys(selectedCryptosSafe).find(key => selectedCryptosSafe[key]);
+      const decimalPlacesMapping = {
+        'BTC': 1, // Example: Bitcoin to 2 decimal places
+        'SOL': 3,
+        'PYTH': 3,
+        'BONK': 8,
+        // Add more mappings as needed
+      };
+      const decimalPlaces = decimalPlacesMapping[selectedCrypto?.toUpperCase()] || 2;
+
       const spread = calculateSpreadPrice(currentPrice, EMAprice, toggleState);
-      setSpreadPrice(spread);
+      setSpreadPrice(parseFloat(spread.toFixed(decimalPlaces)));
   }
-}, [toggleState, prices, EMAprice]);
+}, [toggleState, prices, EMAprice, initialPrice, selectedCryptos]);
 
 
-    useEffect(() => {
-    const initialPrice = isSoliditySelected
-      ? prices['Crypto.SOL/USD']?.price / 100000000
-      : prices['Crypto.BTC/USD']?.price / 100000000;
-  
-    setInitialPrice(initialPrice);
-  }, [isSoliditySelected, prices]);
+useEffect(() => {
+  // Provide a default empty object if selectedCryptos is undefined or null
+  console.log(selectedCryptos, "lfdsfsf")
+  const selectedCryptosSafe = selectedCryptos || {};
+
+  const selectedCrypto = Object.keys(selectedCryptosSafe).find(key => selectedCryptosSafe[key]);
+  const decimalPlacesMapping = {
+    'BTC': 1, // Example: Bitcoin to 2 decimal places
+    'SOL': 3,
+    'PYTH': 3,
+    'BONK': 8,
+    // Add more mappings as needed
+  };
+    // Get the number of decimal places for the selected crypto, defaulting to a standard value if not found
+  const decimalPlaces = decimalPlacesMapping[selectedCrypto?.toUpperCase()] || 2;
+
+  const newInitialPrice = prices?.[`Crypto.${selectedCrypto?.toUpperCase()}/USD`]?.price / 100000000 || 0;
+  setInitialPrice(parseFloat(newInitialPrice.toFixed(decimalPlaces)));
+}, [selectedCryptos, prices]);
+
+
 
     useEffect(() => {
     const socket = socketIOClient(ENDPOINT2);
@@ -491,11 +539,13 @@ useEffect(() => {
 
 
   useEffect(() => {
-    const openingPrice = isSoliditySelected
-      ? openPrices['Crypto.SOL/USD'] / 100000000
-      : openPrices['Crypto.BTC/USD'] / 100000000;
+    const selectedCrypto = Object.keys(selectedCryptos).find(key => selectedCryptos[key]);
+    
+    // Get the price for the selected cryptocurrency
+    const openingPrice = openPrices?.[`Crypto.${selectedCrypto}/USD`]/100000000;
+
     setOpeningPrice(openingPrice);
-  }, [isSoliditySelected, openPrices]);
+  }, [selectedCryptos, openPrices]);
 
   const handleToggleChange = () => {
     if (toggleState === 'LONG') {
@@ -611,22 +661,47 @@ useEffect(() => {
   }, [inputValue2]);
 
   const onClick = useCallback(async (direction = null) => {
-    if((totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL) > 2000000000) {
-      notify({ type: 'error', message: "Position size limit per user", description: "Your position size has reached the limit of 2 SOL"});
+    
+    if((parseFloat(amountValue) * LAMPORTS_PER_SOL) > (LPdata?.totalDeposits/200 + LPdata?.pnl)) {
+      notify({ type: 'error', message: "Not enough liquidity in the Vault"});
+      return;
+    }
+  
+    if((totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL) > (3*(LPdata?.totalDeposits/200 + LPdata?.pnl))) {
+      notify({ type: 'error', message: "Position size limit per user"});
       return;
     }
 
+    const cryptoSettings = {
+      SOL: {
+        symbolCode: 0,
+        oracleAddy: "H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG"
+      },
+      BTC: {
+        symbolCode: 1,
+        oracleAddy: "GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU"
+      },
+      PYTH: {
+        symbolCode: 2,
+        oracleAddy: "nrYkQQQur7z8rYTST3G9GqATviK5SxTDkrqd21MW6Ue"
+      },
+      BONK: {
+        symbolCode: 3,
+        oracleAddy: "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN"
+      },
+      // Add more cryptocurrencies here in the same pattern
+    };
+
     let symbolCode;
     let oracleAddy;
-    if (isSoliditySelected) {
-      symbolCode = 0,
-      oracleAddy = "H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG";  // set to 0 if 'BINANCE:SOLUSDT' is selected
-    } else if (isBitcoinSelected) {
-      symbolCode = 1,
-      oracleAddy = "GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU"  // set to 1 if 'BINANCE:BTCUSDT' is selected
-    } else {
-      throw new Error("Invalid symbol");  // Throw error if neither of them is selected
-    }
+const selectedCrypto = Object.keys(selectedCryptos).find(key => selectedCryptos[key]);
+
+if (selectedCrypto && cryptoSettings[selectedCrypto]) {
+  symbolCode = cryptoSettings[selectedCrypto].symbolCode;
+  oracleAddy = cryptoSettings[selectedCrypto].oracleAddy;
+} else {
+  throw new Error("Invalid or unsupported symbol");
+}
 
     if (!publicKey) {
       notify({ type: 'error', message: `Wallet not connected`, description: "Connect the wallet in the top panel" });
@@ -763,11 +838,12 @@ useEffect(() => {
         );
 
       const accounts: CreateBinOptAccounts = {
+        binOpt: new PublicKey(pda.toString()),
         playerAcc: publicKey,
         userAcc: userAcc,
         ratioAcc: ratioAcc,
+        nftAcc: new PublicKey("AyK9uCXne1K3BvcRnvcwMi3qGtdGrxvJqPyTes2f9Lho"),
         houseAcc: new PublicKey("HME9CUNgcsVZti5x1MdoBeUuo1hkGnuKMwP4xuJHQFtQ"),
-        binOpt: new PublicKey(pda.toString()),
         oracleAccount: new PublicKey(oracleAddy),
         pdaHouseAcc: new PublicKey("3MRKR5tYQeUT8CXYkTjvzR6ivEpaqFLqK9CsNbMFvoHB"),
         affilAcc: AffilAcc,
@@ -793,7 +869,7 @@ useEffect(() => {
       notify({ type: 'error', message: `Option was not created`, description: error?.message, txid: signature });
       return;
     }
-  }, [slippageTolerance, isInit, balance, initialPrice, totalBetAmount, publicKey, notify, connection, sendTransaction, activeButton, inputValue, inputValue2, amountValue, toggleState, isSoliditySelected, isBitcoinSelected]);
+  }, [LPdata, slippageTolerance, isInit, balance, initialPrice, totalBetAmount, publicKey, notify, connection, sendTransaction, activeButton, inputValue, inputValue2, amountValue, toggleState, selectedCryptos]);
 
 const payoutValue = (Number(amountValue) * Number(payout)).toFixed(2);
 
@@ -959,7 +1035,7 @@ return (
           <span className="rounded-12xs flex flex-row items-center justify-start py-[7px] px-0">        <img
           className="relative w-6 h-6 overflow-hidden shrink-0"
           alt=""
-          src="/new/component-9.svg"
+          src="/Sol1.png"
         /></span>
         </div>
 
@@ -1125,9 +1201,9 @@ return (
     <div className="self-stretch h-4 flex flex-row items-start justify-between">
       <div className="relative leading-[14px]">Payout</div>
       <div className="relative leading-[14px] font-medium text-white">
-      {     isNaN(parseFloat((amountValue))*1.70)
+      {     isNaN(parseFloat((amountValue))*1.85)
        ? '0 SOL'
-      : `${((parseFloat(amountValue)*1.70)).toFixed(2)} SOL`
+      : `${((parseFloat(amountValue)*1.85)).toFixed(2)} SOL`
         }
       </div>
     </div>
@@ -1145,14 +1221,7 @@ return (
     <div className="self-stretch h-4 flex flex-row items-start justify-between">
       <div className="relative leading-[14px]">Strike Price</div>
       <div className="relative leading-[14px] font-medium text-white">
-      {isSoliditySelected 
-      ? (spreadPrice && !isNaN(spreadPrice) 
-        ? spreadPrice.toFixed(3)
-        : '-')
-      : (spreadPrice && !isNaN(spreadPrice)
-        ? spreadPrice.toFixed(1)
-        : '-')
-    } USD
+      {spreadPrice} USD
       </div>
     </div>
   </div>

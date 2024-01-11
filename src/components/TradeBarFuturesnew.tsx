@@ -21,6 +21,8 @@ import { components } from 'react-select';
 import Slider from 'rc-slider';
 import Modal from 'react-modal';
 import dynamic from 'next/dynamic';
+import { LiquidityPoolAccount  } from "../out/accounts/LiquidityPoolAccount";
+
 
 
 
@@ -60,8 +62,50 @@ interface TradeBarFuturesProps {
   isSoliditySelected: boolean;
   openingPrice: number; // Add openingPrice here
   setOpeningPrice: React.Dispatch<React.SetStateAction<number>>;
+  selectedCryptos: { [key: string]: boolean };
 }
 
+async function checkLPdata(lpAcc: PublicKey, connection: Connection): Promise<{ IsInitialized: boolean, locked: boolean, epoch: number, totalDeposits: number, lpFees: number, pnl: number, cumulativeFeeRate: number, cumulativePnlRate: number   }> {
+  const accountInfo = await connection.getAccountInfo(lpAcc);
+  
+  if (!accountInfo) {
+      return { 
+          IsInitialized: false,     
+          locked: false,
+          epoch: 0,
+          totalDeposits: 0,
+          lpFees: 0,
+          pnl: 0,
+          cumulativeFeeRate: 0,
+          cumulativePnlRate: 0,
+      
+      };
+  }
+
+  // Convert the buffer from Solana into a Buffer type that's used by Borsh
+  const bufferData = Buffer.from(accountInfo.data);
+
+  let LpAccount;
+  try {
+      // Use the AffiliateAccount class to decode the data
+      LpAccount = LiquidityPoolAccount.decode(bufferData);
+  } catch (error) {
+      console.error("Failed to decode affiliate account data:", error);
+      throw error;
+  }
+
+  return {
+      IsInitialized: LpAccount.isInitialized,
+      locked: LpAccount.locked,
+      epoch: LpAccount.epoch.toNumber(),
+      totalDeposits: LpAccount.totalDeposits.toNumber(),
+      lpFees: LpAccount.lpFees.toNumber(),
+      pnl: LpAccount.pnl.toNumber(),
+      cumulativeFeeRate:LpAccount.cumulativeFeeRate.toNumber(),
+      cumulativePnlRate: LpAccount.cumulativePnlRate.toNumber(),
+
+  };
+}
 
 
 async function isUserAccountInitialized(account: PublicKey, connection: Connection): Promise<{ isInitialized: boolean; usedAffiliate: Uint8Array; myAffiliate: Uint8Array }> {
@@ -157,15 +201,27 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
     btcShort: string;
     solLong: string;
     solShort: string;
+    longCollateral: string,
+    shortCollateral: string,
+    pythLong: string,
+    pythShort: string,
+    bonkLong: string,
+    bonkShort: string,
   };
   setData: (data: {
     btcLong: string;
     btcShort: string;
     solLong: string;
     solShort: string;
+    longCollateral: string,
+    shortCollateral: string,
+    pythLong: string,
+    pythShort: string,
+    bonkLong: string,
+    bonkShort: string,
   }
   ) => void;
-}> = ({ setParentDivHeight, totalBetAmount, data,  setData, setPrices, setEMAPrice, prices,   isBitcoinSelected, setOpeningPrice, openingPrice,
+}> = ({selectedCryptos,  setParentDivHeight, totalBetAmount, data,  setData, setPrices, setEMAPrice, prices,   isBitcoinSelected, setOpeningPrice, openingPrice,
   isSoliditySelected,
 }) => {  const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
@@ -178,7 +234,7 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
   const { getUserSOLBalance } = useUserSOLBalanceStore();
   const wallet = useWallet();
 
-  const [leverage, setLeverage] = useState(200);
+  const [leverage, setLeverage] = useState(50);
   const [showAdditionalDiv, setShowAdditionalDiv] = useState(false);
   const [ProfitValue, setProfitValue] = useState("");
   const [LossValue, setLossValue] = useState("");
@@ -254,20 +310,48 @@ const handleCustomSlippageChange = (event) => {
   }
 };
 
+const [LPdata, setLPdata] = useState<{ IsInitialized: boolean, locked: boolean, epoch: number, totalDeposits: number, lpFees: number, pnl: number, cumulativeFeeRate: number, cumulativePnlRate: number } | null>(null);
+
+
+useEffect(() => {
+  const fetchLpstatus = async () => {
+
+      const houseHarcodedkey = new PublicKey("HME9CUNgcsVZti5x1MdoBeUuo1hkGnuKMwP4xuJHQFtQ");
+      const signerWalletAccount = new PublicKey("Fb1ABWjtSJVtoZnqogFptAAgqhBCPFY1ZcbEskF8gD1C");
+      const seedsLpAcc = [Buffer.from(houseHarcodedkey.toBytes()), Buffer.from(signerWalletAccount.toBytes())];
+    const [lpAcc] = await PublicKey.findProgramAddress(seedsLpAcc, PROGRAM_ID);
+
+    // Check if the user has an affiliate code when the component mounts
+    if (lpAcc) {
+        const results = await checkLPdata(lpAcc, connection);
+        setLPdata(results);
+    }
+  };
+
+  fetchLpstatus();
+}, [connection]);
+
 useEffect(() => {
   console.log(`Current slippage tolerance: ${slippageTolerance}`);
 }, [slippageTolerance]); 
 
 
 const handleLeverageClick = (buttonIndex: number) => {
-  if (buttonIndex > maxleverage) {
-    setLeverage(100);
-    setActiveLeverageButton(100);
+  // Determine the max leverage based on the selected symbol
+  const symbolMaxLeverage = (selectedCryptos.PYTH || selectedCryptos.BONK) ? 50 : 200;
+
+  if (buttonIndex > symbolMaxLeverage) {
+    // Set to a default leverage if clicked value exceeds symbolMaxLeverage
+    const defaultLeverage = 50;
+    setLeverage(defaultLeverage);
+    setActiveLeverageButton(defaultLeverage);
+  } else {
+    // Set to the clicked value
+    setActiveLeverageButton(buttonIndex);
+    setLeverage(buttonIndex);
   }
-  else {
-  setActiveLeverageButton(buttonIndex);
-  setLeverage(buttonIndex);}
 };
+
 
 useEffect(() => {
   // This code runs if maxleverage changes.
@@ -339,15 +423,23 @@ useEffect(() => {
         return totalBetAmount !== 0 ? parseInt(long) / totalBetAmount : 0.5;
     };
 
-    if (isSoliditySelected) {
-        longShortRatio = computeLongShortRatio(data.solLong, data.solShort);
-    } else if (isBitcoinSelected) {
-        longShortRatio = computeLongShortRatio(data.btcLong, data.btcShort);
+    // Determine which cryptocurrency data to use based on selectedCryptos
+    let selectedData = { long: 0, short: 0 };
+    if (selectedCryptos.SOL) {
+      console.log("dddd",data.solLong)
+        selectedData = { long: parseInt(data.solLong), short: parseInt(data.solShort) };
+    } else if (selectedCryptos.BTC) {
+        selectedData = { long: parseInt(data.btcLong), short: parseInt(data.btcShort) };
+    }else if (selectedCryptos.PYTH) {
+        selectedData = { long: parseInt(data.pythLong), short: parseInt(data.pythShort) };
+    }else if (selectedCryptos.BONK) {
+        selectedData = { long: parseInt(data.bonkLong), short: parseInt(data.bonkShort) };
     }
+    // Add more conditions if you have more cryptocurrencies
 
-    const totalBetAmount = isSoliditySelected 
-        ? (parseInt(data.solLong) + parseInt(data.solShort))
-        : (parseInt(data.btcLong) + parseInt(data.btcShort));
+    // Compute longShortRatio and totalBetAmount for the selected cryptocurrency
+    longShortRatio = computeLongShortRatio(selectedData.long, selectedData.short);
+    const totalBetAmount = selectedData.long + selectedData.short;
 
     const priceDirection = toggleState === 'LONG' ? 0 : toggleState === 'SHORT' ? 1 : -1;
     if (priceDirection === -1) {
@@ -366,13 +458,15 @@ useEffect(() => {
     const newMaxLeverage = getDynamicLeverage(longShortRatio, priceDirection);
     setMaxLeverage(newMaxLeverage);
 
-    if (leverage > newMaxLeverage && newMaxLeverage > 200)
+    const defaultLeverage = (selectedCryptos.PYTH || selectedCryptos.BONK) ? 50 : 200;
+
+    if (leverage > newMaxLeverage && newMaxLeverage > defaultLeverage)
     {
     setLeverage(newMaxLeverage)
     setActiveLeverageButton(200)
   }
     
-    else if (leverage > newMaxLeverage && newMaxLeverage < 200) 
+    else if (leverage > newMaxLeverage && newMaxLeverage < defaultLeverage) 
       {
         const newlvg = (newMaxLeverage)
         setMaxLeverage(newlvg);
@@ -381,7 +475,7 @@ useEffect(() => {
     }
     
 
-}, [data, isSoliditySelected, isBitcoinSelected, toggleState, leverage]);
+}, [data, isSoliditySelected, isBitcoinSelected, toggleState, leverage, selectedCryptos]);
 
 
 
@@ -451,66 +545,62 @@ useEffect(() => {
 
   useEffect(() => {
     const socket = socketIOClient(ENDPOINT);
-
+  
     socket.on('priceUpdate', (updatedPrices) => {
+  
       const newPrices = { ...prices };
+      const selectedCryptosSafe = selectedCryptos || {};
+    
+      const selectedCrypto = Object.keys(selectedCryptosSafe).find(key => selectedCryptosSafe[key]);
+  
   
       updatedPrices.forEach((updatedPrice) => {
-          newPrices[updatedPrice.symbol] = updatedPrice.price;
+        newPrices[updatedPrice.symbol] = {
+          price: updatedPrice.price,
+          timestamp: updatedPrice.timestamp};
   
-          if (isSoliditySelected && updatedPrice.symbol === 'Crypto.SOL/USD') {
+          if (updatedPrice && selectedCrypto) {
+            const selectedCryptoSymbol = `Crypto.${selectedCrypto.toUpperCase()}/USD`;
+            
+            if (updatedPrice.symbol === selectedCryptoSymbol) {
               setEMAPrice(updatedPrice.EMA);
-          } else if (!isSoliditySelected && updatedPrice.symbol === 'Crypto.BTC/USD') {
-              setEMAPrice(updatedPrice.EMA);
+              console.log(updatedPrice.EMA, "emaaaaaaa");
+            }
           }
-      });
   
-  });
-  
-
-    // Disconnect the socket when the component unmounts
-    return () => {
-      socket.disconnect();
-    };
-  }, [isSoliditySelected]);
-
-
-  useEffect(() => {
-    const socket = socketIOClient(ENDPOINT);
-
-    socket.on('priceUpdate', (updatedPrices) => {
-      const newPrices = { ...prices };
-  
-      updatedPrices.forEach((updatedPrice) => {
-          newPrices[updatedPrice.symbol] = {
-            price: updatedPrice.price,
-            timestamp: updatedPrice.timestamp};
-  
-          if (isSoliditySelected && updatedPrice.symbol === 'Crypto.SOL/USD') {
-              setEMAPrice(updatedPrice.EMA);
-          } else if (!isSoliditySelected && updatedPrice.symbol === 'Crypto.BTC/USD') {
-              setEMAPrice(updatedPrice.EMA);
-          }
       });
   
       setPrices(newPrices);
-  });
+    });
   
-
     // Disconnect the socket when the component unmounts
     return () => {
       socket.disconnect();
     };
-  }, [isSoliditySelected]);
+  }, [selectedCryptos]);
+
 
 
   useEffect(() => {
-    const initialPrice = isSoliditySelected
-      ? prices['Crypto.SOL/USD']?.price / 100000000
-      : prices['Crypto.BTC/USD']?.price / 100000000;
+    // Provide a default empty object if selectedCryptos is undefined or null
+    console.log(selectedCryptos, "lfdsfsf")
+    const selectedCryptosSafe = selectedCryptos || {};
   
-    setInitialPrice(initialPrice);
-  }, [isSoliditySelected, prices]);
+    const selectedCrypto = Object.keys(selectedCryptosSafe).find(key => selectedCryptosSafe[key]);
+    // Define a mapping of crypto symbols to decimal places
+    const decimalPlacesMapping = {
+      'BTC': 1, // Example: Bitcoin to 2 decimal places
+      'SOL': 3,
+      'PYTH': 3,
+      'BONK': 8,
+      // Add more mappings as needed
+    };
+      // Get the number of decimal places for the selected crypto, defaulting to a standard value if not found
+    const decimalPlaces = decimalPlacesMapping[selectedCrypto?.toUpperCase()] || 2;
+
+    const newInitialPrice = prices?.[`Crypto.${selectedCrypto?.toUpperCase()}/USD`]?.price / 100000000 || 0;
+    setInitialPrice(parseFloat(newInitialPrice.toFixed(decimalPlaces)));
+  }, [selectedCryptos, prices]);
 
   useEffect(() => {
     const socket = socketIOClient(ENDPOINT2);
@@ -532,11 +622,13 @@ useEffect(() => {
 
 
   useEffect(() => {
-    const openingPrice = isSoliditySelected
-      ? openPrices['Crypto.SOL/USD'] / 100000000
-      : openPrices['Crypto.BTC/USD'] / 100000000;
+    const selectedCrypto = Object.keys(selectedCryptos).find(key => selectedCryptos[key]);
+    
+    // Get the price for the selected cryptocurrency
+    const openingPrice = openPrices?.[`Crypto.${selectedCrypto}/USD`]/100000000;
+
     setOpeningPrice(openingPrice);
-  }, [isSoliditySelected, openPrices]);
+  }, [selectedCryptos, openPrices]);
 
   const setToggleChangeLong = () => {
       setToggleState('LONG');
@@ -732,17 +824,16 @@ useEffect(() => {
 
 useEffect(() => {
   const getDisplayedPrice = () => {
-    const currency = isSoliditySelected ? 'SOL' : 'BTC';
-    const decimalPlaces = isSoliditySelected ? 3 : 1;
-
-    const priceKey = `Crypto.${currency}/USD`;
+    const selectedCrypto = Object.keys(selectedCryptos).find(key => selectedCryptos[key]);
+  
+    const priceKey = `Crypto.${selectedCrypto?.toUpperCase()}/USD`;
     const price = prices[priceKey];
 
     if (price && !isNaN(price.price)) {
       const priceInUsd = price.price / 100000000 ;
       const priceDisplay = toggleState === 'LONG'
-        ? ((priceInUsd * 1.0002 - priceInUsd * 1.0002 / leverage) + priceInUsd * 1.0002 * 9 / 10000).toFixed(decimalPlaces)
-        : ((priceInUsd * 0.9998 + priceInUsd * 0.9998 / leverage) - priceInUsd * 0.9998 * 9 / 10000).toFixed(decimalPlaces);
+        ? ((priceInUsd * 1.0002 - priceInUsd * 1.0002 / leverage) + priceInUsd * 1.0002 * 9 / 10000).toFixed(3)
+        : ((priceInUsd * 0.9998 + priceInUsd * 0.9998 / leverage) - priceInUsd * 0.9998 * 9 / 10000).toFixed(3);
         
       return `${priceDisplay}`;
     } else {
@@ -751,7 +842,7 @@ useEffect(() => {
   };
 
   setliquidationPrice(getDisplayedPrice());
-}, [isSoliditySelected, prices, leverage, toggleState]);
+}, [selectedCryptos, prices, leverage, toggleState]);
 
 useEffect(() => {
   // Check if currentItem exists
@@ -847,6 +938,7 @@ const handleMouseLeave2 = () => {
 };
 
 const onClick = useCallback(async () => {
+  const maxBet = (((LPdata?.totalDeposits + LPdata?.pnl) / 200) ) / LAMPORTS_PER_SOL;
   if (warning) {
     console.error('Cannot open position due to warning:', warning);
     // Optionally, show a warning notification
@@ -854,22 +946,48 @@ const onClick = useCallback(async () => {
     return; // Exit function early
   }
 
-  if((totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL) > 2000000000) {
-    notify({ type: 'error', message: "Position size limit per user", description: "Your position size has reached the limit of 2 SOL"});
+  if ((parseFloat(amountValue)) > maxBet) {
+    notify({ type: 'error', message: `Maximum Position amount is ${maxBet.toFixed(2)} SOL` });
+    return;
+}
+
+
+  if((totalBetAmount + parseFloat(amountValue)) > (3*maxBet*LAMPORTS_PER_SOL)) {
+    notify({ type: 'error', message: "Position size limit per user"});
     return;
   }
 
-    let symbolCode;
-    let oracleAddy;
-    if (isSoliditySelected) {
-      symbolCode = 0,
-      oracleAddy = "H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG";  // set to 0 if 'BINANCE:SOLUSDT' is selected
-    } else if (isBitcoinSelected) {
-      symbolCode = 1,
-      oracleAddy = "GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU"  // set to 1 if 'BINANCE:BTCUSDT' is selected
-    } else {
-      throw new Error("Invalid symbol");  // Throw error if neither of them is selected
-    }
+
+  const cryptoSettings = {
+    SOL: {
+      symbolCode: 0,
+      oracleAddy: "H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG"
+    },
+    BTC: {
+      symbolCode: 1,
+      oracleAddy: "GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU"
+    },
+    PYTH: {
+      symbolCode: 2,
+      oracleAddy: "nrYkQQQur7z8rYTST3G9GqATviK5SxTDkrqd21MW6Ue"
+    },
+    BONK: {
+      symbolCode: 3,
+      oracleAddy: "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN"
+    },
+    // Add more cryptocurrencies here in the same pattern
+  };
+
+  let symbolCode;
+  let oracleAddy;
+const selectedCrypto = Object.keys(selectedCryptos).find(key => selectedCryptos[key]);
+
+if (selectedCrypto && cryptoSettings[selectedCrypto]) {
+symbolCode = cryptoSettings[selectedCrypto].symbolCode;
+oracleAddy = cryptoSettings[selectedCrypto].oracleAddy;
+} else {
+throw new Error("Invalid or unsupported symbol");
+}
 
     if (!publicKey) {
       notify({ type: 'info', message: `Wallet not connected`, description: "Connect the wallet in the top panel" });
@@ -887,8 +1005,8 @@ const onClick = useCallback(async () => {
       return;
     }
 
-    if (parseFloat(amountValue) > 1 || parseFloat(amountValue) < 0.05) {
-      notify({ type: 'info', message: "Invalid trade amount", description: "Trade Amount should be between 0.05 and 1 SOL" });
+    if (parseFloat(amountValue) > (LPdata?.totalDeposits/200 + LPdata?.pnl) || parseFloat(amountValue) < 0.05) {
+      notify({ type: 'info', message: "Invalid trade amount", description: `Trade Amount should be between 0.05 and ${maxBet.toFixed(2)}` });
       return;
     }
 
@@ -965,7 +1083,7 @@ if (!isInit.isInitialized) {
     stopLossPrice: new BN(stopLoss),
     takeProfitPrice: new BN(takeProfit),
     slippagePrice: new BN (initialPrice*100000000),
-    slippage: new  BN (1000),
+    slippage: new  BN (slippageTolerance),
   };
   console.log ("Opening Futures Position", "Est. Initial Price",initialPrice, "Collateral", (betAmount/LAMPORTS_PER_SOL), "Leverage", leverage, "Direction", priceDirection, "Symbol", symbolCode, "SL",stopLoss/100000000, "TP", takeProfit/100000000);
 
@@ -987,11 +1105,12 @@ if (!isInit.isInitialized) {
       
       
       const accounts: CreateFutContAccounts = {
+        futCont: pda,
         playerAcc: publicKey,
         userAcc: userAcc,
         ratioAcc: ratioAcc,
         houseAcc: new PublicKey("HME9CUNgcsVZti5x1MdoBeUuo1hkGnuKMwP4xuJHQFtQ"),
-        futCont: pda,
+        nftAcc: new PublicKey("AyK9uCXne1K3BvcRnvcwMi3qGtdGrxvJqPyTes2f9Lho"),
         oracleAccount: new PublicKey(oracleAddy),
         pdaHouseAcc: new PublicKey("3MRKR5tYQeUT8CXYkTjvzR6ivEpaqFLqK9CsNbMFvoHB"),
         affilAcc: AffilAcc,
@@ -1016,7 +1135,7 @@ if (!isInit.isInitialized) {
       notify({ type: 'error', message: `Position has not been succesfully opened`, description: error?.message, txid: signature });
       return;
     }
-  }, [isInit, initialPrice, balance, warning, totalBetAmount, publicKey, notify, connection, sendTransaction, , inputValue, ProfitValue, LossValue, inputValue2, leverage, amountValue, toggleState, isSoliditySelected, isBitcoinSelected]);
+  }, [LPdata, selectedCryptos, slippageTolerance, isInit, initialPrice, balance, warning, totalBetAmount, publicKey, notify, connection, sendTransaction, , inputValue, ProfitValue, LossValue, inputValue2, leverage, amountValue, toggleState]);
 
   const onClick1 = useCallback(async () => {
     const seedsUser = [
@@ -1095,6 +1214,15 @@ useEffect(() => {
 const closeModalHandler = () => {
   setModalIsOpen(false);
   setUserClosedModal(true);
+};
+
+const getMaxLeverage = (selectedCryptos) => {
+  // Check if either PYTH or BONK is selected
+  if (selectedCryptos.PYTH || selectedCryptos.BONK) {
+    return 50;
+  }
+  // Default max leverage for other cases
+  return 200;
 };
 
 
@@ -1212,7 +1340,7 @@ return (
           <span className="rounded-12xs flex flex-row items-center justify-start py-[7px] px-0">        <img
           className="relative w-6 h-6 overflow-hidden shrink-0"
           alt=""
-          src="/new/component-9.svg"
+          src="/Sol1.png"
         /></span>
         </div>
 
@@ -1229,14 +1357,14 @@ return (
       </div>
     </div>
     <div className="self-stretch flex flex-col items-start justify-start  gap-[16px]">
-              <Slider
-        min={1}
-        max={200}
-        step={1}
-        value={leverage}
-        onChange={handleSliderChange}
-        className="w-full"
-      />
+    <Slider
+  min={1}
+  max={getMaxLeverage(selectedCryptos)}
+  step={1}
+  value={leverage}
+  onChange={handleSliderChange}
+  className="w-full"
+/>
       <div className="self-stretch flex flex-row items-start justify-start gap-[8px]">
         <button 
         onClick={() => handleLeverageClick(50)}
@@ -1428,13 +1556,7 @@ onBlur={handleInputBlur} />
     <div className="self-stretch h-4 flex flex-row items-start justify-between">
       <div className="relative leading-[14px]">Est. Entry Price</div>
       <div className="relative leading-[14px] font-medium text-white">
-          {isSoliditySelected 
-    ? (prices['Crypto.SOL/USD']?.price && !isNaN(prices['Crypto.SOL/USD']?.price) 
-      ? ((prices['Crypto.SOL/USD']?.price * (toggleState === 'LONG' ? 1.0002 : 0.9998)) / 100000000).toFixed(3)
-      : '-')
-    : (prices['Crypto.BTC/USD']?.price && !isNaN(prices['Crypto.BTC/USD']?.price)
-      ? ((prices['Crypto.BTC/USD']?.price * (toggleState === 'LONG' ? 1.0002 : 0.9998)) / 100000000).toFixed(1)
-      : '-')
+          {initialPrice
   } USD
       </div>
     </div>

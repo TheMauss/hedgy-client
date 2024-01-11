@@ -314,15 +314,32 @@ useEffect(() => {
 
 
   const getSolanaTimestamp = async (): Promise<number | null> => {
-    // Connect to the Solana cluster (mainnet in this case)
     const connection = new Connection(ENDPOINT3, 'recent');
-    const slot = await connection.getSlot();
-    // Fetch the recent blockhash and its associated details
-    const recentBlockhash = await connection.getBlockTime(slot);
-    console.log("time blockchain",recentBlockhash)
-    // Return the block time
-    return recentBlockhash;
+    let retries = 3; // Number of retries
+    const delay = 1000; // Delay between retries in milliseconds
+  
+    while (retries > 0) {
+      try {
+        const slot = await connection.getSlot();
+        const recentBlockhash = await connection.getBlockTime(slot);
+        if (recentBlockhash) {
+          console.log("time blockchain", recentBlockhash);
+          return recentBlockhash;
+        }
+      } catch (error) {
+        console.error("Error fetching block time:", error);
+        retries--;
+        if (retries > 0) {
+          console.log(`Retrying... Attempts left: ${retries}`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+    }
+  
+    console.error("Failed to fetch block time after multiple attempts.");
+    return null;
   };
+  
 
   const [solanaTimestamp, setSolanaTimestamp] = useState<number | null>(null);
 
@@ -539,13 +556,13 @@ useEffect(() => {
                                   <img
                                   className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                                   alt=""
-                                  src="/sheesh/solana-3d1@2x.png"
+                                  src="/Sol1.png"
                                 />  :
                             currentItem.symbol === 1 ?
                             <img
                             className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                             alt=""
-                            src="/sheesh/solana-3d@2x.png"
+                            src="/Btc1.png"
                           />  : 
                             null
                             }
@@ -665,9 +682,13 @@ useEffect(() => {
                 >
                   <div className="flex items-center ">
   {item.symbol === 0 ?
-    <img src="/sol.png" alt="Logo" width="24" height="24" className=""/> :
+    <img src="/Sol1.png" alt="Logo" width="24" height="24" className="pb-1"/> :
   item.symbol === 1 ?
-    <img src="/Bitcoin.png" alt="Logo" width="24" height="24" className=""/> : 
+    <img src="/Btc1.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    item.symbol === 2 ?
+    <img src="/Coin1.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    item.symbol === 3 ?
+    <img src="/Bonk1.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
   null
   }
   <p className="text-grey-text pt-3 pb-2.5 ml-2">{`${item.binaryOption.slice(0, 4)}...${item.binaryOption.slice(-4)}`}</p> 
@@ -748,9 +769,9 @@ useEffect(() => {
                       >
                               <div className="flex items-center rounded-l">
                                 {item.symbol === 0 ?
-                               <img src="/sol.png" alt="Logo" width="24" height="24" className="pt-0.5"/> :
+                               <img src="/Sol1.png" alt="Logo" width="24" height="24" className="pt-0.5"/> :
                           item.symbol === 1 ?
-                                      <img src="/Bitcoin.png" alt="Logo" width="24" height="24" className="pt-0.5"/> : 
+                                      <img src="/Btc1.png" alt="Logo" width="24" height="24" className="pt-0.5"/> : 
                                     null
                                             }
                           <p className="ml-2 ">{`${item.binaryOption.slice(0, 4)}...${item.binaryOption.slice(-4)}`}</p> 
@@ -914,13 +935,13 @@ useEffect(() => {
                                   <img
                                   className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                                   alt=""
-                                  src="/sheesh/solana-3d1@2x.png"
+                                  src="/Sol1.png"
                                 />  :
                             currentItem.symbol === 1 ?
                             <img
                             className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                             alt=""
-                            src="/sheesh/solana-3d@2x.png"
+                            src="/Btc1.png"
                           />  : 
                             null
                             }
@@ -1045,9 +1066,13 @@ useEffect(() => {
                 >
                   <div className="flex items-center">
   {item.symbol === 0 ?
-    <img src="/sol.png" alt="Logo" width="24" height="24" className=""/> :
+    <img src="/Sol1.png" alt="Logo" width="24" height="24" className="pb-1"/> :
   item.symbol === 1 ?
-    <img src="/Bitcoin.png" alt="Logo" width="24" height="24" className=""/> : 
+    <img src="/Btc1.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    item.symbol === 2 ?
+    <img src="/Coin1.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    item.symbol === 3 ?
+    <img src="/Bonk1.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
   null
   }
   <p className="text-grey-text pt-3 pb-2.5 ml-2">{`${item.binaryOption.slice(0, 4)}...${item.binaryOption.slice(-4)}`}</p> 
@@ -1129,9 +1154,9 @@ useEffect(() => {
                       >
                               <div className="flex items-center rounded-l">
                                 {item.symbol === 0 ?
-                               <img src="/sol.png" alt="Logo" width="24" height="24" className="pt-0.5"/> :
+                               <img src="/Sol1.png" alt="Logo" width="24" height="24" className="pt-0.5"/> :
                           item.symbol === 1 ?
-                                      <img src="/Bitcoin.png" alt="Logo" width="24" height="24" className="pt-0.5"/> : 
+                                      <img src="/Btc1.png" alt="Logo" width="24" height="24" className="pt-0.5"/> : 
                                     null
                                             }
                           <p className="ml-2 ">{`${item.binaryOption.slice(0, 4)}...${item.binaryOption.slice(-4)}`}</p> 

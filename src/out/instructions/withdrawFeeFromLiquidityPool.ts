@@ -5,6 +5,7 @@ import { PROGRAM_ID } from "../programId"
 
 export interface WithdrawFeeFromLiquidityPoolAccounts {
   liqProvider: PublicKey
+  userAcc: PublicKey
   providersWallet: PublicKey
   lpAcc: PublicKey
   signerWalletAccount: PublicKey
@@ -20,6 +21,7 @@ export function withdrawFeeFromLiquidityPool(
 ) {
   const keys: Array<AccountMeta> = [
     { pubkey: accounts.liqProvider, isSigner: false, isWritable: true },
+    { pubkey: accounts.userAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.providersWallet, isSigner: true, isWritable: true },
     { pubkey: accounts.lpAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.signerWalletAccount, isSigner: false, isWritable: true },

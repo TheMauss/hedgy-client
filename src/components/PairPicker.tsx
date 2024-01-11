@@ -8,12 +8,11 @@ import Select from 'react-select';
 interface PairPickerProps {
   onSymbolChange: (symbol: string) => void;
   prices: { [key: string]: { price: number, timestamp: string } };
-  isBitcoinSelected: boolean;
-  isSoliditySelected: boolean;
-  setIsBitcoinSelected: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsSoliditySelected: React.Dispatch<React.SetStateAction<boolean>>;
-  openingPrice: number; // Add openingPrice here
+  selectedCryptos: { [key: string]: boolean };
+  setSelectedCryptos: React.Dispatch<React.SetStateAction<{ [key: string]: boolean }>>;
+  openingPrice: number;
 }
+
 
 const getWindowWidth = () => {
   if (typeof window !== 'undefined') {
@@ -26,13 +25,14 @@ const options = [
   {
     value: 'Crypto.SOL/USD', 
     label: 'SOL/USD', 
-    icon: '/sol.png'
+    icon: '/Sol1.png'
   },
   {
     value: 'Crypto.BTC/USD', 
     label: 'BTC/USD', 
-    icon: '/Bitcoin.png'
+    icon: '/Btc1.png'
   },
+
   // more options here...
 ];
 
@@ -109,46 +109,46 @@ const customStyles = {
 
 
 
-export const PairPicker: React.FC<PairPickerProps> = ({isBitcoinSelected, isSoliditySelected, setIsBitcoinSelected,  setIsSoliditySelected, onSymbolChange, prices, openingPrice}) => {
+export const PairPicker: React.FC<PairPickerProps> = ({selectedCryptos,  setSelectedCryptos, onSymbolChange, prices, openingPrice}) => {
 
   const DropdownIndicator = (props) => {
-    // Safely access the properties of prices
-  // Use useMemo to calculate displayPrice and displayPercentage
-  const { displayPrice, displayPercentage, color } = useMemo(() => {
-    const solPrice = prices?.['Crypto.SOL/USD']?.price;
-    const btcPrice = prices?.['Crypto.BTC/USD']?.price;
-    
-    const newDisplayPrice = isSoliditySelected
-      ? solPrice && !isNaN(solPrice)
-        ? (solPrice / 100000000).toFixed(3)
-        : '-'
-      : btcPrice && !isNaN(btcPrice)
-        ? (btcPrice / 100000000).toFixed(1)
+    // Use useMemo to calculate displayPrice and displayPercentage
+    const { displayPrice, displayPercentage, color } = useMemo(() => {
+      // Determine the selected cryptocurrency
+      const selectedCrypto = Object.keys(selectedCryptos).find(key => selectedCryptos[key]);
+  
+      // Get the price for the selected cryptocurrency
+      const selectedCryptoPrice = prices?.[`Crypto.${selectedCrypto}/USD`]?.price;
+  
+      // Calculate the display price
+      const newDisplayPrice = selectedCryptoPrice && !isNaN(selectedCryptoPrice)
+        ? (selectedCryptoPrice / 100000000).toFixed(selectedCrypto === 'SOL' ? 3 : 1)
         : '-';
-    
-    const initialPrice = isSoliditySelected
-      ? solPrice / 100000000
-      : btcPrice / 100000000;
-    const percentage = (((initialPrice - openingPrice) / openingPrice) * 100).toFixed(2);
-    const newColor = Number(percentage) < 0 ? 'text-red-500' : 'text-primary';
-    const newDisplayPercentage = isNaN(Number(percentage)) ? '-' : Number(percentage) < 0 ? percentage : `+${percentage}`;
-    
-    return {
-      displayPrice: newDisplayPrice,
-      displayPercentage: newDisplayPercentage,
-      color: newColor,
-    };
-  }, [prices, isSoliditySelected, isBitcoinSelected, openingPrice]);
+  
+      // Calculate the initial price
+      const initialPrice = selectedCryptoPrice 
+        ? selectedCryptoPrice / 100000000
+        : 0;
+  
+      // Calculate the percentage change
+      const percentage = (((initialPrice - openingPrice) / openingPrice) * 100).toFixed(2);
+      const newColor = Number(percentage) < 0 ? 'text-red-500' : 'text-primary';
+      const newDisplayPercentage = isNaN(Number(percentage)) ? '-' : Number(percentage) < 0 ? percentage : `+${percentage}`;
+  
+      return {
+        displayPrice: newDisplayPrice,
+        displayPercentage: newDisplayPercentage,
+        color: newColor,
+      };
+    }, [prices, selectedCryptos, openingPrice]);
 
-        const [initialPrice, setInitialPrice] = useState(0);
+    const [initialPrice, setInitialPrice] = useState(0);
 
-        useEffect(() => {
-          const initialPrice = isSoliditySelected
-            ? prices['Crypto.SOL/USD']?.price / 100000000
-            : prices['Crypto.BTC/USD']?.price / 100000000;
-        
-          setInitialPrice(initialPrice);
-        }, [isSoliditySelected, prices]);
+    useEffect(() => {
+      const selectedCrypto = Object.keys(selectedCryptos).find(key => selectedCryptos[key]);
+      const newInitialPrice = prices?.[`Crypto.${selectedCrypto?.toUpperCase()}/USD`]?.price / 100000000 || 0;
+      setInitialPrice(newInitialPrice);
+    }, [selectedCrypto, prices]);
 
   
     return (
@@ -174,32 +174,31 @@ export const PairPicker: React.FC<PairPickerProps> = ({isBitcoinSelected, isSoli
   const { push } = useRouter();
 
   useEffect(() => {
-    if (isSoliditySelected) {
-      push('/trade?crypto=sol', undefined, { shallow: true });
-    } else if (isBitcoinSelected) {
-      push('/trade?crypto=btc', undefined, { shallow: true });
-    }
-  }, [isSoliditySelected, isBitcoinSelected]);
+    const selectedCrypto = Object.keys(selectedCryptos).find(key => selectedCryptos[key]);
+    push(`/trade?crypto=${selectedCrypto}`, undefined, { shallow: true });
+  }, [selectedCrypto]);
 
   useEffect(() => {
-    if(isSoliditySelected) {
-      const newSelectedOption = options.find(option => option.value === 'Crypto.SOL/USD');
-      if(newSelectedOption) {
-        setSelectedCrypto(newSelectedOption);
-      }
-    } else if(isBitcoinSelected) {
-      const newSelectedOption = options.find(option => option.value === 'Crypto.BTC/USD');
-      if(newSelectedOption) {
-        setSelectedCrypto(newSelectedOption);
-      }
+    const selectedCrypto = Object.keys(selectedCryptos).find(key => selectedCryptos[key]);
+    // Assuming selectedCrypto is a string like 'Crypto.SOL/USD'
+    const newSelectedOption = options.find(option => option.value === selectedCrypto);
+  
+    if (newSelectedOption) {
+      // Assuming setSelectedCrypto should update the state with the option object
+      // If setSelectedCrypto should only store the string, use newSelectedOption.value
+      setSelectedCrypto(newSelectedOption);
     }
-  }, [isSoliditySelected, isBitcoinSelected]);
+  }, [selectedCrypto, options]);
 
   const handleCryptoChange = (option) => {
-    setSelectedCrypto(option);
+    // Update the selectedCryptos state
+    const cryptoIdentifier = option.value.split('.')[1].split('/')[0];
 
-    setIsSoliditySelected(option.value === 'Crypto.SOL/USD');
-    setIsBitcoinSelected(option.value === 'Crypto.BTC/USD');
+    // Update the selectedCryptos state
+    setSelectedCryptos({ [cryptoIdentifier]: true });
+    
+    // Update the selectedCrypto state if needed
+    setSelectedCrypto(option);
     
     onSymbolChange(option.value);
   };
@@ -212,7 +211,7 @@ return (
             DropdownIndicator: props => 
               <DropdownIndicator 
                 {...props} 
-                isSoliditySelected={isSoliditySelected} 
+                selectedCryptos={selectedCryptos} 
                 prices={prices} // Make sure prices is passed correctly
               />
           }}

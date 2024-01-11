@@ -11,6 +11,12 @@ import PairPicker from "components/PairPickerFutures";
 import InterestBar from "components/InterestBar";
 import Footer  from "components/Footernew";
 import { priceDataState } from "components/globalStatse";
+import { FaChevronLeft, FaChevronUp } from 'react-icons/fa';
+
+
+import { useAllowlist } from '../contexts/AllowlistContext';
+
+
 
 interface Position {
   _id: string;
@@ -43,9 +49,25 @@ const Futures: FC = () => {
         btcShort: "0",
         solLong: "0",
         solShort: "0",
+        longCollateral: "0",
+        shortCollateral: "0",
+        pythLong: "0",
+        pythShort: "0",
+        bonkLong: "0",
+        bonkShort: "0",
+
+
+
     });
   const [prices, setPrices] = useState({});
   const [EMAprice, setEMAprice] = useState(null);
+  const [selectedCryptos, setSelectedCryptos] = useState({
+    BTC: false,
+    SOL: true,
+    PYTH: false,
+    BONK: false
+    // Add other cryptocurrencies as needed
+  });
   const [isBitcoinSelected, setIsBitcoinSelected] = useState(false);
   const [isSoliditySelected, setIsSoliditySelected] = useState(true); 
   const [openingPrice, setOpeningPrice] = useState(0);
@@ -130,17 +152,44 @@ if (bottomRef.current) {
   }, []);
   
   useEffect(() => {
-    
-    if (crypto === 'btc') {
-      setIsBitcoinSelected(true);
-      setIsSoliditySelected(false);
-      setSymbol('Crypto.BTC/USD');
-    } else if (crypto === 'sol') {
-      setIsSoliditySelected(true);
-      setIsBitcoinSelected(false);
-      setSymbol('Crypto.SOL/USD');
+    // Only proceed if the router is ready and the crypto parameter is present
+    if (!router.isReady || !crypto) {
+      console.log("Router or crypto query not ready.");
+      return;
     }
-}, [crypto]);
+  
+    const cryptoKey = crypto.toString().toUpperCase();
+  
+    // Update selectedCryptos state
+    const newSelectedCryptos = { ...selectedCryptos, [cryptoKey]: true };
+  
+    // Check if the cryptoKey is valid
+    if (!Object.keys(newSelectedCryptos).includes(cryptoKey)) {
+      console.log(`Crypto key ${cryptoKey} is not recognized.`);
+      return;
+    }
+  
+    setSelectedCryptos(newSelectedCryptos);
+  
+    const symbolMap = {
+      BTC: 'Crypto.BTC/USD',
+      SOL: 'Crypto.SOL/USD',
+      PYTH: 'Crypto.PYTH/USD',
+      BONK: 'Crypto.BONK/USD',
+
+      // Add other mappings as necessary
+    };
+  
+    // Set the symbol for the selected crypto
+    if (symbolMap[cryptoKey]) {
+      setSymbol(symbolMap[cryptoKey]);
+      console.log(`Symbol is set to ${symbolMap[cryptoKey]}`);
+    } else {
+      console.log(`No symbol found for ${cryptoKey}.`);
+    }
+  }, [crypto, router.isReady]);
+  
+  
 
 
 useEffect(() => {
@@ -194,6 +243,19 @@ useEffect(() => {
     }
   }, []);  
 
+  const [showSidePanel, setShowSidePanel] = useState(true);
+
+  const toggleSidePanel = () => {
+    setShowSidePanel(prevShowSidePanel => !prevShowSidePanel);
+  };
+  
+  const [showBottomPanel, setshowBottomPanel] = useState(true);
+
+  const toggleBottomPanel = () => {
+    setshowBottomPanel(prevshowBottomPanel => !prevshowBottomPanel);
+  };
+
+
 
   return (
     <div>
@@ -202,10 +264,28 @@ useEffect(() => {
         <meta name="description" content="PopFi" />
       </Head>
       <div className="bg-base w-full flex justify-center flex-col">
+      <div className="relative lg:block hidden"> {/* Ensure the parent has relative positioning */}
+      <button 
+  onClick={toggleSidePanel}
+  className="z-50 fixed right-0 top-1/2 transform -translate-y-1/2 text-sm text-white  rounded lg:block hidden"
+>
+<FaChevronLeft className={`ml-2 transition-transform duration-300 text-layer-3 ${showSidePanel ? 'rotate-180' : ''}`} />
+</button>
+<button 
+  onClick={toggleBottomPanel}
+  className="z-50 fixed right-1/2 bottom-0 transform -translate-y-1/2 text-sm text-white  rounded lg:block hidden"
+>
+<FaChevronUp className={`ml-2 transition-transform duration-300 text-layer-3 ${showBottomPanel ? 'rotate-180' : ''}`} />
+</button>
+</div>
         <div className="w-full md:px-4 h-full lg:h-[calc(100vh-94px)] bg-base overflow-hidden ">
+
           <div className="w-full">
             {/* right content */}
             <div className="w-full">
+
+
+
               {/* top */}
               <div className="w-full flex md:flex-row flex-col md:pt-2 ">
                 <div className="w-full flex flex-col">
@@ -215,10 +295,8 @@ useEffect(() => {
                       <div ref={ref} className={`${isSticky && ActiveButton === 1 ? 'sticky-top' : ''}`}>
                       <PairPicker
                                                         onSymbolChange={handleSymbolChange} 
-                                    isBitcoinSelected={isBitcoinSelected}
-                                    isSoliditySelected={isSoliditySelected}
-                                    setIsBitcoinSelected={setIsBitcoinSelected}
-                                    setIsSoliditySelected={setIsSoliditySelected}
+                                    selectedCryptos={selectedCryptos}
+                                    setSelectedCryptos={setSelectedCryptos}
                                     openingPrice={openingPrice}
                                     prices={prices}
                                     /></div>
@@ -230,7 +308,7 @@ useEffect(() => {
                                 data={data}
                                 prices={prices}
                                 EMAprice={EMAprice}
-                                isSoliditySelected={isSoliditySelected}
+                                selectedCryptos={selectedCryptos}
 
                                       />
                                                       <div className="w-full flex flex-col md:order-1 order-2 md:mt-2 mt-2">
@@ -256,6 +334,7 @@ useEffect(() => {
                     EMAprice={EMAprice}
                     isBitcoinSelected={isBitcoinSelected}
                     isSoliditySelected={isSoliditySelected}
+                    selectedCryptos={selectedCryptos}
                     />
                   </div>
                       </div>
@@ -267,17 +346,21 @@ useEffect(() => {
                                 data={data}
                                 prices={prices}
                                 EMAprice={EMAprice}
-                                isSoliditySelected={isSoliditySelected}
+                                selectedCryptos={selectedCryptos}
 
                                       />
-                                                      <div className=" w-full md:block flex-col hidden md:order-2 order-1 md:h-[629px] lg:h-[calc((100vh-108px)-(40vh+26px))] mt-2">
+<div className={`w-full md:block flex-col hidden md:order-2 order-1 mt-2 md:h-[629px] ${
+    showBottomPanel ? "lg:h-[calc((100vh-108px)-(40vh+26px))]" : "lg:h-[calc(100vh-108px-65px)] "
+}`}>
+
                   <Graph 
                     symbol={symbol}
                     latestOpenedPosition={latestOpenedPosition} 
                     prices={prices}
                     
                     /></div>
-                                  <div className="w-full lg:flex lg:flex-col hidden order-3   lg:h-[calc((100vh-126px)-(60vh-79px))] mt-2">
+
+                                  <div className={`w-full lg:flex lg:flex-col hidden order-3   lg:h-[calc((100vh-126px)-(60vh-79px))] mt-2 ${showBottomPanel ? '' : 'lg:hidden'}`}>
                                     <MyPositionsFutures         
                      latestOpenedPosition={latestOpenedPosition}
                      setLatestOpenedPosition={setLatestOpenedPosition}
@@ -288,13 +371,14 @@ useEffect(() => {
                      </div>
                           
                                       </div>
-                                      <div className="lg:block hidden md:w-[315px] flex flex-col lg:h-[calc(100vh-118px)]">
+
+                                      <div className={`lg:block hidden md:w-[315px] flex flex-col lg:h-[calc(100vh-118px)] ${showSidePanel ? '' : 'lg:hidden'}`}>
                                       <div className="w-full flex flex-col h-[60%]">
                                       <RecentPredictions divHeight={divHeight} /></div>
                                       <div className="h-[40%] mt-2">
                                       <Chat/>
                                       </div>
-                                      </div>
+                                      </div>  
                         {/* left sidebar */}
                     </div></div> 
                 </div> 

@@ -16,6 +16,7 @@ export interface ResolveFutContAccounts {
   clock: PublicKey
   systemProgram: PublicKey
   houseAcc: PublicKey
+  nftAcc: PublicKey
 }
 
 export function resolveFutCont(
@@ -35,6 +36,7 @@ export function resolveFutCont(
     { pubkey: accounts.clock, isSigner: false, isWritable: false },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
     { pubkey: accounts.houseAcc, isSigner: false, isWritable: true },
+    { pubkey: accounts.nftAcc, isSigner: false, isWritable: true },
   ]
   const identifier = Buffer.from([186, 213, 121, 51, 18, 95, 36, 207])
   const data = identifier

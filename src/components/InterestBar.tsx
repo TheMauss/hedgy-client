@@ -8,44 +8,66 @@ interface DataProps {
   btcShort: string;
   solLong: string;
   solShort: string;
+  pythLong: string;
+  pythShort: string;
+  bonkLong: string;
+  bonkShort: string;
 }
 
 interface InterestBarProps {
         data: DataProps;
         openingPrice: number; // Add openingPrice here
-        isSoliditySelected: boolean;
+        selectedCryptos: { [key: string]: boolean };
         prices: { [key: string]: { price: number, timestamp: string } };
         EMAprice: number;
         symbol: string;
       }  
       
-  const InterestBar: React.FC<InterestBarProps> = ({ isSoliditySelected, symbol, data, prices, EMAprice, openingPrice }) => { // You forgot to add latestOpenedPosition here
+  const InterestBar: React.FC<InterestBarProps> = ({selectedCryptos , symbol, data, prices, EMAprice, openingPrice }) => { // You forgot to add latestOpenedPosition here
     // Safely access the properties of prices
-    const solPrice = prices?.['Crypto.SOL/USD']?.price;
-    const btcPrice = prices?.['Crypto.BTC/USD']?.price;
-
     const [initialPrice, setInitialPrice] = useState(0);
 
     useEffect(() => {
-      const initialPrice = isSoliditySelected
-        ? prices['Crypto.SOL/USD']?.price / 100000000
-        : prices['Crypto.BTC/USD']?.price / 100000000;
+      const selectedCrypto = Object.keys(selectedCryptos).find(key => selectedCryptos[key]);
+    
+      // Get the price for the selected cryptocurrency
+      const selectedCryptoPrice = prices?.[`Crypto.${selectedCrypto}/USD`]?.price;
+    
+      // Function to determine the number of decimal places
+      const getDecimalPlaces = (crypto) => {
+        switch (crypto) {
+          case 'BTC':
+            return 1; // One decimal place for BTC
+          case 'SOL':
+            return 3; // Three decimal places for SOL
+          // Add other cases as necessary
+          case 'PYTH':
+            return 4;
+          case 'BONK':
+            return 8;
+          default:
+            return 2; // Default number of decimal places
+        }
+      };
+    
+      let initialPrice = 0;
+    
+      if (selectedCryptoPrice) {
+        const price = selectedCryptoPrice / 100000000;
+        const decimalPlaces = getDecimalPlaces(selectedCrypto);
+        
+        // Convert to fixed-point notation before applying toFixed()
+        const fixedPrice = Number(price.toPrecision(15));
+        initialPrice = parseFloat(fixedPrice.toFixed(decimalPlaces));
+      }
     
       setInitialPrice(initialPrice);
-    }, [isSoliditySelected, prices]);
+    }, [selectedCryptos, prices]);
+    
 
     const percentage = (((initialPrice - openingPrice) / openingPrice) * 100).toFixed(2);
     const color = Number(percentage) < 0 ? 'text-red-500' : 'text-primary';
     const displayedPercentage = isNaN(Number(percentage)) ? '-' : Number(percentage) < 0 ? percentage : `+${percentage}`;
-  
-    // Check if solPrice and btcPrice are numbers before dividing and fixing
-    const displayPrice = isSoliditySelected
-      ? solPrice && !isNaN(solPrice)
-        ? (solPrice / 100000000).toFixed(3)
-        : '-'
-      : btcPrice && !isNaN(btcPrice)
-        ? (btcPrice / 100000000).toFixed(1)
-        : '-';
 
     const MAX_NOTIONAL_POSITIONS = 1000;
 
@@ -59,6 +81,16 @@ interface InterestBarProps {
         return {
           long: (parseFloat(data.solLong) / LAMPORTS_PER_SOL).toFixed(1),
           short: (parseFloat(data.solShort) / LAMPORTS_PER_SOL).toFixed(1)
+        };
+      }else if (sym === 'Crypto.PYTH/USD') {
+        return {
+          long: (parseFloat(data.pythLong) / LAMPORTS_PER_SOL).toFixed(1),
+          short: (parseFloat(data.pythShort) / LAMPORTS_PER_SOL).toFixed(1)
+        };
+      }else if (sym === 'Crypto.BONK/USD') {
+        return {
+          long: (parseFloat(data.bonkLong) / LAMPORTS_PER_SOL).toFixed(1),
+          short: (parseFloat(data.bonkShort) / LAMPORTS_PER_SOL).toFixed(1)
         };
       } else {
         return {
@@ -133,7 +165,7 @@ if (parseFloat(long) === parseFloat(short) || isZeroOrUndefined(long) || isZeroO
       <div className="font-poppins custom-scrollbar rounded-lg bg-layer-1 w-full h-[55px] flex flex-row items-center justify-start  text-xs md:border border-t border-b border-layer-3 overflow-auto">
         <div className="flex flex-row items-center justify-between py-0 px-4 box-border">
           <div className="md:flex hidden min-w-[150px] flex flex-row items-center justify-start py-0 pr-8 pl-0 box-border gap-[12px] text-2xl text-white">
-            <div className=" leading-[18px] font-medium pb-1">${displayPrice}</div>
+            <div className=" leading-[18px] font-medium pb-1">${initialPrice}</div>
             <div className={`text-base leading-[16px] font-medium ${color}`}>
               {displayedPercentage}%
             </div>

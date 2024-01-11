@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { ResolutionString } from '../charting_library'
 import datafeed from '../../utils/datafeed'
 import { colors } from '@react-spring/shared';
@@ -46,13 +46,23 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ symbol, latestOpenedPos
 
   const SYMBOL_MAPPING = {
     "Crypto.SOL/USD": "0", // Assuming '0' is the key for SOL in latestOpenedPosition
-    "Crypto.BTC/USD": "1", // Assuming '1' is the key for BTC
+    "Crypto.BTC/USD": "1", 
+    "Crypto.PYTH/USD": "2", // Assuming '0' is the key for SOL in latestOpenedPosition
+    "Crypto.BONK/USD": "3",// Assuming '1' is the key for BTC
     // Add more mappings if needed
   };
 
 
         // Define your custom color scheme
         const customColorScheme = {
+          "mainSeriesProperties.candleStyle.upColor": "#0B7A55",
+          "mainSeriesProperties.candleStyle.downColor": "#7A3636",
+          "mainSeriesProperties.candleStyle.borderUpColor": "#34C796",
+          "mainSeriesProperties.candleStyle.borderDownColor": "#C44141",
+          "mainSeriesProperties.candleStyle.wickUpColor": "#34C796",
+          "mainSeriesProperties.candleStyle.wickDownColor": "#C44141",
+          
+
           "paneProperties.background": "#151722",
         "paneProperties.backgroundType": "solid",
       'paneProperties.vertGridProperties.color': '#1d202f',
@@ -150,20 +160,51 @@ if (takeProfitPrice != 0) {
           });
           positionLinesRef.current = []; // Clear the references
         };
+        const [linesVisible, setLinesVisible] = useState(true);
+        const linesVisibleRef = useRef(linesVisible);
 
         useEffect(() => {
-          const index = SYMBOL_MAPPING[symbol]; 
-          const position = latestOpenedPosition[index];
-      
-          if (position) {
-            console.log("Position data for symbol:", symbol, position);
+          linesVisibleRef.current = linesVisible;
+        }, [linesVisible]);
+        
+
+
+        const handleButtonClick = () => {
+          console.log("Button clicked. Current state of linesVisible:", linesVisibleRef.current);
+          if (linesVisibleRef.current) {
+            setLinesVisible(false);
             removePositionLines();
-            updateChartLines(position);
           } else {
-            console.log("No position data for symbol:", symbol);
+            setLinesVisible(true);
           }
-        }, [latestOpenedPosition, symbol]);
-    
+        };
+        
+        
+        
+
+
+        
+        
+        const [isWidgetReady, setIsWidgetReady] = useState(false);
+
+        useEffect(() => {
+          // Check if the widget is initialized
+          if (isWidgetReady) {
+            const index = SYMBOL_MAPPING[symbol]; 
+            const position = latestOpenedPosition[index];
+        
+            // Check if the position exists or if it's closed/removed
+            if (linesVisibleRef.current && position) {
+              // If position exists, update the chart lines
+              removePositionLines();
+              updateChartLines(position);
+            } else {
+              // If position is closed or removed, remove the lines
+              removePositionLines();
+            }
+          }
+        }, [isWidgetReady, linesVisibleRef.current, latestOpenedPosition, symbol]);
+        
 
 
       useEffect(() => {
@@ -199,9 +240,10 @@ if (takeProfitPrice != 0) {
 
       widget.onChartReady(() => {
         widgetRef.current = widget;
-        const position = latestOpenedPosition[symbol];
-        updateChartLines(position);
+        setIsWidgetReady(true);
+
       });
+
 
       return () => {
         if (widget && widget.remove) {
@@ -209,7 +251,36 @@ if (takeProfitPrice != 0) {
         }
       };
     }
-  }, [symbol, containerSize]);
+  }, [containerSize]);
+
+  const buttonRef = useRef();
+
+  useEffect(() => {
+    let button;
+    
+    const setupButton = async () => {
+      
+      if (widgetRef.current && isWidgetReady) {
+        
+        await widgetRef.current.headerReady();
+        button = widgetRef.current.createButton();
+        button.setAttribute('title', 'Hide Positions from the graph');
+        button.textContent = 'Hide Positions';
+        button.addEventListener('click', handleButtonClick);
+        buttonRef.current = button; 
+      }
+    };
+  
+    setupButton();
+  
+    // Cleanup: Remove event listener when the component unmounts or before useEffect runs again
+    return () => {
+      if (button) {
+        button.removeEventListener('click', handleButtonClick);
+      }
+    };
+  }, [isWidgetReady]);
+
 
 
   

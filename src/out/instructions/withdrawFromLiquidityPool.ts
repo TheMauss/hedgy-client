@@ -12,6 +12,7 @@ export interface WithdrawFromLiquidityPoolAccounts {
   providersWallet: PublicKey
   lpAcc: PublicKey
   signerWalletAccount: PublicKey
+  ratioAcc: PublicKey
   houseAcc: PublicKey
   pdaHouseAcc: PublicKey
   systemProgram: PublicKey
@@ -33,6 +34,7 @@ export function withdrawFromLiquidityPool(
       isSigner: false,
       isWritable: false,
     },
+    { pubkey: accounts.ratioAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.houseAcc, isSigner: false, isWritable: false },
     { pubkey: accounts.pdaHouseAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },

@@ -16,6 +16,7 @@ export interface ResolveFutContuserAccounts {
   clock: PublicKey
   systemProgram: PublicKey
   houseAcc: PublicKey
+  nftAcc: PublicKey
 }
 
 export function resolveFutContuser(
@@ -39,6 +40,7 @@ export function resolveFutContuser(
     { pubkey: accounts.clock, isSigner: false, isWritable: false },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
     { pubkey: accounts.houseAcc, isSigner: false, isWritable: true },
+    { pubkey: accounts.nftAcc, isSigner: false, isWritable: true },
   ]
   const identifier = Buffer.from([29, 221, 85, 210, 247, 20, 168, 228])
   const data = identifier

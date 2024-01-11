@@ -322,12 +322,16 @@ percentage = Number(percentage);
                       className="hover:underline"
                     >
                       <div className="flex items-center">
-                        {item.symbol === 0 ?
-                          <img src="/sol.png" alt="Logo" width="24" height="24" /> :
-                          item.symbol === 1 ?
-                            <img src="/Bitcoin.png" alt="Logo" width="24" height="24" /> :
-                            null
-                        }
+                      {item.symbol === 0 ?
+    <img src="/Sol1.png" alt="Logo" width="24" height="24" className="pb-1"/> :
+  item.symbol === 1 ?
+    <img src="/Btc1.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    item.symbol === 2 ?
+    <img src="/Coin1.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    item.symbol === 3 ?
+    <img src="/Bonk2.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+  null
+  }
                         <p className="ml-2 text-grey-text">{`${'binaryOption' in item ? item.playerAcc.slice(0, 2) : item.playerAcc.slice(0, 2)}..${'binaryOption' in item ? item.playerAcc.slice(-2) : item.playerAcc.slice(-2)}`}</p>
                       </div>
                     </a>

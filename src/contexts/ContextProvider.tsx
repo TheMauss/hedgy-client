@@ -31,7 +31,7 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
             return ENDPOINT;
             } else if (network === 'devnet') {
             // Replace with your specific devnet URL if needed.
-            return clusterApiUrl('devnet');
+            return ENDPOINT;
         }
         return clusterApiUrl(network); // Fallback to the standard URL for the network
     }, [network]);

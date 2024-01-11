@@ -16,7 +16,6 @@ import { FaVault } from "react-icons/fa6";
 
 
 
-
 const WalletMultiButtonDynamic = dynamic(
   async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
   { ssr: false }
@@ -248,6 +247,7 @@ setModalIsOpen(true);
     <div ref={navRef} className="flex items-center justify-center h-[64px] flex-row shadow-lg bg-layer-1 text-[#E0E5EA] border-b border-layer-3">
       <div className="flex items-center justify-between w-[90%]">
         <div className="flex items-center">
+
         {!isMobile && (
           <div className="flex w-32 h-32 md:mr-3 mb-1">
     <Link href="/">
