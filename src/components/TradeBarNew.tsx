@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState, useCallback, useRef } from "react";
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { Connection, SystemProgram, Transaction, TransactionSignature, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { ComputeBudgetProgram, Connection, SystemProgram, Transaction, TransactionSignature, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { notify } from "../utils/notifications";
 import {
   CreateBinOptArgs,
@@ -23,6 +23,8 @@ import Modal from 'react-modal';
 import { useFastTrade  } from '../contexts/FastTradeContext';
 import dynamic from 'next/dynamic';
 import { LiquidityPoolAccount  } from "../out/accounts/LiquidityPoolAccount";
+import axios from 'axios';
+import { usePriorityFee } from '../contexts/PriorityFee'; 
 
 
 
@@ -167,7 +169,7 @@ const TradeBar: React.FC<TradeBarProps & { setParentDivHeight: (height: string) 
   const { publicKey, sendTransaction } = useWallet();
   const [toggleState, setToggleState] = useState('LONG');
   const [activeButton, setActiveButton] = useState (1);
-  const [activeSlipButton, setSlipActiveButton] = useState (1);
+  const [activeSlipButton, setSlipActiveButton] = useState (3);
 
   const [inputValue, setInputValue] = useState(2);
   const [inputValue2, setInputValue2] = useState(0);
@@ -179,7 +181,7 @@ const TradeBar: React.FC<TradeBarProps & { setParentDivHeight: (height: string) 
   const [openPrices, setopenPrices] = useState({});
   const [initialPrice, setInitialPrice] = useState(0);
   const [spreadPrice, setSpreadPrice] = useState(0);
-  const [slippageTolerance, setSlippageTolerance] = useState(100); // Default to 0.1%
+  const [slippageTolerance, setSlippageTolerance] = useState(500); // Default to 0.1%
   const [customSlippage, setCustomSlippage] = useState('');
 
   const [payout, setPayout] = useState(0);
@@ -209,6 +211,8 @@ const TradeBar: React.FC<TradeBarProps & { setParentDivHeight: (height: string) 
 const [isInit, setisInit] = useState<{ isInitialized: boolean; usedAffiliate: Uint8Array, myAffiliate: Uint8Array }>(null);
 const [modalIsOpen, setModalIsOpen] = useState(false);
 const { fastTradeActivated, setFastTradeActivated } = useFastTrade();
+const { isPriorityFee, setPriorityFee } = usePriorityFee(); 
+
 
 
 const fetchcheckuserdata = async () => {
@@ -258,6 +262,11 @@ useEffect(() => {
 
   fetchLpstatus();
 }, [connection]);
+
+const handleToggle = () => {
+  // Update the isPriorityFee state when the toggle button is clicked
+  setPriorityFee(!isPriorityFee);
+};
 
 
   const handleCustomSlippageChange = (event) => {
@@ -660,6 +669,44 @@ useEffect(() => {
     }
   }, [inputValue2]);
 
+
+const getPriorityFeeEstimate = async () => {
+    try {
+        const rpcUrl = 'https://rpc-proxy.maus-2f5.workers.dev';
+
+        const requestData = {
+            jsonrpc: '2.0',
+            id: '1',
+            method: 'getPriorityFeeEstimate',
+            params: [
+                {
+                    accountKeys: ["AfjPnJz75bJiMKYeManVmPVQEGNcSaj9KeF6c5tncQEa"],
+                    options: {
+                        includeAllPriorityFeeLevels: true,
+                    },
+                },
+            ],
+        };
+
+        const response = await axios.post(rpcUrl, requestData);
+        console.log('Response:', response);
+
+
+        if (response.status !== 200) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const responseData = response.data;
+        if (responseData.error) {
+            throw new Error(`RPC error! Code: ${responseData.error.code}, Message: ${responseData.error.message}`);
+        }
+
+        return((responseData.result.priorityFeeLevels.veryHigh+300).toFixed(0));
+      } catch (error) {
+        console.error('Error fetching priority fee estimate:', error);
+    }
+};
+
   const onClick = useCallback(async (direction = null) => {
     
     if((parseFloat(amountValue) * LAMPORTS_PER_SOL) > (LPdata?.totalDeposits/200 + LPdata?.pnl)) {
@@ -854,9 +901,20 @@ if (selectedCrypto && cryptoSettings[selectedCrypto]) {
         systemProgram: SystemProgram.programId,
       };
 
+      let PRIORITY_FEE_IX;
+
+      if (isPriorityFee) {
+
+        const priorityfees = await getPriorityFeeEstimate();
+        PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({ microLamports: priorityfees });
+        console.log(priorityfees,"feebaby");
+      } else {
+        PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 0 });
+      }
+
       const transaction = new Transaction().add(
         createBinOpt(args, accounts)
-      );
+      ).add(PRIORITY_FEE_IX);
 
       signature = await sendTransaction(transaction, connection);
     // Notify user that the transaction was sent
@@ -869,7 +927,7 @@ if (selectedCrypto && cryptoSettings[selectedCrypto]) {
       notify({ type: 'error', message: `Option was not created`, description: error?.message, txid: signature });
       return;
     }
-  }, [LPdata, slippageTolerance, isInit, balance, initialPrice, totalBetAmount, publicKey, notify, connection, sendTransaction, activeButton, inputValue, inputValue2, amountValue, toggleState, selectedCryptos]);
+  }, [isPriorityFee, LPdata, slippageTolerance, isInit, balance, initialPrice, totalBetAmount, publicKey, notify, connection, sendTransaction, activeButton, inputValue, inputValue2, amountValue, toggleState, selectedCryptos]);
 
 const payoutValue = (Number(amountValue) * Number(payout)).toFixed(2);
 
@@ -978,7 +1036,7 @@ I will not use the PopFi dApp while located within any prohibited jurisdictions.
 
 return (
   <div 
-  className="custom-scrollbar overflow-x-hidden md:h-[628px] lg:h-[calc(100vh-175px)] md:w-[330px] w-full   flex flex-col items-start justify-start p-4 gap-[24px] text-left text-sm text-grey-text font-poppins">
+  className="custom-scrollbar overflow-x-hidden md:h-[628px] lg:h-[calc(100vh-175px)] md:w-[330px] w-full   flex flex-col items-start justify-start p-4 gap-[20px] text-left text-sm text-grey-text font-poppins">
   {ModalDetails1}
   <div className="self-stretch flex flex-row items-start justify-start gap-[8px] text-center text-lg text-grey">
   <button 
@@ -1188,7 +1246,23 @@ return (
       </div>
     </div>
   </div>
+  
   <div className="self-stretch rounded-md flex flex-col items-start justify-start gap-[8px]">
+  <div className="self-stretch h-4 flex flex-row items-start justify-between">
+      <div className="relative leading-[14px]">Priority Fees</div>
+      <div className="relative leading-[14px] font-medium text-white">
+      <label className="toggle-switch-bigger">
+  <input
+    type="checkbox"
+    checked={isPriorityFee}
+    onChange={handleToggle}
+    className="hidden"
+  />
+  <div className={`slider-bigger ${isPriorityFee ? 'active' : ''}`}></div>
+</label>
+      </div>
+    </div>
+
     <div className="self-stretch h-4 flex flex-row items-start justify-between">
       <div className="relative leading-[120%]">Position Size</div>
       <div className="relative leading-[14px] font-medium text-white">

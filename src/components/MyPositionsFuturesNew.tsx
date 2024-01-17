@@ -1,6 +1,6 @@
 import { FC, useEffect, useState,useRef } from "react";
 import { useConnection,useWallet } from '@solana/wallet-adapter-react';
-import { Connection, SystemProgram, Transaction, TransactionSignature, PublicKey} from '@solana/web3.js';
+import { ComputeBudgetProgram, Connection, SystemProgram, Transaction, TransactionSignature, PublicKey} from '@solana/web3.js';
 import socketIOClient from 'socket.io-client';
 import { FaAngleDoubleUp, FaAngleDoubleDown, FaWallet, FaStream, FaShareAlt, FaCogs } from 'react-icons/fa';
 import { notify } from "../utils/notifications";
@@ -18,6 +18,8 @@ import {
 } from "../out/instructions/updateFutCont";
 import { PROGRAM_ID } from '../out/programId';
 import { UserAccount  } from "../out/accounts/UserAccount";
+import axios from 'axios';
+import { usePriorityFee } from '../contexts/PriorityFee'; 
 
 
 
@@ -117,6 +119,7 @@ async function isUserAccountInitialized(account: PublicKey, connection: Connecti
   const [lastInputL, setLastInputL] = useState(null);
   const [warning, setWarning] = useState(null);
   const [isInit, setisInit] = useState<{ isInitialized: boolean; usedAffiliate: Uint8Array, myAffiliate: Uint8Array }>(null);
+  const { isPriorityFee } = usePriorityFee(); 
 
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -682,7 +685,44 @@ const handleLossChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const signature: TransactionSignature = '';
 
   
+  const getPriorityFeeEstimate = async () => {
+    try {
+        const rpcUrl = 'https://rpc-proxy.maus-2f5.workers.dev';
   
+        const requestData = {
+            jsonrpc: '2.0',
+            id: '1',
+            method: 'getPriorityFeeEstimate',
+            params: [
+                {
+                    accountKeys: ["AfjPnJz75bJiMKYeManVmPVQEGNcSaj9KeF6c5tncQEa"],
+                    options: {
+                        includeAllPriorityFeeLevels: true,
+                    },
+                },
+            ],
+        };
+  
+        const response = await axios.post(rpcUrl, requestData);
+        console.log('Response:', response);
+  
+  
+        if (response.status !== 200) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+  
+        const responseData = response.data;
+        if (responseData.error) {
+            throw new Error(`RPC error! Code: ${responseData.error.code}, Message: ${responseData.error.message}`);
+        }
+  
+        return((responseData.result.priorityFeeLevels.veryHigh+300).toFixed(0));
+      } catch (error) {
+        console.error('Error fetching priority fee estimate:', error);
+    }
+  };
+  
+
 
   const resolveFutCont = async (position: Position) => { 
     const seedsUser = [
@@ -737,11 +777,23 @@ const handleLossChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       houseAcc: new PublicKey("HME9CUNgcsVZti5x1MdoBeUuo1hkGnuKMwP4xuJHQFtQ"),
       nftAcc: new PublicKey("AyK9uCXne1K3BvcRnvcwMi3qGtdGrxvJqPyTes2f9Lho"),
     };
+
+    let PRIORITY_FEE_IX;
+
+
+    if (isPriorityFee) {
+
+      const priorityfees = await getPriorityFeeEstimate();
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({ microLamports: priorityfees });
+      console.log(priorityfees,"feebaby");
+    } else {
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 0 });
+    }
   
     // Create the transaction
     const transaction = new Transaction().add(
       resolveFutContuser(accounts)
-    );
+    ).add(PRIORITY_FEE_IX);
   
     let signature: TransactionSignature = '';
     try {
@@ -802,12 +854,23 @@ const handleLossChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log("TP", new BN(Number(ProfitValue)));
     console.log("SL", new BN(Number(LossValue)));
 
+    let PRIORITY_FEE_IX;
+
+
+    if (isPriorityFee) {
+
+      const priorityfees = await getPriorityFeeEstimate();
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({ microLamports: priorityfees });
+      console.log(priorityfees,"feebaby");
+    } else {
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 0 });
+    }
 
   
     // Create the transaction
     const transaction = new Transaction().add(
       updateFutCont(args, accounts)
-    );
+    ).add(PRIORITY_FEE_IX);
   
     let signature: TransactionSignature = '';
     try {
@@ -826,6 +889,85 @@ const handleLossChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     }
     
   };
+
+
+  const both0 = async (position: Position) => {
+    if (warning) {
+      console.error('Cannot update futures contract due to warning:', warning);
+      // Optionally, show a warning notification
+      notify({ type: 'warning', message: `Position update prevented`, description: warning });
+      return; // Exit function early
+    }
+
+    let oracleAccountAddress;
+
+    if (position.symbol === 0) {
+      oracleAccountAddress = "H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG";
+  } else if (position.symbol === 1) {
+      oracleAccountAddress = "GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU";
+  } else if (position.symbol === 2) {
+      oracleAccountAddress = "nrYkQQQur7z8rYTST3G9GqATviK5SxTDkrqd21MW6Ue";
+  } else if (position.symbol === 3) {
+     oracleAccountAddress = "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN";
+
+  } else {
+      // Handle other cases or provide a default value if needed
+  }
+  
+
+    const accounts: UpdateFutContAccounts = {
+      futCont: new PublicKey(position.futuresContract),
+      playerAcc: new PublicKey(walletAddress),
+      oracleAccount: new PublicKey(oracleAccountAddress),
+    };
+
+
+    const args: UpdateFutContArgs = {
+      takeProfitPrice: new BN(Number(0)),
+      stopLossPrice: new BN(Number(0)),
+    };
+
+    console.log(LossValue);
+    console.log("TP", new BN(Number(0)));
+    console.log("SL", new BN(Number(0)));
+
+    let PRIORITY_FEE_IX;
+
+
+    if (isPriorityFee) {
+
+      const priorityfees = await getPriorityFeeEstimate();
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({ microLamports: priorityfees });
+      console.log(priorityfees,"feebaby");
+    } else {
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 0 });
+    }
+
+  
+    // Create the transaction
+    const transaction = new Transaction().add(
+      updateFutCont(args, accounts)
+    ).add(PRIORITY_FEE_IX);
+  
+    let signature: TransactionSignature = '';
+    try {
+      // Send the transaction
+      signature = await sendTransaction(transaction, connection);
+      notify({ type: 'info', message: `Trying to update the Position`})
+
+      // Wait for confirmation
+      await connection.confirmTransaction(signature, 'confirmed');
+  
+      // Optionally, show a success notification
+    } catch (error: any) {
+  
+      // Optionally, show an error notification
+      notify({ type: 'error', message: `Position update failed`, description: error?.message, txid: signature });
+    }
+    
+  };
+
+
 
 
   
@@ -965,10 +1107,20 @@ onBlur={handleInputBlur} />
       </div>
       <div className="w-[100%]">
         {warning && (
-          <div className="mt-2 text-red-500 text-[1rem] ">
+          <div className="mt-1 text-red-500 text-[1rem] mb-1">
             {warning}
           </div>
         )}
+      <div className="flex flex-row self-stretch justify-between text-grey-text text-sm">
+        <div>Remove TP/SL</div>
+        <button
+      className="flex justify-center items-center h-[26px] md:w-[45%] w-[95%] min:w-[100px] bg-[#1D202F] hover:bg-[#484c6d5b] text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
+      onClick={() => both0(item)}
+  >
+    Remove
+  </button>
+      </div>
+
           <button 
   onClick={() => updateFuturescontract(currentItem)}
   className="mt-3 w-full self-stretch rounded-lg [background:linear-gradient(180deg,_#34c796,_#0b7a55)] flex flex-row items-center justify-center py-3 px-6 text-center text-lg text-white">

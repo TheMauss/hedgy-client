@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState, useCallback, useRef } from "react";
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { Connection, SystemProgram, Transaction, TransactionSignature, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { ComputeBudgetProgram, Connection, SystemProgram, Transaction, TransactionSignature, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { notify } from "../utils/notifications";
 import {
   CreateFutContArgs,
@@ -22,9 +22,9 @@ import Slider from 'rc-slider';
 import Modal from 'react-modal';
 import dynamic from 'next/dynamic';
 import { LiquidityPoolAccount  } from "../out/accounts/LiquidityPoolAccount";
-
-
-
+import axios from 'axios';
+import { usePriorityFee } from '../contexts/PriorityFee'; 
+import { MdOutlineSettings } from "react-icons/md";
 
 function Tooltip({ content, children }) {
   const [show, setShow] = useState(false);
@@ -236,6 +236,8 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
 
   const [leverage, setLeverage] = useState(50);
   const [showAdditionalDiv, setShowAdditionalDiv] = useState(false);
+  const [showAdditionalDiv1, setShowAdditionalDiv1] = useState(false);
+
   const [ProfitValue, setProfitValue] = useState("");
   const [LossValue, setLossValue] = useState("");
   const [Profit, setProfit] = useState("");
@@ -248,13 +250,16 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
   const [openPrices, setopenPrices] = useState({});
   const [isInit, setisInit] = useState<{ isInitialized: boolean; usedAffiliate: Uint8Array, myAffiliate: Uint8Array }>(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalIsOpen1, setModalIsOpen1] = useState(false);
  
   const [activeLeverageButton, setActiveLeverageButton] = useState (0);
 
 
-  const [activeButton, setActiveButton] = useState (1);
-  const [slippageTolerance, setSlippageTolerance] = useState(100); // Default to 0.1%
+  const [activeButton, setActiveButton] = useState (3);
+  const [slippageTolerance, setSlippageTolerance] = useState(500); // Default to 0.1%
   const [customSlippage, setCustomSlippage] = useState('');
+
+  const { isPriorityFee, setPriorityFee } = usePriorityFee(); 
 
 const [snapPoints, setSnapPoints] = useState([1, 2, 3, 4, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200]);
 const snapRange = 25;
@@ -582,8 +587,7 @@ useEffect(() => {
 
 
   useEffect(() => {
-    // Provide a default empty object if selectedCryptos is undefined or null
-    console.log(selectedCryptos, "lfdsfsf")
+
     const selectedCryptosSafe = selectedCryptos || {};
   
     const selectedCrypto = Object.keys(selectedCryptosSafe).find(key => selectedCryptosSafe[key]);
@@ -829,13 +833,26 @@ useEffect(() => {
     const priceKey = `Crypto.${selectedCrypto?.toUpperCase()}/USD`;
     const price = prices[priceKey];
 
+    const decimalPlacesMapping = {
+      'BTC': 1, // Example: Bitcoin to 2 decimal places
+      'SOL': 3,
+      'PYTH': 3,
+      'BONK': 8,
+      // Add more mappings as needed
+    };
+
+    const decimalPlaces = decimalPlacesMapping[selectedCrypto?.toUpperCase()] || 2;
+
+
     if (price && !isNaN(price.price)) {
       const priceInUsd = price.price / 100000000 ;
       const priceDisplay = toggleState === 'LONG'
-        ? ((priceInUsd * 1.0002 - priceInUsd * 1.0002 / leverage) + priceInUsd * 1.0002 * 9 / 10000).toFixed(3)
-        : ((priceInUsd * 0.9998 + priceInUsd * 0.9998 / leverage) - priceInUsd * 0.9998 * 9 / 10000).toFixed(3);
+        ? ((priceInUsd * 1.0002 - priceInUsd * 1.0002 / leverage) + priceInUsd * 1.0002 * 9 / 10000)
+        : ((priceInUsd * 0.9998 + priceInUsd * 0.9998 / leverage) - priceInUsd * 0.9998 * 9 / 10000);
         
-      return `${priceDisplay}`;
+        const liquidationPrice = priceDisplay.toFixed(decimalPlaces);
+        
+        return `${liquidationPrice}`;
     } else {
       return '-';
     }
@@ -896,6 +913,12 @@ if (priceDirection === 0) {
     setShowAdditionalDiv(!showAdditionalDiv);
   };
 
+
+
+  const toggleModal = () => {
+    setModalIsOpen1(!modalIsOpen1);
+  };
+
   const [showTooltip, setShowTooltip] = useState(false);
   const [showTooltip1, setShowTooltip1] = useState(false);
   const [showTooltip2, setShowTooltip2] = useState(false);
@@ -937,7 +960,52 @@ const handleMouseLeave2 = () => {
   setShowTooltip2(false);
 };
 
+
+const getPriorityFeeEstimate = async () => {
+  try {
+      const rpcUrl = 'https://rpc-proxy.maus-2f5.workers.dev';
+
+      const requestData = {
+          jsonrpc: '2.0',
+          id: '1',
+          method: 'getPriorityFeeEstimate',
+          params: [
+              {
+                  accountKeys: ["AfjPnJz75bJiMKYeManVmPVQEGNcSaj9KeF6c5tncQEa"],
+                  options: {
+                      includeAllPriorityFeeLevels: true,
+                  },
+              },
+          ],
+      };
+
+      const response = await axios.post(rpcUrl, requestData);
+      console.log('Response:', response);
+
+
+      if (response.status !== 200) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const responseData = response.data;
+      if (responseData.error) {
+          throw new Error(`RPC error! Code: ${responseData.error.code}, Message: ${responseData.error.message}`);
+      }
+
+      return((responseData.result.priorityFeeLevels.veryHigh+300).toFixed(0));
+    } catch (error) {
+      console.error('Error fetching priority fee estimate:', error);
+  }
+};
+
+const handleToggle = () => {
+  // Update the isPriorityFee state when the toggle button is clicked
+  setPriorityFee(!isPriorityFee);
+};
+
+
 const onClick = useCallback(async () => {
+
   const maxBet = (((LPdata?.totalDeposits + LPdata?.pnl) / 200) ) / LAMPORTS_PER_SOL;
   if (warning) {
     console.error('Cannot open position due to warning:', warning);
@@ -1121,9 +1189,23 @@ if (!isInit.isInitialized) {
         systemProgram: SystemProgram.programId,
       };
 
+      let PRIORITY_FEE_IX;
+
+      if (isPriorityFee) {
+
+        const priorityfees = await getPriorityFeeEstimate();
+        PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({ microLamports: priorityfees });
+        console.log(priorityfees,"feebaby");
+      } else {
+        PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 0 });
+      }
+      
       const transaction = new Transaction().add(
         createFutCont(args, accounts)
-      );
+      ).add(PRIORITY_FEE_IX);
+      
+
+      
 
       signature = await sendTransaction(transaction, connection);
       notify({ type: 'info', message: `Opening the position on chain...`, txid: signature });
@@ -1135,7 +1217,7 @@ if (!isInit.isInitialized) {
       notify({ type: 'error', message: `Position has not been succesfully opened`, description: error?.message, txid: signature });
       return;
     }
-  }, [LPdata, selectedCryptos, slippageTolerance, isInit, initialPrice, balance, warning, totalBetAmount, publicKey, notify, connection, sendTransaction, , inputValue, ProfitValue, LossValue, inputValue2, leverage, amountValue, toggleState]);
+  }, [isPriorityFee, LPdata, selectedCryptos, slippageTolerance, isInit, initialPrice, balance, warning, totalBetAmount, publicKey, notify, connection, sendTransaction, , inputValue, ProfitValue, LossValue, inputValue2, leverage, amountValue, toggleState]);
 
   const onClick1 = useCallback(async () => {
     const seedsUser = [
@@ -1201,6 +1283,7 @@ const color = Number(percentage) < 0 ? 'text-red-500' : 'text-[#34c796]';
 const displayedPercentage = isNaN(Number(percentage)) ? '-' : Number(percentage) < 0 ? percentage : `+${percentage}`;
 
 const [userClosedModal, setUserClosedModal] = useState(false);
+const [userClosedModal1, setUserClosedModal1] = useState(false);
 
 
 useEffect(() => {
@@ -1214,6 +1297,11 @@ useEffect(() => {
 const closeModalHandler = () => {
   setModalIsOpen(false);
   setUserClosedModal(true);
+};
+
+const closeModalHandler1 = () => {
+  setModalIsOpen1(false);
+  setUserClosedModal1(true);
 };
 
 const getMaxLeverage = (selectedCryptos) => {
@@ -1275,6 +1363,88 @@ I will not use the PopFi dApp while located within any prohibited jurisdictions.
   </Modal>
 );
 
+const ModalDetails = (
+  <Modal
+    className="custom-scrollbar bg-layer-2"
+
+    isOpen={modalIsOpen1}
+    onRequestClose={closeModalHandler1}
+    style={{
+      overlay: {
+        zIndex: '100',
+        backgroundColor: 'transparent',
+        backdropFilter: 'blur(5px)'
+
+      },
+      content: {
+        backgroundSize: 'cover',
+        position: 'fixed',
+        width: '320px',
+        height: '290px',
+        top: '35%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+      }
+    }}
+  >
+
+<div className="relative rounded tradingcard ">
+  <div className="">
+    <div className='font-poppins w-[100%] h-[100%] bg-layer-2 text-grey-text font-poppins px-5 pt-3 pb rounded text-[1rem]'>
+    <div className="bankGothic text-center font-semibold text-[1.5rem] text-[#F7931A]">DISCLAIMER </div>By opening a trading account on PopFi, I agree to the following:
+    <div className="relative leading-[14px] inline-block max-w-[250px]">
+        Priority Fees
+      </div><div className="self-stretch flex flex-col items-start justify-start gap-[12px]">
+    <div className="self-stretch flex flex-row items-center justify-start">
+      <div className="relative leading-[14px] inline-block max-w-[250px]">
+        Slippage Tolerance
+      </div>
+    </div>
+    <div className="self-stretch flex flex-col items-start justify-start">
+      <div className="self-stretch flex flex-row items-start justify-start gap-[8px]">
+        
+        <button 
+        onClick={() => handleButtonClick(2)}
+        className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
+          activeButton === 2 ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]" : "bg-layer-2"
+        }`}>
+                    <div className={`flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${activeButton === 2 ? "bg-[#0B111B] bg-opacity-80" : "bg-opacity-0 hover:bg-[#484c6d5b]"
+  }`}>0.3%</div>
+        </button>
+        <button 
+        onClick={() => handleButtonClick(3)}
+        className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
+          activeButton === 3 ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]" : "bg-layer-2"
+        }`}>
+                    <div className={`flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${activeButton === 3 ? "bg-[#0B111B] bg-opacity-80" : "bg-opacity-0 hover:bg-[#484c6d5b]"
+  }`}>0.5%</div>
+        </button>
+        <div 
+        onClick={() => handleButtonClick(4)}
+        className={`flex hover:bg-[#484c6d5b] rounded  w-[115px] h-7 ${activeButton === 4 ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]" : "bg-layer-2"}`}>
+        <div className={`rounded flex flex-row w-full h-full px-2 ${activeButton === 4 ? "bg-[#0B111B] bg-opacity-80" : "bg-opacity-0 hover:bg-[#484c6d5b]"}`}>
+        <input type="text" placeholder="Custom"         
+                  className="flex justify-center items-center input3-capsule__input relative leading-[14px]"
+                  value={customSlippage}
+                  onChange={handleCustomSlippageChange}
+                  
+                  
+                  />
+                 <span className="flex justify-center items-center relative w-4 h-8 overflow-hidden shrink-0">%</span>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</div>
+
+    </div>
+  </Modal>
+);
+
+
 
 
 
@@ -1285,6 +1455,7 @@ return (
   <div 
   className="custom-scrollbar overflow-x-hidden md:h-[628px] lg:h-[calc(100vh-175px)] md:w-[330px] w-full rounded-lg  flex flex-col items-start justify-start p-4 gap-[16px] text-left text-sm text-grey-text font-poppins">
   {ModalDetails1}
+  {ModalDetails}
   <div className="self-stretch flex flex-row items-start justify-start gap-[8px] text-center text-lg text-grey">
   <button 
   onClick={setToggleChangeLong}
@@ -1323,11 +1494,14 @@ return (
   </div>
   <div className="self-stretch h-[60px] flex flex-col items-start justify-start gap-[8px]">
     <div className="self-stretch flex flex-col items-start justify-start">
-      
-      <div className="relative leading-[14px] inline-block max-w-[131px]">
-        Collateral Size
-      </div>
-      <div className="mt-[12px] self-stretch rounded-lg bg-layer-2 box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-grey border-[1px] border-solid border-layer-3 hover:bg-[#484c6d5b]">
+      <div className="self-stretch h-4 flex flex-row items-start justify-between">
+      <div className="relative leading-[14px]">Collateral Size</div>
+      <button className="hidden relative leading-[20px] font-medium text-grey-text text-lg" onClick={toggleModal}>
+      <MdOutlineSettings></MdOutlineSettings>
+      </button>
+
+    </div>
+    <div className="mt-[12px] self-stretch rounded-lg bg-layer-2 box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-grey border-[1px] border-solid border-layer-3 hover:bg-[#484c6d5b]">
           <input
             type="text"
             className="input-capsule__input "
@@ -1524,7 +1698,22 @@ onBlur={handleInputBlur} />
             </div>
           </div>  </div>
   <div className="self-stretch rounded-md flex flex-col items-start justify-start gap-[8px]">
+  <div className="self-stretch h-4 flex flex-row items-start justify-between">
+      <div className="relative leading-[14px]">Priority Fees</div>
+      <div className="relative leading-[14px] font-medium text-white">
+      <label className="toggle-switch-bigger">
+  <input
+    type="checkbox"
+    checked={isPriorityFee}
+    onChange={handleToggle}
+    className="hidden"
+  />
+  <div className={`slider-bigger ${isPriorityFee ? 'active' : ''}`}></div>
+</label>
+      </div>
+    </div>
     <div className="self-stretch h-4 flex flex-row items-start justify-between">
+      
       <div className="relative leading-[120%]">Collateral Size</div>
       <div className="relative leading-[14px] font-medium text-white">
         {     isNaN(parseFloat(amountValue))
@@ -1566,6 +1755,7 @@ onBlur={handleInputBlur} />
         {liquidationPrice} USD
       </div>
     </div>
+
   </div>
   {wallet.connected ? (
   <button 
@@ -1581,6 +1771,7 @@ CONNECT WALLET</WalletMultiButtonDynamic>
 
 
     )}
+
 </div>
 );
 };

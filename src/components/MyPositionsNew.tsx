@@ -313,35 +313,13 @@ useEffect(() => {
   };
 
 
-  const getSolanaTimestamp = async (): Promise<number | null> => {
-    const connection = new Connection(ENDPOINT3, 'recent');
-    let retries = 3; // Number of retries
-    const delay = 1000; // Delay between retries in milliseconds
-  
-    while (retries > 0) {
-      try {
-        const slot = await connection.getSlot();
-        const recentBlockhash = await connection.getBlockTime(slot);
-        if (recentBlockhash) {
-          console.log("time blockchain", recentBlockhash);
-          return recentBlockhash;
-        }
-      } catch (error) {
-        console.error("Error fetching block time:", error);
-        retries--;
-        if (retries > 0) {
-          console.log(`Retrying... Attempts left: ${retries}`);
-          await new Promise(resolve => setTimeout(resolve, delay));
-        }
-      }
-    }
-  
-    console.error("Failed to fetch block time after multiple attempts.");
-    return null;
+  const getSolanaTimestamp = async (): Promise<number> => {
+    return Math.floor(Date.now() / 1000);
   };
   
+  
 
-  const [solanaTimestamp, setSolanaTimestamp] = useState<number | null>(null);
+  const [solanaTimestamp, setSolanaTimestamp] = useState<number>(null);
 
   useEffect(() => {
     // Fetch the current Solana timestamp

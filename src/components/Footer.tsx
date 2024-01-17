@@ -2,6 +2,7 @@ import { FC } from "react";
 import Link from "next/link";
 import SolanaTPS from './SolanaTPS'; // import your SolanaTPS component
 import React, { useState, useEffect } from 'react';
+import { IoIosDocument } from "react-icons/io";
 
 
 
@@ -38,7 +39,16 @@ export const Footer: FC = () => {
         </div>
         <div className="justify-end flex w-full lg:w-auto items-center space-x-5 md:px-7 pr-10">
         <Link
-            href="https://discord.gg/jXCbWwD5s8"
+            href="https://popfi.gitbook.io/"
+            target="_blank"
+            rel="noopener noreferrer"
+            passHref
+            className="text-secondary text-[#E0E5EB]"
+          >
+            <IoIosDocument width="16" height="8" className=""/>
+          </Link>
+        <Link
+            href="https://discord.gg/popfiio"
             target="_blank"
             rel="noopener noreferrer"
             passHref
