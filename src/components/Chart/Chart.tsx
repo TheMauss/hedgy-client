@@ -143,8 +143,7 @@ const useChartComponent = (symbol: string, latestOpenedPosition: Record<string, 
   const handleSavePreferencesButtonClick = useCallback(async () => {
     const graphPreferences = JSON.stringify(widgetRef.current.activeChart().createStudyTemplate({ saveSymbol: false, saveInterval: false }));
     await localForage.setItem('graph_preferences', graphPreferences);
-    console.log('Save preferences', widgetRef.current.activeChart().createStudyTemplate({ saveSymbol: false, saveInterval: false }))
-    // widgetRef.current.savePreferences();
+    console.log('Save graph preferences');
   }, []);
 
   const setupButtons = useCallback(async () => {
