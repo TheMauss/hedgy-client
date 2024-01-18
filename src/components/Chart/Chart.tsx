@@ -3,6 +3,7 @@ import { ResolutionString } from '../../charting_library/charting_library'
 import datafeed from '../../../utils/datafeed'
 const chartingLibraryPath = '../charting_library/'
 import localForage from "localforage";
+import { BinaryOptionPosition, FutureContractPosition } from 'components/GraphNew';
 
 interface Position {
   _id: string;
@@ -25,7 +26,7 @@ interface Position {
 
 interface Props {
   symbol: string;
-  latestOpenedPosition: Record<string, Position | null>;
+  latestOpenedPosition: Record<string, FutureContractPosition | BinaryOptionPosition | null>;
   prices: { [key: string]: { price: number, timestamp: string } };
 }
 
@@ -69,7 +70,7 @@ const customColorScheme = {
   'timeScaleProperties.textColor': '#2b2b43', // Text color for the bottom bar
 };
 
-const useChartComponent = (symbol: string, latestOpenedPosition: Record<string, Position | null>) => {
+const useChartComponent = (symbol: string, latestOpenedPosition: Record<string, FutureContractPosition | BinaryOptionPosition | null>) => {
   const [linesVisible, setLinesVisible] = useState(true);
   const [isWidgetReady, setIsWidgetReady] = useState(false);
   const linesVisibleRef = useRef(linesVisible);

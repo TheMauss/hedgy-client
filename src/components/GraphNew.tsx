@@ -1,7 +1,7 @@
-import ChartComponent, { Chart } from "./Chart/Chart";
+import { Chart } from "./Chart/Chart";
 import { FC } from "react";
 
-interface Position {
+export interface FutureContractPosition {
   _id: string;
   futuresContract: string;
   playerAcc: string;
@@ -20,9 +20,27 @@ interface Position {
   pnl: number;
 }
 
+export interface BinaryOptionPosition {
+  _id: string;
+  binaryOption: string;
+  playerAcc: string;
+  initialPrice: number;
+  betAmount: number;
+  priceDirection: number;
+  symbol: number;
+  resolved: boolean;
+  winner: string | null;
+  expiration: number;
+  expirationTime: number;
+  remainingTime: string;
+  timestamp: number;
+  finalPrice: number;
+  currentPrice: number;
+}
+
 interface GraphProps {
   symbol: string;
-  latestOpenedPosition: Record<string, Position | null>;
+  latestOpenedPosition: Record<string, FutureContractPosition | BinaryOptionPosition | null>;
   prices: { [key: string]: { price: number, timestamp: string } };
 }
 
