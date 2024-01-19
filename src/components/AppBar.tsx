@@ -16,6 +16,7 @@ import { FaVault } from "react-icons/fa6";
 
 
 
+
 const WalletMultiButtonDynamic = dynamic(
   async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
   { ssr: false }
@@ -348,7 +349,11 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
         <div className=" -end flex items-center">
           {!isMobile && !isMediumScreen && (
             <div className="hidden md:inline-flex align-items-center justify-items relative items-center text-lg">
+    <Link href="/profile">
 
+    <FaUser className='mr-2 text-layer-3 hover:text-[#34c796] text-xl' />
+      
+    </Link>
               <div className="flex items-center">
                 <WalletMultiButtonDynamic className="font-poppins font-semibold gradient-bgg h-[32px] w-full rounded bg-gradient-to-tr from-[#EF4628] to-[#9845E1]">
                   {connected ?
@@ -378,6 +383,11 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
           )}
           {isMediumScreen && (
             <div className=" flex items-center ml-auto">
+    <Link href="/profile">
+
+    <FaUser className='mr-2 text-layer-3 hover:text-[#34c796] text-xl' />
+
+</Link>
               <WalletMultiButtonDynamic className="font-poppins font-semibold gradient-bgg h-[32px] w-full rounded bg-gradient-to-tr from-[#EF4628] to-[#9845E1]">
                 {connected ?
                   <div className='w-full flex flex-col h-full items-start justify-center text-[15px]'>

@@ -13,10 +13,6 @@ import { Connection, SystemProgram, Transaction, TransactionSignature, PublicKey
 import useUserSOLBalanceStore from '../../src/stores/useUserSOLBalanceStore';
 
 
-import { useAllowlist } from '../contexts/AllowlistContext';
-import { useRouter } from 'next/router';
-
-
 
 const WalletMultiButtonDynamic = dynamic(
     async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
@@ -257,28 +253,28 @@ const Stats: FC = () => {
 
 
     
-    const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT2;
+    const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT8;
     useEffect(() => {
         const fetchLeaderboards = async () => {
             try {
-                const resCompetition = await fetch(`${ENDPOINT}/leaderboard/competition`);
+                const resCompetition = await fetch(`${ENDPOINT}/api/leaderboard/competition`);
                 const leaderboardCompetetion = await resCompetition.json();
 
-                const teamCompetition = await fetch(`${ENDPOINT}/leaderboard/team`);
+                const teamCompetition = await fetch(`${ENDPOINT}/api/leaderboard/team`);
                 const teamCompetitions = await teamCompetition.json();
 
-                const res1Day = await fetch(`${ENDPOINT}/leaderboard/1`);
+                const res1Day = await fetch(`${ENDPOINT}/api/leaderboard/1`);
                 const leaderboard1Day = await res1Day.json();
     
-                const res7Days = await fetch(`${ENDPOINT}/leaderboard/7`);
+                const res7Days = await fetch(`${ENDPOINT}/api/leaderboard/7`);
                 const leaderboard7Days = await res7Days.json();
     
 
 
-                const res30Days = await fetch(`${ENDPOINT}/leaderboard/30`);
+                const res30Days = await fetch(`${ENDPOINT}/api/leaderboard/30`);
                 const leaderboard30Days = await res30Days.json();
     
-                const resallDays = await fetch(`${ENDPOINT}/leaderboard/all`);
+                const resallDays = await fetch(`${ENDPOINT}/api/leaderboard/all`);
                 const leaderboardallDaysData = await resallDays.json();
                 const leaderboardallDays = leaderboardallDaysData.slice();
     
@@ -308,7 +304,7 @@ const Stats: FC = () => {
     const calculateVolume = () => {
         let volume = 0;
         leaderboardallDays.forEach((item) => {
-            volume += item.totalVolume;
+            volume += 2 * item.totalVolume;
         });
         return volume / LAMPORTS_PER_SOL;
     };
@@ -332,7 +328,7 @@ const Stats: FC = () => {
     const calculateVolume24 = () => {
       let volume = 0;
       leaderboard1Day.forEach((item) => {
-          volume += item.totalVolume;
+          volume += 2 * item.totalVolume;
       });
       return volume / LAMPORTS_PER_SOL;
   };
@@ -378,7 +374,7 @@ const Stats: FC = () => {
     }
 }, [usedAffiliate]);
 
-const [activeSection, setActiveSection] = useState('personal');
+const [activeSection, setActiveSection] = useState('protocol');
 const showPersonal = () => setActiveSection('personal');
 const showProtocol = () => setActiveSection('protocol');
 
@@ -392,7 +388,7 @@ const showProtocol = () => setActiveSection('protocol');
           <title>PopFi | Stats</title>
           <meta name="description" content="PopFi" />
         </Head>
-        <div className="bg-base flex justify-center md:pt-2">
+        <div className="bg-base flex justify-center md:pt-2 min-h-[calc(100vh-94px)]">
             <div className="w-[98%] xl:w-[60%] lg:w-[60%] md:w-[60%] sm:w-[60%] lg:min-w-[780px] md:min-w-[780px] sm:min-w-[95%] ">
             <div className="bankGothic flex flex-col  gap-[8px] text-4xl mt-2 lg:text-5xl text-white">
             <h1 className="bankGothic md:text-start text-center text-4xl mt-2 lg:text-5xl text-transparent bg-clip-text bg-white">
@@ -407,9 +403,6 @@ const showProtocol = () => setActiveSection('protocol');
                                                         />
         <div className="w-full flex md:flex-row flex-col gap-2 md:px-0 px-2 z-10">
       <div className="w-full flex justify-center md:justify-start items-center gap-4">
-        <button onClick={showPersonal}             className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
-              activeSection === 'personal'? ' cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-grey-text '
-            } ${activeSection === 'protocol' ? '' : 'text-gray-text'} `}>PERSONAL</button>
         <button onClick={showProtocol} className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
               activeSection === 'protocol'? 'cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-grey-text '
             } ${activeSection === 'personal' ? '' : 'text-gray-text'} `}>PROTOCOL</button>
@@ -594,7 +587,7 @@ className="md:px-0 px-2 mt-4 flex flex md:flex-row flex-col items-start justify-
           <div className="flex flex-col items-start justify-center gap-[4px]">
             <div className="relative leading-[12px]">Total Volume</div>
             <div className="relative text-[15px] leading-[12px] text-white">
-            {(item.totalVolume / LAMPORTS_PER_SOL).toFixed(1)} SOL
+            {(item.totalVolume / LAMPORTS_PER_SOL * 2).toFixed(1)} SOL
             </div>
           </div>
         </div>
@@ -706,7 +699,7 @@ className="md:px-0 px-2 mt-4 flex flex md:flex-row flex-col items-start justify-
                 <div className="flex flex-col items-start justify-center gap-[4px]">
                   <div className="relative leading-[12px]">Total Volume</div>
                   <div className="relative text-[15px] leading-[12px] text-white">
-                  {(item.totalVolume / LAMPORTS_PER_SOL).toFixed(1)} SOL
+                  {(item.totalVolume / LAMPORTS_PER_SOL * 2).toFixed(1)} SOL
                   </div>
                 </div>
               </div>
@@ -757,7 +750,7 @@ className="md:px-0 px-2 mt-4 flex flex md:flex-row flex-col items-start justify-
             className="hover:underline"
           >{`${item.playerAcc.slice(0, 3)}...${item.playerAcc.slice(-3)}`}</a></td>
             <td className="text-white">{item.totalTrades}</td>
-            <td className="text-white"> {(item.totalVolume / LAMPORTS_PER_SOL).toFixed(1)} SOL</td>
+            <td className="text-white"> {(item.totalVolume / LAMPORTS_PER_SOL * 2).toFixed(1)} SOL</td>
             <td className="text-white">                                          {Number.isInteger(100 * item.winRate) ? 
            (100 * item.winRate) : 
             (100 * item.winRate).toFixed(1)
