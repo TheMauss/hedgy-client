@@ -155,11 +155,11 @@ const Earn: FC = () => {
     const [leaderboard30Days, setLeaderboard30Days] = useState([]);
 
 
-    const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT2;
+    const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT8;
     useEffect(() => {
         const fetchLeaderboards = async () => {
             try {
-                const res30Days = await fetch(`${ENDPOINT}/leaderboard/30`);
+                const res30Days = await fetch(`${ENDPOINT}/api/leaderboard/30`);
                 const leaderboard30Days = await res30Days.json();
 
                 setLeaderboard30Days(leaderboard30Days);

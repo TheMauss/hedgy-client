@@ -82,29 +82,34 @@ async function checkLPdata(lpAcc: PublicKey, connection: Connection): Promise<{ 
   };
 }
 
-async function isUserAccountInitialized(account: PublicKey, connection: Connection): Promise<{ isInitialized: boolean; usedAffiliate: Uint8Array; myAffiliate: Uint8Array }> {
+async function isUserAccountInitialized(account: PublicKey, connection: Connection): Promise<{ isInitialized: boolean; usedAffiliate: Uint8Array; myAffiliate: Uint8Array, rebateTier: number }> {
   const accountInfo = await connection.getAccountInfo(account);
 
   if (!accountInfo) {
     console.error("Account not found or not fetched properly.");
     // You'll need to decide on an appropriate default return here.
-    return { isInitialized: false, usedAffiliate: new Uint8Array(8).fill(0), myAffiliate: new Uint8Array(8).fill(0) };
+    return { isInitialized: false, usedAffiliate: new Uint8Array(8).fill(0), myAffiliate: new Uint8Array(8).fill(0), rebateTier: 0 };
   }
 
   const bufferData = Buffer.from(accountInfo.data);
 
   let userAcc;
+
   try {
     userAcc = UserAccount.decode(bufferData);
   } catch (error) {
     console.error("Failed to decode user account data:", error);
-    return { isInitialized: false, usedAffiliate: new Uint8Array(8).fill(0), myAffiliate: new Uint8Array(8).fill(0) };
+    return { isInitialized: false, usedAffiliate: new Uint8Array(8).fill(0), myAffiliate: new Uint8Array(8).fill(0), rebateTier: 0 };
   }
+
+  const userrebateTier = userAcc.rebateTier.toNumber();
+
 
   return {
     isInitialized: userAcc.isInitialized,
     usedAffiliate: userAcc.usedAffiliate,
     myAffiliate: userAcc.myAffiliate,
+    rebateTier: userrebateTier
   };
 }
 
@@ -210,7 +215,7 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
     const [warning, setWarning] = useState(null);
     const [initialPrice, setInitialPrice] = useState(0);
     const [openPrices, setopenPrices] = useState({});
-    const [isInit, setisInit] = useState<{ isInitialized: boolean; usedAffiliate: Uint8Array, myAffiliate: Uint8Array }>(null);
+    const [isInit, setisInit] = useState<{ isInitialized: boolean; usedAffiliate: Uint8Array, myAffiliate: Uint8Array, rebateTier: number  }>(null);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [modalIsOpen1, setModalIsOpen1] = useState(false);
 
@@ -225,6 +230,8 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
     const snapPoints = [1, 2, 3, 4, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200];
     const snapRange = 25;
     const [maxleverage, setMaxLeverage] = useState(200); // Initially set to 1000
+    const [rebateTier, setrebateTier] = useState<number>(null);
+
 
     const handleButtonClick = (buttonIndex: number) => {
       setActiveButton(buttonIndex);
@@ -342,6 +349,7 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
       if (publicKey) {
         const result = await isUserAccountInitialized(userAcc, connection);
         setisInit(result);
+        setrebateTier(result.rebateTier)
       }
     };
     useEffect(() => {
@@ -1199,6 +1207,26 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
       return 200;
     };
 
+    const [fee, setFee] = useState(0);
+
+const calculateFee = (amount, lev, rebate, init) => {
+  const baseFee = parseFloat(amount) * 0.0007 * lev;
+  const hasAffiliate = init?.usedAffiliate.some(value => value !== 0);
+  const feeReduction = hasAffiliate ? baseFee * 0.05 : 0;
+  const rebateAmount = parseFloat(amount) * rebate / 100_000 * lev;
+
+  const finalFee = baseFee - feeReduction - rebateAmount;
+  return isNaN(finalFee) ? 0 : parseFloat(finalFee.toFixed(3)); // Check for NaN and return as a number
+};
+
+// Rest of your code...
+
+
+useEffect(() => {
+  const newFee = calculateFee(amountValue, leverage, rebateTier, isInit);
+  setFee(newFee); // Set as a number
+}, [amountValue, leverage, rebateTier, isInit]);
+
 
 
 
@@ -1570,36 +1598,46 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
               </label>
             </div>
           </div>
+
+          <div className="self-stretch h-4 flex flex-row items-start justify-between">
+          <div className="relative leading-[14px]">Fees</div>
+      <div className="relative leading-[14px] font-medium text-white">
+  {
+    isNaN(parseFloat(amountValue) * 0.0007 * leverage) ?
+      '0 SOL' :
+      (
+        parseFloat((parseFloat(amountValue) * 0.0007 * leverage).toFixed(3)) > fee ?
+          <>
+            <span className="line-through">
+              {(parseFloat(amountValue) * 0.0007 * leverage).toFixed(3)} SOL
+            </span>
+            <span> {fee} SOL</span>
+          </> :
+          `${fee} SOL`
+      )
+  }
+</div>
+          </div>
           <div className="self-stretch h-4 flex flex-row items-start justify-between">
 
-            <div className="relative leading-[120%]">Collateral Size</div>
-            <div className="relative leading-[14px] font-medium text-white">
-              {isNaN(parseFloat(amountValue))
-                ? '0 SOL'
-                : `${(parseFloat(amountValue))} SOL`
-              }
-            </div>
-          </div>
-          <div className="self-stretch h-4 flex flex-row items-start justify-between">
-            <div className="relative leading-[14px]">Position Size</div>
-            <div className="relative leading-[14px] font-medium text-white">
-              {
-                isNaN((parseFloat(amountValue) - (parseFloat(amountValue) * 0.0007 * leverage)) * leverage)
-                  ? '0 SOL'
-                  : `${((parseFloat(amountValue) - (parseFloat(amountValue) * 0.0007 * leverage)) * leverage).toFixed(2)} SOL`
-              }
-            </div>
-          </div>
-          <div className="self-stretch h-4 flex flex-row items-start justify-between">
-            <div className="relative leading-[14px]">Fees</div>
-            <div className="relative leading-[14px] font-medium text-white">
-              {
-                isNaN(parseFloat(amountValue) * 0.0007 * leverage)
-                  ? '0 SOL'
-                  : `${(parseFloat(amountValue) * 0.0007 * leverage).toFixed(2)} SOL`
-              }
-            </div>
-          </div>
+<div className="relative leading-[120%]">Collateral Size</div>
+<div className="relative leading-[14px] font-medium text-white">
+  {isNaN(parseFloat(amountValue))
+    ? '0 SOL'
+    : `${(parseFloat(amountValue))} SOL`
+  }
+</div>
+</div>
+<div className="self-stretch h-4 flex flex-row items-start justify-between">
+      <div className="relative leading-[14px]">Position Size</div>
+      <div className="relative leading-[14px] font-medium text-white">
+                  {
+     isNaN((parseFloat(amountValue) - fee)* leverage)
+       ? '0 SOL'
+      : `${((parseFloat(amountValue) - fee) * leverage).toFixed(2)} SOL`
+        }
+      </div>
+    </div>
           <div className="self-stretch h-4 flex flex-row items-start justify-between">
             <div className="relative leading-[14px]">Est. Entry Price</div>
             <div className="relative leading-[14px] font-medium text-white">

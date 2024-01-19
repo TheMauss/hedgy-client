@@ -19,6 +19,11 @@ export interface UserAccountFields {
   userBinaryBetAmountPyth: BN
   userBetAmountJup: BN
   userBinaryBetAmountJup: BN
+  currentEpochVolume: BN
+  prevTradingVolume: BN
+  rebates: BN
+  lastTradeEpoch: BN
+  rebateTier: BN
 }
 
 export interface UserAccountJSON {
@@ -37,6 +42,11 @@ export interface UserAccountJSON {
   userBinaryBetAmountPyth: string
   userBetAmountJup: string
   userBinaryBetAmountJup: string
+  currentEpochVolume: string
+  prevTradingVolume: string
+  rebates: string
+  lastTradeEpoch: string
+  rebateTier: string
 }
 
 export class UserAccount {
@@ -55,6 +65,11 @@ export class UserAccount {
   readonly userBinaryBetAmountPyth: BN
   readonly userBetAmountJup: BN
   readonly userBinaryBetAmountJup: BN
+  readonly currentEpochVolume: BN
+  readonly prevTradingVolume: BN
+  readonly rebates: BN
+  readonly lastTradeEpoch: BN
+  readonly rebateTier: BN
 
   static readonly discriminator = Buffer.from([
     211, 33, 136, 16, 186, 110, 242, 127,
@@ -76,6 +91,11 @@ export class UserAccount {
     borsh.u64("userBinaryBetAmountPyth"),
     borsh.u64("userBetAmountJup"),
     borsh.u64("userBinaryBetAmountJup"),
+    borsh.u64("currentEpochVolume"),
+    borsh.u64("prevTradingVolume"),
+    borsh.u64("rebates"),
+    borsh.u64("lastTradeEpoch"),
+    borsh.u64("rebateTier"),
   ])
 
   constructor(fields: UserAccountFields) {
@@ -94,6 +114,11 @@ export class UserAccount {
     this.userBinaryBetAmountPyth = fields.userBinaryBetAmountPyth
     this.userBetAmountJup = fields.userBetAmountJup
     this.userBinaryBetAmountJup = fields.userBinaryBetAmountJup
+    this.currentEpochVolume = fields.currentEpochVolume
+    this.prevTradingVolume = fields.prevTradingVolume
+    this.rebates = fields.rebates
+    this.lastTradeEpoch = fields.lastTradeEpoch
+    this.rebateTier = fields.rebateTier
   }
 
   static async fetch(
@@ -155,6 +180,11 @@ export class UserAccount {
       userBinaryBetAmountPyth: dec.userBinaryBetAmountPyth,
       userBetAmountJup: dec.userBetAmountJup,
       userBinaryBetAmountJup: dec.userBinaryBetAmountJup,
+      currentEpochVolume: dec.currentEpochVolume,
+      prevTradingVolume: dec.prevTradingVolume,
+      rebates: dec.rebates,
+      lastTradeEpoch: dec.lastTradeEpoch,
+      rebateTier: dec.rebateTier,
     })
   }
 
@@ -175,6 +205,12 @@ export class UserAccount {
       userBinaryBetAmountPyth: this.userBinaryBetAmountPyth.toString(),
       userBetAmountJup: this.userBetAmountJup.toString(),
       userBinaryBetAmountJup: this.userBinaryBetAmountJup.toString(),
+
+      currentEpochVolume: this.currentEpochVolume.toString(),
+      prevTradingVolume: this.prevTradingVolume.toString(),
+      rebates: this.rebates.toString(),
+      lastTradeEpoch: this.lastTradeEpoch.toString(),
+      rebateTier: this.rebateTier.toString(),
     }
   }
 
@@ -195,6 +231,11 @@ export class UserAccount {
       userBinaryBetAmountPyth: new BN(obj.userBinaryBetAmountPyth),
       userBetAmountJup: new BN(obj.userBetAmountJup),
       userBinaryBetAmountJup: new BN(obj.userBinaryBetAmountJup),
+      currentEpochVolume: new BN(obj.currentEpochVolume),
+      prevTradingVolume: new BN(obj.prevTradingVolume),
+      rebates: new BN(obj.rebates),
+      lastTradeEpoch: new BN(obj.lastTradeEpoch),
+      rebateTier: new BN(obj.rebateTier),
     })
   }
 }

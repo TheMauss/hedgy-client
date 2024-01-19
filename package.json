@@ -67,6 +67,7 @@
     "react-spring": "^9.7.2",
     "react-transition-group": "^4.4.5",
     "react-use": "^17.4.0",
+    "recharts": "^2.10.4",
     "rellax": "^1.12.1",
     "rsuite": "^5.40.0",
     "seamless-scroll-polyfill": "^2.3.4",

@@ -80,6 +80,9 @@ export const ContentContainer: React.FC<Props> = ({ setIsContentContainerOpen, c
             <NavElement label="Futures" href="/futures" />
           </li>
           <li>
+            <NavElement label="Profile" href="/profile" />
+          </li>
+          <li>
             <NavElement label="Stats" href="/stats" />
           </li>
           <li>
