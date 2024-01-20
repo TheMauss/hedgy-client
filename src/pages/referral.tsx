@@ -6,23 +6,21 @@ import { UserAccount  } from "../out/accounts/UserAccount"; // Update with the c
 import { AffiliateAccount  } from "../out/accounts/AffiliateAccount";
 import { initializeAffilAcc } from "../out/instructions/initializeAffilAcc"; // Update with the correct path
 import { withdrawAffiliateEarnings } from "../out/instructions/withdrawAffiliateEarnings"; // Update with the correct path
-import { initializeUserAcc } from "../out/instructions/initializeUserAcc"; // Update with the correct path
+import { initializeUserAcc, InitializeUserAccArgs, InitializeUserAccAccounts } from "../out/instructions/initializeUserAcc"; // Update with the correct path
 import { PROGRAM_ID } from '../out/programId';
 import { notify } from "utils/notifications";
 import useUserSOLBalanceStore from '../../src/stores/useUserSOLBalanceStore';
 
 
-import { useAllowlist } from '../contexts/AllowlistContext';
-import { useRouter } from 'next/router';
 
 
 
-  async function doesUserhaveAffiliate (account: PublicKey, connection: Connection): Promise<{ hasCode: boolean; myAffiliate: Uint8Array; isInt: boolean; }> {
+  async function doesUserhaveAffiliate (account: PublicKey, connection: Connection): Promise<{ hasCode: boolean; myAffiliate: Uint8Array; usedAffiliate: Uint8Array; isInt: boolean; }> {
       const accountInfo = await connection.getAccountInfo(account);
   
       if (!accountInfo) {
           console.error("Account not found or not fetched properly.");
-          return { hasCode: false, myAffiliate: new Uint8Array(8), isInt: false };
+          return { hasCode: false, myAffiliate: new Uint8Array(8), usedAffiliate: new Uint8Array(8).fill(0),isInt: false };
       }
   
       // Convert the buffer from Solana into a Buffer type that's used by Borsh
@@ -34,7 +32,7 @@ import { useRouter } from 'next/router';
           userAccount = UserAccount.decode(bufferData);
       } catch (error) {
           console.error("Failed to decode user account data:", error);
-          return { hasCode: false, myAffiliate: new Uint8Array(8), isInt: false };
+          return { hasCode: false, myAffiliate: new Uint8Array(8), usedAffiliate: new Uint8Array(8).fill(0),isInt: false };
       }
   
 
@@ -42,6 +40,7 @@ import { useRouter } from 'next/router';
       return {
           hasCode,
           myAffiliate: userAccount.myAffiliate,
+          usedAffiliate: userAccount.usedAffiliate,
           isInt: userAccount.isInitialized
       };
   }
@@ -114,7 +113,7 @@ const Referral: FC = () => {
     const { publicKey, sendTransaction } = useWallet();
     
     const [affiliateCode, setAffiliateCode] = useState<string>('');
-    const [userAffiliateData, setUserAffiliateData] = useState<{ hasCode: boolean; myAffiliate: Uint8Array; isInt: boolean } | null>(null);
+    const [userAffiliateData, setUserAffiliateData] = useState<{ hasCode: boolean; myAffiliate: Uint8Array; usedAffiliate: Uint8Array, isInt: boolean } | null>(null);
     const balance = useUserSOLBalanceStore((s) => s.balance);
     const { getUserSOLBalance } = useUserSOLBalanceStore();
 
@@ -158,16 +157,30 @@ const Referral: FC = () => {
 
         if (userAffiliateData && !userAffiliateData.isInt) {
             try {
-                // Create the instruction to initialize the user account
-                const initializeInstruction = initializeUserAcc({
-                    userAcc: userAcc,
-                    playerAcc: publicKey,
-                    systemProgram: SystemProgram.programId,
-                    clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
-                });
-          
-                // Create a new transaction to initialize the user account and send it
-                const initTransaction = new Transaction().add(initializeInstruction);
+
+              const seedsAffil = [userAffiliateData.usedAffiliate];
+
+              const [AffilAcc] = await PublicKey.findProgramAddress(
+                seedsAffil,
+                PROGRAM_ID
+              );
+              
+              const accounts: InitializeUserAccAccounts = {
+                userAcc: userAcc,
+                playerAcc: publicKey,
+                affilAcc: AffilAcc,
+                systemProgram: SystemProgram.programId,
+                clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
+              };
+    
+              const args: InitializeUserAccArgs = {
+                usedAffiliate: Array.from(userAffiliateData.usedAffiliate),
+              };
+    
+    
+              // Create a new transaction to initialize the user account and send it
+              const initTransaction = new Transaction().add(initializeUserAcc(args, accounts)
+              );
                 const initSignature = await sendTransaction(initTransaction, connection);
                 
                 // Wait for transaction confirmation
@@ -289,7 +302,7 @@ const onClick1 = useCallback(async () => {// Create the instruction to initializ
         const accounts = {
             affilAcc: AffilAcc,
             playerAcc: publicKey,
-            pdaHouseAcc: new PublicKey("3MRKR5tYQeUT8CXYkTjvzR6ivEpaqFLqK9CsNbMFvoHB"),
+            pdaHouseAcc: new PublicKey("9EcaMSw2fqjxHLtKjWEWgoMjXAL6fYn94ot6tz4DGEo6"),
           systemProgram: SystemProgram.programId,
         };
         // Create a new transaction to initialize the user account and send it
@@ -379,14 +392,14 @@ notify({ type: 'info', message: `Trying to create the referral...`, txid: initSi
                                     maxLength={8}
                                     placeholder="Enter 8 letters" /></div>
                           <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px] md:w-1/4 w-full h-10   box-border text-center text-lg">
-                            <div 
+                            <button 
                             onClick={onClick}
                             className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg">
                                 <button 
                                 
                                 className="font-semibold bg-clip-text text-transparent bg-gradient-to-t from-[#34C796] to-[#0B7A55]">
                               CREATE
-                            </button></div>
+                            </button></button>
                           </div>
                         </div>
                       </div>
@@ -469,14 +482,14 @@ notify({ type: 'info', message: `Trying to create the referral...`, txid: initSi
                       </div>
                     </div>
                     <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px] w-full w-full h-10   box-border text-center text-lg">
-                                <div 
+                                <button 
                                 onClick={onClick1}
                                 className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg">
                                     <button 
                                     
                                     className="font-semibold bg-clip-text text-transparent bg-gradient-to-t from-[#34C796] to-[#0B7A55]">
                                   CLAIM
-                                </button></div>
+                                </button></button>
                               </div>
     
                    

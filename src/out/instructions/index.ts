@@ -1,5 +1,8 @@
 export { initializeUserAcc } from "./initializeUserAcc"
-export type { InitializeUserAccAccounts } from "./initializeUserAcc"
+export type {
+  InitializeUserAccArgs,
+  InitializeUserAccAccounts,
+} from "./initializeUserAcc"
 export { initializeLongShortRatio } from "./initializeLongShortRatio"
 export type { InitializeLongShortRatioAccounts } from "./initializeLongShortRatio"
 export { setAffilAcc } from "./setAffilAcc"

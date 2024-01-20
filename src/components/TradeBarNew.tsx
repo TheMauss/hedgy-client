@@ -10,7 +10,7 @@ import {
 import { useRouter } from 'next/router';
 import { UserAccount  } from "../out/accounts/UserAccount"; // Update with the correct path
 import { LongShortRatio   } from "../out/accounts/LongShortRatio"; // Update with the correct path
-import { initializeUserAcc } from "../out/instructions/initializeUserAcc"; // Update with the correct path
+import { initializeUserAcc, InitializeUserAccArgs, InitializeUserAccAccounts } from "../out/instructions/initializeUserAcc"; // Update with the correct path
 import useUserSOLBalanceStore from '../../src/stores/useUserSOLBalanceStore';
 import { BN } from '@project-serum/anchor';
 import { PROGRAM_ID } from '../out/programId';
@@ -775,6 +775,13 @@ if (selectedCrypto && cryptoSettings[selectedCrypto]) {
       return;
     }
 
+    const seedsAffil = [usedAffiliate];
+    
+    const [AffilAcc] = await PublicKey.findProgramAddress(
+    seedsAffil,
+    PROGRAM_ID
+    );
+
     let signature: TransactionSignature = '';
     try {
       // Get the current time and add 1 to the time number
@@ -845,16 +852,22 @@ if (selectedCrypto && cryptoSettings[selectedCrypto]) {
 
       if (!isInit.isInitialized) {
         try {
-          // Create the instruction to initialize the user account
-          const initializeInstruction = initializeUserAcc({
+          const accounts: InitializeUserAccAccounts = {
             userAcc: userAcc,
             playerAcc: publicKey,
-              systemProgram: SystemProgram.programId,
-              clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
-          });
-    
+            affilAcc: AffilAcc,
+            systemProgram: SystemProgram.programId,
+            clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
+          };
+
+          const args: InitializeUserAccArgs = {
+            usedAffiliate: Array.from(isInit.usedAffiliate),
+          };
+
+
           // Create a new transaction to initialize the user account and send it
-          const initTransaction = new Transaction().add(initializeInstruction);
+          const initTransaction = new Transaction().add(initializeUserAcc(args, accounts)
+          );
           const initSignature = await sendTransaction(initTransaction, connection);
           
           // Wait for transaction confirmation
@@ -877,12 +890,7 @@ if (selectedCrypto && cryptoSettings[selectedCrypto]) {
           PROGRAM_ID
         );
 
-        const seedsAffil = [usedAffiliate];
-    
-        const [AffilAcc] = await PublicKey.findProgramAddress(
-        seedsAffil,
-        PROGRAM_ID
-        );
+
 
       const accounts: CreateBinOptAccounts = {
         binOpt: new PublicKey(pda.toString()),
@@ -943,16 +951,30 @@ const onClick1 = useCallback(async () => {
     PROGRAM_ID
   );
   try {
-    // Create the instruction to initialize the user account
-    const initializeInstruction = initializeUserAcc({
-        userAcc: userAcc,
-        playerAcc: publicKey,
-        systemProgram: SystemProgram.programId,
-        clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
-    });
+    const seedsAffil = [isInit.usedAffiliate];
 
-    // Create a new transaction to initialize the user account and send it
-    const initTransaction = new Transaction().add(initializeInstruction);
+    const [AffilAcc] = await PublicKey.findProgramAddress(
+      seedsAffil,
+      PROGRAM_ID
+    );
+
+
+        const accounts: InitializeUserAccAccounts = {
+          userAcc: userAcc,
+          playerAcc: publicKey,
+          affilAcc: AffilAcc,
+          systemProgram: SystemProgram.programId,
+          clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
+        };
+
+        const args: InitializeUserAccArgs = {
+          usedAffiliate: Array.from(isInit.usedAffiliate),
+        };
+
+
+        // Create a new transaction to initialize the user account and send it
+        const initTransaction = new Transaction().add(initializeUserAcc(args, accounts)
+        );
     const initSignature = await sendTransaction(initTransaction, connection);
     
     // Wait for transaction confirmation
