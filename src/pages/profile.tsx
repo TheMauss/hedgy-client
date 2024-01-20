@@ -154,7 +154,7 @@ const Stats: FC = () => {
 
 
 
-    const ENDPOINT6 = process.env.NEXT_PUBLIC_ENDPOINT8;
+    const ENDPOINT8 = process.env.NEXT_PUBLIC_ENDPOINT8;
 
 
     const preprocessData = (data, timeframe) => {
@@ -215,7 +215,7 @@ const Stats: FC = () => {
 
         const fetchLeaderboards = async () => {
             try {
-                const res1Day = await fetch(`${ENDPOINT6}/api/userstats/${publicKey}`);
+                const res1Day = await fetch(`${ENDPOINT8}/api/userstats/${publicKey}`);
                 const leaderboard1Day = await res1Day.json();
     
     
