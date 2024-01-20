@@ -709,12 +709,12 @@ const getPriorityFeeEstimate = async () => {
 
   const onClick = useCallback(async (direction = null) => {
     
-    if((parseFloat(amountValue) * LAMPORTS_PER_SOL) > (LPdata?.totalDeposits/200 + LPdata?.pnl)) {
+    if((parseFloat(amountValue) * LAMPORTS_PER_SOL) > ((LPdata?.totalDeposits + LPdata?.pnl)/200 )) {
       notify({ type: 'error', message: "Not enough liquidity in the Vault"});
       return;
     }
   
-    if((totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL) > (3*(LPdata?.totalDeposits/200 + LPdata?.pnl))) {
+    if((totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL) > (3*((LPdata?.totalDeposits + LPdata?.pnl)/200 ))) {
       notify({ type: 'error', message: "Position size limit per user"});
       return;
     }
