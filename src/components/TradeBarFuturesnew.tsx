@@ -979,7 +979,7 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
         return;
       }
 
-      if (parseFloat(amountValue) > ((LPdata?.totalDeposits+ LPdata?.pnl) / 200 ) || parseFloat(amountValue) < 0.05) {
+      if (parseFloat(amountValue) > ((LPdata?.totalDeposits+ LPdata?.pnl) / 200 / LAMPORTS_PER_SOL ) || parseFloat(amountValue) < 0.05) {
         notify({ type: 'info', message: "Invalid trade amount", description: `Trade Amount should be between 0.05 and ${maxBet.toFixed(2)}` });
         return;
       }
