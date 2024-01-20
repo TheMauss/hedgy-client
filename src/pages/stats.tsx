@@ -109,9 +109,9 @@ const Stats: FC = () => {
     const { publicKey, sendTransaction } = useWallet();
     const { connection } = useConnection();
     const [affiliateCode, setAffiliateCode] = useState<string>('');
-    const [usedAffiliate, setusedAffiliate] = useState<Uint8Array>(new Uint8Array());
-    const [accOld, setaccOld] = useState<number>(null);
-    const [issInt, setissInt] = useState <boolean>(null);
+    const [usedAffiliate, setUsedAffiliate] = useState<Uint8Array>(new Uint8Array());
+    const [accOld, setAccOld] = useState<number>(null);
+    const [issInt, setIssInt] = useState <boolean>(null);
     const balance = useUserSOLBalanceStore((s) => s.balance);
     const { getUserSOLBalance } = useUserSOLBalanceStore();
 
@@ -143,14 +143,14 @@ const Stats: FC = () => {
                 
     
                 setHasAffiliate(result.hasCode);
-                setusedAffiliate(result.usedAffiliate);
+                setUsedAffiliate(result.usedAffiliate);
     
                 if (!result.hasCode) {
-                    setusedAffiliate(result.usedAffiliate);
+                    setUsedAffiliate(result.usedAffiliate);
     
-                    setaccOld(result.creationTime);
+                    setAccOld(result.creationTime);
     
-                    setissInt(result.isInitialized);
+                    setIssInt(result.isInitialized);
                 }
             } catch (error) {
                 console.error("Error fetching user account or affiliate code:", error);
@@ -209,8 +209,8 @@ const Stats: FC = () => {
                     // Wait for transaction confirmation
                     notify({ type: 'info', message: `Trying to create Trading Account` });
                     await connection.confirmTransaction(initSignature, 'confirmed');
-                    setissInt(true);
-                    setaccOld(currentTime-1);
+                    setIssInt(true);
+                    setAccOld(currentTime-1);
                     notify({ type: 'success', message: `Trading account successfully created, now enter the Referral.` });
 
                 } catch (error) {
@@ -239,7 +239,7 @@ const Stats: FC = () => {
                 // Wait for transaction confirmation
                 await connection.confirmTransaction(initSignature, 'confirmed');
                 setHasAffiliate(true);
-                setusedAffiliate(affiliateCodeToUint8Array(affiliateCode));
+                setUsedAffiliate(affiliateCodeToUint8Array(affiliateCode));
                 notify({ type: 'success', message: `Referral code has been used.`, txid: initSignature });
             } catch (error: any) {
                 // In case of an error, show only the 'error' notification
