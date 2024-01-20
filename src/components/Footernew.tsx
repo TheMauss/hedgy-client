@@ -62,9 +62,9 @@ export const Footer: FC = () => {
             target="_blank"
             rel="noopener noreferrer"
             passHref
-            className="text-secondary text-[#E0E5EB]"
+            className="text-secondary "
           >
-            <IoIosDocument width="16" height="8" className=""/>
+            <IoIosDocument width="16" height="8" className="text-[#dde1e7]"/>
           </Link>
         <Link
             href="https://pyth.network/"
