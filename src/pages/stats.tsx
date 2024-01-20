@@ -161,98 +161,6 @@ const Stats: FC = () => {
     }, [publicKey, connection]);
     
     
-
-    const onClick = useCallback(async () => {// Create the instruction to initialize the user account    const handleAffiliateTransaction = async () => {
-      if (!publicKey) {
-        notify({ type: 'info', message: `Wallet not connected`, description: "Connect the wallet in the top panel" });
-        return;
-      }
-      const seedsUser = [
-            Buffer.from(publicKey.toBytes()),
-            ];
-
-            const [userAcc] = await PublicKey.findProgramAddress(seedsUser, PROGRAM_ID);
-
-
-            // Prompt the user for input or whatever logic you want here
-
-            const seedsAffil = [affiliateCodeToUint8Array(affiliateCode)];
-        
-              const [AffilAcc] = await PublicKey.findProgramAddress(
-                seedsAffil,
-                PROGRAM_ID
-              );
-
-            const result = await checkAffiliateInitialization(AffilAcc, connection);
-            const IsInitialized = result.IsInitialized;
-            const isIntUser = issInt;
-            const creationTime = accOld;
-            const currentTime = Math.floor(Date.now() / 1000);  // Current Unix timestamp in seconds
-            const timeDifference = currentTime - creationTime;  
-
-            if (!IsInitialized) {
-                notify({ type: 'error', message: 'Referral code does not exist.' });
-            }else if (!isIntUser) {
-                try {
-                    // Create the instruction to initialize the user account
-                    const initializeInstruction = initializeUserAcc({
-                        userAcc: userAcc,
-                        playerAcc: publicKey,
-                        systemProgram: SystemProgram.programId,
-                        clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
-                    });
-              
-                    // Create a new transaction to initialize the user account and send it
-                    const initTransaction = new Transaction().add(initializeInstruction);
-                    const initSignature = await sendTransaction(initTransaction, connection);
-                    
-                    // Wait for transaction confirmation
-                    notify({ type: 'info', message: `Trying to create Trading Account` });
-                    await connection.confirmTransaction(initSignature, 'confirmed');
-                    setIssInt(true);
-                    setAccOld(currentTime-1);
-                    notify({ type: 'success', message: `Trading account successfully created, now enter the Referral.` });
-
-                } catch (error) {
-                    notify({ type: 'error', message: `Creating Trading account failed`, description: error?.message });
-                }             } else if (timeDifference >= 24 * 60 * 60) {
-                notify({ type: 'error', message: 'Referrals can only be used on accounts created within less than 24 hours.' });
-            } else {
-            const setAffiliateArgs: SetAffilAccArgs = {
-                usedAffiliate: Array.from(affiliateCodeToUint8Array(affiliateCode)), // This is just an example; you will replace with actual data
-            };
-    
-            const setAffilAccs: SetAffilAccAccounts = {
-                userAcc: userAcc,  // Just a placeholder; replace with actual account
-                affilAcc: AffilAcc, // Placeholder
-                playerAcc: publicKey, // Placeholder
-                systemProgram: SystemProgram.programId, // Using the SystemProgram's programId
-                clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
-            };
-    
-            const initTransaction = new Transaction().add(setAffilAcc(setAffiliateArgs, setAffilAccs));
-            
-            try {
-                const initSignature = await sendTransaction(initTransaction, connection);
-                    // Notify user that the transaction was sent
-    notify({ type: 'info', message: `Trying to use the referral code...`, txid: initSignature });
-                // Wait for transaction confirmation
-                await connection.confirmTransaction(initSignature, 'confirmed');
-                setHasAffiliate(true);
-                setUsedAffiliate(affiliateCodeToUint8Array(affiliateCode));
-                notify({ type: 'success', message: `Referral code has been used.`, txid: initSignature });
-            } catch (error: any) {
-                // In case of an error, show only the 'error' notification
-                notify({ type: 'error', message: `Using the Referral code failed`, description: error?.message });
-                return;
-            }
-            // Now, you can send this instruction in a transaction using Solana's web3.js library.
-        }}
-    , [issInt, , accOld, affiliateCode, publicKey, connection, sendTransaction, notify]);
-
-
-
-    
     const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT8;
     useEffect(() => {
         const fetchLeaderboards = async () => {
@@ -407,33 +315,6 @@ const showProtocol = () => setActiveSection('protocol');
               activeSection === 'protocol'? 'cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-grey-text '
             } ${activeSection === 'personal' ? '' : 'text-gray-text'} `}>PROTOCOL</button>
       </div>
-      {!hasAffiliate ? (
-      <div className="z-10 w-full md:w-[350px] self-stretch rounded-lg bg-layer-1 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-gryy-text border-[1px] hover:bg-[#484c6d5b] border-solid border-layer-3 ">
-            <input       
-                                         className="w-full h-full input3-capsule__input relative leading-[14px] "
-                                         type="text"
-                                         id="affiliateCode"
-                                         value={affiliateCode}
-                                         onChange={(e) => setAffiliateCode(e.target.value)}
-                                         maxLength={8}
-                                         placeholder="Enter Promo Code"
-                                     />
-        <button 
-        onClick={onClick}
-        className="relative leading-[14px] font-medium bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
-          APPLY
-        </button>
-      </div>)
-      :(
-
-        <div className="z-10 font-poppins w-full md:w-[350px] self-stretch rounded-lg bg-layer-1 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-grey-text border-[1px] hover:bg-[#484c6d5b] border-solid border-layer-3 ">
-        Used Code
-    <div 
-    className="relative leading-[14px] font-medium bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
-      {decodedString}
-    </div>
-  </div>
-      )}
       </div>
 
            

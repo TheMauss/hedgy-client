@@ -8,7 +8,7 @@ import { LiquidityProviderAccount  } from "../out/accounts/LiquidityProviderAcco
 import { FaStairs, FaMoneyBill, FaLockOpen, FaLock } from "react-icons/fa6";
 import { FaPaste, FaCoins, FaUsers, FaUser } from 'react-icons/fa';
 import { MdTimer } from 'react-icons/md';
-import { initializeUserAcc } from "../out/instructions/initializeUserAcc"; // Update with the correct path
+import { initializeUserAcc, InitializeUserAccArgs, InitializeUserAccAccounts } from "../out/instructions/initializeUserAcc"; // Update with the correct path
 import { WithdrawFromLiquidityPoolArgs, DepositToLiquidityPoolAccounts, DepositToLiquidityPoolArgs, WithdrawFeeFromLiquidityPoolAccounts, WithdrawFromLiquidityPoolAccounts, initializeLiqProvider, withdrawFeeFromLiquidityPool, withdrawFromLiquidityPool } from "../out/instructions/"; // Update with the correct path
 import { PROGRAM_ID } from '../out/programId';
 import { notify } from "utils/notifications";
@@ -388,16 +388,30 @@ const Earn: FC = () => {
 
           if (!isInit.isInitialized) {
             try {
-              // Create the instruction to initialize the user account
-              const initializeInstruction = initializeUserAcc({
-                userAcc: userAcc,
-                playerAcc: publicKey,
-                  systemProgram: SystemProgram.programId,
-                  clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
-              });
-        
-              // Create a new transaction to initialize the user account and send it
-              const initTransaction = new Transaction().add(initializeInstruction);
+              const seedsAffil = [isInit.usedAffiliate];
+          
+              const [AffilAcc] = await PublicKey.findProgramAddress(
+                seedsAffil,
+                PROGRAM_ID
+              );
+          
+          
+                  const accounts: InitializeUserAccAccounts = {
+                    userAcc: userAcc,
+                    playerAcc: publicKey,
+                    affilAcc: AffilAcc,
+                    systemProgram: SystemProgram.programId,
+                    clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
+                  };
+          
+                  const args: InitializeUserAccArgs = {
+                    usedAffiliate: Array.from(isInit.usedAffiliate),
+                  };
+          
+          
+                  // Create a new transaction to initialize the user account and send it
+                  const initTransaction = new Transaction().add(initializeUserAcc(args, accounts)
+                  );
               const initSignature = await sendTransaction(initTransaction, connection);
               
               // Wait for transaction confirmation
@@ -436,7 +450,7 @@ const Earn: FC = () => {
 
     
     
-}}}, [publicKey, depositValue, LPdata, LProviderdata])
+}}}, [publicKey, depositValue, LPdata, LProviderdata, isInit])
 
     const withdrawfromLP = useCallback(async () => {
         if (!publicKey) {

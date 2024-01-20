@@ -9,7 +9,7 @@ import {
 } from "../out/instructions/createFutCont";
 import { UserAccount } from "../out/accounts/UserAccount"; // Update with the correct path
 import { LongShortRatio } from "../out/accounts/LongShortRatio"; // Update with the correct path
-import { initializeUserAcc } from "../out/instructions/initializeUserAcc"; // Update with the correct path
+import { initializeUserAcc, InitializeUserAccArgs, InitializeUserAccAccounts } from "../out/instructions/initializeUserAcc"; // Update with the correct path
 import useUserSOLBalanceStore from '../stores/useUserSOLBalanceStore';
 import { BN } from '@project-serum/anchor';
 import { PROGRAM_ID } from '../out/programId';
@@ -1024,18 +1024,31 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
           PROGRAM_ID
         );
 
+        const seedsAffil = [isInit.usedAffiliate];
+
+        const [AffilAcc] = await PublicKey.findProgramAddress(
+          seedsAffil,
+          PROGRAM_ID
+        );
+
         if (!isInit.isInitialized) {
           try {
-            // Create the instruction to initialize the user account
-            const initializeInstruction = initializeUserAcc({
+            const accounts: InitializeUserAccAccounts = {
               userAcc: userAcc,
               playerAcc: publicKey,
+              affilAcc: AffilAcc,
               systemProgram: SystemProgram.programId,
               clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
-            });
+            };
+
+            const args: InitializeUserAccArgs = {
+              usedAffiliate: Array.from(isInit.usedAffiliate),
+            };
+
 
             // Create a new transaction to initialize the user account and send it
-            const initTransaction = new Transaction().add(initializeInstruction);
+            const initTransaction = new Transaction().add(initializeUserAcc(args, accounts)
+            );
             const initSignature = await sendTransaction(initTransaction, connection);
 
             // Wait for transaction confirmation
@@ -1071,12 +1084,7 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
             PROGRAM_ID
           );
 
-          const seedsAffil = [isInit.usedAffiliate];
 
-          const [AffilAcc] = await PublicKey.findProgramAddress(
-            seedsAffil,
-            PROGRAM_ID
-          );
 
 
           const accounts: CreateFutContAccounts = {
@@ -1137,16 +1145,31 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
         PROGRAM_ID
       );
       try {
-        // Create the instruction to initialize the user account
-        const initializeInstruction = initializeUserAcc({
-          userAcc: userAcc,
-          playerAcc: publicKey,
-          systemProgram: SystemProgram.programId,
-          clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
-        });
+        const seedsAffil = [isInit.usedAffiliate];
 
-        // Create a new transaction to initialize the user account and send it
-        const initTransaction = new Transaction().add(initializeInstruction);
+        const [AffilAcc] = await PublicKey.findProgramAddress(
+          seedsAffil,
+          PROGRAM_ID
+        );
+
+   
+            const accounts: InitializeUserAccAccounts = {
+              userAcc: userAcc,
+              playerAcc: publicKey,
+              affilAcc: AffilAcc,
+              systemProgram: SystemProgram.programId,
+              clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
+            };
+
+            const args: InitializeUserAccArgs = {
+              usedAffiliate: Array.from(isInit.usedAffiliate),
+            };
+
+
+            // Create a new transaction to initialize the user account and send it
+            const initTransaction = new Transaction().add(initializeUserAcc(args, accounts)
+            );
+
         const initSignature = await sendTransaction(initTransaction, connection);
 
         // Wait for transaction confirmation

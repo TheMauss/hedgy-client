@@ -2,8 +2,7 @@ import Head from "next/head";
 import { FC, useEffect, useState, useCallback } from "react";
 import dynamic from 'next/dynamic';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
-import { initializeUserAcc } from "../out/instructions/initializeUserAcc"; // Update with the correct path
-import io from 'socket.io-client';
+import { initializeUserAcc, InitializeUserAccArgs, InitializeUserAccAccounts } from "../out/instructions/initializeUserAcc"; // Update with the correct path
 import { PROGRAM_ID } from '../out/programId';
 import { UserAccount  } from "../out/accounts/UserAccount"; // Update with the correct path
 import { notify } from "utils/notifications";
@@ -330,17 +329,24 @@ const processedData30Days = leaderboard1Day.thirtyDay && leaderboard1Day.thirtyD
             if (!IsInitialized) {
                 notify({ type: 'error', message: 'Referral code does not exist.' });
             }else if (!isIntUser) {
-                try {
-                    // Create the instruction to initialize the user account
-                    const initializeInstruction = initializeUserAcc({
-                        userAcc: userAcc,
-                        playerAcc: publicKey,
-                        systemProgram: SystemProgram.programId,
-                        clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
-                    });
-              
-                    // Create a new transaction to initialize the user account and send it
-                    const initTransaction = new Transaction().add(initializeInstruction);
+              try {
+                // Create the instruction to initialize the user account
+                const accounts: InitializeUserAccAccounts = {
+                  userAcc: userAcc,
+                  playerAcc: publicKey,
+                  affilAcc: AffilAcc,
+                  systemProgram: SystemProgram.programId,
+                  clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
+                };
+      
+                const args: InitializeUserAccArgs = {
+                  usedAffiliate: Array.from(affiliateCodeToUint8Array(affiliateCode)),
+                };
+      
+      
+                // Create a new transaction to initialize the user account and send it
+                const initTransaction = new Transaction().add(initializeUserAcc(args, accounts)
+                );
                     const initSignature = await sendTransaction(initTransaction, connection);
                     
                     // Wait for transaction confirmation
