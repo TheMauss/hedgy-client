@@ -19,6 +19,7 @@ export interface UserAccountFields {
   userBinaryBetAmountPyth: BN
   userBetAmountJup: BN
   userBinaryBetAmountJup: BN
+  totalFees: BN
   currentEpochVolume: BN
   prevTradingVolume: BN
   rebates: BN
@@ -42,6 +43,7 @@ export interface UserAccountJSON {
   userBinaryBetAmountPyth: string
   userBetAmountJup: string
   userBinaryBetAmountJup: string
+  totalFees: string
   currentEpochVolume: string
   prevTradingVolume: string
   rebates: string
@@ -65,6 +67,7 @@ export class UserAccount {
   readonly userBinaryBetAmountPyth: BN
   readonly userBetAmountJup: BN
   readonly userBinaryBetAmountJup: BN
+  readonly totalFees: BN
   readonly currentEpochVolume: BN
   readonly prevTradingVolume: BN
   readonly rebates: BN
@@ -91,6 +94,7 @@ export class UserAccount {
     borsh.u64("userBinaryBetAmountPyth"),
     borsh.u64("userBetAmountJup"),
     borsh.u64("userBinaryBetAmountJup"),
+    borsh.u64("totalFees"),
     borsh.u64("currentEpochVolume"),
     borsh.u64("prevTradingVolume"),
     borsh.u64("rebates"),
@@ -114,6 +118,7 @@ export class UserAccount {
     this.userBinaryBetAmountPyth = fields.userBinaryBetAmountPyth
     this.userBetAmountJup = fields.userBetAmountJup
     this.userBinaryBetAmountJup = fields.userBinaryBetAmountJup
+    this.totalFees = fields.totalFees
     this.currentEpochVolume = fields.currentEpochVolume
     this.prevTradingVolume = fields.prevTradingVolume
     this.rebates = fields.rebates
@@ -180,6 +185,7 @@ export class UserAccount {
       userBinaryBetAmountPyth: dec.userBinaryBetAmountPyth,
       userBetAmountJup: dec.userBetAmountJup,
       userBinaryBetAmountJup: dec.userBinaryBetAmountJup,
+      totalFees: dec.totalFees,
       currentEpochVolume: dec.currentEpochVolume,
       prevTradingVolume: dec.prevTradingVolume,
       rebates: dec.rebates,
@@ -205,7 +211,7 @@ export class UserAccount {
       userBinaryBetAmountPyth: this.userBinaryBetAmountPyth.toString(),
       userBetAmountJup: this.userBetAmountJup.toString(),
       userBinaryBetAmountJup: this.userBinaryBetAmountJup.toString(),
-
+      totalFees: this.totalFees.toString(),
       currentEpochVolume: this.currentEpochVolume.toString(),
       prevTradingVolume: this.prevTradingVolume.toString(),
       rebates: this.rebates.toString(),
@@ -231,6 +237,7 @@ export class UserAccount {
       userBinaryBetAmountPyth: new BN(obj.userBinaryBetAmountPyth),
       userBetAmountJup: new BN(obj.userBetAmountJup),
       userBinaryBetAmountJup: new BN(obj.userBinaryBetAmountJup),
+      totalFees: new BN(obj.totalFees),
       currentEpochVolume: new BN(obj.currentEpochVolume),
       prevTradingVolume: new BN(obj.prevTradingVolume),
       rebates: new BN(obj.rebates),
