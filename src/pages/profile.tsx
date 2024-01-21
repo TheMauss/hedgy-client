@@ -180,7 +180,9 @@ const Stats: FC = () => {
     };
 
     const createDefaultZeroLineData = (timeframe) => {
+
       const data = [];
+
       let startTime;
   
       switch (timeframe) {
@@ -196,7 +198,7 @@ const Stats: FC = () => {
                   data.push({ hour: new Date(startTime + (i * 3600)), PnL: 0, Roi: 0 });
               }
               break;
-            
+
           case '30D': // 30 Days - 30 daily points
               startTime = Date.now()/1000 - (30 * 24 * 3600); // 30 days ago
               for (let i = 0; i < 30; i++) {
