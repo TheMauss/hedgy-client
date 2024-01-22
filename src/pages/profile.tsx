@@ -685,7 +685,7 @@ className="z-10 mt-4 w-full flex md:flex-row flex-col items-start justify-start 
   
 
 
-      <div className="flex flex-col items-start justify-start gap-[24px]">
+      <div className="flex flex-col items-start justify-start gap-[16px]">
       <div className="w-full flex justify-center md:justify-start items-center gap-4">
 </div> 
                 <div className="w-full flex md:flex-row flex-col gap-2 md:px-0  z-100">
