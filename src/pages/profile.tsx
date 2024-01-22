@@ -576,7 +576,7 @@ className="z-10 mt-4 w-full flex md:flex-row flex-col items-start justify-start 
 
       <div
       style={{ position: 'relative', zIndex: 100 }}
-      className="z-100 mt-2 rounded-2xl bg-layer-1 box-border w-full flex flex-col items-start justify-center md:p-8 p-4 gap-[16px] text-sm border-[1px] border-solid border-layer-3">
+      className="z-100 mt-2 md:rounded-2xl rounded-lg bg-layer-1 box-border w-full flex flex-col items-start justify-center md:p-8 p-4 gap-[16px] text-sm border-[1px] border-solid border-layer-3">
               <div className="self-stretch flex flex-col items-start justify-center gap-[8px] text-center text-lg text-grey font-poppins z-100">
                 <div className="self-stretch flex flex-row items-center justify-between z-100">
                   <div className="self-stretch w-[265px] flex flex-row items-start justify-start gap-[8px] z-100">
@@ -707,7 +707,7 @@ className="z-10 mt-4 w-full flex md:flex-row flex-col items-start justify-start 
 
 
                 <div className="z-10 w-full flex md:flex-row flex-col items-stretch justify-start md:gap-[12px] gap-[8px] ">
-               <div className={`md:1/4 w-full md:rounded-3xl rounded-xl ${rebateTier === 0 ? '[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]' : 'bg-layer-1'} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 0 ? 'border-solid border-[#0F7F59]' : 'border-solid border-layer-3'}`}>
+               <div className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 0 ? '[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]' : 'bg-layer-1'} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 0 ? 'border-solid border-[#0F7F59]' : 'border-solid border-layer-3'}`}>
   <div className={`md:block hidden rounded-full ${rebateTier === 0 ? '[background:linear-gradient(180deg,_#34c796,_#0b7a55)]' : 'bg-layer-2'} flex flex-row items-center justify-center py-2 px-4`}>
     <div className="relative leading-[100%] font-medium">
       {rebateTier === 0 ? 'Your Tier' : 'Tier 1'}
@@ -732,7 +732,7 @@ className="z-10 mt-4 w-full flex md:flex-row flex-col items-start justify-start 
                   </div>
                 </div>
               </div>
-              <div className={`md:1/4 w-full md:rounded-3xl rounded-xl ${rebateTier === 5 ? '[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]' : 'bg-layer-1'} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 5 ? 'border-solid border-[#0F7F59]' : 'border-solid border-layer-3'}`}>
+              <div className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 5 ? '[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]' : 'bg-layer-1'} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 5 ? 'border-solid border-[#0F7F59]' : 'border-solid border-layer-3'}`}>
   <div className={`md:block hidden rounded-full ${rebateTier === 5 ? '[background:linear-gradient(180deg,_#34c796,_#0b7a55)]' : 'bg-layer-2'} flex flex-row items-center justify-center py-2 px-4`}>
     <div className="relative leading-[100%] font-medium">
       {rebateTier === 5 ? 'Your Tier' : 'Tier 2'}
@@ -757,7 +757,7 @@ className="z-10 mt-4 w-full flex md:flex-row flex-col items-start justify-start 
                   </div>
                 </div>
               </div>
-              <div className={`md:1/4 w-full md:rounded-3xl rounded-xl ${rebateTier === 10 ? '[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]' : 'bg-layer-1'} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 10 ? 'border-solid border-[#0F7F59]' : 'border-solid border-layer-3'}`}>
+              <div className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 10 ? '[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]' : 'bg-layer-1'} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 10 ? 'border-solid border-[#0F7F59]' : 'border-solid border-layer-3'}`}>
   <div className={`md:block hidden rounded-full ${rebateTier === 10 ? '[background:linear-gradient(180deg,_#34c796,_#0b7a55)]' : 'bg-layer-2'} flex flex-row items-center justify-center py-2 px-4`}>
     <div className="relative leading-[100%] font-medium">
       {rebateTier === 10 ? 'Your Tier' : 'Tier 3'}
@@ -782,7 +782,7 @@ className="z-10 mt-4 w-full flex md:flex-row flex-col items-start justify-start 
                   </div>
                 </div>
               </div>
-              <div className={`md:1/4 w-full md:rounded-3xl rounded-xl ${rebateTier === 15 ? '[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]' : 'bg-layer-1'} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 15 ? 'border-solid border-[#0F7F59]' : 'border-solid border-layer-3'}`}>
+              <div className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 15 ? '[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]' : 'bg-layer-1'} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 15 ? 'border-solid border-[#0F7F59]' : 'border-solid border-layer-3'}`}>
   <div className={`md:block hidden rounded-full ${rebateTier === 15 ? '[background:linear-gradient(180deg,_#34c796,_#0b7a55)]' : 'bg-layer-2'} flex flex-row items-center justify-center py-2 px-4`}>
     <div className="relative leading-[100%] font-medium">
       {rebateTier === 15 ? 'Your Tier' : 'Tier 4'}
@@ -810,7 +810,7 @@ className="z-10 mt-4 w-full flex md:flex-row flex-col items-start justify-start 
             </div>
             </div>
             <div className="z-10 md:mt-3 mt-2 w-full flex md:flex-row flex-col items-start justify-start md:gap-[12px] gap-[8px] ">
-            <div className={`md:1/4 w-full md:rounded-3xl rounded-xl ${rebateTier === 20 ? '[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]' : 'bg-layer-1'} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 20 ? 'border-solid border-[#0F7F59]' : 'border-solid border-layer-3'}`}>
+            <div className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 20 ? '[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]' : 'bg-layer-1'} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 20 ? 'border-solid border-[#0F7F59]' : 'border-solid border-layer-3'}`}>
   <div className={`md:block hidden rounded-full ${rebateTier === 20 ? '[background:linear-gradient(180deg,_#34c796,_#0b7a55)]' : 'bg-layer-2'} flex flex-row items-center justify-center py-2 px-4`}>
     <div className="relative leading-[100%] font-medium">
       {rebateTier === 20 ? 'Your Tier' : 'Tier 5'}
@@ -835,7 +835,7 @@ className="z-10 mt-4 w-full flex md:flex-row flex-col items-start justify-start 
                   </div>
                 </div>
               </div>
-              <div className={`md:1/4 w-full md:rounded-3xl rounded-xl ${rebateTier === 25 ? '[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]' : 'bg-layer-1'} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 25 ? 'border-solid border-[#0F7F59]' : 'border-solid border-layer-3'}`}>
+              <div className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 25 ? '[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]' : 'bg-layer-1'} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 25 ? 'border-solid border-[#0F7F59]' : 'border-solid border-layer-3'}`}>
   <div className={`md:block hidden rounded-full ${rebateTier === 25 ? '[background:linear-gradient(180deg,_#34c796,_#0b7a55)]' : 'bg-layer-2'} flex flex-row items-center justify-center py-2 px-4`}>
     <div className="relative leading-[100%] font-medium">
       {rebateTier === 25 ? 'Your Tier' : 'Tier 6'}
@@ -860,7 +860,7 @@ className="z-10 mt-4 w-full flex md:flex-row flex-col items-start justify-start 
                   </div>
                 </div>
               </div>
-              <div className={`md:1/4 w-full md:rounded-3xl rounded-xl ${rebateTier === 30 ? '[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]' : 'bg-layer-1'} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 30 ? 'border-solid border-[#0F7F59]' : 'border-solid border-layer-3'}`}>
+              <div className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 30 ? '[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]' : 'bg-layer-1'} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 30 ? 'border-solid border-[#0F7F59]' : 'border-solid border-layer-3'}`}>
   <div className={`md:block hidden rounded-full ${rebateTier === 30 ? '[background:linear-gradient(180deg,_#34c796,_#0b7a55)]' : 'bg-layer-2'} flex flex-row items-center justify-center py-2 px-4`}>
     <div className="relative leading-[100%] font-medium">
       {rebateTier === 30 ? 'Your Tier' : 'Tier 7'}
@@ -885,7 +885,7 @@ className="z-10 mt-4 w-full flex md:flex-row flex-col items-start justify-start 
                   </div>
                 </div>
               </div>
-              <div className={`md:1/4 w-full md:rounded-3xl rounded-xl ${rebateTier === 35 ? '[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]' : 'bg-layer-1'} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 35 ? 'border-solid border-[#0F7F59]' : 'border-solid border-layer-3'}`}>
+              <div className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 35 ? '[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]' : 'bg-layer-1'} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 35 ? 'border-solid border-[#0F7F59]' : 'border-solid border-layer-3'}`}>
   <div className={`md:block hidden rounded-full ${rebateTier === 35 ? '[background:linear-gradient(180deg,_#34c796,_#0b7a55)]' : 'bg-layer-2'} flex flex-row items-center justify-center py-2 px-4`}>
     <div className="relative leading-[100%] font-medium">
       {rebateTier === 35 ? 'Your Tier' : 'Tier 8'}

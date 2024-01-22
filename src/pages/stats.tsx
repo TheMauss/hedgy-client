@@ -15,7 +15,7 @@ const Stats: FC = () => {
     const balance = useUserSOLBalanceStore((s) => s.balance);
     const { getUserSOLBalance } = useUserSOLBalanceStore();
 
-    const [isCompetition, setIsCompetition] = useState(true);
+    const [isCompetition, setIsCompetition] = useState(false);
     const [isTeamCompetition, setIsTeamCompetition] = useState(false);
     const [leaderboardCompetetion, setLeaderboardCompetetion] = useState([]);
     const [teamLeaderboard, setTeamLeaderboard] = useState([]);
@@ -192,13 +192,8 @@ const showProtocol = () => setActiveSection('protocol');
                                                  src="/sheesh/donut1.svg"
                                                         />
         <div className="w-full flex md:flex-row flex-col gap-2 md:px-0 px-2 z-10">
-      <div className="w-full flex justify-center md:justify-start items-center gap-4">
-        <button onClick={showProtocol} className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
-              activeSection === 'protocol'? 'cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-grey-text '
-            } ${activeSection === 'personal' ? '' : 'text-gray-text'} `}>PROTOCOL</button>
       </div>
-      </div>
-<div className="mt-4 w-full flex md:flex-row flex-col items-start justify-start gap-[8px] md:px-0 px-2">
+<div className="mt-2 w-full flex md:flex-row flex-col items-start justify-start gap-[8px] md:px-0 px-2">
 <div className="md:w-1/3 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] border-solid border-layer-3">
   <img
     className="relative w-[60px] h-[60px]"
@@ -313,11 +308,11 @@ className="md:px-0 px-2 mt-4 flex flex md:flex-row flex-col items-start justify-
       <h1 className="pt-6 bankGothic md:text-start md:text-left text-center text-4xl lg:text-5xl text-transparent bg-clip-text bg-white">
                     Leaderboard
                 </h1>
-                <div className="mt-4 flex flex-row items-center justify-between gap-[16px] text-lg text-grey-text w-full md:rounded-xl rounded-lg bg-layer-1 border-[1px] border-solid border-layer-3 px-4">
-                <div className="self-stretch w-[265px] flex flex-row items-start justify-start gap-[8px] z-100 py-2">
+                <div className="mt-2 flex md:flex-row flex-col items-center justify-between md:gap-[16px] text-lg text-grey-text w-full md:rounded-xl rounded-lg bg-layer-1 border-[1px] border-solid border-layer-3 px-4">
+                <div className="self-stretch md:w-1/3 flex flex-row items-center justify-center md:justify-start gap-[8px] z-100 py-2">
                   <button 
   onClick={() => handleSort('PnL')}
-  className={`w-[100px] rounded-lg h-8 flex flex-row items-center justify-center box-border ${
+  className={`w-[120px] rounded-lg h-8 flex flex-row items-center justify-center box-border ${
     sortCriterion === "PnL" ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]" : "bg-transparent border border-grey"
   }`}
 >
@@ -334,7 +329,7 @@ className="md:px-0 px-2 mt-4 flex flex md:flex-row flex-col items-start justify-
     </button>
     <button 
   onClick={() => handleSort('totalVolume')}
-  className={`w-[100px] rounded-lg h-8 flex flex-row items-center justify-center box-border ${
+  className={`w-[120px] rounded-lg h-8 flex flex-row items-center justify-center box-border ${
     sortCriterion === "totalVolume" ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]" : "bg-transparent border border-grey"
   }`}
 >
@@ -346,7 +341,7 @@ className="md:px-0 px-2 mt-4 flex flex md:flex-row flex-col items-start justify-
 <div className={`bankGothic bg-clip-text text-transparent uppercase ${
   sortCriterion === "totalVolume" ? "bg-gradient-to-t from-[#34C796] to-[#0B7A55]" : "bg-grey"
 }`}>
-        Volume</div>
+        VOL</div>
       </div>
     </button>
                   </div>
@@ -358,7 +353,7 @@ className="md:px-0 px-2 mt-4 flex flex md:flex-row flex-col items-start justify-
             onClick={() => setCurrentLeaderboard(leaderboard1Day)}
             className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
                 currentLeaderboard === leaderboard1Day ? ' cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-grey-text '
-              } ${currentLeaderboard == leaderboard1Day ? 'text-white' : 'text-gray-text'} `}>1d</div>
+              } ${currentLeaderboard == leaderboard1Day ? 'text-white' : 'text-gray-text'} `}>1<span className="ml-0.5">d</span></div>
           </button>)}
           {!isCompetition && (
           <button className="flex flex-row items-center justify-center py-1 px-0">
@@ -366,7 +361,7 @@ className="md:px-0 px-2 mt-4 flex flex md:flex-row flex-col items-start justify-
             onClick={() => setCurrentLeaderboard(leaderboard7Days)}
             className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
                 currentLeaderboard === leaderboard7Days ? ' cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-grey-text '
-              } ${currentLeaderboard == leaderboard7Days ? 'text-white' : 'text-gray-text'} `}>7d</div>
+              } ${currentLeaderboard == leaderboard7Days ? 'text-white' : 'text-gray-text'} `}>7<span className="ml-0.5">d</span></div>
           </button>)}
           {isCompetition && (
   <button className="flex flex-row items-center justify-center py-1 px-0 text-white">
@@ -383,7 +378,7 @@ className="md:px-0 px-2 mt-4 flex flex md:flex-row flex-col items-start justify-
 
                 className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
                     currentLeaderboard === leaderboard30Days ? ' cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-grey-text '
-                  } ${currentLeaderboard == leaderboard30Days ? 'text-white' : 'text-gray-text'} `}>30d</div>
+                  } ${currentLeaderboard == leaderboard30Days ? 'text-white' : 'text-gray-text'} `}>30<span className="ml-0.5">d</span></div>
           </button>
           <button className="flex flex-row items-center justify-center py-1 px-0">
             <div 

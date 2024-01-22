@@ -356,7 +356,7 @@ notify({ type: 'info', message: `Trying to create the referral...`, txid: initSi
         
       </Head>
         <div className="flex justify-center items-center md:pt-2 bg-base h-[calc(100vh-94px)]">
-            <div className="w-[98%] xl:w-[60%] lg:w-[60%] md:w-[60%] sm:w-[60%] lg:min-w-[700px] md:min-w-[700px] h-full">
+            <div className="w-[98%] xl:w-[60%] lg:w-[60%] md:w-[60%] sm:w-full lg:min-w-[700px] md:min-w-[700px] h-full px-2">
                 
             <h1 className="bankGothic md:text-start text-center text-4xl pt-4 lg:text-5xl text-transparent bg-clip-text bg-white">
                     Referral System
@@ -367,7 +367,7 @@ notify({ type: 'info', message: `Trying to create the referral...`, txid: initSi
                                                  src="/sheesh/donut3.svg"
                                                         />
                 {!userAffiliateData?.hasCode ? (
-                    <div className="pt-4 flex md:flex-row flex-col items-center justify-center gap-[16px] text-xl text-white px-2 md:px-0 z-100">
+                    <div className="pt-2 flex md:flex-row flex-col items-center justify-center gap-[16px] text-xl text-white z-100">
 
                         <div className="md:w-[35%] w-full self-stretch bg-gradient-to-t from-[#0B7A55] to-[#34C796] md:rounded-2xl rounded-lg p-[1px] ">
                       <div className="w-full h-full self-stretch md:rounded-2xl rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#0b111b]  w-full flex flex-col items-start justify-center">
@@ -410,7 +410,7 @@ notify({ type: 'info', message: `Trying to create the referral...`, txid: initSi
                     
               
             ) : (
-                <div className="z-10 pt-4 flex md:flex-row flex-col items-center justify-center gap-[16px] text-white px-2 md:px-0">
+                <div className="z-10 pt-2 flex md:flex-row flex-col items-center justify-center gap-[16px] text-white px-2 md:px-0">
                 <div className="z-10 md:w-[35%] self-stretch bg-gradient-to-t from-[#0B7A55] to-[#34C796] md:rounded-2xl rounded-lg p-[1px]">
                           <div className="w-full h-full self-stretch md:rounded-2xl rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#0b111b]  w-full flex flex-col items-start justify-center">
                             <div className="flex items-center justify-center bg-base bg-opacity-70 w-full h-full self-stretch md:rounded-2xl rounded-lg  w-full flex flex-col items-start justify-center md:p-8 p-4  gap-[12px]">
