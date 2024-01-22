@@ -2,101 +2,8 @@ import Head from "next/head";
 import { FC, useEffect, useState, useCallback } from "react";
 import dynamic from 'next/dynamic';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
-import { initializeUserAcc } from "../out/instructions/initializeUserAcc"; // Update with the correct path
-import io from 'socket.io-client';
-import { PROGRAM_ID } from '../out/programId';
-import { UserAccount  } from "../out/accounts/UserAccount"; // Update with the correct path
-import { notify } from "utils/notifications";
-import { AffiliateAccount  } from "../out/accounts/AffiliateAccount";
-import { setAffilAcc, SetAffilAccArgs, SetAffilAccAccounts } from "../out/instructions/setAffilAcc"; // Update with the correct path
-import { Connection, SystemProgram, Transaction, TransactionSignature, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import useUserSOLBalanceStore from '../../src/stores/useUserSOLBalanceStore';
 
-
-
-const WalletMultiButtonDynamic = dynamic(
-    async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
-    { ssr: false }
-  );
-
-type UserStatsType = {
-    playerAcc: string,
-    totalTrades: number,
-    totalVolume: number,
-    winRate: number,
-    creationTime: number,
-    PnL: number,
-    Fees: number,
-    // other fields...
-  };
-
-  async function doesUserhaveAffiliateCode(account: PublicKey, connection: Connection): Promise<{ hasCode: boolean; usedAffiliate: Uint8Array; creationTime: number, isInitialized: boolean }> {
-    const accountInfo = await connection.getAccountInfo(account);
-
-    if (!accountInfo) {
-        console.error("Account not found or not fetched properly.");
-        return { hasCode: false, usedAffiliate: new Uint8Array(8), creationTime: 0, isInitialized: false }; // default value
-    }
-
-    // Convert the buffer from Solana into a Buffer type that's used by Borsh
-    const bufferData = Buffer.from(accountInfo.data);
-
-    let userAccount;
-    try {
-        // Use the UserAccount class to decode the data
-        userAccount = UserAccount.decode(bufferData);
-    } catch (error) {
-        console.error("Failed to decode user account data:", error);
-        return { hasCode: false, usedAffiliate: new Uint8Array(8), creationTime: 0, isInitialized: false }; // default value
-    }
-
-
-
-    // Convert BN to number
-    const creationTimeNumber = userAccount.creationTime.toNumber();
-    const hasCode = userAccount.usedAffiliate.some(value => value !== 0);
-    return {
-        hasCode,
-        usedAffiliate: userAccount.usedAffiliate,
-        creationTime: creationTimeNumber,
-        isInitialized: userAccount.isInitialized // Assuming userAccount has an isInitialized property
-    };
-}
-
-async function checkAffiliateInitialization(affiliatePublicKey: PublicKey, connection: Connection): Promise<{ IsInitialized: boolean }> {
-    const accountInfo = await connection.getAccountInfo(affiliatePublicKey);
-    
-    if (!accountInfo) {
-        return { IsInitialized: false };
-    }
-
-    // Convert the buffer from Solana into a Buffer type that's used by Borsh
-    const bufferData = Buffer.from(accountInfo.data);
-
-    let affiliateAccount;
-    try {
-        // Use the AffiliateAccount class to decode the data
-        affiliateAccount = AffiliateAccount.decode(bufferData);
-    } catch (error) {
-        console.error("Failed to decode affiliate account data:", error);
-        throw error;
-    }
-
-    return {
-        IsInitialized: affiliateAccount.isInitialized  // assuming isInitialized is a method
-    };
-}
-
-
-
-
-function affiliateCodeToUint8Array(input: string): Uint8Array {
-    const byteArray = new Uint8Array(8).fill(0);
-    for (let i = 0; i < 8 && i < input.length; i++) {
-        byteArray[i] = input.charCodeAt(i);
-    }
-    return byteArray;
-}
 
 const Stats: FC = () => {
     const [leaderboard1Day, setLeaderboard1Day] = useState([]);
@@ -104,61 +11,31 @@ const Stats: FC = () => {
     const [leaderboard30Days, setLeaderboard30Days] = useState([]);
     const [leaderboardallDays, setLeaderboardallDays] = useState([]);
     const [currentLeaderboard, setCurrentLeaderboard] = useState([]);
-    const [userData, setUserData] = useState<UserStatsType | null>(null);
-    const [hasAffiliate, setHasAffiliate] = useState<boolean | null>(null);
-    const { publicKey, sendTransaction } = useWallet();
     const { connection } = useConnection();
-    const [affiliateCode, setAffiliateCode] = useState<string>('');
-    const [usedAffiliate, setUsedAffiliate] = useState<Uint8Array>(new Uint8Array());
-    const [accOld, setAccOld] = useState<number>(null);
-    const [issInt, setIssInt] = useState <boolean>(null);
     const balance = useUserSOLBalanceStore((s) => s.balance);
     const { getUserSOLBalance } = useUserSOLBalanceStore();
 
-    const [isCompetition, setIsCompetition] = useState(false);
+    const [isCompetition, setIsCompetition] = useState(true);
     const [isTeamCompetition, setIsTeamCompetition] = useState(false);
     const [leaderboardCompetetion, setLeaderboardCompetetion] = useState([]);
     const [teamLeaderboard, setTeamLeaderboard] = useState([]);
 
 
+    const [sortCriterion, setSortCriterion] = useState('PnL'); // Default sorting criterion
+
+
+
 
     const LAMPORTS_PER_SOL = 1_000_000_000;
-    const FEE_PERCENTAGE = 0.05;
-    const wallet = useWallet();
-    const userPublicKey = wallet.publicKey?.toBase58();
 
-    useEffect(() => {
-        const fetchUserAcc = async () => {
-            if (!publicKey) {
-                return; // Exit if publicKey is not defined
-            }
-    
-            try {
-                const seedsUser = [
-                    Buffer.from(publicKey.toBytes()),
-                ];
-                
-                const [userAcc] = await PublicKey.findProgramAddress(seedsUser, PROGRAM_ID);
-                const result = await doesUserhaveAffiliateCode(userAcc, connection);
-                
-    
-                setHasAffiliate(result.hasCode);
-                setUsedAffiliate(result.usedAffiliate);
-    
-                if (!result.hasCode) {
-                    setUsedAffiliate(result.usedAffiliate);
-    
-                    setAccOld(result.creationTime);
-    
-                    setIssInt(result.isInitialized);
-                }
-            } catch (error) {
-                console.error("Error fetching user account or affiliate code:", error);
-            }
-        };
-    
-        fetchUserAcc();
-    }, [publicKey, connection]);
+
+
+    const sortLeaderboard = (leaderboard, criterion) => {
+      return [...leaderboard].sort((a, b) => {
+          return criterion === 'totalVolume' ? b.totalVolume - a.totalVolume : b.PnL - a.PnL;
+      });
+  };
+  
     
     
     const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT8;
@@ -186,9 +63,6 @@ const Stats: FC = () => {
                 const leaderboardallDaysData = await resallDays.json();
                 const leaderboardallDays = leaderboardallDaysData.slice();
     
-
-                
-                
                 setLeaderboard1Day(leaderboard1Day);
                 setLeaderboard7Days(leaderboard7Days);
                 setLeaderboard30Days(leaderboard30Days);
@@ -207,6 +81,38 @@ const Stats: FC = () => {
         fetchLeaderboards();
         
     }, []);
+
+    const handleSort = (criterion) => {
+      const sortedLeaderboard1Day = sortLeaderboard(leaderboard1Day, criterion);
+      const sortedLeaderboard7Days = sortLeaderboard(leaderboard7Days, criterion);
+      const sortedLeaderboard30Days = sortLeaderboard(leaderboard30Days, criterion);
+      const sortedLeaderboardCompetition = sortLeaderboard(leaderboardCompetetion, criterion);
+      const sortedLeaderboardAllDays = sortLeaderboard(leaderboardallDays, criterion);
+    
+      setLeaderboard1Day(sortedLeaderboard1Day);
+      setLeaderboard7Days(sortedLeaderboard7Days);
+      setLeaderboard30Days(sortedLeaderboard30Days);
+      setLeaderboardCompetetion(sortedLeaderboardCompetition);
+      setLeaderboardallDays(sortedLeaderboardAllDays);
+    
+      // Update currentLeaderboard based on the current view
+      if (!isCompetition) {
+        if (currentLeaderboard === leaderboard1Day) {
+          setCurrentLeaderboard(sortedLeaderboard1Day);
+        } else if (currentLeaderboard === leaderboard7Days) {
+          setCurrentLeaderboard(sortedLeaderboard7Days);
+        } else if (currentLeaderboard === leaderboard30Days) {
+          setCurrentLeaderboard(sortedLeaderboard30Days);
+        } else {
+          setCurrentLeaderboard(sortedLeaderboardAllDays);
+        }
+      } else {
+        setCurrentLeaderboard(sortedLeaderboardCompetition);
+      }
+
+      setSortCriterion(criterion);
+    };
+
     
 
     const calculateVolume = () => {
@@ -256,31 +162,7 @@ const Stats: FC = () => {
       });
       return uniquePlayers.size;
   };
-
-  useEffect(() => {
-    // fetch leaderboard data...
   
-    if (userPublicKey) {
-      const userStats = leaderboardallDays.find(user => user.playerAcc === userPublicKey);
-      setUserData(userStats);
-    }
-  }, [userPublicKey, leaderboardallDays]);
-  
-  const [decodedString, setDecodedString] = useState("");
-
-  useEffect(() => {
-    if (usedAffiliate && usedAffiliate.length > 0) {
-        const decoded = Array.from(usedAffiliate)
-                             .filter(byte => byte !== 0)
-                             .map(byte => String.fromCharCode(byte))
-                             .join('');
-
-        setDecodedString(decoded);
-    } else {
-        setDecodedString("");
-        
-    }
-}, [usedAffiliate]);
 
 const [activeSection, setActiveSection] = useState('protocol');
 const showPersonal = () => setActiveSection('personal');
@@ -316,76 +198,7 @@ const showProtocol = () => setActiveSection('protocol');
             } ${activeSection === 'personal' ? '' : 'text-gray-text'} `}>PROTOCOL</button>
       </div>
       </div>
-
-           
-      {(activeSection === 'personal') ? (      <div className="z-10 mt-4 w-full flex md:flex-row flex-col items-start justify-start gap-[8px] md:px-0 px-2">
-      <div className="z-10 md:w-1/5 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] border-solid border-layer-3">
-          <img
-            className="relative w-[60px] h-[60px]"
-            alt=""
-            src="/sheesh/icons21.svg"
-          /><div className="h-[60px] flex flex-col justify-center items-start md:items-center">
-          <div className="relative leading-[100%] font-medium text-center">TRADER</div>
-          <div className="pt-2 relative text-xl leading-[100%] font-medium font-poppins text-white text-left md:text-center">
-          {userData?.playerAcc.slice(0, 3)}...{userData?.playerAcc.slice(-3)}
-          </div></div>
-        </div>
-        <div className="z-10 md:w-1/5 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] border-solid border-layer-3">
-          <img
-            className="relative w-[60px] h-[60px]"
-            alt=""
-            src="/sheesh/icons22.svg"
-          /><div className="h-[60px] flex flex-col justify-center items-start md:items-center">
-          <div className="relative leading-[100%] font-medium text-center">
-            TRADES
-          </div>
-          <div className="pt-2 relative text-xl leading-[100%] font-medium font-poppins text-white text-left md:text-center">
-          {userData?.totalTrades?? '-'}
-          </div></div>
-        </div>
-        <div className="z-10 md:w-1/5 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] border-solid border-layer-3">
-          <img
-            className="relative w-[60px] h-[60px]"
-            alt=""
-            src="/sheesh/icons23.svg"
-          /><div className="h-[60px] flex flex-col justify-center items-start md:items-center">
-          <div className="relative leading-[100%] font-medium text-center">
-            VOLUME
-          </div>
-          <div className="pt-2 relative text-xl leading-[100%] font-medium font-poppins text-white text-left md:text-center">
-          {userData?.totalVolume !== undefined ? (userData.totalVolume / LAMPORTS_PER_SOL).toFixed(1) + 'SOL': '-'} 
-
-          </div></div>
-        </div>
-        <div className="z-10 md:w-1/5 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] border-solid border-layer-3">
-          <img
-            className="relative w-[60px] h-[60px]"
-            alt=""
-            src="/sheesh/icons24.svg"
-          /><div className="h-[60px] flex flex-col justify-center items-start md:items-center">
-          <div className="relative leading-[100%] font-medium text-center">WIN RATIO</div>
-          <div className="pt-2 relative text-xl leading-[100%] font-medium font-poppins text-white text-left md:text-center">
-            {
-    userData?.winRate
-    ? (userData.winRate * 100).toFixed(1) + " %"
-    : '-'
-  }
-          </div></div>
-        </div>
-        <div className="z-10 md:w-1/5 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] border-solid border-layer-3">
-          <img
-            className="relative w-[60px] h-[60px]"
-            alt=""
-            src="/sheesh/icons25.svg"
-          /><div className="h-[60px] flex flex-col justify-center items-start md:items-center">
-          <div className="relative leading-[100%] font-medium text-center">PnL</div>
-          <div className="pt-2 relative text-xl leading-[100%] font-medium font-poppins text-white text-left md:text-center">
-          {userData?.PnL !== undefined ? (userData?.PnL/LAMPORTS_PER_SOL).toFixed(1) + " SOL" : '-'}
-          </div></div>
-        </div>
-      </div>
-
-): (      <div className="mt-4 w-full flex md:flex-row flex-col items-start justify-start gap-[8px] md:px-0 px-2">
+<div className="mt-4 w-full flex md:flex-row flex-col items-start justify-start gap-[8px] md:px-0 px-2">
 <div className="md:w-1/3 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] border-solid border-layer-3">
   <img
     className="relative w-[60px] h-[60px]"
@@ -424,7 +237,6 @@ const showProtocol = () => setActiveSection('protocol');
 </div></div>
 </div>
 
-)}
                 {isTeamCompetition && (
       <h1 className="pt-6 bankGothic md:text-start md:text-left text-center text-4xl lg:text-5xl text-transparent bg-clip-text bg-white">
                     DAO WARS
@@ -493,11 +305,100 @@ className="md:px-0 px-2 mt-4 flex flex md:flex-row flex-col items-start justify-
     </div></div>)})}
   </div>)}
 
-      <div className="flex flex-col md:items-start items-center text-13xl text-white">
+  
+
+
+      <div   style={{ position: 'relative', zIndex: 100 }}
+      className="flex flex-col md:items-start items-center text-13xl text-white md:px-0 px-2">
       <h1 className="pt-6 bankGothic md:text-start md:text-left text-center text-4xl lg:text-5xl text-transparent bg-clip-text bg-white">
                     Leaderboard
-                </h1>          <div className="flex flex-row items-start justify-start gap-[16px] text-lg text-grey-text">
+                </h1>
+                <div className="mt-4 flex flex-row items-center justify-between gap-[16px] text-lg text-grey-text w-full md:rounded-xl rounded-lg bg-layer-1 border-[1px] border-solid border-layer-3 px-4">
+                <div className="self-stretch w-[265px] flex flex-row items-start justify-start gap-[8px] z-100 py-2">
+                  <button 
+  onClick={() => handleSort('PnL')}
+  className={`w-[100px] rounded-lg h-8 flex flex-row items-center justify-center box-border ${
+    sortCriterion === "PnL" ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]" : "bg-transparent border border-grey"
+  }`}
+>
+  <div className={`flex justify-center items-center h-full w-full rounded-lg ${
+    sortCriterion === "PnL" ? "bg-[#0B111B] bg-opacity-80" : "bg-opacity-0 hover:bg-[#484c6d5b]"
+  }`}>
+
+<div className={`bankGothic bg-clip-text text-transparent uppercase ${
+  sortCriterion === "PnL" ? "bg-gradient-to-t from-[#34C796] to-[#0B7A55]" : "bg-grey"
+}`}>
+  PnL
+</div>
+    </div>
+    </button>
+    <button 
+  onClick={() => handleSort('totalVolume')}
+  className={`w-[100px] rounded-lg h-8 flex flex-row items-center justify-center box-border ${
+    sortCriterion === "totalVolume" ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]" : "bg-transparent border border-grey"
+  }`}
+>
+<div className={`flex justify-center items-center h-full w-full rounded-lg ${
+    sortCriterion === "totalVolume" ? "bg-[#0B111B] bg-opacity-80" : "bg-opacity-0 hover:bg-[#484c6d5b]"
+  }`}>
+
+
+<div className={`bankGothic bg-clip-text text-transparent uppercase ${
+  sortCriterion === "totalVolume" ? "bg-gradient-to-t from-[#34C796] to-[#0B7A55]" : "bg-grey"
+}`}>
+        Volume</div>
+      </div>
+    </button>
+                  </div>
+                  <div className="md:hidden flex flex-row gap-3">
                 {!isCompetition && (
+                  
+          <button className="flex flex-row items-center justify-center py-1 px-0 text-white">
+            <div 
+            onClick={() => setCurrentLeaderboard(leaderboard1Day)}
+            className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
+                currentLeaderboard === leaderboard1Day ? ' cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-grey-text '
+              } ${currentLeaderboard == leaderboard1Day ? 'text-white' : 'text-gray-text'} `}>1d</div>
+          </button>)}
+          {!isCompetition && (
+          <button className="flex flex-row items-center justify-center py-1 px-0">
+            <div 
+            onClick={() => setCurrentLeaderboard(leaderboard7Days)}
+            className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
+                currentLeaderboard === leaderboard7Days ? ' cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-grey-text '
+              } ${currentLeaderboard == leaderboard7Days ? 'text-white' : 'text-gray-text'} `}>7d</div>
+          </button>)}
+          {isCompetition && (
+  <button className="flex flex-row items-center justify-center py-1 px-0 text-white">
+    <div 
+      onClick={() => setCurrentLeaderboard(leaderboardCompetetion)}
+      className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
+          currentLeaderboard === leaderboardCompetetion ? ' cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-grey-text '
+        } ${currentLeaderboard == leaderboardCompetetion ? 'text-white' : 'text-gray-text'} `}>Comp</div>
+  </button>
+)}
+          <button className="flex flex-row items-center justify-center py-1 px-0">
+            <div 
+                onClick={() => setCurrentLeaderboard(leaderboard30Days)}
+
+                className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
+                    currentLeaderboard === leaderboard30Days ? ' cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-grey-text '
+                  } ${currentLeaderboard == leaderboard30Days ? 'text-white' : 'text-gray-text'} `}>30d</div>
+          </button>
+          <button className="flex flex-row items-center justify-center py-1 px-0">
+            <div 
+                onClick={() => setCurrentLeaderboard(leaderboardallDays)}
+
+                className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
+                    currentLeaderboard === leaderboardallDays ? ' cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-grey-text '
+                  } ${currentLeaderboard == leaderboardallDays ? 'text-white' : 'text-gray-text'} `}>ALL</div>
+          </button>
+
+        </div>
+
+        <div className="hidden md:flex flex-row gap-3">
+                {!isCompetition && (
+                  
           <button className="flex flex-row items-center justify-center py-1 px-0 text-white">
             <div 
             onClick={() => setCurrentLeaderboard(leaderboard1Day)}
@@ -540,11 +441,11 @@ className="md:px-0 px-2 mt-4 flex flex md:flex-row flex-col items-start justify-
           </button>
 
         </div>
-      </div>
+      </div></div>
 
       <div 
 
-      className="md:px-0 px-2 mt-4 flex flex md:flex-row flex-col items-start justify-start gap-[8px] text-5xl text-white">
+      className="md:px-0 px-2 mt-2 flex flex md:flex-row flex-col items-start justify-start gap-[8px] text-5xl text-white">
               {currentLeaderboard.slice(0,3).map((item, index) => {
         
         return (
@@ -605,7 +506,7 @@ className="md:px-0 px-2 mt-4 flex flex md:flex-row flex-col items-start justify-
           </div></div>)})}
         </div>
         <div className="md:px-0 px-2">
-        <div className="z-10 h-[600px] overflow-scroll custom-scrollbar mt-2 rounded-lg bg-layer-1 box-border w-full overflow-hidden flex flex-col items-start justify-start p-4 gap-[16px] text-right font-poppins border-[1px] border-solid border-layer-3">
+        <div className="z-10 h-[600px] overflow-scroll custom-scrollbar mt-2 rounded-lg md:rounded-2xl bg-layer-1 box-border w-full overflow-hidden flex flex-col items-start justify-start p-4 gap-[16px] text-right font-poppins border-[1px] border-solid border-layer-3">
         <table className="w-full relative h-3 text-sm text-grey-text text-end ">
       <thead>
         <tr>
