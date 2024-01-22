@@ -10,7 +10,7 @@ function SolanaTPS() {
 
     async function fetchTPS() {
         try {
-          const response = await fetch(`${ENDPOINT}/tps`);  // Replace with your server's URL
+          const response = await fetch(`${ENDPOINT}/api/tps`);  // Replace with your server's URL
           const json = await response.json();
           setTPS(json.tps);
         } catch (error) {
