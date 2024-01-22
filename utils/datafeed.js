@@ -12,113 +12,127 @@ socket.on("connect_error", (error) =>
 );
 // Define the description based on the symbol name
 
+const API_ENDPOINT = 'https://benchmarks.pyth.network/v1/shims/tradingview'
+
 const datafeed = {
-  onReady: (cb) =>
-    setTimeout(
-      () => cb({ supported_resolutions: ["1", "5", "15", "60", "240", "1D"] }),
-      0
-    ),
-  searchSymbols: (userInput, exchange, symbolType, onResultReadyCallback) => {},
+  onReady: (callback) => {
+    console.log('[onReady]: Method call')
+    fetch(`${API_ENDPOINT}/config`).then((response) => {
+      response.json().then((configurationData) => {
+        setTimeout(() => callback(configurationData))
+      })
+    })
+  },
+  searchSymbols: (userInput, exchange, symbolType, onResultReadyCallback) => {
+    console.log('[searchSymbols]: Method call')
+    fetch(
+      `${API_ENDPOINT}/search?query=${userInput}`
+    ).then((response) => {
+      response.json().then((data) => {
+        onResultReadyCallback(data)
+      })
+    })
+  },
   resolveSymbol: (
     symbolName,
     onSymbolResolvedCallback,
     onResolveErrorCallback
   ) => {
-    let description;
-    if (symbolName === "Crypto.SOL/USD") {
-      description = "SOL/USD";
-    } else if (symbolName === "Crypto.BTC/USD") {
-      description = "BTC/USD";
-    } else if (symbolName === "Crypto.BONK/USD") {
-      description = "BONK/USD";
-    } else if (symbolName === "Crypto.PYTH/USD") {
-      description = "PYTH/USD";
-    } else {
-      // Handle other cases or set a default description
-      description = symbolName;
-    }
-    let pricescale;
-    if (symbolName === "Crypto.SOL/USD") {
-      pricescale = 1000;
-    } else if (symbolName === "Crypto.BTC/USD") {
-      pricescale = 10;
-    } else if (symbolName === "Crypto.BONK/USD") {
-      pricescale = 100000000;
-    } else if (symbolName === "Crypto.PYTH/USD") {
-      pricescale = 1000;
-    } else {
-      // Handle other cases or set a default description
-      pricescale = 100;
-    }
-    setTimeout(() => {
-      onSymbolResolvedCallback({
-        name: symbolName,
-        ticker: symbolName,
-        description: description,
-        type: "crypto",
-        session: "24x7",
-        timezone: "Etc/UTC",
-        exchange: "PopFi",
-        minmov: 1,
-        pricescale: pricescale,
-        has_intraday: true,
-        has_no_volume: true,
-        has_weekly_and_monthly: true,
-        supported_resolutions: ["1", "5", "15", "30", "60", "240", "1D"],
-        // other required properties...
-      });
-    }, 0);
+    console.log('[resolveSymbol]: Method call', symbolName)
+    fetch(`${API_ENDPOINT}/symbols?symbol=${symbolName}`).then((response) => {
+      response
+        .json()
+        .then((symbolInfo) => {
+          console.log('[resolveSymbol]: Symbol resolved', symbolInfo)
+          let description, pricescale;
+          let timezone = symbolInfo.timezone;
+
+          if (symbolName === "Crypto.SOL/USD") {
+            description = "SOL/USD";
+            pricescale = 1000;
+          } else if (symbolName === "Crypto.BTC/USD") {
+            description = "BTC/USD";
+            pricescale = 10;
+          } else if (symbolName === "Crypto.BONK/USD") {
+            description = "BONK/USD";
+            pricescale = 100000000;
+          } else if (symbolName === "Crypto.PYTH/USD") {
+            description = "PYTH/USD";
+            pricescale = 10000;
+          } else {
+            description = symbolName;
+            pricescale = 100;
+          }
+
+          
+          setTimeout(() => {
+            onSymbolResolvedCallback({
+              name: symbolName,
+              ticker: symbolName,
+              description: description,
+              type: "crypto",
+              session: "24x7",
+              timezone: timezone,
+              exchange: "PopFi",
+              minmov: 1,
+              pricescale: pricescale,
+              has_intraday: true,
+              has_no_volume: true,
+              has_weekly_and_monthly: true,
+              supported_resolutions: ["1", "5", "15", "30", "60", "240", "1D"],
+              // other required properties...
+            });
+          }, 0);
+        })
+        .catch((error) => {
+          console.log('[resolveSymbol]: Cannot resolve symbol', symbolName)
+          onResolveErrorCallback('Cannot resolve symbol')
+          return
+        })
+    })
   },
   getBars: (
     symbolInfo,
     resolution,
     periodParams,
     onHistoryCallback,
-    onErrorCallback,
-    firstDataRequest
+    onErrorCallback
   ) => {
-    const { from, to } = periodParams;
-    isDebug
-      ? console.log("[getBars]: Emitting data", {
-          symbol: symbolInfo.ticker,
-          from: from,
-          to: to,
-          resolution: resolution,
+    const { from, to, firstDataRequest } = periodParams
+    console.log('[getBars]: Method call', symbolInfo, resolution, from, to)
+    fetch(
+      `${API_ENDPOINT}/history?symbol=${symbolInfo.ticker}&from=${periodParams.from}&to=${periodParams.to}&resolution=${resolution}`
+    ).then((response) => {
+      response
+        .json()
+        .then((data) => {
+          if (data.t.length === 0) {
+            onHistoryCallback([], { noData: true })
+            return
+          }
+          const bars = []
+          for (let i = 0; i < data.t.length; ++i) {
+            const multiplier = symbolInfo.ticker === "Crypto.BONK/USD" ? 100 : 1;
+            bars.push({
+              time: data.t[i] * 1000,
+              low: data.l[i] * multiplier,
+              high: data.h[i] * multiplier,
+              open: data.o[i] * multiplier,
+              close: data.c[i] * multiplier,
+            })
+          }
+          if (firstDataRequest) {
+            lastBarsCache.set(symbolInfo.ticker, {
+              ...bars[bars.length - 1],
+            })
+          }
+          onHistoryCallback(bars, { noData: false })
         })
-      : null;
-
-    socket.emit("subscribe", {
-      symbol: symbolInfo.ticker,
-      from: from,
-      to: to,
-      resolution: resolution,
-    });
-
-    socket.on("prices", (response) => {
-      isDebug
-        ? console.log("[getBars]: History data received", response)
-        : null;
-
-      if (response.error) {
-        console.error("[getBars]: Error in fetching history", response.error);
-        onErrorCallback(response.error);
-        return;
-      }
-
-      // Assuming the response is an array of {time, open, high, low, close} objects
-      const bars = response.map((bar) => {
-        return {
-          time: bar.time * 1000, // Convert time to milliseconds if needed
-          open: bar.open / 1e8,
-          high: bar.high / 1e8,
-          low: bar.low / 1e8,
-          close: bar.close / 1e8,
-        };
-      });
-
-      isDebug ? console.log("[getBars]: Processed bars", bars) : null;
-      onHistoryCallback(bars, { noData: bars.length === 0 });
-    });
+        .catch((error) => {
+          console.log('[getBars]: Get error', error)
+          onErrorCallback(error)
+        })
+    })
   },
   subscribeBars: (
     symbolInfo,
