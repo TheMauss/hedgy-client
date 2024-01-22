@@ -451,6 +451,7 @@ className="md:px-0 px-2 mt-4 flex flex md:flex-row flex-col items-start justify-
         return (
         <div 
         key={item}
+        style={{ position: 'relative', zIndex: 100 }}
         className="w-full text-3xl flex flex-col md:flex-row items-start justify-start gap-[8px]">
           <div className="z-10 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-col items-center justify-center pt-4 px-4 pb-6 gap-[16px] border-[1px] border-solid border-layer-3">
             <div className="flex flex-col items-center justify-center gap-[4px]">
@@ -505,7 +506,9 @@ className="md:px-0 px-2 mt-4 flex flex md:flex-row flex-col items-start justify-
             </div>
           </div></div>)})}
         </div>
-        <div className="md:px-0 px-2">
+        <div 
+        style={{ position: 'relative', zIndex: 100 }}
+        className="md:px-0 px-2">
         <div className="z-10 h-[600px] overflow-scroll custom-scrollbar mt-2 rounded-lg md:rounded-2xl bg-layer-1 box-border w-full overflow-hidden flex flex-col items-start justify-start p-4 gap-[16px] text-right font-poppins border-[1px] border-solid border-layer-3">
         <table className="w-full relative h-3 text-sm text-grey-text text-end ">
       <thead>
