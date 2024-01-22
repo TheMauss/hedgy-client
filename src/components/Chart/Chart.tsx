@@ -157,11 +157,11 @@ const useChartComponent = (symbol: string, latestOpenedPosition: Record<string, 
         enabled_features: ["hide_left_toolbar_by_default"],
         overrides: {
           "mainSeriesProperties.candleStyle.upColor": "#0B7A55",
-          "mainSeriesProperties.candleStyle.downColor": "#34C796",
+          "mainSeriesProperties.candleStyle.downColor": "#7A3636",
           "mainSeriesProperties.candleStyle.borderUpColor": "#34C796",
-          "mainSeriesProperties.candleStyle.borderDownColor": "#34C796",
+          "mainSeriesProperties.candleStyle.borderDownColor": "#C44141",
           "mainSeriesProperties.candleStyle.wickUpColor": "#34C796",
-          "mainSeriesProperties.candleStyle.wickDownColor": "#34C796",
+          "mainSeriesProperties.candleStyle.wickDownColor": "#C44141",
 
 
           "paneProperties.background": "#151722",
