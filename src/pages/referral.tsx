@@ -302,7 +302,7 @@ const onClick1 = useCallback(async () => {// Create the instruction to initializ
         const accounts = {
             affilAcc: AffilAcc,
             playerAcc: publicKey,
-            pdaHouseAcc: new PublicKey("9EcaMSw2fqjxHLtKjWEWgoMjXAL6fYn94ot6tz4DGEo6"),
+            pdaHouseAcc: new PublicKey("3MRKR5tYQeUT8CXYkTjvzR6ivEpaqFLqK9CsNbMFvoHB"),
           systemProgram: SystemProgram.programId,
         };
         // Create a new transaction to initialize the user account and send it
@@ -326,7 +326,7 @@ notify({ type: 'info', message: `Trying to create the referral...`, txid: initSi
             
         } catch (error: any) {
             // In case of an error, show only the 'error' notification
-            notify({ type: 'error', message: `Referral code was not created`, description: error?.message });
+            notify({ type: 'error', message: `Could not withdraw the Affiliate Earnings`, description: error?.message });
             return;
         }
     
