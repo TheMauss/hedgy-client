@@ -396,11 +396,10 @@ const processedData30Days = leaderboard1Day.thirtyDay && leaderboard1Day.thirtyD
 
 
     
-    const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT2;
     useEffect(() => {
         const fetchLeaderboards = async () => {
             try {
-                const resallDays = await fetch(`${ENDPOINT}/leaderboard/all`);
+                const resallDays = await fetch(`${ENDPOINT8}/api/leaderboard/all`);
                 const leaderboardallDaysData = await resallDays.json();
                 const leaderboardallDays = leaderboardallDaysData.slice();
     
