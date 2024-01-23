@@ -79,7 +79,6 @@ const datafeed = {
               has_intraday: true,
               has_no_volume: true,
               has_weekly_and_monthly: true,
-              supported_resolutions: ["1", "5", "15", "30", "60", "240", "1D"],
               // other required properties...
             });
           }, 0);
