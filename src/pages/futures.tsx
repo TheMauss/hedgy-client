@@ -66,6 +66,9 @@ const Futures: FC = () => {
   const [isBitcoinSelected, setIsBitcoinSelected] = useState(false);
   const [isSoliditySelected, setIsSoliditySelected] = useState(true);
   const [openingPrice, setOpeningPrice] = useState(0);
+  const [initialPrice, setInitialPrice] = useState(0);
+  const [selectedPair, setSelectedPair] = useState('');
+
 
   const router = useRouter();
   const { crypto } = router.query; // could be 'btc' or 'sol'
@@ -250,12 +253,34 @@ const Futures: FC = () => {
     setshowBottomPanel(prevshowBottomPanel => !prevshowBottomPanel);
   };
 
+  useEffect(() => {
+    // Provide a default empty object if selectedCryptos is undefined or null
+    const selectedCryptosSafe = selectedCryptos || {};
+  
+    const selectedCrypto = Object.keys(selectedCryptosSafe).find(key => selectedCryptosSafe[key]);
+    if (selectedCrypto) {
+      setSelectedPair(selectedCrypto);
+    }
+    const decimalPlacesMapping = {
+      'BTC': 1, // Example: Bitcoin to 2 decimal places
+      'SOL': 3,
+      'PYTH': 3,
+      'BONK': 8,
+      // Add more mappings as needed
+    };
+      // Get the number of decimal places for the selected crypto, defaulting to a standard value if not found
+    const decimalPlaces = decimalPlacesMapping[selectedCrypto?.toUpperCase()] || 2;
+  
+    const newInitialPrice = prices?.[`Crypto.${selectedCrypto?.toUpperCase()}/USD`]?.price / 100000000 || 0;
+    setInitialPrice(parseFloat(newInitialPrice.toFixed(decimalPlaces)));
+  }, [selectedCryptos, prices]);
+
 
 
   return (
     <div>
       <Head>
-        <title>PopFi | Futures</title>
+      <title> {selectedPair}  ${initialPrice} | PopFi Futures</title>
         <meta name="description" content="PopFi" />
       </Head>
       <div className="bg-base w-full flex justify-center flex-col">
