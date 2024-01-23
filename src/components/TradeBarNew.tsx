@@ -450,7 +450,6 @@ useEffect(() => {
           
           if (updatedPrice.symbol === selectedCryptoSymbol) {
             setEMAPrice(updatedPrice.EMA);
-            console.log(updatedPrice.EMA, "emaaaaaaa");
           }
         }
 
@@ -508,7 +507,6 @@ useEffect(() => {
 
 useEffect(() => {
   // Provide a default empty object if selectedCryptos is undefined or null
-  console.log(selectedCryptos, "lfdsfsf")
   const selectedCryptosSafe = selectedCryptos || {};
 
   const selectedCrypto = Object.keys(selectedCryptosSafe).find(key => selectedCryptosSafe[key]);
@@ -689,7 +687,6 @@ const getPriorityFeeEstimate = async () => {
         };
 
         const response = await axios.post(rpcUrl, requestData);
-        console.log('Response:', response);
 
 
         if (response.status !== 200) {
@@ -915,7 +912,6 @@ if (selectedCrypto && cryptoSettings[selectedCrypto]) {
 
         const priorityfees = await getPriorityFeeEstimate();
         PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({ microLamports: priorityfees });
-        console.log(priorityfees,"feebaby");
       } else {
         PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 0 });
       }

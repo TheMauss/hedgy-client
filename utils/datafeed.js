@@ -1,16 +1,7 @@
-import io from "socket.io-client";
 import { priceDataState } from "../src/components/globalStatse"; // Import your global state
-import { isDebug } from "../src/utils/environment";
 
-const ENDPOINT4 = process.env.NEXT_PUBLIC_ENDPOINT4;
-const socket = io(ENDPOINT4);
 const lastBarsCache = new Map();
 
-socket.on("connect", () => console.log("[WebSocket] Connected"));
-socket.on("connect_error", (error) =>
-  console.error("[WebSocket] Connect Error:", error)
-);
-// Define the description based on the symbol name
 
 const API_ENDPOINT = 'https://benchmarks.pyth.network/v1/shims/tradingview'
 
