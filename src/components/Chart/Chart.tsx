@@ -142,6 +142,7 @@ const useChartComponent = (symbol: string, latestOpenedPosition: Record<string, 
   }, [isWidgetReady, latestOpenedPosition, symbol]);
 
   useEffect(() => {
+    const initializeWidget = () => {
     if (typeof window !== 'undefined' && window.TradingView && chartContainerRef.current) {
       const widget = new window.TradingView.widget({
         container: chartContainerRef.current,
@@ -152,7 +153,9 @@ const useChartComponent = (symbol: string, latestOpenedPosition: Record<string, 
         interval: '1' as ResolutionString,
         fullscreen: false,
         autosize: true,
+        loading_screen: { backgroundColor: "#151722", foregroundColor:"#34C796" },
         theme: "dark",
+        
         toolbar_bg: "#151722",
         enabled_features: ["hide_left_toolbar_by_default"],
         overrides: {
@@ -189,13 +192,13 @@ const useChartComponent = (symbol: string, latestOpenedPosition: Record<string, 
           "header_symbol_search",
           "header_compare",
           "border_around_the_chart",
-          "use_localstorage_for_settings",
+        
           "adaptive_logo",
-          "header_fullscreen_button",
           "adaptive_logo",
           "header_undo_redo",
           "popup_hints",
-          "timeframes_toolbar"
+          "timeframes_toolbar","property_pages",
+          "header_screenshot"
         ]
       });
 
@@ -206,6 +209,37 @@ const useChartComponent = (symbol: string, latestOpenedPosition: Record<string, 
         if (graphPreferences) {
           widgetRef.current.activeChart().applyStudyTemplate(JSON.parse(graphPreferences));
         }
+        widget.applyOverrides({
+ "mainSeriesProperties.candleStyle.upColor": "#0B7A55",
+          "mainSeriesProperties.candleStyle.downColor": "#7A3636",
+          "mainSeriesProperties.candleStyle.borderUpColor": "#34C796",
+          "mainSeriesProperties.candleStyle.borderDownColor": "#C44141",
+          "mainSeriesProperties.candleStyle.wickUpColor": "#34C796",
+          "mainSeriesProperties.candleStyle.wickDownColor": "#C44141",
+
+
+          "paneProperties.background": "#151722",
+          "paneProperties.backgroundType": "solid",
+          'paneProperties.vertGridProperties.color': '#1d202f',
+          'paneProperties.horzGridProperties.color': '#1d202f',
+          'paneProperties.separatorColor': '#151722',
+          'paneProperties.legendProperties.backgroundTransparency': 100,
+          // Axis and scales
+          'scalesProperties.textColor': '#CCC',
+          'scalesProperties.lineColor': '#555555',
+          'scalesProperties.axisLineToolLabelBackgroundColorActive': '#555555',
+
+          'mainSeriesProperties.barStyle.downColor': '',
+          'mainSeriesProperties.barStyle.upColor': '#20b482',
+
+          // Crosshair
+          'paneProperties.crossHairProperties.color': '#909090',
+          // Add more overrides for grid, background, text colors, etc.
+
+          'timeScaleProperties.backgroundColor': '#2b2b43', // Set the color for the bottom bar
+          'timeScaleProperties.textColor': '#2b2b43', // Text color for the bottom bar
+          // ... other overrides you want to change or add
+        });
       });
 
       return () => {
@@ -213,6 +247,14 @@ const useChartComponent = (symbol: string, latestOpenedPosition: Record<string, 
           widget.remove();
         }
       };
+    }
+  };
+    if (typeof window !== 'undefined' && window.TradingView && chartContainerRef.current) {
+      // Set a timeout to delay the widget initialization
+      const timer = setTimeout(() => initializeWidget(), 1000); // Delay for 1 second
+  
+      // Clean up function to clear the timeout
+      return () => clearTimeout(timer);
     }
   }, [symbol]);
 
