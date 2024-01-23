@@ -368,7 +368,7 @@ const Futures: FC = () => {
                           selectedCryptos={selectedCryptos}
 
                         />
-                        <div className={`w-full md:block flex-col hidden md:order-2 order-1 mt-2 md:h-[629px] ${showBottomPanel ? "lg:h-[calc((100vh-108px)-(40vh+26px))]" : "lg:h-[calc(100vh-108px-65px)] "
+                        <div className={`w-full md:block flex-col hidden md:order-2 order-1 mt-2 md:h-[629px] ${showBottomPanel ? "lg:h-[calc((100vh-8px)-(40vh+26px))]" : "lg:h-[calc(100vh-108px-65px)] "
                           }`}>
                           <Graph
                             symbol={symbol}
@@ -376,7 +376,7 @@ const Futures: FC = () => {
                             prices={prices}
                           /></div>
 
-                        <div className={`w-full lg:flex lg:flex-col hidden order-3   lg:h-[calc((100vh-126px)-(60vh-79px))] mt-2 ${showBottomPanel ? '' : 'lg:hidden'}`}>
+                        <div className={`w-full lg:flex lg:flex-col hidden order-3   lg:h-[calc((100vh-226px)-(60vh-79px))] mt-2 ${showBottomPanel ? '' : 'lg:hidden'}`}>
                           <MyPositionsFutures
                             latestOpenedPosition={latestOpenedPosition}
                             setLatestOpenedPosition={setLatestOpenedPosition}
