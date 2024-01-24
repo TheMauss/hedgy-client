@@ -772,7 +772,7 @@ if (selectedCrypto && cryptoSettings[selectedCrypto]) {
       return;
     }
 
-    const seedsAffil = [usedAffiliate];
+    const seedsAffil = [isInit.usedAffiliate];
     
     const [AffilAcc] = await PublicKey.findProgramAddress(
     seedsAffil,
