@@ -317,7 +317,6 @@ const MyPositions: FC<MyPositionsProps> = ({ prices, setLatestOpenedPosition, ha
       if (solanaTimestamp !== null) {
         // Increment the solanaTimestamp by 1 second
         setSolanaTimestamp(prevTimestamp => prevTimestamp + 1);
-        console.log('solanaTimestamp', solanaTimestamp);
         setPositions((positions) =>
           positions.map((position) => ({
             ...position,
