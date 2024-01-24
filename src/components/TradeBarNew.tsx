@@ -156,6 +156,8 @@ const formatOptionLabel = ({value, label, icon}) => (
 
 const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT1;
 const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
+const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT5;
+
 
 
 
@@ -670,7 +672,7 @@ useEffect(() => {
 
 const getPriorityFeeEstimate = async () => {
     try {
-        const rpcUrl = 'https://rpc-proxy.maus-2f5.workers.dev';
+        const rpcUrl = ENDPOINT5;
 
         const requestData = {
             jsonrpc: '2.0',
@@ -724,14 +726,6 @@ const getPriorityFeeEstimate = async () => {
       BTC: {
         symbolCode: 1,
         oracleAddy: "GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU"
-      },
-      PYTH: {
-        symbolCode: 2,
-        oracleAddy: "nrYkQQQur7z8rYTST3G9GqATviK5SxTDkrqd21MW6Ue"
-      },
-      BONK: {
-        symbolCode: 3,
-        oracleAddy: "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN"
       },
       // Add more cryptocurrencies here in the same pattern
     };

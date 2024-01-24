@@ -50,6 +50,14 @@ const Futures: FC = () => {
     pythShort: "0",
     bonkLong: "0",
     bonkShort: "0",
+    jupLong: "0",
+    jupShort: "0",
+    ethLong: "0",
+    ethShort: "0",
+    tiaLong: "0",
+    tiaShort: "0",
+    suiLong: "0",
+    suiShort: "0",
 
 
 
@@ -60,7 +68,11 @@ const Futures: FC = () => {
     BTC: false,
     SOL: true,
     PYTH: false,
-    BONK: false
+    BONK: false,
+    JUP: false,
+    ETH: false,
+    TIA: false,
+    SUI: false
     // Add other cryptocurrencies as needed
   });
   const [isBitcoinSelected, setIsBitcoinSelected] = useState(false);
@@ -174,6 +186,10 @@ const Futures: FC = () => {
       SOL: 'Crypto.SOL/USD',
       PYTH: 'Crypto.PYTH/USD',
       BONK: 'Crypto.BONK/USD',
+      JUP: 'Crypto.JUP/USD',
+      ETH: 'Crypto.ETH/USD',
+      TIA: 'Crypto.TIA/USD',
+      SUI: 'Crypto.SUI/USD',
 
       // Add other mappings as necessary
     };
@@ -266,6 +282,11 @@ const Futures: FC = () => {
       'SOL': 3,
       'PYTH': 3,
       'BONK': 8,
+      'ETH': 1, 
+      'SUI': 3,
+      'TIA': 3,
+      'JUP': 3,
+
       // Add more mappings as needed
     };
       // Get the number of decimal places for the selected crypto, defaulting to a standard value if not found

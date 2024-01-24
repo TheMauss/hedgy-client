@@ -24,22 +24,42 @@ const options = [
   {
     value: 'Crypto.SOL/USD', 
     label: 'SOL/USD', 
-    icon: '/Sol1.png'
+    icon: '/coins/Sol1.png'
   },
   {
     value: 'Crypto.BTC/USD', 
     label: 'BTC/USD', 
-    icon: '/Btc1.png'
+    icon: '/coins/Btc1.png'
   },
+  {
+    value: 'Crypto.ETH/USD', 
+    label: 'ETH/USD', 
+    icon: '/coins/Btc1.png'
+  },
+ // {
+ //  value: 'Crypto.JUP/USD', 
+  //   label: 'JUP/USD', 
+   //  icon: '/coins/Coin1.png'
+   // },
   {
     value: 'Crypto.PYTH/USD', 
      label: 'PYTH/USD', 
-     icon: '/Coin1.png'
+     icon: '/coins/Coin1.png'
    },
    {
   value: 'Crypto.BONK/USD', 
   label: 'BONK/USD', 
-   icon: '/Bonk2.png'
+   icon: '/coins/Bonk2.png'
+ },
+ {
+  value: 'Crypto.TIA/USD', 
+  label: 'TIA/USD', 
+   icon: '/coins/Bonk2.png'
+ },
+ {
+  value: 'Crypto.SUI/USD', 
+  label: 'SUI/USD', 
+   icon: '/coins/Bonk2.png'
  },
   // more options here...
 ];
@@ -132,14 +152,22 @@ export const PairPicker: React.FC<PairPickerProps> = ({setSelectedCryptos, selec
            const getDecimalPlaces = (crypto) => {
             switch (crypto) {
               case 'BTC':
-                return 1; // One decimal place for BTC
+                return 1; 
+                case 'ETH':
+                  return 1; // One decimal place for BTC
               case 'SOL':
                 return 3; // Three decimal places for SOL
               // Add other cases as necessary
               case 'PYTH':
                 return 4;
+                case 'JUP':
+                  return 4;
               case 'BONK':
                 return 8;
+                case 'TIA':
+                  return 3;
+                  case 'SUI':
+                    return 3;  // Three decimal places for SOL
               default:
                 return 2; // Default number of decimal places
             }

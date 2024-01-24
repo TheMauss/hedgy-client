@@ -50,6 +50,18 @@ const datafeed = {
           } else if (symbolName === "Crypto.PYTH/USD") {
             description = "PYTH/USD";
             pricescale = 10000;
+          } else if (symbolName === "Crypto.JUP/USD") {
+            description = "JUP/USD";
+            pricescale = 10000;
+          } else if (symbolName === "Crypto.TIA/USD") {
+            description = "TIA/USD";
+            pricescale = 1000;
+          } else if (symbolName === "Crypto.SUI/USD") {
+            description = "SUI/USD";
+            pricescale = 1000;
+          } else if (symbolName === "Crypto.ETH/USD") {
+            description = "ETH/USD";
+            pricescale = 10;
           } else {
             description = symbolName;
             pricescale = 100;

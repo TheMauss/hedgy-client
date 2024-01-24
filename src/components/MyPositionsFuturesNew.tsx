@@ -25,6 +25,8 @@ import { usePriorityFee } from '../contexts/PriorityFee';
 
 const ENDPOINT1 = process.env.NEXT_PUBLIC_ENDPOINT1;
 const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
+const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT5;
+
 
 
 interface Position {
@@ -104,7 +106,11 @@ async function isUserAccountInitialized(account: PublicKey, connection: Connecti
     0: "Crypto.SOL/USD",
     1: "Crypto.BTC/USD",
     2: "Crypto.PYTH/USD",
-    3: "Crypto.BONK/USD"
+    3: "Crypto.BONK/USD",
+    4: "Crypto.JUP/USD",
+    5: "Crypto.ETH/USD",
+    6: "Crypto.TIA/USD",
+    7: "Crypto.SUI/USD",
     // Add more symbols as needed
   };
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -687,7 +693,7 @@ const handleLossChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   
   const getPriorityFeeEstimate = async () => {
     try {
-        const rpcUrl = 'https://rpc-proxy.maus-2f5.workers.dev';
+        const rpcUrl = ENDPOINT5;
   
         const requestData = {
             jsonrpc: '2.0',
@@ -704,7 +710,6 @@ const handleLossChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         };
   
         const response = await axios.post(rpcUrl, requestData);
-        console.log('Response:', response);
   
   
         if (response.status !== 200) {
@@ -756,7 +761,15 @@ const handleLossChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         oracleAccountAddress = "nrYkQQQur7z8rYTST3G9GqATviK5SxTDkrqd21MW6Ue";
     } else if (position.symbol === 3) {
        oracleAccountAddress = "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN";
-
+      } else if (position.symbol === 4) {
+        oracleAccountAddress = "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN";
+      } else if (position.symbol === 5) {
+        oracleAccountAddress = "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB";
+      } else if (position.symbol === 6) {
+        oracleAccountAddress = "funeUsHgi2QKkLdUPASRLuYkaK8JaazCEz3HikbkhVt";
+      } else if (position.symbol === 7) {
+        oracleAccountAddress = "3Qub3HaAJaa2xNY7SUqPKd3vVwTqDfDDkEUMPjXD2c1q";
+    
     } else {
         // Handle other cases or provide a default value if needed
     }
@@ -785,7 +798,6 @@ const handleLossChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
       const priorityfees = await getPriorityFeeEstimate();
       PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({ microLamports: priorityfees });
-      console.log(priorityfees,"feebaby");
     } else {
       PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 0 });
     }
@@ -832,7 +844,14 @@ const handleLossChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       oracleAccountAddress = "nrYkQQQur7z8rYTST3G9GqATviK5SxTDkrqd21MW6Ue";
   } else if (position.symbol === 3) {
      oracleAccountAddress = "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN";
-
+    } else if (position.symbol === 4) {
+      oracleAccountAddress = "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN";
+    } else if (position.symbol === 5) {
+      oracleAccountAddress = "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB";
+    } else if (position.symbol === 6) {
+      oracleAccountAddress = "funeUsHgi2QKkLdUPASRLuYkaK8JaazCEz3HikbkhVt";
+    } else if (position.symbol === 7) {
+      oracleAccountAddress = "3Qub3HaAJaa2xNY7SUqPKd3vVwTqDfDDkEUMPjXD2c1q";
   } else {
       // Handle other cases or provide a default value if needed
   }
@@ -861,7 +880,6 @@ const handleLossChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
       const priorityfees = await getPriorityFeeEstimate();
       PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({ microLamports: priorityfees });
-      console.log(priorityfees,"feebaby");
     } else {
       PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 0 });
     }
@@ -909,7 +927,14 @@ const handleLossChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       oracleAccountAddress = "nrYkQQQur7z8rYTST3G9GqATviK5SxTDkrqd21MW6Ue";
   } else if (position.symbol === 3) {
      oracleAccountAddress = "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN";
-
+    } else if (position.symbol === 4) {
+      oracleAccountAddress = "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN";
+    } else if (position.symbol === 5) {
+      oracleAccountAddress = "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB";
+    } else if (position.symbol === 6) {
+      oracleAccountAddress = "funeUsHgi2QKkLdUPASRLuYkaK8JaazCEz3HikbkhVt";
+    } else if (position.symbol === 7) {
+      oracleAccountAddress = "3Qub3HaAJaa2xNY7SUqPKd3vVwTqDfDDkEUMPjXD2c1q";
   } else {
       // Handle other cases or provide a default value if needed
   }
@@ -938,7 +963,6 @@ const handleLossChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
       const priorityfees = await getPriorityFeeEstimate();
       PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({ microLamports: priorityfees });
-      console.log(priorityfees,"feebaby");
     } else {
       PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 0 });
     }

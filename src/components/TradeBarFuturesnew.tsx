@@ -163,6 +163,7 @@ function getDynamicLeverage(longShortRatio, priceDirection) {
 
 const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT1;
 const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
+const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT5;
 
 const TradeBar: React.FC<TradeBarFuturesProps & {
   setParentDivHeight: (height: string) => void;
@@ -177,6 +178,14 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
     pythShort: string,
     bonkLong: string,
     bonkShort: string,
+    jupLong: string,
+    jupShort: string,
+    ethLong: string,
+    ethShort: string,
+    tiaLong: string,
+    tiaShort: string,
+    suiLong: string,
+    suiShort: string,
   };
   setData: (data: {
     btcLong: string;
@@ -189,6 +198,14 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
     pythShort: string,
     bonkLong: string,
     bonkShort: string,
+    jupLong: string,
+    jupShort: string,
+    ethLong: string,
+    ethShort: string,
+    tiaLong: string,
+    tiaShort: string,
+    suiLong: string,
+    suiShort: string,
   }
   ) => void;
 }> = ({ selectedCryptos, setParentDivHeight, totalBetAmount, data, setData, setPrices, setEMAPrice, prices, isBitcoinSelected, setOpeningPrice, openingPrice,
@@ -553,6 +570,10 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
         'SOL': 3,
         'PYTH': 3,
         'BONK': 8,
+        'ETH': 1, 
+        'SUI': 3,
+        'TIA': 3,
+        'JUP': 3,
         // Add more mappings as needed
       };
       // Get the number of decimal places for the selected crypto, defaulting to a standard value if not found
@@ -788,6 +809,11 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
           'SOL': 3,
           'PYTH': 3,
           'BONK': 8,
+          'ETH': 1, 
+          'SUI': 3,
+          'TIA': 3,
+          'JUP': 3,
+
           // Add more mappings as needed
         };
 
@@ -871,7 +897,7 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
 
     const getPriorityFeeEstimate = async () => {
       try {
-        const rpcUrl = 'https://rpc-proxy.maus-2f5.workers.dev';
+        const rpcUrl = ENDPOINT5;
 
         const requestData = {
           jsonrpc: '2.0',
@@ -948,6 +974,22 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
         BONK: {
           symbolCode: 3,
           oracleAddy: "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN"
+        },
+        JUP: {
+          symbolCode: 4,
+          oracleAddy: "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN"
+        },
+        ETH: {
+          symbolCode: 5,
+          oracleAddy: "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB"
+        },
+        TIA: {
+          symbolCode: 6,
+          oracleAddy: "funeUsHgi2QKkLdUPASRLuYkaK8JaazCEz3HikbkhVt"
+        },
+        SUI: {
+          symbolCode: 7,
+          oracleAddy: "3Qub3HaAJaa2xNY7SUqPKd3vVwTqDfDDkEUMPjXD2c1q"
         },
         // Add more cryptocurrencies here in the same pattern
       };

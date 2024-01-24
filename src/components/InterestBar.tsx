@@ -12,6 +12,14 @@ interface DataProps {
   pythShort: string;
   bonkLong: string;
   bonkShort: string;
+  jupLong: string,
+  jupShort: string,
+  ethLong: string,
+  ethShort: string,
+  tiaLong: string,
+  tiaShort: string,
+  suiLong: string,
+  suiShort: string,
 }
 
 interface InterestBarProps {
@@ -37,14 +45,22 @@ interface InterestBarProps {
       const getDecimalPlaces = (crypto) => {
         switch (crypto) {
           case 'BTC':
-            return 1; // One decimal place for BTC
+            return 1; 
+            case 'ETH':
+              return 1; // One decimal place for BTC
           case 'SOL':
             return 3; // Three decimal places for SOL
           // Add other cases as necessary
           case 'PYTH':
             return 4;
+            case 'JUP':
+              return 4;
           case 'BONK':
             return 8;
+            case 'TIA':
+              return 3;
+              case 'SUI':
+                return 3;  // Three decimal places for SOL
           default:
             return 2; // Default number of decimal places
         }
@@ -91,6 +107,26 @@ interface InterestBarProps {
         return {
           long: (parseFloat(data.bonkLong) / LAMPORTS_PER_SOL).toFixed(1),
           short: (parseFloat(data.bonkShort) / LAMPORTS_PER_SOL).toFixed(1)
+        };
+      }else if (sym === 'Crypto.JUP/USD') {
+        return {
+          long: (parseFloat(data.jupLong) / LAMPORTS_PER_SOL).toFixed(1),
+          short: (parseFloat(data.jupShort) / LAMPORTS_PER_SOL).toFixed(1)
+        };
+      }else if (sym === 'Crypto.ETH/USD') {
+        return {
+          long: (parseFloat(data.ethLong) / LAMPORTS_PER_SOL).toFixed(1),
+          short: (parseFloat(data.ethShort) / LAMPORTS_PER_SOL).toFixed(1)
+        };
+      }else if (sym === 'Crypto.TIA/USD') {
+        return {
+          long: (parseFloat(data.tiaLong) / LAMPORTS_PER_SOL).toFixed(1),
+          short: (parseFloat(data.tiaShort) / LAMPORTS_PER_SOL).toFixed(1)
+        };
+      }else if (sym === 'Crypto.SUI/USD') {
+        return {
+          long: (parseFloat(data.suiLong) / LAMPORTS_PER_SOL).toFixed(1),
+          short: (parseFloat(data.suiShort) / LAMPORTS_PER_SOL).toFixed(1)
         };
       } else {
         return {

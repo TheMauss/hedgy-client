@@ -38,12 +38,14 @@ export interface LongShortRatioFields {
   bonkShort1: BN
   pythLong: BN
   pythShort: BN
-  pythLong1: BN
-  pythShort1: BN
   jupLong: BN
   jupShort: BN
-  jupLong1: BN
-  jupShort1: BN
+  ethLong: BN
+  ethShort: BN
+  suiLong: BN
+  suiShort: BN
+  tiaLong: BN
+  tiaShort: BN
 }
 
 export interface LongShortRatioJSON {
@@ -81,12 +83,14 @@ export interface LongShortRatioJSON {
   bonkShort1: string
   pythLong: string
   pythShort: string
-  pythLong1: string
-  pythShort1: string
   jupLong: string
   jupShort: string
-  jupLong1: string
-  jupShort1: string
+  ethLong: string
+  ethShort: string
+  suiLong: string
+  suiShort: string
+  tiaLong: string
+  tiaShort: string
 }
 
 export class LongShortRatio {
@@ -124,12 +128,14 @@ export class LongShortRatio {
   readonly bonkShort1: BN
   readonly pythLong: BN
   readonly pythShort: BN
-  readonly pythLong1: BN
-  readonly pythShort1: BN
   readonly jupLong: BN
   readonly jupShort: BN
-  readonly jupLong1: BN
-  readonly jupShort1: BN
+  readonly ethLong: BN
+  readonly ethShort: BN
+  readonly suiLong: BN
+  readonly suiShort: BN
+  readonly tiaLong: BN
+  readonly tiaShort: BN
 
   static readonly discriminator = Buffer.from([
     18, 172, 89, 131, 240, 106, 141, 203,
@@ -170,12 +176,14 @@ export class LongShortRatio {
     borsh.u64("bonkShort1"),
     borsh.u64("pythLong"),
     borsh.u64("pythShort"),
-    borsh.u64("pythLong1"),
-    borsh.u64("pythShort1"),
     borsh.u64("jupLong"),
     borsh.u64("jupShort"),
-    borsh.u64("jupLong1"),
-    borsh.u64("jupShort1"),
+    borsh.u64("ethLong"),
+    borsh.u64("ethShort"),
+    borsh.u64("suiLong"),
+    borsh.u64("suiShort"),
+    borsh.u64("tiaLong"),
+    borsh.u64("tiaShort"),
   ])
 
   constructor(fields: LongShortRatioFields) {
@@ -213,12 +221,14 @@ export class LongShortRatio {
     this.bonkShort1 = fields.bonkShort1
     this.pythLong = fields.pythLong
     this.pythShort = fields.pythShort
-    this.pythLong1 = fields.pythLong1
-    this.pythShort1 = fields.pythShort1
     this.jupLong = fields.jupLong
     this.jupShort = fields.jupShort
-    this.jupLong1 = fields.jupLong1
-    this.jupShort1 = fields.jupShort1
+    this.ethLong = fields.ethLong
+    this.ethShort = fields.ethShort
+    this.suiLong = fields.suiLong
+    this.suiShort = fields.suiShort
+    this.tiaLong = fields.tiaLong
+    this.tiaShort = fields.tiaShort
   }
 
   static async fetch(
@@ -299,12 +309,14 @@ export class LongShortRatio {
       bonkShort1: dec.bonkShort1,
       pythLong: dec.pythLong,
       pythShort: dec.pythShort,
-      pythLong1: dec.pythLong1,
-      pythShort1: dec.pythShort1,
       jupLong: dec.jupLong,
       jupShort: dec.jupShort,
-      jupLong1: dec.jupLong1,
-      jupShort1: dec.jupShort1,
+      ethLong: dec.ethLong,
+      ethShort: dec.ethShort,
+      suiLong: dec.suiLong,
+      suiShort: dec.suiShort,
+      tiaLong: dec.tiaLong,
+      tiaShort: dec.tiaShort,
     })
   }
 
@@ -344,12 +356,14 @@ export class LongShortRatio {
       bonkShort1: this.bonkShort1.toString(),
       pythLong: this.pythLong.toString(),
       pythShort: this.pythShort.toString(),
-      pythLong1: this.pythLong1.toString(),
-      pythShort1: this.pythShort1.toString(),
       jupLong: this.jupLong.toString(),
       jupShort: this.jupShort.toString(),
-      jupLong1: this.jupLong1.toString(),
-      jupShort1: this.jupShort1.toString(),
+      ethLong: this.ethLong.toString(),
+      ethShort: this.ethShort.toString(),
+      suiLong: this.suiLong.toString(),
+      suiShort: this.suiShort.toString(),
+      tiaLong: this.tiaLong.toString(),
+      tiaShort: this.tiaShort.toString(),
     }
   }
 
@@ -389,12 +403,14 @@ export class LongShortRatio {
       bonkShort1: new BN(obj.bonkShort1),
       pythLong: new BN(obj.pythLong),
       pythShort: new BN(obj.pythShort),
-      pythLong1: new BN(obj.pythLong1),
-      pythShort1: new BN(obj.pythShort1),
       jupLong: new BN(obj.jupLong),
       jupShort: new BN(obj.jupShort),
-      jupLong1: new BN(obj.jupLong1),
-      jupShort1: new BN(obj.jupShort1),
+      ethLong: new BN(obj.ethLong),
+      ethShort: new BN(obj.ethShort),
+      suiLong: new BN(obj.suiLong),
+      suiShort: new BN(obj.suiShort),
+      tiaLong: new BN(obj.tiaLong),
+      tiaShort: new BN(obj.tiaShort),
     })
   }
 }

@@ -25,6 +25,9 @@ export interface UserAccountFields {
   rebates: BN
   lastTradeEpoch: BN
   rebateTier: BN
+  userBetAmountEth: BN
+  userBetAmountSui: BN
+  userBetAmountTia: BN
 }
 
 export interface UserAccountJSON {
@@ -49,6 +52,9 @@ export interface UserAccountJSON {
   rebates: string
   lastTradeEpoch: string
   rebateTier: string
+  userBetAmountEth: string
+  userBetAmountSui: string
+  userBetAmountTia: string
 }
 
 export class UserAccount {
@@ -73,6 +79,9 @@ export class UserAccount {
   readonly rebates: BN
   readonly lastTradeEpoch: BN
   readonly rebateTier: BN
+  readonly userBetAmountEth: BN
+  readonly userBetAmountSui: BN
+  readonly userBetAmountTia: BN
 
   static readonly discriminator = Buffer.from([
     211, 33, 136, 16, 186, 110, 242, 127,
@@ -100,6 +109,9 @@ export class UserAccount {
     borsh.u64("rebates"),
     borsh.u64("lastTradeEpoch"),
     borsh.u64("rebateTier"),
+    borsh.u64("userBetAmountEth"),
+    borsh.u64("userBetAmountSui"),
+    borsh.u64("userBetAmountTia"),
   ])
 
   constructor(fields: UserAccountFields) {
@@ -124,6 +136,9 @@ export class UserAccount {
     this.rebates = fields.rebates
     this.lastTradeEpoch = fields.lastTradeEpoch
     this.rebateTier = fields.rebateTier
+    this.userBetAmountEth = fields.userBetAmountEth
+    this.userBetAmountSui = fields.userBetAmountSui
+    this.userBetAmountTia = fields.userBetAmountTia
   }
 
   static async fetch(
@@ -191,6 +206,9 @@ export class UserAccount {
       rebates: dec.rebates,
       lastTradeEpoch: dec.lastTradeEpoch,
       rebateTier: dec.rebateTier,
+      userBetAmountEth: dec.userBetAmountEth,
+      userBetAmountSui: dec.userBetAmountSui,
+      userBetAmountTia: dec.userBetAmountTia,
     })
   }
 
@@ -217,6 +235,9 @@ export class UserAccount {
       rebates: this.rebates.toString(),
       lastTradeEpoch: this.lastTradeEpoch.toString(),
       rebateTier: this.rebateTier.toString(),
+      userBetAmountEth: this.userBetAmountEth.toString(),
+      userBetAmountSui: this.userBetAmountSui.toString(),
+      userBetAmountTia: this.userBetAmountTia.toString(),
     }
   }
 
@@ -243,6 +264,9 @@ export class UserAccount {
       rebates: new BN(obj.rebates),
       lastTradeEpoch: new BN(obj.lastTradeEpoch),
       rebateTier: new BN(obj.rebateTier),
+      userBetAmountEth: new BN(obj.userBetAmountEth),
+      userBetAmountSui: new BN(obj.userBetAmountSui),
+      userBetAmountTia: new BN(obj.userBetAmountTia),
     })
   }
 }
