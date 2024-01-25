@@ -1248,7 +1248,7 @@ onBlur={handleInputBlur} />
                     <img
                     className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                     alt=""
-                    src="/coins/1200x1200/Eth.png"
+                    src="/coins/1200x1200/Eth1.png"
                   /> :
                   currentItem.symbol === 6 ?
                   <img
@@ -1756,7 +1756,7 @@ onBlur={handleInputBlur} />
                     <img
                     className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                     alt=""
-                    src="/coins/1200x1200/Eth.png"
+                    src="/coins/1200x1200/Eth1.png"
                   /> :
                   currentItem.symbol === 6 ?
                   <img
