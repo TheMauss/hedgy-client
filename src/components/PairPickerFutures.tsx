@@ -31,16 +31,16 @@ const options = [
     label: 'BTC/USD', 
     icon: '/coins/120x120/Btc.png'
   },
-  {
-    value: 'Crypto.ETH/USD', 
-    label: 'ETH/USD', 
-    icon: '/coins/120x120/Eth.png'
-  },
-// {
-// value: 'Crypto.JUP/USD', 
-// label: 'JUP/USD', 
-//   icon: '/coins/120x120/Jup.png'
-//  },
+{
+ value: 'Crypto.ETH/USD', 
+  label: 'ETH/USD', 
+  icon: '/coins/120x120/Eth.png'
+ },
+{
+ value: 'Crypto.JUP/USD', 
+ label: 'JUP/USD', 
+  icon: '/coins/120x120/Jup.png'
+ },
   {
     value: 'Crypto.PYTH/USD', 
      label: 'PYTH/USD', 
@@ -52,14 +52,14 @@ const options = [
    icon: '/coins/120x120/Bonk.png'
  },
  {
-  value: 'Crypto.TIA/USD', 
-  label: 'TIA/USD', 
-   icon: '/coins/120x120/Tia.png'
+ value: 'Crypto.TIA/USD', 
+label: 'TIA/USD', 
+ icon: '/coins/120x120/Tia.png'
  },
  {
-  value: 'Crypto.SUI/USD', 
-  label: 'SUI/USD', 
-   icon: '/coins/120x120/Sei.png'
+ value: 'Crypto.SUI/USD', 
+label: 'SUI/USD', 
+ icon: '/coins/120x120/Sui.png'
  },
   // more options here...
 ];

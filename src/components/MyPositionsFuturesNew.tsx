@@ -1260,7 +1260,7 @@ onBlur={handleInputBlur} />
                 <img
                 className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                 alt=""
-                src="/coins/1200x1200/Sei.png"
+                src="/coins/1200x1200/Sui.png"
               /> :
                             null
                             }
@@ -1404,7 +1404,7 @@ onBlur={handleInputBlur} />
       item.symbol === 6 ?
       <img src="/coins/120x120/Tia.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 7 ?
-      <img src="/coins/120x120/Sei.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/120x120/Sui.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
   null
   }
   <p className="ml-2 ">{`${item.futuresContract.slice(0, 4)}...${item.futuresContract.slice(-4)}`}</p> 
@@ -1535,7 +1535,7 @@ onBlur={handleInputBlur} />
       item.symbol === 6 ?
       <img src="/coins/120x120/Tia.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 7 ?
-      <img src="/coins/120x120/Sei.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/120x120/Sui.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
   null
   }
                           <p className="ml-2 ">{`${item.futuresContract.slice(0, 4)}...${item.futuresContract.slice(-4)}`}</p> 
@@ -1767,7 +1767,7 @@ onBlur={handleInputBlur} />
                 <img
                 className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                 alt=""
-                src="/coins/1200x1200/Sei.png"
+                src="/coins/1200x1200/Sui.png"
               /> :
                             null
                             }
@@ -1915,7 +1915,7 @@ onBlur={handleInputBlur} />
       item.symbol === 6 ?
       <img src="/coins/120x120/Tia.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 7 ?
-      <img src="/coins/120x120/Sei.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/120x120/Sui.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
   null
   }
   <p className="ml-2 ">{`${item.futuresContract.slice(0, 4)}...${item.futuresContract.slice(-4)}`}</p> 
@@ -2021,7 +2021,7 @@ onBlur={handleInputBlur} />
       item.symbol === 6 ?
       <img src="/coins/120x120/Tia.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 7 ?
-      <img src="/coins/120x120/Sei.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/120x120/Sui.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
   null
   }
                           <p className="ml-2 ">{`${item.futuresContract.slice(0, 4)}...${item.futuresContract.slice(-4)}`}</p> 
