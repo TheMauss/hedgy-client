@@ -1345,13 +1345,14 @@ onBlur={handleInputBlur} />
         <div className="flex flex-col items-start justify-center gap-[32px] text-5xl">
           <div className="relative leading-[48px] ">Mark Price</div>
           <div className="relative text-[78px] leading-[100%] font-medium text-white">
-          {item.symbol === 1 ? (item.liquidationPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.currentPrice / 100000000).toFixed(3) :
-              item.symbol === 2 ? (item.currentPrice / 100000000).toFixed(4):
-              item.symbol === 3 ? (item.currentPrice / 100000000).toFixed(7) :
-              item.symbol === 4 ? (item.currentPrice / 100000000).toFixed(3) :
-              item.symbol === 5 ? (item.currentPrice / 100000000).toFixed(1) :
-              item.symbol === 6 ? (item.currentPrice / 100000000).toFixed(3) :
-              item.symbol === 7 ? (item.currentPrice / 100000000).toFixed(3) : null}
+          {currentItem.symbol === 1 ? (currentItem.currentPrice / 100000000).toFixed(1) :
+          currentItem.symbol === 0 ? (currentItem.currentPrice / 100000000).toFixed(3) :
+              currentItem.symbol === 2 ? (currentItem.currentPrice / 100000000).toFixed(4):
+              currentItem.symbol === 3 ? (currentItem.currentPrice / 100000000).toFixed(7) :
+              currentItem.symbol === 4 ? (currentItem.currentPrice / 100000000).toFixed(3) :
+              currentItem.symbol === 5 ? (currentItem.currentPrice / 100000000).toFixed(1) :
+              currentItem.symbol === 6 ? (currentItem.currentPrice / 100000000).toFixed(3) :
+              currentItem.symbol === 7 ? (currentItem.currentPrice / 100000000).toFixed(3) : null}
           </div>
         </div>
       </div>
@@ -1420,7 +1421,7 @@ onBlur={handleInputBlur} />
               item.symbol === 6 ? (item.initialPrice / 100000000).toFixed(3) :
               item.symbol === 7 ? (item.initialPrice / 100000000).toFixed(3) : null}</p>                </div>
               <div className="flex flex-col w-[16%] min-w-[90px] text-[0.9rem] text-white   font-poppins ">
-                  <div>{item.symbol === 1 ? (item.liquidationPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.currentPrice / 100000000).toFixed(3) :
+                  <div>{item.symbol === 1 ? (item.currentPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.currentPrice / 100000000).toFixed(3) :
               item.symbol === 2 ? (item.currentPrice / 100000000).toFixed(4):
               item.symbol === 3 ? (item.currentPrice / 100000000).toFixed(7) :
               item.symbol === 4 ? (item.currentPrice / 100000000).toFixed(3) :
@@ -1594,7 +1595,7 @@ onBlur={handleInputBlur} />
               <div className="flex flex-col items-end justify-center gap-[6px]">
                 <div className="relative leading-[12px] text-grey-text">Mark (Liquidation)</div>
                 <div className="flex flex-col items-end justify-center gap-[4px] text-sm text-white">
-                  <div className="relative leading-[12px]"> {item.symbol === 1 ? (item.liquidationPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.currentPrice / 100000000).toFixed(3) :
+                  <div className="relative leading-[12px]"> {item.symbol === 1 ? (item.currentPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.currentPrice / 100000000).toFixed(3) :
               item.symbol === 2 ? (item.currentPrice / 100000000).toFixed(4):
               item.symbol === 3 ? (item.currentPrice / 100000000).toFixed(7) :
               item.symbol === 4 ? (item.currentPrice / 100000000).toFixed(3) :
@@ -1851,7 +1852,13 @@ onBlur={handleInputBlur} />
           <div className="flex flex-col items-start justify-center gap-[32px] text-5xl">
             <div className="relative leading-[48px] ">Exit Price</div>
             <div className="relative text-[78px] leading-[100%] font-medium text-white">
-            {currentItem.symbol === 1 ? (currentItem.finalPrice / 100000000).toFixed(1) : currentItem.symbol === 0 ? (currentItem.finalPrice / 100000000).toFixed(3) : currentItem.symbol === 2 ? (currentItem.finalPrice / 100000000).toFixed(4): currentItem.symbol === 3 ? (currentItem.finalPrice / 100000000).toFixed(7) : null}
+            {currentItem.symbol === 1 ? (currentItem.finalPrice / 100000000).toFixed(1) : currentItem.symbol === 0 ? (currentItem.finalPrice / 100000000).toFixed(3) :
+              currentItem.symbol === 2 ? (currentItem.finalPrice / 100000000).toFixed(4):
+              currentItem.symbol === 3 ? (currentItem.finalPrice / 100000000).toFixed(7) :
+              currentItem.symbol === 4 ? (currentItem.finalPrice / 100000000).toFixed(3) :
+              currentItem.symbol === 5 ? (currentItem.finalPrice / 100000000).toFixed(1) :
+              currentItem.symbol === 6 ? (currentItem.finalPrice / 100000000).toFixed(3) :
+              currentItem.symbol === 7 ? (currentItem.finalPrice / 100000000).toFixed(3) : null}
             </div>
           </div>
         </div>
