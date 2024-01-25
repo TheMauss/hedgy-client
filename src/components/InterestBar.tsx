@@ -87,54 +87,28 @@ interface InterestBarProps {
 
     const MAX_NOTIONAL_POSITIONS = 1000;
 
-    const getOpenInterestValues = (sym: string) => {
-      if (sym === 'Crypto.BTC/USD') {
+    const getOpenInterestValues = (sym) => {
+      const mapping = {
+        'Crypto.BTC/USD': { long: 'btcLong', short: 'btcShort' },
+        'Crypto.SOL/USD': { long: 'solLong', short: 'solShort' },
+        'Crypto.PYTH/USD': { long: 'pythLong', short: 'pythShort' },
+        'Crypto.BONK/USD': { long: 'bonkLong', short: 'bonkShort' },
+        'Crypto.JUP/USD': { long: 'jupLong', short: 'jupShort' },
+        'Crypto.ETH/USD': { long: 'ethLong', short: 'ethShort' },
+        'Crypto.TIA/USD': { long: 'tiaLong', short: 'tiaShort' },
+        'Crypto.SUI/USD': { long: 'suiLong', short: 'suiShort' }
+      };
+    
+      if (mapping[sym]) {
         return {
-          long: (parseFloat(data.btcLong) / LAMPORTS_PER_SOL).toFixed(1),
-          short: (parseFloat(data.btcShort) / LAMPORTS_PER_SOL).toFixed(1),
-        };
-      } else if (sym === 'Crypto.SOL/USD') {
-        return {
-          long: (parseFloat(data.solLong) / LAMPORTS_PER_SOL).toFixed(1),
-          short: (parseFloat(data.solShort) / LAMPORTS_PER_SOL).toFixed(1)
-        };
-      }else if (sym === 'Crypto.PYTH/USD') {
-        return {
-          long: (parseFloat(data.pythLong) / LAMPORTS_PER_SOL).toFixed(1),
-          short: (parseFloat(data.pythShort) / LAMPORTS_PER_SOL).toFixed(1)
-        };
-      }else if (sym === 'Crypto.BONK/USD') {
-        return {
-          long: (parseFloat(data.bonkLong) / LAMPORTS_PER_SOL).toFixed(1),
-          short: (parseFloat(data.bonkShort) / LAMPORTS_PER_SOL).toFixed(1)
-        };
-      }else if (sym === 'Crypto.JUP/USD') {
-        return {
-          long: (parseFloat(data.jupLong) / LAMPORTS_PER_SOL).toFixed(1),
-          short: (parseFloat(data.jupShort) / LAMPORTS_PER_SOL).toFixed(1)
-        };
-      }else if (sym === 'Crypto.ETH/USD') {
-        return {
-          long: (parseFloat(data.ethLong) / LAMPORTS_PER_SOL).toFixed(1),
-          short: (parseFloat(data.ethShort) / LAMPORTS_PER_SOL).toFixed(1)
-        };
-      }else if (sym === 'Crypto.TIA/USD') {
-        return {
-          long: (parseFloat(data.tiaLong) / LAMPORTS_PER_SOL).toFixed(1),
-          short: (parseFloat(data.tiaShort) / LAMPORTS_PER_SOL).toFixed(1)
-        };
-      }else if (sym === 'Crypto.SUI/USD') {
-        return {
-          long: (parseFloat(data.suiLong) / LAMPORTS_PER_SOL).toFixed(1),
-          short: (parseFloat(data.suiShort) / LAMPORTS_PER_SOL).toFixed(1)
+          long: (parseFloat(data[mapping[sym].long]) / LAMPORTS_PER_SOL).toFixed(1),
+          short: (parseFloat(data[mapping[sym].short]) / LAMPORTS_PER_SOL).toFixed(1)
         };
       } else {
-        return {
-          long: "0",
-          short: "0"
-        };
+        return { long: "0", short: "0" };
       }
     };
+    
 
     const { long, short } = getOpenInterestValues(symbol);
     
