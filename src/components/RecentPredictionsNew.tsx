@@ -323,21 +323,21 @@ percentage = Number(percentage);
                     >
                       <div className="flex items-center">
                       {item.symbol === 0 ?
-    <img src="/coins/120x120/Sol.png" alt="Logo" width="24" height="24" className="pb-1"/> :
+    <img src="/coins/60x60/Sol.png" alt="Logo" width="24" height="24" className="pb-1"/> :
   item.symbol === 1 ?
-    <img src="/coins/120x120/Btc.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    <img src="/coins/60x60/Btc.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
     item.symbol === 2 ?
-    <img src="/coins/120x120/Pyth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    <img src="/coins/60x60/Pyth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
     item.symbol === 3 ?
-    <img src="/coins/120x120/Bonk.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    <img src="/coins/60x60/Bonk.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
     item.symbol === 4 ?
-    <img src="/coins/120x120/Jup.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    <img src="/coins/60x60/Jup.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
     item.symbol === 5 ?
-    <img src="/coins/120x120/Eth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    <img src="/coins/60x60/Eth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
     item.symbol === 6 ?
-    <img src="/coins/120x120/Tia.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    <img src="/coins/60x60/Tia.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
     item.symbol === 7 ?
-    <img src="/coins/120x120/Sui.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    <img src="/coins/60x60/Sui.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
   null
   }
                         <p className="ml-2 text-grey-text">{`${'binaryOption' in item ? item.playerAcc.slice(0, 2) : item.playerAcc.slice(0, 2)}..${'binaryOption' in item ? item.playerAcc.slice(-2) : item.playerAcc.slice(-2)}`}</p>

@@ -514,13 +514,13 @@ const MyPositions: FC<MyPositionsProps> = ({ prices, setLatestOpenedPosition, ha
                                   <img
                                   className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                                   alt=""
-                                  src="/coins/1200x1200/Sol.png"
+                                  src="/coins/320x320/Sol.png"
                                 />  :
                             currentItem.symbol === 1 ?
                             <img
                             className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                             alt=""
-                            src="/coins/1200x1200/Btc.png"
+                            src="/coins/320x320/Btc.png"
                           />  : 
                             null
                             }
@@ -640,13 +640,13 @@ const MyPositions: FC<MyPositionsProps> = ({ prices, setLatestOpenedPosition, ha
                 >
                   <div className="flex items-center ">
   {item.symbol === 0 ?
-    <img src="/coins/120x120/Sol.png" alt="Logo" width="24" height="24" className="pb-1"/> :
+    <img src="/coins/60x60/Sol.png" alt="Logo" width="24" height="24" className="pb-1"/> :
   item.symbol === 1 ?
-    <img src="/coins/120x120/Btc.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    <img src="/coins/60x60/Btc.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
     item.symbol === 2 ?
-    <img src="/coins/120x120/Pyth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    <img src="/coins/60x60/Pyth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
     item.symbol === 3 ?
-    <img src="/coins/120x120/Bonk.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    <img src="/coins/60x60/Bonk.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
   null
   }
   <p className="text-grey-text pt-3 pb-2.5 ml-2">{`${item.binaryOption.slice(0, 4)}...${item.binaryOption.slice(-4)}`}</p> 
@@ -727,9 +727,9 @@ const MyPositions: FC<MyPositionsProps> = ({ prices, setLatestOpenedPosition, ha
                       >
                               <div className="flex items-center rounded-l">
                                 {item.symbol === 0 ?
-                               <img src="/coins/120x120/Sol.png" alt="Logo" width="24" height="24" className="pt-0.5"/> :
+                               <img src="/coins/60x60/Sol.png" alt="Logo" width="24" height="24" className="pt-0.5"/> :
                           item.symbol === 1 ?
-                                      <img src="/coins/120x120/Btc.png" alt="Logo" width="24" height="24" className="pt-0.5"/> : 
+                                      <img src="/coins/60x60/Btc.png" alt="Logo" width="24" height="24" className="pt-0.5"/> : 
                                     null
                                             }
                           <p className="ml-2 ">{`${item.binaryOption.slice(0, 4)}...${item.binaryOption.slice(-4)}`}</p> 
@@ -893,13 +893,13 @@ const MyPositions: FC<MyPositionsProps> = ({ prices, setLatestOpenedPosition, ha
                                   <img
                                   className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                                   alt=""
-                                  src="/coins/1200x1200/Sol.png"
+                                  src="/coins/320x320/Sol.png"
                                 />  :
                             currentItem.symbol === 1 ?
                             <img
                             className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                             alt=""
-                            src="/coins/1200x1200/Btc.png"
+                            src="/coins/320x320/Btc.png"
                             />  : 
                             null
                             }
@@ -1022,13 +1022,13 @@ const MyPositions: FC<MyPositionsProps> = ({ prices, setLatestOpenedPosition, ha
                 >
                   <div className="flex items-center">
   {item.symbol === 0 ?
-    <img src="/coins/120x120/Sol.png" alt="Logo" width="24" height="24" className="pb-1"/> :
+    <img src="/coins/60x60/Sol.png" alt="Logo" width="24" height="24" className="pb-1"/> :
   item.symbol === 1 ?
-    <img src="/coins/120x120/Btc.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    <img src="/coins/60x60/Btc.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
     item.symbol === 2 ?
-    <img src="/coins/120x120/Coin1.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    <img src="/coins/60x60/Coin1.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
     item.symbol === 3 ?
-    <img src="/coins/120x120/Bonk1.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    <img src="/coins/60x60/Bonk1.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
   null
   }
   <p className="text-grey-text pt-3 pb-2.5 ml-2">{`${item.binaryOption.slice(0, 4)}...${item.binaryOption.slice(-4)}`}</p> 
@@ -1110,9 +1110,9 @@ const MyPositions: FC<MyPositionsProps> = ({ prices, setLatestOpenedPosition, ha
                       >
                               <div className="flex items-center rounded-l">
                                 {item.symbol === 0 ?
-                               <img src="/coins/120x120/Sol.png" alt="Logo" width="24" height="24" className="pt-0.5"/> :
+                               <img src="/coins/60x60/Sol.png" alt="Logo" width="24" height="24" className="pt-0.5"/> :
                           item.symbol === 1 ?
-                                      <img src="/coins/120x120/Btc.png" alt="Logo" width="24" height="24" className="pt-0.5"/> : 
+                                      <img src="/coins/60x60/Btc.png" alt="Logo" width="24" height="24" className="pt-0.5"/> : 
                                     null
                                             }
                           <p className="ml-2 ">{`${item.binaryOption.slice(0, 4)}...${item.binaryOption.slice(-4)}`}</p> 

@@ -25,12 +25,12 @@ const options = [
   {
     value: 'Crypto.SOL/USD', 
     label: 'SOL/USD', 
-    icon: '/coins/120x120/Sol.png'
+    icon: '/coins/60x60/Sol.png'
   },
   {
     value: 'Crypto.BTC/USD', 
     label: 'BTC/USD', 
-    icon: '/coins/120x120/Btc.png'
+    icon: '/coins/60x60/Btc.png'
   },
 
   // more options here...
@@ -60,7 +60,21 @@ const customStyles = {
     borderRadius: '0.5rem',
     boxShadow: 'none',
     borderColor: '#434665',
-    backgroundColor: '#151722', // Change color to match your theme
+    className: "custom-scrollbar",
+    backgroundColor: '#1d202f', // Change color to match your theme
+    '::-webkit-scrollbar': {
+      width: '0px',
+      height: '3px'
+    },
+    '::-webkit-scrollbar-track': {
+      background: '#f1f1f1',
+    },
+    '::-webkit-scrollbar-thumb': {
+      background: '#888',
+    },
+    '::-webkit-scrollbar-thumb:hover': {
+      background: '#555',
+    },
   }),
   control: (provided, state) => {
     const windowWidth = getWindowWidth();
@@ -92,9 +106,9 @@ const customStyles = {
     fontWeight: '600',
     borderRadius: '0.5rem',
     borderColor: state.isFocused ? '#434665' : '#434665',
-    backgroundColor: '#151722',
+    backgroundColor: '#1d202f',
     ':hover': {
-      backgroundColor: '#1d202f' ,
+      backgroundColor: '#434665' ,
     }
   }),
   
@@ -104,7 +118,6 @@ const customStyles = {
     return { ...provided, opacity, transition, color: '#A9AAB7', fontWeight: '600' }; // change the color here
   }
 };
-
 
 
 

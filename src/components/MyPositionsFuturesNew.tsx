@@ -1218,49 +1218,49 @@ onBlur={handleInputBlur} />
                                   <img
                                   className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                                   alt=""
-                                  src="/coins/1200x1200/Sol.png"
+                                  src="/coins/320x320/Sol.png"
                                 />  :
                             currentItem.symbol === 1 ?
                             <img
                             className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                             alt=""
-                            src="/coins/1200x1200/Btc.png"
+                            src="/coins/320x320/Btc.png"
                           />  : 
                           currentItem.symbol === 2 ?
                           <img
                           className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                           alt=""
-                          src="/coins/1200x1200/Pyth.png"
+                          src="/coins/320x320/Pyth.png"
                         /> :
                         currentItem.symbol === 3 ?
                         <img
                         className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                         alt=""
-                        src="/coins/1200x1200/Bonk.png"
+                        src="/coins/320x320/Bonk.png"
                       /> :
                       currentItem.symbol === 4 ?
                       <img
                       className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                       alt=""
-                      src="/coins/1200x1200/Jup.png"
+                      src="/coins/320x320/Jup.png"
                     /> :
                     currentItem.symbol === 5 ?
                     <img
                     className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                     alt=""
-                    src="/coins/1200x1200/Eth1.png"
+                    src="/coins/320x320/Eth1.png"
                   /> :
                   currentItem.symbol === 6 ?
                   <img
                   className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                   alt=""
-                  src="/coins/1200x1200/Tia.png"
+                  src="/coins/320x320/Tia.png"
                 /> :
                 currentItem.symbol === 7 ?
                 <img
                 className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                 alt=""
-                src="/coins/1200x1200/Sui.png"
+                src="/coins/320x320/Sui.png"
               /> :
                             null
                             }
@@ -1391,21 +1391,21 @@ onBlur={handleInputBlur} />
                 >
 <div className="flex justify-center items-center rounded-l">
 {item.symbol === 0 ?
-    <img src="/coins/120x120/Sol.png" alt="Logo" width="24" height="24" className="pb-1"/> :
+    <img src="/coins/60x60/Sol.png" alt="Logo" width="24" height="24" className="pb-1"/> :
     item.symbol === 1 ?
-      <img src="/coins/120x120/Btc.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Btc.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 2 ?
-      <img src="/coins/120x120/Pyth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Pyth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 3 ?
-      <img src="/coins/120x120/Bonk.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Bonk.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 4 ?
-      <img src="/coins/120x120/Jup.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Jup.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 5 ?
-      <img src="/coins/120x120/Eth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Eth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 6 ?
-      <img src="/coins/120x120/Tia.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Tia.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 7 ?
-      <img src="/coins/120x120/Sui.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Sui.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
   null
   }
   <p className="ml-2 ">{`${item.futuresContract.slice(0, 4)}...${item.futuresContract.slice(-4)}`}</p> 
@@ -1522,21 +1522,21 @@ onBlur={handleInputBlur} />
                       >
                               <div className="flex items-center rounded-l">
                               {item.symbol === 0 ?
-    <img src="/coins/120x120/Sol.png" alt="Logo" width="24" height="24" className="pb-1"/> :
+    <img src="/coins/60x60/Sol.png" alt="Logo" width="24" height="24" className="pb-1"/> :
     item.symbol === 1 ?
-      <img src="/coins/120x120/Btc.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Btc.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 2 ?
-      <img src="/coins/120x120/Pyth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Pyth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 3 ?
-      <img src="/coins/120x120/Bonk.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Bonk.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 4 ?
-      <img src="/coins/120x120/Jup.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Jup.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 5 ?
-      <img src="/coins/120x120/Eth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Eth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 6 ?
-      <img src="/coins/120x120/Tia.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Tia.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 7 ?
-      <img src="/coins/120x120/Sui.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Sui.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
   null
   }
                           <p className="ml-2 ">{`${item.futuresContract.slice(0, 4)}...${item.futuresContract.slice(-4)}`}</p> 
@@ -1726,49 +1726,49 @@ onBlur={handleInputBlur} />
                                   <img
                                   className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                                   alt=""
-                                  src="/coins/1200x1200/Sol.png"
+                                  src="/coins/320x320/Sol.png"
                                 />  :
                             currentItem.symbol === 1 ?
                             <img
                             className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                             alt=""
-                            src="/coins/1200x1200/Btc.png"
+                            src="/coins/320x320/Btc.png"
                           />  : 
                           currentItem.symbol === 2 ?
                           <img
                           className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                           alt=""
-                          src="/coins/1200x1200/Pyth.png"
+                          src="/coins/320x320/Pyth.png"
                         /> :
                         currentItem.symbol === 3 ?
                         <img
                         className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                         alt=""
-                        src="/coins/1200x1200/Bonk.png"
+                        src="/coins/320x320/Bonk.png"
                       /> :
                       currentItem.symbol === 4 ?
                       <img
                       className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                       alt=""
-                      src="/coins/1200x1200/Jup.png"
+                      src="/coins/320x320/Jup.png"
                     /> :
                     currentItem.symbol === 5 ?
                     <img
                     className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                     alt=""
-                    src="/coins/1200x1200/Eth1.png"
+                    src="/coins/320x320/Eth1.png"
                   /> :
                   currentItem.symbol === 6 ?
                   <img
                   className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                   alt=""
-                  src="/coins/1200x1200/Tia.png"
+                  src="/coins/320x320/Tia.png"
                 /> :
                 currentItem.symbol === 7 ?
                 <img
                 className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                 alt=""
-                src="/coins/1200x1200/Sui.png"
+                src="/coins/320x320/Sui.png"
               /> :
                             null
                             }
@@ -1908,21 +1908,21 @@ onBlur={handleInputBlur} />
                 >
 <div className="flex items-center justify-center rounded-l">
 {item.symbol === 0 ?
-    <img src="/coins/120x120/Sol.png" alt="Logo" width="24" height="24" className="pb-1"/> :
+    <img src="/coins/60x60/Sol.png" alt="Logo" width="24" height="24" className="pb-1"/> :
     item.symbol === 1 ?
-      <img src="/coins/120x120/Btc.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Btc.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 2 ?
-      <img src="/coins/120x120/Pyth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Pyth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 3 ?
-      <img src="/coins/120x120/Bonk.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Bonk.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 4 ?
-      <img src="/coins/120x120/Jup.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Jup.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 5 ?
-      <img src="/coins/120x120/Eth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Eth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 6 ?
-      <img src="/coins/120x120/Tia.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Tia.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 7 ?
-      <img src="/coins/120x120/Sui.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Sui.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
   null
   }
   <p className="ml-2 ">{`${item.futuresContract.slice(0, 4)}...${item.futuresContract.slice(-4)}`}</p> 
@@ -2014,21 +2014,21 @@ onBlur={handleInputBlur} />
                       >
                               <div className="flex items-center justify-center rounded-l">
                               {item.symbol === 0 ?
-    <img src="/coins/120x120/Sol.png" alt="Logo" width="24" height="24" className="pb-1"/> :
+    <img src="/coins/60x60/Sol.png" alt="Logo" width="24" height="24" className="pb-1"/> :
     item.symbol === 1 ?
-      <img src="/coins/120x120/Btc.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Btc.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 2 ?
-      <img src="/coins/120x120/Pyth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Pyth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 3 ?
-      <img src="/coins/120x120/Bonk.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Bonk.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 4 ?
-      <img src="/coins/120x120/Jup.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Jup.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 5 ?
-      <img src="/coins/120x120/Eth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Eth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 6 ?
-      <img src="/coins/120x120/Tia.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Tia.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
       item.symbol === 7 ?
-      <img src="/coins/120x120/Sui.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      <img src="/coins/60x60/Sui.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
   null
   }
                           <p className="ml-2 ">{`${item.futuresContract.slice(0, 4)}...${item.futuresContract.slice(-4)}`}</p> 

@@ -24,42 +24,42 @@ const options = [
   {
     value: 'Crypto.SOL/USD', 
     label: 'SOL/USD', 
-    icon: '/coins/120x120/Sol.png'
+    icon: '/coins/60x60/Sol.png'
   },
   {
     value: 'Crypto.BTC/USD', 
     label: 'BTC/USD', 
-    icon: '/coins/120x120/Btc.png'
+    icon: '/coins/60x60/Btc.png'
   },
- // {
-  //  value: 'Crypto.ETH/USD', 
-  //  label: 'ETH/USD', 
-  //  icon: '/coins/120x120/Eth.png'
-  // },
+ {
+ value: 'Crypto.ETH/USD', 
+  label: 'ETH/USD', 
+  icon: '/coins/60x60/Eth.png'
+ },
 // {
 // value: 'Crypto.JUP/USD', 
 // label: 'JUP/USD', 
-//   icon: '/coins/120x120/Jup.png'
+//   icon: '/coins/60x60/Jup.png'
 //  },
   {
     value: 'Crypto.PYTH/USD', 
      label: 'PYTH/USD', 
-     icon: '/coins/120x120/Pyth.png'
+     icon: '/coins/60x60/Pyth.png'
    },
    {
   value: 'Crypto.BONK/USD', 
   label: 'BONK/USD', 
-   icon: '/coins/120x120/Bonk.png'
+   icon: '/coins/60x60/Bonk.png'
  },
  // {
  // value: 'Crypto.TIA/USD', 
  // label: 'TIA/USD', 
- //  icon: '/coins/120x120/Tia.png'
+ //  icon: '/coins/60x60/Tia.png'
 // },
 // {
 //  value: 'Crypto.SUI/USD', 
  // label: 'SUI/USD', 
- //  icon: '/coins/120x120/Sui.png'
+ //  icon: '/coins/60x60/Sui.png'
  // },
   // more options here...
 ];
@@ -89,7 +89,7 @@ const customStyles = {
     boxShadow: 'none',
     borderColor: '#434665',
     className: "custom-scrollbar",
-    backgroundColor: '#151722', // Change color to match your theme
+    backgroundColor: '#1d202f', // Change color to match your theme
     '::-webkit-scrollbar': {
       width: '0px',
       height: '3px'
@@ -134,9 +134,9 @@ const customStyles = {
     fontWeight: '600',
     borderRadius: '0.5rem',
     borderColor: state.isFocused ? '#434665' : '#434665',
-    backgroundColor: '#151722',
+    backgroundColor: '#1d202f',
     ':hover': {
-      backgroundColor: '#1d202f' ,
+      backgroundColor: '#434665' ,
     }
   }),
   
