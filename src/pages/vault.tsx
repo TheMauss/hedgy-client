@@ -689,7 +689,7 @@ const Earn: FC = () => {
           <meta name="description" content="PopFi" />
         </Head>
 
-        <div className="bg-base flex justify-center items-top md:pt-2 min-h-[calc(100vh-94px)]">
+        <div className="bg-base flex justify-center items-top md:pt-2 min-h-[calc(100vh-78px)]">
         <div className="w-[98%] xl:w-[60%] lg:w-[60%] md:w-[60%] sm:w-[60%] lg:min-w-[780px] md:min-w-[780px] sm:min-w-[95%] ">
             <div className="bankGothic flex flex-col  gap-[8px] text-4xl mt-2 lg:text-5xl text-white">
             <h1 className="bankGothic md:text-start text-center text-4xl mt-2 lg:text-5xl text-transparent bg-clip-text bg-white">

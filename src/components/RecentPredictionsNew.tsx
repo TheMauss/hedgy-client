@@ -267,7 +267,7 @@ function handleNewPositions(newPositions, timestampKey) {
 
     return (
       <div
-        className="font-poppins w-full flex flex-col overflow-hidden h-full md:overflow-y-scroll  custom-scrollbar  order-5 xl:order-3 lg:order-3 md:order-5 rounded-lg bg-layer-1 p-4 border-t border-b md:border border-layer-3 flex bg-layer-1"
+        className="font-poppins w-full flex flex-col overflow-hidden h-full md:overflow-y-scroll  custom-scrollbar  order-5 xl:order-3 lg:order-3 md:order-5 rounded-lg bg-layer-1 p-4  flex bg-layer-1"
       >
         <div className="sticky top-0 flex items-center z-10">
           <h2 className="bankGothic leading-[18px] text-xl text-start text-grey-text">Recent Predictions</h2>

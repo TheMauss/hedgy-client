@@ -713,7 +713,7 @@ const MyPositions: FC<MyPositionsProps> = ({ prices, setLatestOpenedPosition, ha
           ) : (
 
             <div className="self-stretch flex flex-col items-center justify-start text-left text-xs">
-            <div className="self-stretch bg-layer-1 flex flex-col items-start justify-start p-4 gap-[16px] border-t border-b border-layer-3 text-poppins">
+            <div className="self-stretch bg-layer-1 flex flex-col items-start justify-start p-4 gap-[16px]  border-layer-3 text-poppins">
               <div className="self-stretch flex flex-row items-start justify-between">
                 <div className="flex flex-col items-start justify-center gap-[4px] ">
                   <div className="relative leading-[9.98px] flex items-center text-grey-text w-[50px]">
@@ -1096,7 +1096,7 @@ const MyPositions: FC<MyPositionsProps> = ({ prices, setLatestOpenedPosition, ha
 
 
             <div className="self-stretch flex flex-col items-center justify-start text-left text-xs">
-            <div className="self-stretch bg-layer-1 flex flex-col items-start justify-start p-4 gap-[16px] border-t border-b border-layer-3 text-poppins">
+            <div className="self-stretch bg-layer-1 flex flex-col items-start justify-start p-4 gap-[16px]  border-layer-3 text-poppins">
               <div className="self-stretch flex flex-row items-start justify-between">
                 <div className="flex flex-col items-start justify-center gap-[4px] ">
                   <div className="relative leading-[9.98px] flex items-center text-grey-text w-[50px]">
@@ -1207,7 +1207,7 @@ const MyPositions: FC<MyPositionsProps> = ({ prices, setLatestOpenedPosition, ha
 
   if (!connected) {
     return (
-      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1 border-t border-b md:py-3 md:border border-layer-3">
+      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 ">
         <div className="rounded-lg  py-3.5 md:py-0 border-layer-3 flex justify-center items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
           <span
             className={`text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${position ? 'font-bold cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-grey-text '
@@ -1235,7 +1235,7 @@ const MyPositions: FC<MyPositionsProps> = ({ prices, setLatestOpenedPosition, ha
     );
   } else if (positions.length === 0 && resolvedPositions.length === 0) {
     return (
-      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1 border-t border-b md:py-3 md:border border-layer-3">
+      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 ">
         <div className="rounded-lg  py-3.5 md:py-0 border-layer-3 flex justify-center items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
           <span
             className={`text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${position ? 'font-bold cursor-pointer border-b-2 border-gradient' : 'cursor-pointer text-grey-text '
@@ -1263,7 +1263,7 @@ const MyPositions: FC<MyPositionsProps> = ({ prices, setLatestOpenedPosition, ha
   } else if (positions.length === 0 && resolvedPositions.length !== 0) {
 
     return (
-      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1 border-t border-b md:py-3 md:border border-layer-3">
+      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 ">
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           <div className="rounded-lg  py-3.5 md:py-0 border-layer-3 flex justify-center items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
             <span
@@ -1397,7 +1397,7 @@ const MyPositions: FC<MyPositionsProps> = ({ prices, setLatestOpenedPosition, ha
   }
 
   return (
-    <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1 border-t border-b md:py-3 md:border border-layer-3">
+    <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 ">
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <div className="rounded-lg  py-3.5 md:py-0 border-layer-3 flex justify-center items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
           <span

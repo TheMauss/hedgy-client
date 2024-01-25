@@ -351,7 +351,7 @@ const Chat: FC = () => {
   const { cancel, reset, ...longPressHandlers } = longPressActions;
 
   return (
-    <div className="w-full px-4 pb-1 flex flex-col custom-scrollbar overflow-x-hidden h-full  bg-[#232332] xl:order-5 lg:order-5 md:order-5 order-6 px-2 rounded-lg border-t border-b md:border border-layer-3 flex bg-layer-1">
+    <div className="w-full px-4 pb-1 flex flex-col custom-scrollbar overflow-x-hidden h-full  bg-[#232332] xl:order-5 lg:order-5 md:order-5 order-6 px-2 rounded-lg  flex bg-layer-1">
       <div className="sticky top-0 flex items-center z-10">
         <h2 className="pt-4 pb-4 bankGothic leading-[18px] text-xl text-start text-grey-text">Chat</h2>
       </div>
@@ -428,7 +428,7 @@ const Chat: FC = () => {
             }}
             className="chat-input-container"
           >
-            <div className="input-cap2 mb-2 mt-2 rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between text-base text-grey border-[1px] border-solid border-layer-3 hover:bg-[#484c6d5b]">
+            <div className="input-cap2 mb-2 mt-2 rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between text-base text-grey hover:bg-[#484c6d5b]">
               <div className="pl-2">
                 <button
                   onClick={(e) => {

@@ -95,7 +95,7 @@ const calculateSpreadPrice = (currentPrice, EMAprice) => {
 
 
     return (
-      <div className="font-poppins custom-scrollbar rounded-lg bg-layer-1 w-full h-[55px] flex flex-row items-center justify-start  text-xs md:border border-t border-b border-layer-3 overflow-auto">
+      <div className="font-poppins custom-scrollbar rounded-lg bg-layer-1 w-full h-[53px] flex flex-row items-center justify-start  text-xs overflow-auto">
         <div className="flex flex-row items-center justify-between py-0 px-4 box-border">
           <div className="md:flex hidden min-w-[150px] flex flex-row items-center justify-start py-0 pr-8 pl-0 box-border gap-[12px] text-2xl text-white">
             <div className=" leading-[18px] font-medium pb-1">${initialPrice}</div>

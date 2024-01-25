@@ -263,7 +263,7 @@ const Transaction: FC = () => {
         <meta name="description" content="PopFi" />
       </Head>
       <div className="bg-base w-full flex justify-center flex-col">
-        <div className="relative lg:block hidden"> {/* Ensure the parent has relative positioning */}
+        <div className="relative lg:block hidden mt-1"> {/* Ensure the parent has relative positioning */}
           <button
             onClick={toggleSidePanel}
             className="z-50 fixed right-0 top-1/2 transform -translate-y-1/2 text-sm text-white  rounded lg:block hidden"
@@ -277,12 +277,12 @@ const Transaction: FC = () => {
             <FaChevronUp className={`ml-2 transition-transform duration-300 text-layer-3 ${showBottomPanel ? 'rotate-180' : ''}`} />
           </button>
         </div>
-        <div className="w-full md:px-4 h-full lg:h-[calc(100vh-94px)] bg-base overflow-hidden ">
+        <div className="w-full md:px-2 h-full lg:h-[calc(100vh-78px)] bg-base overflow-hidden ">
           <div className="w-full">
             {/* right content */}
             <div className="w-full">
               {/* top */}
-              <div className="w-full flex md:flex-row flex-col md:pt-2 ">
+              <div className="w-full flex md:flex-row flex-col  ">
                 <div className="w-full flex flex-col">
                   <div className="w-full md:flex-row flex-col gap-2">
                     <div className="w-full flex md:flex-row flex-col gap-2">
@@ -314,7 +314,7 @@ const Transaction: FC = () => {
                             />
                           </div>
                         </div>
-                        <div className={`md:w-[330px] w-full md:order-1 order-2  overflow-y-auto mb-2 rounded-lg bg-layer-1 md:border border-t border-b border-layer-3 overhlow-y-auto overflow-x-hidden mt-2 ${ActiveButton === 1 ? '' : 'hidden'}`} >
+                        <div className={`md:w-[330px] w-full md:order-1 order-2  overflow-y-auto mb-2 rounded-lg bg-layer-1  overhlow-y-auto overflow-x-hidden mt-2 ${ActiveButton === 1 ? '' : 'hidden'}`} >
                           <TradeBar
                             setOpeningPrice={setOpeningPrice}
                             openingPrice={openingPrice}
@@ -331,7 +331,7 @@ const Transaction: FC = () => {
                         </div>
                       </div>
 
-                      <div className="w-full md:block hidden lg:h-[calc(100vh-108px)] overflow-auto">
+                      <div className="w-full md:block hidden lg:h-[calc(100vh-80px)] overflow-auto">
                         <InterestBar
                           openingPrice={openingPrice}
                           selectedCryptos={selectedCryptos}
@@ -339,7 +339,7 @@ const Transaction: FC = () => {
                           prices={prices}
                           EMAprice={EMAprice}
                         />
-                        <div className={`w-full md:block flex-col hidden md:order-2 order-1 mt-2 md:h-[629px] ${showBottomPanel ? "lg:h-[calc((100vh-8px)-(40vh+26px))]" : "lg:h-[calc(100vh-108px-65px)] "
+                        <div className={`w-full md:block flex-col hidden md:order-2 order-1 mt-2 md:h-[629px] ${showBottomPanel ? "lg:h-[calc((100vh-2px)-(40vh))]" : "lg:h-[calc(100vh-108px-33px)] "
                           }`}>
                           <Graph
                             symbol={symbol}
@@ -359,10 +359,10 @@ const Transaction: FC = () => {
                         </div>
                       </div>
 
-                      <div className={`lg:block hidden md:w-[315px] flex flex-col lg:h-[calc(100vh-118px)] ${showSidePanel ? '' : 'lg:hidden'}`}>
-                        <div className="w-full flex flex-col h-[60%]">
+                      <div className={`lg:block hidden md:w-[315px] flex flex-col lg:h-[calc(100vh-88px)] ${showSidePanel ? '' : 'lg:hidden'}`}>
+                        <div className="w-full flex flex-col h-[59%]">
                           <RecentPredictions divHeight={divHeight} /></div>
-                        <div className="h-[40%] mt-2">
+                        <div className="h-[41%] mt-2">
                           <Chat />
                         </div>
                       </div>
@@ -371,7 +371,7 @@ const Transaction: FC = () => {
                 </div>
               </div>
 
-              <div className={`h-[calc(100vh-211px)] md:h-[330px] w-full md:flex lg:flex-col lg:hidden  ${ActiveButton === 2 ? "" : "hidden"
+              <div className={`h-[calc(100vh-192px)] md:h-[330px] w-full md:flex lg:flex-col lg:hidden  ${ActiveButton === 2 ? "" : "hidden"
                 }`}>
                 <MyPositions
                   latestOpenedPosition={latestOpenedPosition}
@@ -381,10 +381,10 @@ const Transaction: FC = () => {
                 />
               </div>
               <div className="flex flex-row md:py-2 md:gap-2">
-                <div className={`h-[calc(100vh-211px)] md:h-[330px] w-full md:block lg:flex-col lg:hidden flex-row gap-2 ${ActiveButton === 3 ? "" : "hidden"
+                <div className={`h-[calc(100vh-192px)] md:h-[330px] w-full md:block lg:flex-col lg:hidden flex-row gap-2 ${ActiveButton === 3 ? "" : "hidden"
                   }`}>
                   <RecentPredictions divHeight={divHeight} /></div>
-                <div className={`h-[calc(100vh-211px)] md:h-[330px] w-full md:block lg:flex-col lg:hidden flex-row gap-2  ${ActiveButton === 4 ? "" : "hidden"
+                <div className={`h-[calc(100vh-192px)] md:h-[330px] w-full md:block lg:flex-col lg:hidden flex-row gap-2  ${ActiveButton === 4 ? "" : "hidden"
                   }`}>
                   <Chat /></div>
 

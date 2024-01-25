@@ -205,7 +205,7 @@ export const PairPicker: React.FC<PairPickerProps> = ({selectedCryptos,  setSele
 
 
 return (
-<div className="md:w-[330px] w-full sticky-tops md:bg-layer-1 bg-base rounded-lg md:border border-layer-3 ">
+<div className="md:w-[330px] w-full sticky-tops md:bg-layer-1 bg-base rounded-lg">
 <Select 
           components={{
             DropdownIndicator: props => 

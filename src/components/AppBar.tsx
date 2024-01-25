@@ -221,15 +221,15 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
 
 
   return (
-    <div ref={navRef} className="flex items-center justify-center h-[64px] flex-row shadow-lg bg-layer-1 text-[#E0E5EA] border-b border-layer-3">
+    <div ref={navRef} className="flex items-center justify-center h-[48px] flex-row shadow-lg md:bg-base bg-layer-1 text-[#E0E5EA] mb:pt-1 ">
       <div className="flex items-center justify-between w-[90%]">
         <div className="flex items-center">
 
           {!isMobile && (
-            <div className="flex w-32 h-32 md:mr-3 mb-1">
+            <div className="flex justify-center items-center">
               <Link href="/">
                 <div>
-                  <img src="/bromigo.png" alt="Logo" className='min-w-[130px]' />
+                  <img src="/popfismall.png" alt="Logo" className='w-[48px] h-[48px]' />
                 </div>
               </Link>
             </div>

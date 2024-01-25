@@ -46,7 +46,7 @@ interface GraphProps {
 
 export const Graph: FC<GraphProps> = ({ latestOpenedPosition, symbol, prices }) => {
   return (
-    <div className="overflow-hidden w-full h-full order-1 rounded-lg md:border  border-t border-b border-layer-3 flex bg-layer-1">
+    <div className="overflow-hidden w-full h-full order-1 rounded-lg flex bg-layer-1">
       <div className="min-h-[330px] h-full w-full flex flex-col overflow-y-auto ">
         <div className="flex-1 h-full relative flex flex-col w-full">
           <div className="absolute inset-0 flex bg-layer-1 rounded ">

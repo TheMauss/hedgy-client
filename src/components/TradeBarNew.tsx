@@ -1048,7 +1048,7 @@ I will not use the PopFi dApp while located within any prohibited jurisdictions.
 
 return (
   <div 
-  className="custom-scrollbar overflow-x-hidden md:h-[628px] lg:h-[calc(100vh-175px)] md:w-[330px] w-full   flex flex-col items-start justify-start p-4 gap-[20px] text-left text-sm text-grey-text font-poppins">
+  className="custom-scrollbar overflow-x-hidden md:h-[628px] lg:h-[calc(100vh-141px)] md:w-[330px] w-full   flex flex-col items-start justify-start p-4 gap-[20px] text-left text-sm text-grey-text font-poppins">
   {ModalDetails1}
   <div className="self-stretch flex flex-row items-start justify-start gap-[8px] text-center text-lg text-grey">
   <button 
@@ -1092,7 +1092,7 @@ return (
       <div className="relative leading-[14px] inline-block max-w-[131px]">
         Position Size
       </div>
-      <div className="mt-[12px] self-stretch rounded-lg bg-layer-2 box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-grey border-[1px] border-solid border-layer-3 hover:bg-[#484c6d5b]">
+      <div className="mt-[12px] self-stretch rounded-lg bg-layer-2 box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-grey  hover:bg-[#484c6d5b]">
           <input
             type="text"
             className="input-capsule__input "

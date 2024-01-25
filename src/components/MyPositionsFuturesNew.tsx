@@ -1026,7 +1026,7 @@ const handleLossChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 <Modal
   isOpen={modalIsOpen1}
   onRequestClose={() => setModalIsOpen1(false)}
-  className='bg-layer-1 border border-layer-3 rounded-lg px-4 py-6'
+  className='bg-layer-1  rounded-lg px-4 py-6 border border-layer-3'
   style={{
     overlay: {
       backgroundColor: 'transparent'
@@ -1045,9 +1045,9 @@ const handleLossChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   {currentItem && (
     
 
-    <div className="relative  flex-col h-full font-poppins">
+    <div className="relative  flex-col h-full font-poppins ">
       
-      <div className="mb-3 leading-[80.69%] bankGothic uppercase text-xl text-white">
+      <div className="mb-3 leading-[80.69%] bankGothic uppercase text-xl text-white ">
         Update Position
       </div>
       <div className="flex flex-row self-stretch justify-between text-grey-text text-sm">
@@ -1061,7 +1061,7 @@ const handleLossChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       </div>
       <div className="flex justify-center flex justify-center items-center gap-2">
         <div className="py-2 w-[50%]">
-          <div className="mb-2 flex-1 rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 border-[1px] border-solid border-layer-3 hover:bg-[#484c6d5b]">
+          <div className="mb-2 flex-1 rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 border-[1px] border-solid border-layer-3 hover:bg-[#484c6d5b] border border-layer-3">
 
 <input type="text" placeholder="Take Profit"         
 className="input3-capsule__input relative leading-[14px]"
@@ -1163,7 +1163,7 @@ onBlur={handleInputBlur} />
 
               const ModalDetails2 = (
                 <Modal
-                className="bg-layer-1 border border-layer-3 rounded-[2rem]"
+                className="bg-layer-1  rounded-[2rem] border border-layer-3"
                   isOpen={modalIsOpen}
                   onRequestClose={() => setModalIsOpen(false)}
                   style={{
@@ -1194,7 +1194,7 @@ onBlur={handleInputBlur} />
 
 
                   
-<div className="font-poppins relative w-full overflow-hidden flex flex-col items-center justify-center text-left text-84xl text-white rounded-[2rem] border border-layer-3 bg-layer-1">
+<div className="font-poppins relative w-full overflow-hidden flex flex-col items-center justify-center text-left text-84xl text-white rounded-[2rem]  bg-layer-1 border border-layer-3">
   <div className="relative w-[1280px] h-[800px] z-1000">
     <img
       className="absolute top-[105.2px] left-[243.2px] w-[760.8px] h-[760.8px]"
@@ -1508,7 +1508,7 @@ onBlur={handleInputBlur} />
             </div>
 
           ):(           <div key={item._id} className="text-poppins self-stretch flex flex-col items-center justify-start text-left text-xs">
-          <div className="self-stretch bg-layer-1 flex flex-col items-start justify-start p-4 gap-[8px] border-t border-b border-solid border-layer-3">
+          <div className="self-stretch bg-layer-1 flex flex-col items-start justify-start p-4 gap-[8px]">
             <div className="self-stretch flex flex-row items-start justify-between">
               <div className="flex flex-col items-start justify-center gap-[4px]">
                 <div className="text-grey-text relative leading-[9.98px] flex items-center w-[50px]">
@@ -1676,7 +1676,7 @@ onBlur={handleInputBlur} />
 
     const ModalDetails = (
 <Modal
-                className="bg-layer-1 border border-layer-3 rounded-[2rem]"
+                className="bg-layer-1  rounded-[2rem] border border-layer-3"
                 isOpen={modalIsOpen}
                 onRequestClose={() => setModalIsOpen(false)}
                 style={{
@@ -1703,7 +1703,7 @@ onBlur={handleInputBlur} />
   
   
                     
-  <div className="font-poppins relative w-full overflow-hidden flex flex-col items-center justify-center text-left text-84xl text-white rounded-[2rem] border border-layer-3 bg-layer-1">
+  <div className="font-poppins relative w-full overflow-hidden flex flex-col items-center justify-center text-left text-84xl text-white rounded-[2rem]  bg-layer-1 border border-layer-3">
     <div className="relative w-[1280px] h-[800px] z-1000">
       <img
         className="absolute top-[105.2px] left-[243.2px] w-[760.8px] h-[760.8px]"
@@ -1999,8 +1999,8 @@ onBlur={handleInputBlur} />
 </div>
             </div>
    ):(
-    <div key={item._id} className="text-poppins self-stretch flex flex-col items-center justify-start text-left text-xs">
-          <div className="self-stretch bg-layer-1 flex flex-col items-start justify-start p-4 gap-[8px] border-t border-b border-solid border-layer-3">
+    <div key={item._id} className="text-poppins self-stretch flex flex-col items-center justify-start text-left text-xs border border-layer-3">
+          <div className="self-stretch bg-layer-1 flex flex-col items-start justify-start p-4 gap-[8px]">
             <div className="self-stretch flex flex-row items-start justify-between">
               <div className="flex flex-col items-start justify-center gap-[4px]">
                 <div className="text-grey-text relative leading-[9.98px] flex items-center w-[50px]">
@@ -2133,7 +2133,7 @@ onBlur={handleInputBlur} />
 
   if (!connected) {
     return (
-      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1 border-t border-b md:py-3 md:border border-layer-3">
+      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 md:">
   <div className="rounded-lg  py-3.5 md:py-0 border-layer-3 flex justify-center items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
         <span
             className={`text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
@@ -2164,7 +2164,7 @@ onBlur={handleInputBlur} />
     );
   } else if (positions.length === 0 && resolvedPositions.length === 0) {
     return (
-      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1 border-t border-b md:py-3 md:border border-layer-3">
+      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 md:">
   <div className="rounded-lg  py-3.5 md:py-0 border-layer-3 flex justify-center items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
         <span
             className={`text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
@@ -2195,7 +2195,7 @@ onBlur={handleInputBlur} />
   } else if ( positions.length === 0 && resolvedPositions.length !== 0 ) {
     
     return (
-      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1 border-t border-b md:py-3 md:border border-layer-3">
+      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 md:">
   <div style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
   <div className="rounded-lg  py-3.5 md:py-0 border-layer-3 flex justify-center items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
         <span
@@ -2332,7 +2332,7 @@ onBlur={handleInputBlur} />
   }
 
   return (
-    <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1 border-t border-b md:py-3 md:border border-layer-3">
+    <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 md:">
     <div style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
   <div className="rounded-lg  py-3.5 md:py-0 border-layer-3 flex justify-center items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
         <span

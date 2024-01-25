@@ -22,7 +22,7 @@ export const Footer: FC = () => {
   }, []);
   
   return (
-    <div className="md:bg-layer-1 bg-base h-[30px] flex flex-row  text-[#E0E5EA]   md:border-t border-layer-3 ">
+    <div className="md:bg-base bg-base h-[26px] flex flex-row  text-[#E0E5EA]  ">
       <div className="flex items-center flex-row gap-y-5 justify-between w-full md:px-10">
         <div className="justify-start w-full lg:w-auto flex items-center md:px-7 pl-10">
           <Link

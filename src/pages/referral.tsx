@@ -355,7 +355,7 @@ notify({ type: 'info', message: `Trying to create the referral...`, txid: initSi
         <meta name="description" content="PopFi" />
         
       </Head>
-        <div className="flex justify-center items-center md:pt-2 bg-base h-[calc(100vh-94px)]">
+        <div className="flex justify-center items-center md:pt-2 bg-base h-[calc(100vh-78px)]">
             <div className="w-[98%] xl:w-[60%] lg:w-[60%] md:w-[60%] sm:w-full lg:min-w-[700px] md:min-w-[700px] h-full px-2">
                 
             <h1 className="bankGothic md:text-start text-center text-4xl pt-4 lg:text-5xl text-transparent bg-clip-text bg-white">

@@ -454,7 +454,7 @@ const processedData30Days = leaderboard1Day.thirtyDay && leaderboard1Day.thirtyD
           <title>PopFi | Personal Stats</title>
           <meta name="description" content="PopFi" />
         </Head>
-        <div className="bg-base flex justify-center md:pt-2 min-h-[calc(100vh-94px)]">
+        <div className="bg-base flex justify-center md:pt-2 min-h-[calc(100vh-78px)]">
             <div className="w-[98%] xl:w-[60%] lg:w-[60%] md:w-[60%] sm:w-[60%] lg:min-w-[780px] md:min-w-[780px] sm:min-w-[95%] px-2 z-0">
             <div 
             className="bankGothic flex flex-col  gap-[8px] text-4xl mt-2 lg:text-5xl text-white z-0">
