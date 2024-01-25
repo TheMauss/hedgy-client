@@ -1472,7 +1472,7 @@ useEffect(() => {
               <span className="rounded-12xs flex flex-row items-center justify-start py-[7px] px-0">        <img
                 className="relative w-6 h-6 overflow-hidden shrink-0"
                 alt=""
-                src="/Sol1.png"
+                src="/coins/120x120/Sol.png"
               /></span>
             </div>
 

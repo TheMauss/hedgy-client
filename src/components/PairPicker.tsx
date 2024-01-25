@@ -25,12 +25,12 @@ const options = [
   {
     value: 'Crypto.SOL/USD', 
     label: 'SOL/USD', 
-    icon: '/Sol1.png'
+    icon: '/coins/120x120/Sol.png'
   },
   {
     value: 'Crypto.BTC/USD', 
     label: 'BTC/USD', 
-    icon: '/Btc1.png'
+    icon: '/coins/120x120/Btc.png'
   },
 
   // more options here...

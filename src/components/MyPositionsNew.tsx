@@ -464,86 +464,86 @@ const MyPositions: FC<MyPositionsProps> = ({ prices, setLatestOpenedPosition, ha
 
 
     const ModalDetails1 = (
-      <Modal
-        className="bg-layer-1 border border-layer-3 rounded-[2rem]"
-        isOpen={modalIsOpen}
-        onRequestClose={() => setModalIsOpen(false)}
-        style={{
-          overlay: {
-            backgroundColor: 'transparent'
-          },
-          content: {
-            width: '1280px',  // default width for desktop // default height for desktop
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%) scale(0.25)',
-            boxSizing: 'border-box', // ensure padding and border are included in width/height calculations
-          }
-        }}
-
-      >
-
-        {currentItem && (
-          <div className="custom-scrollbar h-full w-full p-0 m-0 box-border" id="my-modal" style={{
-          }}>
-
-
-
-
-            <div className="font-poppins relative w-full overflow-hidden flex flex-col items-center justify-center text-left text-84xl text-white rounded-[2rem] border border-layer-3 bg-layer-1">
-              <div className="relative w-[1280px] h-[800px] z-1000">
-                <img
-                  className="absolute top-[105.2px] left-[243.2px] w-[760.8px] h-[760.8px]"
-                  alt=""
-                  src="/sheesh/abstract071.svg"
-                />
-                <div className="absolute top-[64px] right-[64px] rounded-lg bg-layer-2 flex flex-row items-start justify-start p-4 border-[4px] border-solid border-grey">
-                  <button className="" onClick={downloadAsPng}><img
-                    className="relative w-24 h-24"
-                    alt=""
-                    src="/sheesh/vuesaxlinearimport.svg"
-                  /></button>
-                </div>
-                <img
-                  className="absolute my-0 mx-[!important] top-[64px] left-[64px] w-[404px] h-[133.6px] object-cover z-[3]"
-                  alt=""
-                  src="/sheesh/image-5@2x.png"
-                />
-                {currentItem.symbol === 0 ?
-                  <img
-                    className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
-                    alt=""
-                    src="/Sol1.png"
-                  /> :
-                  currentItem.symbol === 1 ?
-                    <img
-                      className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
-                      alt=""
-                      src="/Btc1.png"
-                    /> :
-                    null
-                }
-              </div>
-              <div className="self-stretch flex flex-col items-center justify-center p-24 gap-[64px] z-[1]">
-                <div className="bankGothic text-16xl relative leading-[80%] text-[160px]">
-                  {currentItem.symbol === 0 ?
-                    <p className="">{`SOL/USD`}</p> :
-                    currentItem.symbol === 1 ?
-                      <p className="">{`BTC/USD`}</p> :
-                      null
-                  }</div>
-                <div className="self-stretch flex flex-row items-center justify-start gap-[128px] text-right font-poppins">
-                  <div className="h-[392px] flex flex-col items-start justify-start gap-[36px]">
-                    <div className="flex flex-row items-center justify-start gap-[32px]">
-                      {currentItem.priceDirection === 0 ? (
-                        <>
-                          <img
-                            className="relative w-32 h-32"
+<Modal
+                className="bg-layer-1 border border-layer-3 rounded-[2rem]"
+                isOpen={modalIsOpen}
+                onRequestClose={() => setModalIsOpen(false)}
+                style={{
+                  overlay: {
+                    backgroundColor: 'transparent'
+                  },
+                  content: {
+                    width: '1280px',  // default width for desktop // default height for desktop
+                    position: 'fixed',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%) scale(0.25)',
+                    boxSizing: 'border-box', // ensure padding and border are included in width/height calculations
+                  }
+                }}
+                
+              >
+      
+      {currentItem && (
+                  <div className="custom-scrollbar h-full w-full p-0 m-0 box-border" id="my-modal" style={{
+                  }}>
+  
+  
+  
+                    
+  <div className="font-poppins relative w-full overflow-hidden flex flex-col items-center justify-center text-left text-84xl text-white rounded-[2rem] border border-layer-3 bg-layer-1">
+    <div className="relative w-[1280px] h-[800px] z-1000">
+      <img
+        className="absolute top-[105.2px] left-[243.2px] w-[760.8px] h-[760.8px]"
+        alt=""
+        src="/sheesh/abstract071.svg"
+      />
+      <div className="absolute top-[64px] right-[64px] rounded-lg bg-layer-2 flex flex-row items-start justify-start p-4 border-[4px] border-solid border-grey">
+        <button className="" onClick={downloadAsPng}><img
+            className="relative w-24 h-24"
+            alt=""
+            src="/sheesh/vuesaxlinearimport.svg"
+          /></button>
+      </div>
+      <img
+        className="absolute my-0 mx-[!important] top-[64px] left-[64px] w-[404px] h-[133.6px] object-cover z-[3]"
+        alt=""
+        src="/sheesh/image-5@2x.png"
+      />
+{currentItem.symbol === 0 ?
+                                  <img
+                                  className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
+                                  alt=""
+                                  src="/coins/1200x1200/Sol.png"
+                                />  :
+                            currentItem.symbol === 1 ?
+                            <img
+                            className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                             alt=""
-                            src="/sheesh/vuesaxbulktrendup2.svg"
-                          />
-                        </>
+                            src="/coins/1200x1200/Btc.png"
+                          />  : 
+                            null
+                            }
+    </div>
+    <div className="self-stretch flex flex-col items-center justify-center p-24 gap-[64px] z-[1]">
+      <div className="bankGothic text-16xl relative leading-[80%] text-[160px]">                            
+                              {currentItem.symbol === 0 ?
+                                <p className="">{`SOL/USD`}</p>  :
+                              currentItem.symbol === 1 ?
+                              <p className="">{`BTC/USD`}</p>  : 
+                              null
+                              }</div>
+      <div className="self-stretch flex flex-row items-center justify-start gap-[128px] text-right font-poppins">
+        <div className="h-[392px] flex flex-col items-start justify-start gap-[36px]">
+          <div className="flex flex-row items-center justify-start gap-[32px]">
+          {currentItem.priceDirection === 0 ? (
+                          <>
+                                        <img
+              className="relative w-32 h-32"
+              alt=""
+              src="/sheesh/vuesaxbulktrendup2.svg"
+            />
+                          </>
                       ) : (
                         <>
                           <img
@@ -639,18 +639,18 @@ const MyPositions: FC<MyPositionsProps> = ({ prices, setLatestOpenedPosition, ha
                   className="hover:underline"
                 >
                   <div className="flex items-center ">
-                    {item.symbol === 0 ?
-                      <img src="/Sol1.png" alt="Logo" width="24" height="24" className="pb-1" /> :
-                      item.symbol === 1 ?
-                        <img src="/Btc1.png" alt="Logo" width="24" height="24" className="pb-1" /> :
-                        item.symbol === 2 ?
-                          <img src="/Coin1.png" alt="Logo" width="24" height="24" className="pb-1" /> :
-                          item.symbol === 3 ?
-                            <img src="/Bonk1.png" alt="Logo" width="24" height="24" className="pb-1" /> :
-                            null
-                    }
-                    <p className="text-grey-text pt-3 pb-2.5 ml-2">{`${item.binaryOption.slice(0, 4)}...${item.binaryOption.slice(-4)}`}</p>
-                  </div>
+  {item.symbol === 0 ?
+    <img src="/coins/120x120/Sol.png" alt="Logo" width="24" height="24" className="pb-1"/> :
+  item.symbol === 1 ?
+    <img src="/coins/120x120/Btc.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    item.symbol === 2 ?
+    <img src="/coins/120x120/Pyth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    item.symbol === 3 ?
+    <img src="/coins/120x120/Bonk.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+  null
+  }
+  <p className="text-grey-text pt-3 pb-2.5 ml-2">{`${item.binaryOption.slice(0, 4)}...${item.binaryOption.slice(-4)}`}</p> 
+</div>   
                 </a>
               </div>
               <div className=" pt-3 pb-2.5 w-[13%] min-w-[90px] text-start text-[0.9rem]  ">
@@ -713,34 +713,34 @@ const MyPositions: FC<MyPositionsProps> = ({ prices, setLatestOpenedPosition, ha
           ) : (
 
             <div className="self-stretch flex flex-col items-center justify-start text-left text-xs">
-              <div className="self-stretch bg-layer-1 flex flex-col items-start justify-start p-4 gap-[16px] border-t border-b border-layer-3 text-poppins">
-                <div className="self-stretch flex flex-row items-start justify-between">
-                  <div className="flex flex-col items-start justify-center gap-[4px] ">
-                    <div className="relative leading-[9.98px] flex items-center text-grey-text w-[50px]">
-                      Position
-                    </div>
-                    <div className="relative leading-[12px]">                <a
-                      href={`https://solscan.io/account/${item.binaryOption}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="hover:underline"
-                    >
-                      <div className="flex items-center rounded-l">
-                        {item.symbol === 0 ?
-                          <img src="/Sol1.png" alt="Logo" width="24" height="24" className="pt-0.5" /> :
-                          item.symbol === 1 ?
-                            <img src="/Btc1.png" alt="Logo" width="24" height="24" className="pt-0.5" /> :
-                            null
-                        }
-                        <p className="ml-2 ">{`${item.binaryOption.slice(0, 4)}...${item.binaryOption.slice(-4)}`}</p>
-                      </div>
-                    </a></div>
+            <div className="self-stretch bg-layer-1 flex flex-col items-start justify-start p-4 gap-[16px] border-t border-b border-layer-3 text-poppins">
+              <div className="self-stretch flex flex-row items-start justify-between">
+                <div className="flex flex-col items-start justify-center gap-[4px] ">
+                  <div className="relative leading-[9.98px] flex items-center text-grey-text w-[50px]">
+                    Position
                   </div>
-                  <div className="flex flex-col items-end justify-center gap-[6px] text-right">
-                    <div className="relative leading-[12px] text-grey-text">Payout</div>
-                    <div className="flex flex-col items-end justify-center gap-[4px] text-sm text-primary">
-                      <div className="relative leading-[12px] ">
-                        <p className={pnl >= 0 ? 'text-[#34c796] ' : 'text-red-500 '}>
+                <div className="relative leading-[12px]">                <a
+                        href={`https://solscan.io/account/${item.binaryOption}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="hover:underline"
+                      >
+                              <div className="flex items-center rounded-l">
+                                {item.symbol === 0 ?
+                               <img src="/coins/120x120/Sol.png" alt="Logo" width="24" height="24" className="pt-0.5"/> :
+                          item.symbol === 1 ?
+                                      <img src="/coins/120x120/Btc.png" alt="Logo" width="24" height="24" className="pt-0.5"/> : 
+                                    null
+                                            }
+                          <p className="ml-2 ">{`${item.binaryOption.slice(0, 4)}...${item.binaryOption.slice(-4)}`}</p> 
+                            </div>
+                     </a></div>
+              </div>
+                <div className="flex flex-col items-end justify-center gap-[6px] text-right">
+                  <div className="relative leading-[12px] text-grey-text">Payout</div>
+                  <div className="flex flex-col items-end justify-center gap-[4px] text-sm text-primary">
+                    <div className="relative leading-[12px] ">
+                    <p className={pnl >= 0 ? 'text-[#34c796] ' : 'text-red-500 '}>
                           {pnl.toFixed(2)} SOL
                         </p>
                       </div>
@@ -843,86 +843,86 @@ const MyPositions: FC<MyPositionsProps> = ({ prices, setLatestOpenedPosition, ha
       : 0;
 
     const ModalDetails = (
-      <Modal
-        className="bg-layer-1 border border-layer-3 rounded-[2rem]"
-        isOpen={modalIsOpen}
-        onRequestClose={() => setModalIsOpen(false)}
-        style={{
-          overlay: {
-            backgroundColor: 'transparent'
-          },
-          content: {
-            width: '1280px',  // default width for desktop // default height for desktop
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%) scale(0.25)',
-            boxSizing: 'border-box', // ensure padding and border are included in width/height calculations
-          }
-        }}
-
-      >
-
-        {currentItem && (
-          <div className="custom-scrollbar h-full w-full p-0 m-0 box-border" id="my-modal" style={{
-          }}>
-
-
-
-
-            <div className="font-poppins relative w-full overflow-hidden flex flex-col items-center justify-center text-left text-84xl text-white rounded-[2rem] border border-layer-3 bg-layer-1">
-              <div className="relative w-[1280px] h-[800px] z-1000">
-                <img
-                  className="absolute top-[105.2px] left-[243.2px] w-[760.8px] h-[760.8px]"
-                  alt=""
-                  src="/sheesh/abstract071.svg"
-                />
-                <div className="absolute top-[64px] right-[64px] rounded-lg bg-layer-2 flex flex-row items-start justify-start p-4 border-[4px] border-solid border-grey">
-                  <button className="" onClick={downloadAsPng}><img
-                    className="relative w-24 h-24"
-                    alt=""
-                    src="/sheesh/vuesaxlinearimport.svg"
-                  /></button>
-                </div>
-                <img
-                  className="absolute my-0 mx-[!important] top-[64px] left-[64px] w-[404px] h-[133.6px] object-cover z-[3]"
-                  alt=""
-                  src="/sheesh/image-5@2x.png"
-                />
-                {currentItem.symbol === 0 ?
-                  <img
-                    className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
-                    alt=""
-                    src="/Sol1.png"
-                  /> :
-                  currentItem.symbol === 1 ?
-                    <img
-                      className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
-                      alt=""
-                      src="/Btc1.png"
-                    /> :
-                    null
-                }
-              </div>
-              <div className="self-stretch flex flex-col items-center justify-center p-24 gap-[64px] z-[1]">
-                <div className="bankGothic text-16xl relative leading-[80%] text-[160px]">
-                  {currentItem.symbol === 0 ?
-                    <p className="">{`SOL/USD`}</p> :
-                    currentItem.symbol === 1 ?
-                      <p className="">{`BTC/USD`}</p> :
-                      null
-                  }</div>
-                <div className="self-stretch flex flex-row items-center justify-start gap-[128px] text-right font-poppins">
-                  <div className="h-[392px] flex flex-col items-start justify-start gap-[36px]">
-                    <div className="flex flex-row items-center justify-start gap-[32px]">
-                      {currentItem.priceDirection === 0 ? (
-                        <>
-                          <img
-                            className="relative w-32 h-32"
+<Modal
+                className="bg-layer-1 border border-layer-3 rounded-[2rem]"
+                isOpen={modalIsOpen}
+                onRequestClose={() => setModalIsOpen(false)}
+                style={{
+                  overlay: {
+                    backgroundColor: 'transparent'
+                  },
+                  content: {
+                    width: '1280px',  // default width for desktop // default height for desktop
+                    position: 'fixed',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%) scale(0.25)',
+                    boxSizing: 'border-box', // ensure padding and border are included in width/height calculations
+                  }
+                }}
+                
+              >
+      
+      {currentItem && (
+                  <div className="custom-scrollbar h-full w-full p-0 m-0 box-border" id="my-modal" style={{
+                  }}>
+  
+  
+  
+                    
+  <div className="font-poppins relative w-full overflow-hidden flex flex-col items-center justify-center text-left text-84xl text-white rounded-[2rem] border border-layer-3 bg-layer-1">
+    <div className="relative w-[1280px] h-[800px] z-1000">
+      <img
+        className="absolute top-[105.2px] left-[243.2px] w-[760.8px] h-[760.8px]"
+        alt=""
+        src="/sheesh/abstract071.svg"
+      />
+      <div className="absolute top-[64px] right-[64px] rounded-lg bg-layer-2 flex flex-row items-start justify-start p-4 border-[4px] border-solid border-grey">
+        <button className="" onClick={downloadAsPng}><img
+            className="relative w-24 h-24"
+            alt=""
+            src="/sheesh/vuesaxlinearimport.svg"
+          /></button>
+      </div>
+      <img
+        className="absolute my-0 mx-[!important] top-[64px] left-[64px] w-[404px] h-[133.6px] object-cover z-[3]"
+        alt=""
+        src="/sheesh/image-5@2x.png"
+      />
+{currentItem.symbol === 0 ?
+                                  <img
+                                  className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
+                                  alt=""
+                                  src="/coins/1200x1200/Sol.png"
+                                />  :
+                            currentItem.symbol === 1 ?
+                            <img
+                            className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                             alt=""
-                            src="/sheesh/vuesaxbulktrendup2.svg"
-                          />
-                        </>
+                            src="/coins/1200x1200/Btc.png"
+                            />  : 
+                            null
+                            }
+    </div>
+    <div className="self-stretch flex flex-col items-center justify-center p-24 gap-[64px] z-[1]">
+      <div className="bankGothic text-16xl relative leading-[80%] text-[160px]">                            
+                              {currentItem.symbol === 0 ?
+                                <p className="">{`SOL/USD`}</p>  :
+                              currentItem.symbol === 1 ?
+                              <p className="">{`BTC/USD`}</p>  : 
+                              null
+                              }</div>
+      <div className="self-stretch flex flex-row items-center justify-start gap-[128px] text-right font-poppins">
+        <div className="h-[392px] flex flex-col items-start justify-start gap-[36px]">
+          <div className="flex flex-row items-center justify-start gap-[32px]">
+          {currentItem.priceDirection === 0 ? (
+                          <>
+                                        <img
+              className="relative w-32 h-32"
+              alt=""
+              src="/sheesh/vuesaxbulktrendup2.svg"
+            />
+                          </>
                       ) : (
                         <>
                           <img
@@ -1021,18 +1021,18 @@ const MyPositions: FC<MyPositionsProps> = ({ prices, setLatestOpenedPosition, ha
                   className="hover:underline"
                 >
                   <div className="flex items-center">
-                    {item.symbol === 0 ?
-                      <img src="/Sol1.png" alt="Logo" width="24" height="24" className="pb-1" /> :
-                      item.symbol === 1 ?
-                        <img src="/Btc1.png" alt="Logo" width="24" height="24" className="pb-1" /> :
-                        item.symbol === 2 ?
-                          <img src="/Coin1.png" alt="Logo" width="24" height="24" className="pb-1" /> :
-                          item.symbol === 3 ?
-                            <img src="/Bonk1.png" alt="Logo" width="24" height="24" className="pb-1" /> :
-                            null
-                    }
-                    <p className="text-grey-text pt-3 pb-2.5 ml-2">{`${item.binaryOption.slice(0, 4)}...${item.binaryOption.slice(-4)}`}</p>
-                  </div>
+  {item.symbol === 0 ?
+    <img src="/coins/120x120/Sol.png" alt="Logo" width="24" height="24" className="pb-1"/> :
+  item.symbol === 1 ?
+    <img src="/coins/120x120/Btc.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    item.symbol === 2 ?
+    <img src="/coins/120x120/Coin1.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    item.symbol === 3 ?
+    <img src="/coins/120x120/Bonk1.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+  null
+  }
+  <p className="text-grey-text pt-3 pb-2.5 ml-2">{`${item.binaryOption.slice(0, 4)}...${item.binaryOption.slice(-4)}`}</p> 
+</div>   
                 </a>
               </div>
               <div className=" pt-3 pb-2.5 w-[13%] min-w-[90px] text-start text-[0.9rem]  ">
@@ -1096,34 +1096,34 @@ const MyPositions: FC<MyPositionsProps> = ({ prices, setLatestOpenedPosition, ha
 
 
             <div className="self-stretch flex flex-col items-center justify-start text-left text-xs">
-              <div className="self-stretch bg-layer-1 flex flex-col items-start justify-start p-4 gap-[16px] border-t border-b border-layer-3 text-poppins">
-                <div className="self-stretch flex flex-row items-start justify-between">
-                  <div className="flex flex-col items-start justify-center gap-[4px] ">
-                    <div className="relative leading-[9.98px] flex items-center text-grey-text w-[50px]">
-                      Position
-                    </div>
-                    <div className="relative leading-[12px]">                <a
-                      href={`https://solscan.io/account/${item.binaryOption}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="hover:underline"
-                    >
-                      <div className="flex items-center rounded-l">
-                        {item.symbol === 0 ?
-                          <img src="/Sol1.png" alt="Logo" width="24" height="24" className="pt-0.5" /> :
-                          item.symbol === 1 ?
-                            <img src="/Btc1.png" alt="Logo" width="24" height="24" className="pt-0.5" /> :
-                            null
-                        }
-                        <p className="ml-2 ">{`${item.binaryOption.slice(0, 4)}...${item.binaryOption.slice(-4)}`}</p>
-                      </div>
-                    </a></div>
+            <div className="self-stretch bg-layer-1 flex flex-col items-start justify-start p-4 gap-[16px] border-t border-b border-layer-3 text-poppins">
+              <div className="self-stretch flex flex-row items-start justify-between">
+                <div className="flex flex-col items-start justify-center gap-[4px] ">
+                  <div className="relative leading-[9.98px] flex items-center text-grey-text w-[50px]">
+                    Position
                   </div>
-                  <div className="flex flex-col items-end justify-center gap-[6px] text-right">
-                    <div className="relative leading-[12px] text-grey-text">Payout</div>
-                    <div className="flex flex-col items-end justify-center gap-[4px] text-sm text-primary">
-                      <div className="relative leading-[12px] ">
-                        <p className={pnl >= 0 ? 'text-[#34c796] ' : 'text-red-500 '}>
+                <div className="relative leading-[12px]">                <a
+                        href={`https://solscan.io/account/${item.binaryOption}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="hover:underline"
+                      >
+                              <div className="flex items-center rounded-l">
+                                {item.symbol === 0 ?
+                               <img src="/coins/120x120/Sol.png" alt="Logo" width="24" height="24" className="pt-0.5"/> :
+                          item.symbol === 1 ?
+                                      <img src="/coins/120x120/Btc.png" alt="Logo" width="24" height="24" className="pt-0.5"/> : 
+                                    null
+                                            }
+                          <p className="ml-2 ">{`${item.binaryOption.slice(0, 4)}...${item.binaryOption.slice(-4)}`}</p> 
+                            </div>
+                     </a></div>
+              </div>
+                <div className="flex flex-col items-end justify-center gap-[6px] text-right">
+                  <div className="relative leading-[12px] text-grey-text">Payout</div>
+                  <div className="flex flex-col items-end justify-center gap-[4px] text-sm text-primary">
+                    <div className="relative leading-[12px] ">
+                    <p className={pnl >= 0 ? 'text-[#34c796] ' : 'text-red-500 '}>
                           {pnl.toFixed(2)} SOL
                         </p>
                       </div>

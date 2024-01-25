@@ -1218,33 +1218,57 @@ onBlur={handleInputBlur} />
                                   <img
                                   className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                                   alt=""
-                                  src="/Sol1.png"
+                                  src="/coins/1200x1200/Sol.png"
                                 />  :
                             currentItem.symbol === 1 ?
                             <img
                             className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                             alt=""
-                            src="/Btc1.png"
+                            src="/coins/1200x1200/Btc.png"
                           />  : 
                           currentItem.symbol === 2 ?
                           <img
                           className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                           alt=""
-                          src="/Coin1.png"
+                          src="/coins/1200x1200/Pyth.png"
                         /> :
                         currentItem.symbol === 3 ?
                         <img
                         className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                         alt=""
-                        src="/Bonk2.png"
+                        src="/coins/1200x1200/Bonk.png"
                       /> :
+                      currentItem.symbol === 4 ?
+                      <img
+                      className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
+                      alt=""
+                      src="/coins/1200x1200/Jup.png"
+                    /> :
+                    currentItem.symbol === 5 ?
+                    <img
+                    className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
+                    alt=""
+                    src="/coins/1200x1200/Eth.png"
+                  /> :
+                  currentItem.symbol === 6 ?
+                  <img
+                  className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
+                  alt=""
+                  src="/coins/1200x1200/Tia.png"
+                /> :
+                currentItem.symbol === 7 ?
+                <img
+                className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
+                alt=""
+                src="/coins/1200x1200/Sei.png"
+              /> :
                             null
                             }
 
   </div>
   <div className="self-stretch flex flex-col items-center justify-center p-24 gap-[64px] z-[1]">
     <div className="bankGothic text-16xl relative leading-[80%] text-[160px]">                            
-                            {currentItem.symbol === 0 ?
+    {currentItem.symbol === 0 ?
                               <p className="">{`SOL/USD`}</p>  :
                               currentItem.symbol === 1 ?
                               <p className="">{`BTC/USD`}</p>  : 
@@ -1252,6 +1276,14 @@ onBlur={handleInputBlur} />
                               <p className="">{`PYTH/USD`}</p>  : 
                               currentItem.symbol === 3 ?
                               <p className="">{`BONK/USD`}</p>  : 
+                              currentItem.symbol === 4 ?
+                              <p className="">{`JUP/USD`}</p>  : 
+                              currentItem.symbol === 5 ?
+                              <p className="">{`ETH/USD`}</p>  : 
+                              currentItem.symbol === 6 ?
+                              <p className="">{`TIA/USD`}</p>  : 
+                              currentItem.symbol === 7 ?
+                              <p className="">{`SUI/USD`}</p>  : 
                               null
                             }</div>
     <div className="self-stretch flex flex-row items-center justify-start gap-[128px] text-right font-poppins">
@@ -1300,13 +1332,26 @@ onBlur={handleInputBlur} />
         <div className="flex flex-col items-start justify-center gap-[32px] text-5xl">
           <div className="relative leading-[48px] ">Entry Price</div>
           <div className="relative text-[78px] leading-[100%] font-medium text-white">
-          {currentItem.symbol === 1 ? (currentItem.initialPrice / 100000000).toFixed(1) : currentItem.symbol === 0 ? (currentItem.initialPrice / 100000000).toFixed(3) : currentItem.symbol === 2 ? (currentItem.initialPrice / 100000000).toFixed(4): currentItem.symbol === 3 ? (currentItem.initialPrice / 100000000).toFixed(7) : null}
+          {currentItem.symbol === 1 ? (currentItem.initialPrice / 100000000).toFixed(1)
+            : currentItem.symbol === 0 ? (currentItem.initialPrice / 100000000).toFixed(3)
+            : currentItem.symbol === 2 ? (currentItem.initialPrice / 100000000).toFixed(4)
+            : currentItem.symbol === 3 ? (currentItem.initialPrice / 100000000).toFixed(7)
+            : currentItem.symbol === 4 ? (currentItem.initialPrice / 100000000).toFixed(3) 
+            : currentItem.symbol === 5 ? (currentItem.initialPrice / 100000000).toFixed(1) 
+            : currentItem.symbol === 6 ? (currentItem.initialPrice / 100000000).toFixed(3) 
+            : currentItem.symbol === 7 ? (currentItem.initialPrice / 100000000).toFixed(3)  : null}
           </div>
         </div>
         <div className="flex flex-col items-start justify-center gap-[32px] text-5xl">
           <div className="relative leading-[48px] ">Mark Price</div>
           <div className="relative text-[78px] leading-[100%] font-medium text-white">
-          {currentItem.symbol === 1 ? (currentItem.currentPrice / 100000000).toFixed(1) : currentItem.symbol === 0 ? (currentItem.currentPrice / 100000000).toFixed(3) : currentItem.symbol === 2 ? (currentItem.currentPrice / 100000000).toFixed(4): currentItem.symbol === 3 ? (currentItem.currentPrice / 100000000).toFixed(7) : null}
+          {item.symbol === 1 ? (item.liquidationPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.currentPrice / 100000000).toFixed(3) :
+              item.symbol === 2 ? (item.currentPrice / 100000000).toFixed(4):
+              item.symbol === 3 ? (item.currentPrice / 100000000).toFixed(7) :
+              item.symbol === 4 ? (item.currentPrice / 100000000).toFixed(3) :
+              item.symbol === 5 ? (item.currentPrice / 100000000).toFixed(1) :
+              item.symbol === 6 ? (item.currentPrice / 100000000).toFixed(3) :
+              item.symbol === 7 ? (item.currentPrice / 100000000).toFixed(3) : null}
           </div>
         </div>
       </div>
@@ -1344,14 +1389,22 @@ onBlur={handleInputBlur} />
                   className="hover:underline"
                 >
 <div className="flex justify-center items-center rounded-l">
-  {item.symbol === 0 ?
-    <img src="/Sol1.png" alt="Logo" width="24" height="24" className="pb-1"/> :
-  item.symbol === 1 ?
-    <img src="/Btc1.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
-    item.symbol === 2 ?
-    <img src="/Coin1.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
-    item.symbol === 3 ?
-    <img src="/Bonk2.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+{item.symbol === 0 ?
+    <img src="/coins/120x120/Sol.png" alt="Logo" width="24" height="24" className="pb-1"/> :
+    item.symbol === 1 ?
+      <img src="/coins/120x120/Btc.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 2 ?
+      <img src="/coins/120x120/Pyth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 3 ?
+      <img src="/coins/120x120/Bonk.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 4 ?
+      <img src="/coins/120x120/Jup.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 5 ?
+      <img src="/coins/120x120/Eth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 6 ?
+      <img src="/coins/120x120/Tia.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 7 ?
+      <img src="/coins/120x120/Sei.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
   null
   }
   <p className="ml-2 ">{`${item.futuresContract.slice(0, 4)}...${item.futuresContract.slice(-4)}`}</p> 
@@ -1359,10 +1412,28 @@ onBlur={handleInputBlur} />
               </a>
               </div>
               <div className="flex items-center w-[16%] min-w-[90px] text-[0.9rem] text-white   font-poppins ">
-              <p>{item.symbol === 1 ? (item.initialPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.initialPrice / 100000000).toFixed(3) :item.symbol === 2 ? (item.initialPrice / 100000000).toFixed(4) : item.symbol === 3 ? (item.initialPrice / 100000000).toFixed(7) : null}</p>                </div>
+              <p>{item.symbol === 1 ? (item.initialPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.initialPrice / 100000000).toFixed(3) :
+              item.symbol === 2 ? (item.initialPrice / 100000000).toFixed(4):
+              item.symbol === 3 ? (item.initialPrice / 100000000).toFixed(7) :
+              item.symbol === 4 ? (item.initialPrice / 100000000).toFixed(3) :
+              item.symbol === 5 ? (item.initialPrice / 100000000).toFixed(1) :
+              item.symbol === 6 ? (item.initialPrice / 100000000).toFixed(3) :
+              item.symbol === 7 ? (item.initialPrice / 100000000).toFixed(3) : null}</p>                </div>
               <div className="flex flex-col w-[16%] min-w-[90px] text-[0.9rem] text-white   font-poppins ">
-                  <div>{item.symbol === 1 ? (item.currentPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.currentPrice / 100000000).toFixed(3) :item.symbol === 2 ? (item.currentPrice / 100000000).toFixed(4) : item.symbol === 3 ? (item.currentPrice / 100000000).toFixed(7) : null}</div>
-                  <div className="text-grey-text">{item.symbol === 1 ? (item.liquidationPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.liquidationPrice / 100000000).toFixed(3) :item.symbol === 2 ? (item.liquidationPrice / 100000000).toFixed(4) : item.symbol === 3 ? (item.liquidationPrice / 100000000).toFixed(7) : null}</div>              </div>
+                  <div>{item.symbol === 1 ? (item.liquidationPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.currentPrice / 100000000).toFixed(3) :
+              item.symbol === 2 ? (item.currentPrice / 100000000).toFixed(4):
+              item.symbol === 3 ? (item.currentPrice / 100000000).toFixed(7) :
+              item.symbol === 4 ? (item.currentPrice / 100000000).toFixed(3) :
+              item.symbol === 5 ? (item.currentPrice / 100000000).toFixed(1) :
+              item.symbol === 6 ? (item.currentPrice / 100000000).toFixed(3) :
+              item.symbol === 7 ? (item.currentPrice / 100000000).toFixed(3) : null}</div>
+                  <div className="text-grey-text">  {item.symbol === 1 ? (item.liquidationPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.liquidationPrice / 100000000).toFixed(3) :
+              item.symbol === 2 ? (item.liquidationPrice / 100000000).toFixed(4):
+              item.symbol === 3 ? (item.liquidationPrice / 100000000).toFixed(7) :
+              item.symbol === 4 ? (item.liquidationPrice / 100000000).toFixed(3) :
+              item.symbol === 5 ? (item.liquidationPrice / 100000000).toFixed(1) :
+              item.symbol === 6 ? (item.liquidationPrice / 100000000).toFixed(3) :
+              item.symbol === 7 ? (item.liquidationPrice / 100000000).toFixed(3) : null}</div>              </div>
                   <div className="w-[16%] min-w-[90px] text-[0.9rem] text-grey-text   font-poppins ">
                 <div className={item.priceDirection === 0 ? 'text-[#34c796] ' : 'text-red-500'}>
 
@@ -1450,13 +1521,21 @@ onBlur={handleInputBlur} />
                       >
                               <div className="flex items-center rounded-l">
                               {item.symbol === 0 ?
-    <img src="/Sol1.png" alt="Logo" width="24" height="24" className="pb-1"/> :
-  item.symbol === 1 ?
-    <img src="/Btc1.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
-    item.symbol === 2 ?
-    <img src="/Coin1.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
-    item.symbol === 3 ?
-    <img src="/Bonk2.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    <img src="/coins/120x120/Sol.png" alt="Logo" width="24" height="24" className="pb-1"/> :
+    item.symbol === 1 ?
+      <img src="/coins/120x120/Btc.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 2 ?
+      <img src="/coins/120x120/Pyth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 3 ?
+      <img src="/coins/120x120/Bonk.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 4 ?
+      <img src="/coins/120x120/Jup.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 5 ?
+      <img src="/coins/120x120/Eth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 6 ?
+      <img src="/coins/120x120/Tia.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 7 ?
+      <img src="/coins/120x120/Sei.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
   null
   }
                           <p className="ml-2 ">{`${item.futuresContract.slice(0, 4)}...${item.futuresContract.slice(-4)}`}</p> 
@@ -1503,15 +1582,33 @@ onBlur={handleInputBlur} />
               <div className="w-[63px] flex flex-col items-end justify-center gap-[6px]">
                 <div className="relative leading-[12px] text-grey-text">Entry</div>
                 <div className="flex flex-col items-end justify-center text-sm text-white">
-                  <div className="relative leading-[12px]">{item.symbol === 1 ? (item.initialPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.initialPrice / 100000000).toFixed(3) :item.symbol === 2 ? (item.initialPrice / 100000000).toFixed(4) : item.symbol === 3 ? (item.initialPrice / 100000000).toFixed(7) : null}</div>
+                  <div className="relative leading-[12px]">{item.symbol === 1 ? (item.initialPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.initialPrice / 100000000).toFixed(3) :
+              item.symbol === 2 ? (item.initialPrice / 100000000).toFixed(4):
+              item.symbol === 3 ? (item.initialPrice / 100000000).toFixed(7) :
+              item.symbol === 4 ? (item.initialPrice / 100000000).toFixed(3) :
+              item.symbol === 5 ? (item.initialPrice / 100000000).toFixed(1) :
+              item.symbol === 6 ? (item.initialPrice / 100000000).toFixed(3) :
+              item.symbol === 7 ? (item.initialPrice / 100000000).toFixed(3) : null}</div>
                 </div>
               </div>
               <div className="flex flex-col items-end justify-center gap-[6px]">
                 <div className="relative leading-[12px] text-grey-text">Mark (Liquidation)</div>
                 <div className="flex flex-col items-end justify-center gap-[4px] text-sm text-white">
-                  <div className="relative leading-[12px]">{item.symbol === 1 ? (item.currentPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.currentPrice / 100000000).toFixed(3) :item.symbol === 2 ? (item.currentPrice / 100000000).toFixed(4) : item.symbol === 3 ? (item.currentPrice / 100000000).toFixed(7) : null}</div>
+                  <div className="relative leading-[12px]"> {item.symbol === 1 ? (item.liquidationPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.currentPrice / 100000000).toFixed(3) :
+              item.symbol === 2 ? (item.currentPrice / 100000000).toFixed(4):
+              item.symbol === 3 ? (item.currentPrice / 100000000).toFixed(7) :
+              item.symbol === 4 ? (item.currentPrice / 100000000).toFixed(3) :
+              item.symbol === 5 ? (item.currentPrice / 100000000).toFixed(1) :
+              item.symbol === 6 ? (item.currentPrice / 100000000).toFixed(3) :
+              item.symbol === 7 ? (item.currentPrice / 100000000).toFixed(3) : null}</div>
                   <div className="relative leading-[12px] text-grey-text">
-                  {item.symbol === 1 ? (item.liquidationPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.liquidationPrice / 100000000).toFixed(3) :item.symbol === 2 ? (item.liquidationPrice / 100000000).toFixed(4) : item.symbol === 3 ? (item.liquidationPrice / 100000000).toFixed(7) : null}
+                  {item.symbol === 1 ? (item.liquidationPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.liquidationPrice / 100000000).toFixed(3) :
+              item.symbol === 2 ? (item.liquidationPrice / 100000000).toFixed(4):
+              item.symbol === 3 ? (item.liquidationPrice / 100000000).toFixed(7) :
+              item.symbol === 4 ? (item.liquidationPrice / 100000000).toFixed(3) :
+              item.symbol === 5 ? (item.liquidationPrice / 100000000).toFixed(1) :
+              item.symbol === 6 ? (item.liquidationPrice / 100000000).toFixed(3) :
+              item.symbol === 7 ? (item.liquidationPrice / 100000000).toFixed(3) : null}
                   </div>
                 </div>
               </div>
@@ -1628,26 +1725,50 @@ onBlur={handleInputBlur} />
                                   <img
                                   className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                                   alt=""
-                                  src="/Sol1.png"
+                                  src="/coins/1200x1200/Sol.png"
                                 />  :
                             currentItem.symbol === 1 ?
                             <img
                             className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                             alt=""
-                            src="/Btc1.png"
+                            src="/coins/1200x1200/Btc.png"
                           />  : 
                           currentItem.symbol === 2 ?
                           <img
                           className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                           alt=""
-                          src="/Coin1.png"
+                          src="/coins/1200x1200/Pyth.png"
                         /> :
                         currentItem.symbol === 3 ?
                         <img
                         className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
                         alt=""
-                        src="/Bonk2.png"
+                        src="/coins/1200x1200/Bonk.png"
                       /> :
+                      currentItem.symbol === 4 ?
+                      <img
+                      className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
+                      alt=""
+                      src="/coins/1200x1200/Jup.png"
+                    /> :
+                    currentItem.symbol === 5 ?
+                    <img
+                    className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
+                    alt=""
+                    src="/coins/1200x1200/Eth.png"
+                  /> :
+                  currentItem.symbol === 6 ?
+                  <img
+                  className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
+                  alt=""
+                  src="/coins/1200x1200/Tia.png"
+                /> :
+                currentItem.symbol === 7 ?
+                <img
+                className="absolute top-[456px] left-[564px] w-[396px] h-[396px] object-cover"
+                alt=""
+                src="/coins/1200x1200/Sei.png"
+              /> :
                             null
                             }
     </div>
@@ -1659,8 +1780,16 @@ onBlur={handleInputBlur} />
                               <p className="">{`BTC/USD`}</p>  : 
                               currentItem.symbol === 2 ?
                               <p className="">{`PYTH/USD`}</p>  : 
-                              currentItem.symbol === 1 ?
+                              currentItem.symbol === 3 ?
                               <p className="">{`BONK/USD`}</p>  : 
+                              currentItem.symbol === 4 ?
+                              <p className="">{`JUP/USD`}</p>  : 
+                              currentItem.symbol === 5 ?
+                              <p className="">{`ETH/USD`}</p>  : 
+                              currentItem.symbol === 6 ?
+                              <p className="">{`TIA/USD`}</p>  : 
+                              currentItem.symbol === 7 ?
+                              <p className="">{`SUI/USD`}</p>  : 
                               null
                             }</div>
       <div className="self-stretch flex flex-row items-center justify-start gap-[128px] text-right font-poppins">
@@ -1709,7 +1838,14 @@ onBlur={handleInputBlur} />
           <div className="flex flex-col items-start justify-center gap-[32px] text-5xl">
             <div className="relative leading-[48px] ">Entry Price</div>
             <div className="relative text-[78px] leading-[100%] font-medium text-white">
-            {currentItem.symbol === 1 ? (currentItem.initialPrice / 100000000).toFixed(1) : currentItem.symbol === 0 ? (currentItem.initialPrice / 100000000).toFixed(3) : currentItem.symbol === 2 ? (currentItem.initialPrice / 100000000).toFixed(4): currentItem.symbol === 3 ? (currentItem.initialPrice / 100000000).toFixed(7) : null}
+            {currentItem.symbol === 1 ? (currentItem.initialPrice / 100000000).toFixed(1)
+            : currentItem.symbol === 0 ? (currentItem.initialPrice / 100000000).toFixed(3)
+            : currentItem.symbol === 2 ? (currentItem.initialPrice / 100000000).toFixed(4)
+            : currentItem.symbol === 3 ? (currentItem.initialPrice / 100000000).toFixed(7)
+            : currentItem.symbol === 4 ? (currentItem.initialPrice / 100000000).toFixed(3) 
+            : currentItem.symbol === 5 ? (currentItem.initialPrice / 100000000).toFixed(1) 
+            : currentItem.symbol === 6 ? (currentItem.initialPrice / 100000000).toFixed(3) 
+            : currentItem.symbol === 7 ? (currentItem.initialPrice / 100000000).toFixed(3)  : null}
             </div>
           </div>
           <div className="flex flex-col items-start justify-center gap-[32px] text-5xl">
@@ -1765,13 +1901,21 @@ onBlur={handleInputBlur} />
                 >
 <div className="flex items-center justify-center rounded-l">
 {item.symbol === 0 ?
-    <img src="/Sol1.png" alt="Logo" width="24" height="24" className="pb-1"/> :
-  item.symbol === 1 ?
-    <img src="/Btc1.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
-    item.symbol === 2 ?
-    <img src="/Coin1.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
-    item.symbol === 3 ?
-    <img src="/Bonk2.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+    <img src="/coins/120x120/Sol.png" alt="Logo" width="24" height="24" className="pb-1"/> :
+    item.symbol === 1 ?
+      <img src="/coins/120x120/Btc.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 2 ?
+      <img src="/coins/120x120/Pyth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 3 ?
+      <img src="/coins/120x120/Bonk.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 4 ?
+      <img src="/coins/120x120/Jup.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 5 ?
+      <img src="/coins/120x120/Eth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 6 ?
+      <img src="/coins/120x120/Tia.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 7 ?
+      <img src="/coins/120x120/Sei.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
   null
   }
   <p className="ml-2 ">{`${item.futuresContract.slice(0, 4)}...${item.futuresContract.slice(-4)}`}</p> 
@@ -1779,10 +1923,24 @@ onBlur={handleInputBlur} />
                </a>
               </div>
               <div className="flex items-center w-[16%] min-w-[90px] text-[0.9rem] text-white   font-poppins ">
-              <p>{item.symbol === 1 ? (item.initialPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.initialPrice / 100000000).toFixed(3) :item.symbol === 2 ? (item.initialPrice / 100000000).toFixed(4) : item.symbol === 3 ? (item.initialPrice / 100000000).toFixed(7) : null}</p>          
+              <p>{item.symbol === 1 ? (item.initialPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.initialPrice / 100000000).toFixed(3) :
+              item.symbol === 2 ? (item.initialPrice / 100000000).toFixed(4):
+              item.symbol === 3 ? (item.initialPrice / 100000000).toFixed(7) :
+              item.symbol === 4 ? (item.initialPrice / 100000000).toFixed(3) :
+              item.symbol === 5 ? (item.initialPrice / 100000000).toFixed(1) :
+              item.symbol === 6 ? (item.initialPrice / 100000000).toFixed(3) :
+              item.symbol === 7 ? (item.initialPrice / 100000000).toFixed(3) : null}</p>          
               </div>
               <div className="flex items-center w-[16%] min-w-[90px] text-[0.9rem] text-white   font-poppins ">
-              <p>{item.symbol === 1 ? (item.finalPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.finalPrice / 100000000).toFixed(3) :item.symbol === 2 ? (item.finalPrice / 100000000).toFixed(4) : item.symbol === 3 ? (item.finalPrice / 100000000).toFixed(7) : null}</p>              
+              <p>{item.symbol === 1 ? (item.finalPrice / 100000000).toFixed(1) :
+              item.symbol === 0 ? (item.finalPrice / 100000000).toFixed(3) :
+              item.symbol === 2 ? (item.finalPrice / 100000000).toFixed(4) :
+              item.symbol === 3 ? (item.finalPrice / 100000000).toFixed(7) :
+              item.symbol === 4 ? (item.finalPrice / 100000000).toFixed(3) :
+              item.symbol === 5 ? (item.finalPrice / 100000000).toFixed(1) :
+              item.symbol === 6 ? (item.finalPrice / 100000000).toFixed(3) :
+              item.symbol === 7 ? (item.finalPrice / 100000000).toFixed(3) :
+              null}</p>              
                 </div>
                 <div className="w-[16%] min-w-[90px] text-[0.9rem] text-grey-text   font-poppins ">
                 <div className={item.priceDirection === 0 ? ' text-[#34c796]' : ' text-red-500'}>
@@ -1848,12 +2006,24 @@ onBlur={handleInputBlur} />
                         className="hover:underline"
                       >
                               <div className="flex items-center justify-center rounded-l">
-                                {item.symbol === 0 ?
-                               <img src="/sol.png" alt="Logo" width="24" height="24" className=""/> :
-                          item.symbol === 1 ?
-                                      <img src="/Bitcoin.png" alt="Logo" width="24" height="24" className=""/> : 
-                                    null
-                                            }
+                              {item.symbol === 0 ?
+    <img src="/coins/120x120/Sol.png" alt="Logo" width="24" height="24" className="pb-1"/> :
+    item.symbol === 1 ?
+      <img src="/coins/120x120/Btc.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 2 ?
+      <img src="/coins/120x120/Pyth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 3 ?
+      <img src="/coins/120x120/Bonk.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 4 ?
+      <img src="/coins/120x120/Jup.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 5 ?
+      <img src="/coins/120x120/Eth.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 6 ?
+      <img src="/coins/120x120/Tia.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+      item.symbol === 7 ?
+      <img src="/coins/120x120/Sei.png" alt="Logo" width="24" height="24" className="pb-1" /> : 
+  null
+  }
                           <p className="ml-2 ">{`${item.futuresContract.slice(0, 4)}...${item.futuresContract.slice(-4)}`}</p> 
       </div>
                      </a></div>
@@ -1898,13 +2068,27 @@ onBlur={handleInputBlur} />
               <div className="w-[63px] flex flex-col items-end justify-center gap-[6px]">
                 <div className="relative leading-[12px] text-grey-text">Entry</div>
                 <div className="flex flex-col items-end justify-center text-sm text-white">
-                  <div className="relative leading-[12px]">{item.symbol === 1 ? (item.initialPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.initialPrice / 100000000).toFixed(3) :item.symbol === 2 ? (item.initialPrice / 100000000).toFixed(4) : item.symbol === 3 ? (item.initialPrice / 100000000).toFixed(7) : null}</div>
+                  <div className="relative leading-[12px]">{item.symbol === 1 ? (item.initialPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.initialPrice / 100000000).toFixed(3) :
+              item.symbol === 2 ? (item.initialPrice / 100000000).toFixed(4):
+              item.symbol === 3 ? (item.initialPrice / 100000000).toFixed(7) :
+              item.symbol === 4 ? (item.initialPrice / 100000000).toFixed(3) :
+              item.symbol === 5 ? (item.initialPrice / 100000000).toFixed(1) :
+              item.symbol === 6 ? (item.initialPrice / 100000000).toFixed(3) :
+              item.symbol === 7 ? (item.initialPrice / 100000000).toFixed(3) : null}</div>
                 </div>
               </div>
               <div className="w-[90px] flex flex-col items-end justify-center gap-[6px]">
                 <div className="relative leading-[12px] text-grey-text">Exit</div>
                 <div className="flex flex-col items-end justify-center gap-[4px] text-sm text-white">
-                  <div className="relative leading-[12px]">{item.symbol === 1 ? (item.finalPrice / 100000000).toFixed(1) : item.symbol === 0 ? (item.finalPrice / 100000000).toFixed(3) :item.symbol === 2 ? (item.finalPrice / 100000000).toFixed(4) : item.symbol === 3 ? (item.finalPrice / 100000000).toFixed(7) : null}</div>
+                  <div className="relative leading-[12px]">{item.symbol === 1 ? (item.finalPrice / 100000000).toFixed(1) :
+              item.symbol === 0 ? (item.finalPrice / 100000000).toFixed(3) :
+              item.symbol === 2 ? (item.finalPrice / 100000000).toFixed(4) :
+              item.symbol === 3 ? (item.finalPrice / 100000000).toFixed(7) :
+              item.symbol === 4 ? (item.finalPrice / 100000000).toFixed(3) :
+              item.symbol === 5 ? (item.finalPrice / 100000000).toFixed(1) :
+              item.symbol === 6 ? (item.finalPrice / 100000000).toFixed(3) :
+              item.symbol === 7 ? (item.finalPrice / 100000000).toFixed(3) :
+              null}</div>
                 </div>
               </div>
             </div>

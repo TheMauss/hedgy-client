@@ -712,7 +712,7 @@ const Earn: FC = () => {
                         <img
             className="my-0 mx-[!important] top-[20px] left-[calc(50%_-_143px)] sm:w-1/2 sm:min-w-[100px] w-1/2 min-w-[75px] max-w-[150px] z-[1]"
             alt=""
-            src="/sheesh/solana-3d3@2x.png"
+            src="/coins/1200x1200/Sol.png"
           />
           <div className="flex flex-col w-2/3 text-left h-[62px] flex flex-col items-start justify-center gap-[8px] z-[0] text-[18px]">
             <div className="relative leading-[100%] font-medium">
