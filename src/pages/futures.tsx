@@ -34,6 +34,7 @@ interface Position {
 
 
 
+
 const Futures: FC = () => {
   const [symbol, setSymbol] = useState('Crypto.SOL/USD'); // default value
   const [latestOpenedPosition, setLatestOpenedPosition] = useState<Record<string, Position | null>>({});

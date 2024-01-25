@@ -165,49 +165,15 @@ const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT1;
 const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
 const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT5;
 
+type SymbolPosition = 'btcLong' | 'btcShort' | 'solLong' | 'solShort' | 'pythLong' | 'pythShort' | 'bonkLong' | 'bonkShort' | 'jupLong' | 'jupShort' | 'ethLong' | 'ethShort' | 'tiaLong' | 'tiaShort' | 'suiLong' | 'suiShort' | 'longCollateral' | 'shortCollateral';
+type TradeBarData = {
+  [key in SymbolPosition]: string;
+};
+
 const TradeBar: React.FC<TradeBarFuturesProps & {
   setParentDivHeight: (height: string) => void;
-  data: {
-    btcLong: string;
-    btcShort: string;
-    solLong: string;
-    solShort: string;
-    longCollateral: string,
-    shortCollateral: string,
-    pythLong: string,
-    pythShort: string,
-    bonkLong: string,
-    bonkShort: string,
-    jupLong: string,
-    jupShort: string,
-    ethLong: string,
-    ethShort: string,
-    tiaLong: string,
-    tiaShort: string,
-    suiLong: string,
-    suiShort: string,
-  };
-  setData: (data: {
-    btcLong: string;
-    btcShort: string;
-    solLong: string;
-    solShort: string;
-    longCollateral: string,
-    shortCollateral: string,
-    pythLong: string,
-    pythShort: string,
-    bonkLong: string,
-    bonkShort: string,
-    jupLong: string,
-    jupShort: string,
-    ethLong: string,
-    ethShort: string,
-    tiaLong: string,
-    tiaShort: string,
-    suiLong: string,
-    suiShort: string,
-  }
-  ) => void;
+  data: TradeBarData;
+  setData: (data: TradeBarData) => void;
 }> = ({ selectedCryptos, setParentDivHeight, totalBetAmount, data, setData, setPrices, setEMAPrice, prices, isBitcoinSelected, setOpeningPrice, openingPrice,
   isSoliditySelected,
 }) => {
