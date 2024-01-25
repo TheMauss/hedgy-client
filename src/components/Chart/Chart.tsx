@@ -16,6 +16,10 @@ const SYMBOL_MAPPING = {
   "Crypto.BTC/USD": "1",
   "Crypto.PYTH/USD": "2",
   "Crypto.BONK/USD": "3",
+  "Crypto.JUP/USD": "4",
+  "Crypto.ETH/USD": "5",
+  "Crypto.TIA/USD": "6",
+  "Crypto.SUI/USD": "7",
   // Add more mappings if needed
 };
 
