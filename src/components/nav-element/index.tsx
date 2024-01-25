@@ -27,11 +27,11 @@ const NavElement = ({
 }: NavElementProps) => {
     const router = useRouter();
     const isActive = (href === router.asPath || (as && as === router.asPath)) || 
-    (router.asPath.startsWith(href) && (router.query.crypto === 'SOL' || router.query.crypto === 'BTC' || router.query.crypto === 'PYTH' || router.query.crypto === 'BONK')
+    (router.asPath.startsWith(href) && (router.query.crypto === 'SOL' || router.query.crypto === 'BTC' || router.query.crypto === 'PYTH' || router.query.crypto === 'BONK'
     || router.query.crypto === 'ETH'
     || router.query.crypto === 'TIA'
     || router.query.crypto === 'SUI'
-    || router.query.crypto === 'JUP');
+    || router.query.crypto === 'JUP'));
     const divRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
