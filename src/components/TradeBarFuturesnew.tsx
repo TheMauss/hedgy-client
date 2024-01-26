@@ -389,7 +389,17 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
         selectedData = { long: parseInt(data.pythLong), short: parseInt(data.pythShort) };
       } else if (selectedCryptos.BONK) {
         selectedData = { long: parseInt(data.bonkLong), short: parseInt(data.bonkShort) };
+      } else if (selectedCryptos.ETH) {
+        selectedData = { long: parseInt(data.ethLong), short: parseInt(data.ethShort) };
+      } else if (selectedCryptos.TIA) {
+        selectedData = { long: parseInt(data.tiaLong), short: parseInt(data.tiaShort) };
+      } else if (selectedCryptos.SUI) {
+        selectedData = { long: parseInt(data.suiLong), short: parseInt(data.suiShort) };
       }
+      else if (selectedCryptos.JUP) {
+        selectedData = { long: parseInt(data.jupLong), short: parseInt(data.jupShort) };
+      }
+      
       // Add more conditions if you have more cryptocurrencies
 
       // Compute longShortRatio and totalBetAmount for the selected cryptocurrency
@@ -413,7 +423,7 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
       const newMaxLeverage = getDynamicLeverage(longShortRatio, priceDirection);
       setMaxLeverage(newMaxLeverage);
 
-      const defaultLeverage = (selectedCryptos.PYTH || selectedCryptos.BONK) ? 50 : 200;
+      const defaultLeverage = (selectedCryptos.PYTH || selectedCryptos.BONK || selectedCryptos.JUP || selectedCryptos.TIA || selectedCryptos.SUI) ? 50 : 200;
 
       if (leverage > newMaxLeverage && newMaxLeverage > defaultLeverage) {
         setLeverage(newMaxLeverage)
@@ -1231,7 +1241,7 @@ const TradeBar: React.FC<TradeBarFuturesProps & {
 
     const getMaxLeverage = (selectedCryptos) => {
       // Check if either PYTH or BONK is selected
-      if (selectedCryptos.PYTH || selectedCryptos.BONK) {
+      if (selectedCryptos.PYTH || selectedCryptos.BONK || selectedCryptos.JUP || selectedCryptos.TIA || selectedCryptos.SUI) {
         return 50;
       }
       // Default max leverage for other cases
