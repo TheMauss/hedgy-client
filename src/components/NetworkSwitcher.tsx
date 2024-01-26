@@ -1,10 +1,13 @@
-import { FC, useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
-import { useNetworkConfiguration } from '../contexts/NetworkConfigurationProvider';
+import { FC, useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+import { useNetworkConfiguration } from "../contexts/NetworkConfigurationProvider";
 
 const NetworkSwitcher: FC = () => {
-  const { networkConfiguration, setNetworkConfiguration } = useNetworkConfiguration();
-  const [isChecked, setIsChecked] = useState(networkConfiguration === "mainnet-beta");
+  const { networkConfiguration, setNetworkConfiguration } =
+    useNetworkConfiguration();
+  const [isChecked, setIsChecked] = useState(
+    networkConfiguration === "mainnet-beta"
+  );
   const [label, setLabel] = useState("Papertrading");
 
   useEffect(() => {
@@ -13,7 +16,7 @@ const NetworkSwitcher: FC = () => {
 
   const toggleNetwork = (e) => {
     e.stopPropagation(); // Add this line
-    const newNetwork = isChecked ? 'devnet' : 'mainnet-beta';
+    const newNetwork = isChecked ? "devnet" : "mainnet-beta";
     setIsChecked(!isChecked);
     setNetworkConfiguration(newNetwork);
   };
@@ -22,12 +25,15 @@ const NetworkSwitcher: FC = () => {
 
   return (
     <>
-      <label className="text-slate-300 font-semibold cursor-pointer label" title={explanation}>
+      <label
+        className="text-slate-300 font-semibold cursor-pointer label"
+        title={explanation}
+      >
         <span>{label}</span>
         <input
           type="checkbox"
           checked={isChecked}
-          onChange={toggleNetwork} 
+          onChange={toggleNetwork}
           className="toggle"
         />
       </label>
@@ -36,5 +42,5 @@ const NetworkSwitcher: FC = () => {
 };
 
 export default dynamic(() => Promise.resolve(NetworkSwitcher), {
-  ssr: false
+  ssr: false,
 });

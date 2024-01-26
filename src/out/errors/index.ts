@@ -1,22 +1,22 @@
-import { PublicKey } from "@solana/web3.js"
-import { PROGRAM_ID } from "../programId"
-import * as anchor from "./anchor"
+import { PublicKey } from "@solana/web3.js";
+import { PROGRAM_ID } from "../programId";
+import * as anchor from "./anchor";
 
 export function fromCode(
   code: number,
   logs?: string[]
 ): anchor.AnchorError | null {
-  return anchor.fromCode(code, logs)
+  return anchor.fromCode(code, logs);
 }
 
 function hasOwnProperty<X extends object, Y extends PropertyKey>(
   obj: X,
   prop: Y
 ): obj is X & Record<Y, unknown> {
-  return Object.hasOwnProperty.call(obj, prop)
+  return Object.hasOwnProperty.call(obj, prop);
 }
 
-const errorRe = /Program (\w+) failed: custom program error: (\w+)/
+const errorRe = /Program (\w+) failed: custom program error: (\w+)/;
 
 export function fromTxError(
   err: unknown,
@@ -28,32 +28,32 @@ export function fromTxError(
     !hasOwnProperty(err, "logs") ||
     !Array.isArray(err.logs)
   ) {
-    return null
+    return null;
   }
 
-  let firstMatch: RegExpExecArray | null = null
+  let firstMatch: RegExpExecArray | null = null;
   for (const logLine of err.logs) {
-    firstMatch = errorRe.exec(logLine)
+    firstMatch = errorRe.exec(logLine);
     if (firstMatch !== null) {
-      break
+      break;
     }
   }
 
   if (firstMatch === null) {
-    return null
+    return null;
   }
 
-  const [programIdRaw, codeRaw] = firstMatch.slice(1)
+  const [programIdRaw, codeRaw] = firstMatch.slice(1);
   if (programIdRaw !== programId.toString()) {
-    return null
+    return null;
   }
 
-  let errorCode: number
+  let errorCode: number;
   try {
-    errorCode = parseInt(codeRaw, 16)
+    errorCode = parseInt(codeRaw, 16);
   } catch (parseErr) {
-    return null
+    return null;
   }
 
-  return fromCode(errorCode, err.logs)
+  return fromCode(errorCode, err.logs);
 }

@@ -1,8 +1,6 @@
-
 import { FC } from "react";
 
-export const BasicsView: FC = ({ }) => {
-
+export const BasicsView: FC = ({}) => {
   return (
     <div className="md:hero mx-auto p-4">
       <div className="md:hero-content flex flex-col">
@@ -10,8 +8,7 @@ export const BasicsView: FC = ({ }) => {
           Basics
         </h1>
         {/* CONTENT GOES HERE */}
-        <div className="text-center">
-        </div>
+        <div className="text-center"></div>
       </div>
     </div>
   );

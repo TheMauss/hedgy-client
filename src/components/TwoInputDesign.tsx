@@ -8,7 +8,13 @@ interface TwoDigitInputProps {
   setError?: (error: string) => void; // Add setError prop
 }
 
-const TwoDigitInput: React.FC<TwoDigitInputProps> = ({ value, onValueChange, formatAmount, maxValue, setError }) => {
+const TwoDigitInput: React.FC<TwoDigitInputProps> = ({
+  value,
+  onValueChange,
+  formatAmount,
+  maxValue,
+  setError,
+}) => {
   const [inputValue, setInputValue] = useState(value);
 
   useEffect(() => {
@@ -38,37 +44,35 @@ const TwoDigitInput: React.FC<TwoDigitInputProps> = ({ value, onValueChange, for
 
   const handleBlur: React.FocusEventHandler<HTMLInputElement> = (event) => {
     let newValue = event.target.value;
-  
+
     if (formatAmount) {
       newValue = newValue.padStart(2, "0");
     }
-  
+
     // If the value is not a number, set it to "00"
     if (isNaN(parseInt(newValue))) {
       newValue = "00";
     }
-  
+
     setInputValue(newValue);
-  
+
     if (onValueChange) {
       onValueChange(newValue); // Notify parent component of value change
     }
-  
+
     const scrollY = document.body.style.top;
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.width = ''; // Add this line
-    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.width = ""; // Add this line
+    window.scrollTo(0, parseInt(scrollY || "0") * -1);
   };
 
   const handleFocus: React.FocusEventHandler<HTMLInputElement> = (event) => {
     const scrollY = window.scrollY;
-    document.body.style.position = 'fixed';
+    document.body.style.position = "fixed";
     document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = '100%'; // Add this line
+    document.body.style.width = "100%"; // Add this line
   };
-  
-  
 
   return (
     <input

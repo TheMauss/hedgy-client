@@ -3,14 +3,14 @@ import TradeBarFutures from "../components/TradeBarFuturesnew";
 import RecentPredictions from "../components/RecentPredictionsNew";
 import MyPositionsFutures from "../components/MyPositionsFuturesNew";
 import { FC, useState, useEffect, useRef } from "react";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import React from "react";
 import Chat from "../components/Chatnew";
 import PairPicker from "components/PairPickerFutures";
 import InterestBar from "components/InterestBar";
 import Footer from "components/Footernew";
 import { priceDataState } from "components/globalStatse";
-import { FaChevronLeft, FaChevronUp } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronUp } from "react-icons/fa";
 import { Graph } from "components/GraphNew";
 
 interface Position {
@@ -20,10 +20,10 @@ interface Position {
   initialPrice: number;
   betAmount: number;
   priceDirection: number;
-  leverage: number,
-  stopLossPrice: number,
-  takeProfitPrice: number,
-  liquidationPrice: number,
+  leverage: number;
+  stopLossPrice: number;
+  takeProfitPrice: number;
+  liquidationPrice: number;
   symbol: number;
   resolved: boolean;
   winner: string | null;
@@ -32,14 +32,13 @@ interface Position {
   pnl: number;
 }
 
-
-
-
 const Futures: FC = () => {
-  const [symbol, setSymbol] = useState('Crypto.SOL/USD'); // default value
-  const [latestOpenedPosition, setLatestOpenedPosition] = useState<Record<string, Position | null>>({});
+  const [symbol, setSymbol] = useState("Crypto.SOL/USD"); // default value
+  const [latestOpenedPosition, setLatestOpenedPosition] = useState<
+    Record<string, Position | null>
+  >({});
   const [totalBetAmount, setTotalBetAmount] = useState(0);
-  const [divHeight, setDivHeight] = useState('60vh');
+  const [divHeight, setDivHeight] = useState("60vh");
   const [data, setData] = useState({
     btcLong: "0",
     btcShort: "0",
@@ -59,9 +58,6 @@ const Futures: FC = () => {
     tiaShort: "0",
     suiLong: "0",
     suiShort: "0",
-
-
-
   });
   const [prices, setPrices] = useState({});
   const [EMAprice, setEMAprice] = useState(null);
@@ -73,15 +69,14 @@ const Futures: FC = () => {
     JUP: false,
     ETH: false,
     TIA: false,
-    SUI: false
+    SUI: false,
     // Add other cryptocurrencies as needed
   });
   const [isBitcoinSelected, setIsBitcoinSelected] = useState(false);
   const [isSoliditySelected, setIsSoliditySelected] = useState(true);
   const [openingPrice, setOpeningPrice] = useState(0);
   const [initialPrice, setInitialPrice] = useState(0);
-  const [selectedPair, setSelectedPair] = useState('');
-
+  const [selectedPair, setSelectedPair] = useState("");
 
   const router = useRouter();
   const { crypto } = router.query; // could be 'btc' or 'sol'
@@ -127,16 +122,15 @@ const Futures: FC = () => {
     checkSize();
 
     // Add event listener for resize
-    window.addEventListener('resize', checkSize);
+    window.addEventListener("resize", checkSize);
 
     // Cleanup event listener
-    return () => window.removeEventListener('resize', checkSize);
+    return () => window.removeEventListener("resize", checkSize);
   }, []);
-
 
   useEffect(() => {
     const handleScroll = () => {
-      const stickyThreshold = 64;// for example, 200px from the top of the page
+      const stickyThreshold = 64; // for example, 200px from the top of the page
       const bottomStickyThreshold = -1;
       if (ref.current) {
         setIsSticky(window.scrollY > stickyThreshold);
@@ -147,18 +141,19 @@ const Futures: FC = () => {
       if (bottomRef.current) {
         const viewportHeight = window.innerHeight;
         // Check if the bottom of the element is within the viewport
-        const isNearBottom = window.scrollY + viewportHeight >= document.documentElement.offsetHeight - bottomStickyThreshold;
+        const isNearBottom =
+          window.scrollY + viewportHeight >=
+          document.documentElement.offsetHeight - bottomStickyThreshold;
         setIsStickyBottom(!isNearBottom);
       }
-
     };
 
     // Trigger the scroll event listener on scroll
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
 
     // Clean up the event listener when the component unmounts
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -183,14 +178,14 @@ const Futures: FC = () => {
     setSelectedCryptos(newSelectedCryptos);
 
     const symbolMap = {
-      BTC: 'Crypto.BTC/USD',
-      SOL: 'Crypto.SOL/USD',
-      PYTH: 'Crypto.PYTH/USD',
-      BONK: 'Crypto.BONK/USD',
-      JUP: 'Crypto.JUP/USD',
-      ETH: 'Crypto.ETH/USD',
-      TIA: 'Crypto.TIA/USD',
-      SUI: 'Crypto.SUI/USD',
+      BTC: "Crypto.BTC/USD",
+      SOL: "Crypto.SOL/USD",
+      PYTH: "Crypto.PYTH/USD",
+      BONK: "Crypto.BONK/USD",
+      JUP: "Crypto.JUP/USD",
+      ETH: "Crypto.ETH/USD",
+      TIA: "Crypto.TIA/USD",
+      SUI: "Crypto.SUI/USD",
 
       // Add other mappings as necessary
     };
@@ -204,15 +199,11 @@ const Futures: FC = () => {
     }
   }, [crypto, router.isReady]);
 
-
-
-
   useEffect(() => {
-    Object.keys(prices).forEach(symbol => {
+    Object.keys(prices).forEach((symbol) => {
       priceDataState.updatePriceData(symbol, prices[symbol]);
     });
   }, [prices]);
-
 
   const handleTotalBetAmountChange = (totalBetAmount) => {
     setTotalBetAmount(totalBetAmount);
@@ -227,32 +218,33 @@ const Futures: FC = () => {
   };
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       // Only run this client-side since window object is not available server-side
       let scrollPosition = 0;
 
       const handleFocus = () => {
         // Save the current scroll position when an input is focused
-        scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+        scrollPosition =
+          window.pageYOffset || document.documentElement.scrollTop;
       };
 
       const handleBlur = () => {
         // When an input is blurred, scroll back to the saved position
-        window.scrollTo({ top: scrollPosition, behavior: 'smooth' });
+        window.scrollTo({ top: scrollPosition, behavior: "smooth" });
       };
 
       // Add the event listeners when the component mounts
-      const inputs = document.querySelectorAll('input');
+      const inputs = document.querySelectorAll("input");
       inputs.forEach((input) => {
-        input.addEventListener('focus', handleFocus);
-        input.addEventListener('blur', handleBlur);
+        input.addEventListener("focus", handleFocus);
+        input.addEventListener("blur", handleBlur);
       });
 
       // Remove the event listeners when the component unmounts
       return () => {
         inputs.forEach((input) => {
-          input.removeEventListener('focus', handleFocus);
-          input.removeEventListener('blur', handleBlur);
+          input.removeEventListener("focus", handleFocus);
+          input.removeEventListener("blur", handleBlur);
         });
       };
     }
@@ -261,89 +253,105 @@ const Futures: FC = () => {
   const [showSidePanel, setShowSidePanel] = useState(true);
 
   const toggleSidePanel = () => {
-    setShowSidePanel(prevShowSidePanel => !prevShowSidePanel);
+    setShowSidePanel((prevShowSidePanel) => !prevShowSidePanel);
   };
 
   const [showBottomPanel, setshowBottomPanel] = useState(true);
 
   const toggleBottomPanel = () => {
-    setshowBottomPanel(prevshowBottomPanel => !prevshowBottomPanel);
+    setshowBottomPanel((prevshowBottomPanel) => !prevshowBottomPanel);
   };
 
   useEffect(() => {
     // Provide a default empty object if selectedCryptos is undefined or null
     const selectedCryptosSafe = selectedCryptos || {};
-  
-    const selectedCrypto = Object.keys(selectedCryptosSafe).find(key => selectedCryptosSafe[key]);
+
+    const selectedCrypto = Object.keys(selectedCryptosSafe).find(
+      (key) => selectedCryptosSafe[key]
+    );
     if (selectedCrypto) {
       setSelectedPair(selectedCrypto);
     }
     const decimalPlacesMapping = {
-      'BTC': 1, // Example: Bitcoin to 2 decimal places
-      'SOL': 3,
-      'PYTH': 3,
-      'BONK': 8,
-      'ETH': 1, 
-      'SUI': 3,
-      'TIA': 3,
-      'JUP': 3,
+      BTC: 1, // Example: Bitcoin to 2 decimal places
+      SOL: 3,
+      PYTH: 3,
+      BONK: 8,
+      ETH: 1,
+      SUI: 3,
+      TIA: 3,
+      JUP: 3,
 
       // Add more mappings as needed
     };
-      // Get the number of decimal places for the selected crypto, defaulting to a standard value if not found
-    const decimalPlaces = decimalPlacesMapping[selectedCrypto?.toUpperCase()] || 2;
-  
-    const newInitialPrice = prices?.[`Crypto.${selectedCrypto?.toUpperCase()}/USD`]?.price / 100000000 || 0;
+    // Get the number of decimal places for the selected crypto, defaulting to a standard value if not found
+    const decimalPlaces =
+      decimalPlacesMapping[selectedCrypto?.toUpperCase()] || 2;
+
+    const newInitialPrice =
+      prices?.[`Crypto.${selectedCrypto?.toUpperCase()}/USD`]?.price /
+        100000000 || 0;
     setInitialPrice(parseFloat(newInitialPrice.toFixed(decimalPlaces)));
   }, [selectedCryptos, prices]);
-
-
 
   return (
     <div>
       <Head>
-      <title> {selectedPair}  ${initialPrice} | PopFi Futures</title>
+        <title>
+          {" "}
+          {selectedPair} ${initialPrice} | PopFi Futures
+        </title>
         <meta name="description" content="PopFi" />
       </Head>
       <div className="bg-base w-full flex justify-center flex-col">
-        <div className="relative lg:block hidden mt-1"> {/* Ensure the parent has relative positioning */}
+        <div className="relative lg:block hidden mt-1">
+          {" "}
+          {/* Ensure the parent has relative positioning */}
           <button
             onClick={toggleSidePanel}
             className="z-50 fixed right-0 top-1/2 transform -translate-y-1/2 text-sm text-white  rounded lg:block hidden"
           >
-            <FaChevronLeft className={`ml-2 transition-transform duration-300 text-layer-3 ${showSidePanel ? 'rotate-180' : ''}`} />
+            <FaChevronLeft
+              className={`ml-2 transition-transform duration-300 text-layer-3 ${showSidePanel ? "rotate-180" : ""}`}
+            />
           </button>
           <button
             onClick={toggleBottomPanel}
             className="z-50 fixed right-1/2 bottom-0 transform -translate-y-1/2 text-sm text-white  rounded lg:block hidden"
           >
-            <FaChevronUp className={`ml-2 transition-transform duration-300 text-layer-3 ${showBottomPanel ? 'rotate-180' : ''}`} />
+            <FaChevronUp
+              className={`ml-2 transition-transform duration-300 text-layer-3 ${showBottomPanel ? "rotate-180" : ""}`}
+            />
           </button>
         </div>
         <div className="w-full md:px-2 h-full lg:h-[calc(100vh-78px)] bg-base overflow-hidden ">
-
           <div className="w-full">
             {/* right content */}
             <div className="w-full">
-
-
-
               {/* top */}
               <div className="w-full flex md:flex-row flex-col ">
                 <div className="w-full flex flex-col">
                   <div className="w-full md:flex-row flex-col gap-2">
                     <div className="w-full flex md:flex-row flex-col gap-2">
                       <div className="md:w-[330px] w-full">
-                        <div ref={ref} className={`${isSticky && ActiveButton === 1 ? 'sticky-top' : ''}`}>
+                        <div
+                          ref={ref}
+                          className={`${isSticky && ActiveButton === 1 ? "sticky-top" : ""}`}
+                        >
                           <PairPicker
                             onSymbolChange={handleSymbolChange}
                             selectedCryptos={selectedCryptos}
                             setSelectedCryptos={setSelectedCryptos}
                             openingPrice={openingPrice}
                             prices={prices}
-                          /></div>
-                        <div className={`${isSticky && ActiveButton === 1 ? 'spacer-active pt-[64px] md:pt-0' : ''}`}></div>
-                        <div className={`overflow-auto w-full md:hidden md:order-1 order-2 ${ActiveButton === 1 ? '' : 'hidden'}`}>
+                          />
+                        </div>
+                        <div
+                          className={`${isSticky && ActiveButton === 1 ? "spacer-active pt-[64px] md:pt-0" : ""}`}
+                        ></div>
+                        <div
+                          className={`overflow-auto w-full md:hidden md:order-1 order-2 ${ActiveButton === 1 ? "" : "hidden"}`}
+                        >
                           <InterestBar
                             openingPrice={openingPrice}
                             symbol={symbol}
@@ -351,7 +359,6 @@ const Futures: FC = () => {
                             prices={prices}
                             EMAprice={EMAprice}
                             selectedCryptos={selectedCryptos}
-
                           />
                           <div className="w-full flex flex-col md:order-1 order-2 md:mt-2 mt-2">
                             <Graph
@@ -361,7 +368,9 @@ const Futures: FC = () => {
                             />
                           </div>
                         </div>
-                        <div className={`md:w-[330px] w-full md:order-1 order-2  overflow-y-auto mb-2 rounded-lg bg-layer-1  overhlow-y-auto overflow-x-hidden mt-2 ${ActiveButton === 1 ? '' : 'hidden'}`} >
+                        <div
+                          className={`md:w-[330px] w-full md:order-1 order-2  overflow-y-auto mb-2 rounded-lg bg-layer-1  overhlow-y-auto overflow-x-hidden mt-2 ${ActiveButton === 1 ? "" : "hidden"}`}
+                        >
                           <TradeBarFutures
                             setOpeningPrice={setOpeningPrice}
                             openingPrice={openingPrice}
@@ -388,42 +397,56 @@ const Futures: FC = () => {
                           prices={prices}
                           EMAprice={EMAprice}
                           selectedCryptos={selectedCryptos}
-
                         />
-                        <div className={`w-full md:block flex-col hidden md:order-2 order-1 mt-2 md:h-[629px] ${showBottomPanel ? "lg:h-[calc((100vh-2px)-(40vh))]" : "lg:h-[calc(100vh-108px-33px)] "
-                          }`}>
+                        <div
+                          className={`w-full md:block flex-col hidden md:order-2 order-1 mt-2 md:h-[629px] ${
+                            showBottomPanel
+                              ? "lg:h-[calc((100vh-2px)-(40vh))]"
+                              : "lg:h-[calc(100vh-108px-33px)] "
+                          }`}
+                        >
                           <Graph
                             symbol={symbol}
                             latestOpenedPosition={latestOpenedPosition}
                             prices={prices}
-                          /></div>
+                          />
+                        </div>
 
-                        <div className={`w-full lg:flex lg:flex-col hidden order-3   lg:h-[calc((100vh-226px)-(60vh-79px))] mt-2 ${showBottomPanel ? '' : 'lg:hidden'}`}>
+                        <div
+                          className={`w-full lg:flex lg:flex-col hidden order-3   lg:h-[calc((100vh-226px)-(60vh-79px))] mt-2 ${showBottomPanel ? "" : "lg:hidden"}`}
+                        >
                           <MyPositionsFutures
                             latestOpenedPosition={latestOpenedPosition}
                             setLatestOpenedPosition={setLatestOpenedPosition}
-                            handleTotalBetAmountChange={handleTotalBetAmountChange}
+                            handleTotalBetAmountChange={
+                              handleTotalBetAmountChange
+                            }
                             prices={prices}
                           />
-
                         </div>
-
                       </div>
 
-                      <div className={`lg:block hidden md:w-[315px] flex flex-col lg:h-[calc(100vh-88px)] ${showSidePanel ? '' : 'lg:hidden'}`}>
+                      <div
+                        className={`lg:block hidden md:w-[315px] flex flex-col lg:h-[calc(100vh-88px)] ${showSidePanel ? "" : "lg:hidden"}`}
+                      >
                         <div className="w-full flex flex-col h-[59%]">
-                          <RecentPredictions divHeight={divHeight} /></div>
+                          <RecentPredictions divHeight={divHeight} />
+                        </div>
                         <div className="h-[41%] mt-2">
                           <Chat />
                         </div>
                       </div>
                       {/* left sidebar */}
-                    </div></div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className={`h-[calc(100vh-192px)] md:h-[330px] w-full md:flex lg:flex-col lg:hidden  ${ActiveButton === 2 ? "" : "hidden"
-                }`}>
+              <div
+                className={`h-[calc(100vh-192px)] md:h-[330px] w-full md:flex lg:flex-col lg:hidden  ${
+                  ActiveButton === 2 ? "" : "hidden"
+                }`}
+              >
                 <MyPositionsFutures
                   latestOpenedPosition={latestOpenedPosition}
                   setLatestOpenedPosition={setLatestOpenedPosition}
@@ -432,32 +455,48 @@ const Futures: FC = () => {
                 />
               </div>
               <div className="flex flex-row md:py-2 md:gap-2">
-                <div className={`h-[calc(100vh-192px)] md:h-[330px] w-full md:block lg:flex-col lg:hidden flex-row gap-2 ${ActiveButton === 3 ? "" : "hidden"
-                  }`}>
-                  <RecentPredictions divHeight={divHeight} /></div>
-                <div className={`h-[calc(100vh-192px)] md:h-[330px] w-full md:block lg:flex-col lg:hidden flex-row gap-2 ${ActiveButton === 4 ? "" : "hidden"
-                  }`}>
-                  <Chat /></div>
-
+                <div
+                  className={`h-[calc(100vh-192px)] md:h-[330px] w-full md:block lg:flex-col lg:hidden flex-row gap-2 ${
+                    ActiveButton === 3 ? "" : "hidden"
+                  }`}
+                >
+                  <RecentPredictions divHeight={divHeight} />
+                </div>
+                <div
+                  className={`h-[calc(100vh-192px)] md:h-[330px] w-full md:block lg:flex-col lg:hidden flex-row gap-2 ${
+                    ActiveButton === 4 ? "" : "hidden"
+                  }`}
+                >
+                  <Chat />
+                </div>
               </div>
             </div>
           </div>
           <div className="md:hidden">
-            <Footer /></div>
-          <div className={`h-[62px] md:hidden ${isStickyBottom ? '' : 'hidden'}`}></div>
+            <Footer />
+          </div>
+          <div
+            className={`h-[62px] md:hidden ${isStickyBottom ? "" : "hidden"}`}
+          ></div>
 
           <div
             ref={bottomRef}
-            className={`bankGothic px-2 md:hidden h-[62px]  self-stretch bg-layer-2 flex flex-row items-start justify-between py-0 text-center text-grey font-bankgothic-md-bt border-t border-layer-3 ${isStickyBottom ? 'fixed-bottom' : ''}`}>
+            className={`bankGothic px-2 md:hidden h-[62px]  self-stretch bg-layer-2 flex flex-row items-start justify-between py-0 text-center text-grey font-bankgothic-md-bt border-t border-layer-3 ${isStickyBottom ? "fixed-bottom" : ""}`}
+          >
             <button
               onClick={() => handleButtonClick(1)}
-              className={`bankGothic w-[70px] flex flex-col items-center justify-center py-3 px-0 box-border gap-[4px] ${ActiveButton === 1 ? "text-white" : "text-text-grey"
-                }`}>
+              className={`bankGothic w-[70px] flex flex-col items-center justify-center py-3 px-0 box-border gap-[4px] ${
+                ActiveButton === 1 ? "text-white" : "text-text-grey"
+              }`}
+            >
               <img
                 className="relative w-6 h-6"
                 alt=""
-                src={`${ActiveButton === 1 ? "/new/vuesaxboldbitcoinconvert2.svg" : "/new/vuesaxboldbitcoinconvert1.svg"
-                  }`}
+                src={`${
+                  ActiveButton === 1
+                    ? "/new/vuesaxboldbitcoinconvert2.svg"
+                    : "/new/vuesaxboldbitcoinconvert1.svg"
+                }`}
               />
               <div className="bankGothic relative tracking-[-0.08em] leading-[80.69%] uppercase text-[12px]">
                 Trade
@@ -465,28 +504,37 @@ const Futures: FC = () => {
             </button>
             <button
               onClick={() => handleButtonClick(2)}
-              className={`bankGothic w-1/4 flex flex-col items-center justify-center py-3 px-0 box-border gap-[4px] ${ActiveButton === 2 ? "text-white " : "text-text-grey"
-                }`}>
+              className={`bankGothic w-1/4 flex flex-col items-center justify-center py-3 px-0 box-border gap-[4px] ${
+                ActiveButton === 2 ? "text-white " : "text-text-grey"
+              }`}
+            >
               <img
                 className="relative w-6 h-6 "
                 alt=""
-                src={`${ActiveButton === 2 ? "/new/vuesaxboldcalendar.svg" : "/new/vuesaxboldcalendar1.svg"
-                  }`}
+                src={`${
+                  ActiveButton === 2
+                    ? "/new/vuesaxboldcalendar.svg"
+                    : "/new/vuesaxboldcalendar1.svg"
+                }`}
               />
-              <div
-                className="bankGothic relative tracking-[-0.08em] leading-[80.69%] uppercase text-[12px]">
+              <div className="bankGothic relative tracking-[-0.08em] leading-[80.69%] uppercase text-[12px]">
                 Positions
               </div>
             </button>
             <button
               onClick={() => handleButtonClick(3)}
-              className={`flex flex-col items-center justify-center py-3 px-0 box-border gap-[4px] ${ActiveButton === 3 ? "text-white " : "text-text-grey"
-                }`}>
+              className={`flex flex-col items-center justify-center py-3 px-0 box-border gap-[4px] ${
+                ActiveButton === 3 ? "text-white " : "text-text-grey"
+              }`}
+            >
               <img
                 className="relative w-6 h-6"
                 alt=""
-                src={`${ActiveButton === 3 ? "/new/vuesaxboldflash2.svg" : "/new/vuesaxboldflash1.svg"
-                  }`}
+                src={`${
+                  ActiveButton === 3
+                    ? "/new/vuesaxboldflash2.svg"
+                    : "/new/vuesaxboldflash1.svg"
+                }`}
               />
               <div className="bankGothic relative tracking-[-0.08em] leading-[80.69%] uppercase text-[12px]">
                 Predictions
@@ -494,24 +542,29 @@ const Futures: FC = () => {
             </button>
             <button
               onClick={() => handleButtonClick(4)}
-              className={`w-[65px] flex flex-col items-center justify-center py-3 px-0 box-border gap-[4px] ${ActiveButton === 4 ? "text-white " : "text-text-grey"
-                }`}>
+              className={`w-[65px] flex flex-col items-center justify-center py-3 px-0 box-border gap-[4px] ${
+                ActiveButton === 4 ? "text-white " : "text-text-grey"
+              }`}
+            >
               <img
                 className="relative w-6 h-6"
                 alt=""
-                src={`${ActiveButton === 4 ? "/new/vuesaxboldmessages22.svg" : "/new/vuesaxboldmessages21.svg"
-                  }`}
+                src={`${
+                  ActiveButton === 4
+                    ? "/new/vuesaxboldmessages22.svg"
+                    : "/new/vuesaxboldmessages21.svg"
+                }`}
               />
               <div className="bankGothic relative tracking-[-0.08em] leading-[80.69%] uppercase text-[12px]">
                 CHATS
               </div>
             </button>
           </div>
-
         </div>
-
       </div>
-      <div className="hidden md:block w-full"><Footer /></div>
+      <div className="hidden md:block w-full">
+        <Footer />
+      </div>
     </div>
   );
 };

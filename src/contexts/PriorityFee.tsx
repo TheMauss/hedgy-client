@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState } from "react";
 
 const PriorityFeeContext = createContext({
   isPriorityFee: true,
@@ -23,7 +23,7 @@ export const usePriorityFee = () => {
   const context = useContext(PriorityFeeContext);
 
   if (!context) {
-    throw new Error('usePriorityFee must be used within a PriorityFeeProvider');
+    throw new Error("usePriorityFee must be used within a PriorityFeeProvider");
   }
 
   return context;

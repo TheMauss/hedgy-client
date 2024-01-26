@@ -1,8 +1,5 @@
 {
-  "extends": [
-    "next",
-    "plugin:@typescript-eslint/recommended"
-  ],
+  "extends": ["next", "plugin:@typescript-eslint/recommended"],
   "rules": {
     "react/jsx-no-target-blank": [
       "error",

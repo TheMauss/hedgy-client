@@ -1,26 +1,30 @@
-import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
-import { PROGRAM_ID } from "../programId"
+import {
+  TransactionInstruction,
+  PublicKey,
+  AccountMeta,
+} from "@solana/web3.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import BN from "bn.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import * as borsh from "@coral-xyz/borsh"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { PROGRAM_ID } from "../programId";
 
 export interface ResolveBinOptArgs {
-  finalPrice: BN
+  finalPrice: BN;
 }
 
 export interface ResolveBinOptAccounts {
-  binOpt: PublicKey
-  playerAcc: PublicKey
-  userAcc: PublicKey
-  ratioAcc: PublicKey
-  signerServer: PublicKey
-  houseAcc: PublicKey
-  pdaHouseAcc: PublicKey
-  lpAcc: PublicKey
-  clock: PublicKey
-  systemProgram: PublicKey
+  binOpt: PublicKey;
+  playerAcc: PublicKey;
+  userAcc: PublicKey;
+  ratioAcc: PublicKey;
+  signerServer: PublicKey;
+  houseAcc: PublicKey;
+  pdaHouseAcc: PublicKey;
+  lpAcc: PublicKey;
+  clock: PublicKey;
+  systemProgram: PublicKey;
 }
 
-export const layout = borsh.struct([borsh.i64("finalPrice")])
+export const layout = borsh.struct([borsh.i64("finalPrice")]);
 
 export function resolveBinOpt(
   args: ResolveBinOptArgs,
@@ -38,16 +42,16 @@ export function resolveBinOpt(
     { pubkey: accounts.lpAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.clock, isSigner: false, isWritable: false },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
-  ]
-  const identifier = Buffer.from([248, 123, 236, 161, 28, 63, 84, 107])
-  const buffer = Buffer.alloc(1000)
+  ];
+  const identifier = Buffer.from([248, 123, 236, 161, 28, 63, 84, 107]);
+  const buffer = Buffer.alloc(1000);
   const len = layout.encode(
     {
       finalPrice: args.finalPrice,
     },
     buffer
-  )
-  const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
-  const ix = new TransactionInstruction({ keys, programId, data })
-  return ix
+  );
+  const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len);
+  const ix = new TransactionInstruction({ keys, programId, data });
+  return ix;
 }

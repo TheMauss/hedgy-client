@@ -1,11 +1,15 @@
 import React, { FC, useState, useEffect, useRef } from "react";
-import socketIOClient from 'socket.io-client';
-import { useWallet } from '@solana/wallet-adapter-react';
+import socketIOClient from "socket.io-client";
+import { useWallet } from "@solana/wallet-adapter-react";
 import HashLoader from "react-spinners/HashLoader";
-import Modal from 'react-modal';
-import { BiMicrophoneOff, BiSend, BiSolidSend, BiMicrophone } from "react-icons/bi";
+import Modal from "react-modal";
+import {
+  BiMicrophoneOff,
+  BiSend,
+  BiSolidSend,
+  BiMicrophone,
+} from "react-icons/bi";
 import CustomEmojis from "../components/emojis";
-
 
 interface WalletAddress {
   [address: string]: any;
@@ -46,7 +50,11 @@ const CustomEmojiPicker = ({ onEmojiClick }) => {
       {CustomEmojis.map((emoji, index) => (
         <button key={index} onClick={() => onEmojiClick(emoji.name)}>
           <span className="emoji-wrapper p-1.5">
-            <img src={emoji.src} alt={`Emoji ${index + 1}`} style={{ width: "25px", height: "25px" }} />
+            <img
+              src={emoji.src}
+              alt={`Emoji ${index + 1}`}
+              style={{ width: "25px", height: "25px" }}
+            />
           </span>
         </button>
       ))}
@@ -100,7 +108,7 @@ const Chat: FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [input, setInput] = useState("");
   const { publicKey } = useWallet();
-  const walletAddress = publicKey?.toString() || '';
+  const walletAddress = publicKey?.toString() || "";
   const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
   const socketRef = useRef(null);
   const messagesContainerRef = useRef(null);
@@ -109,10 +117,9 @@ const Chat: FC = () => {
   const [emojiPickerPosition, setEmojiPickerPosition] = useState(null);
   const [mutedUsers, setMutedUsers] = useState({});
   const inputRef = useRef(null);
-  const mutedUsersRef = useRef({});  // Modify this line
+  const mutedUsersRef = useRef({}); // Modify this line
   const [hovered, setHovered] = useState(false);
   const [originalMessages, setOriginalMessages] = useState<WalletAddress>({});
-
 
   const muteUser = (walletAddressToMute) => {
     if (walletAddressToMute === walletAddress) {
@@ -125,11 +132,15 @@ const Chat: FC = () => {
         if (msg.walletAddress === walletAddressToMute) {
           const mutedMessage = { ...msg, muted: !msg.muted };
           if (mutedMessage.muted) {
-            mutedMessage.message = 'Muted Message';
+            mutedMessage.message = "Muted Message";
             mutedMessage.elements = [{ type: "text" }];
           } else {
-            mutedMessage.message = mutedUsers[walletAddressToMute]?.originalMessages[msg.id]?.message || msg.message;
-            mutedMessage.elements = mutedUsers[walletAddressToMute]?.originalMessages[msg.id]?.elements || msg.elements;
+            mutedMessage.message =
+              mutedUsers[walletAddressToMute]?.originalMessages[msg.id]
+                ?.message || msg.message;
+            mutedMessage.elements =
+              mutedUsers[walletAddressToMute]?.originalMessages[msg.id]
+                ?.elements || msg.elements;
           }
           return mutedMessage;
         } else {
@@ -138,13 +149,12 @@ const Chat: FC = () => {
       })
     );
 
-
-
     setMutedUsers((prevMutedUsers) => {
       const newMutedUsers = { ...prevMutedUsers };
       if (newMutedUsers[walletAddressToMute]) {
         // User is already in the list, so toggle their muted status
-        newMutedUsers[walletAddressToMute].muted = !newMutedUsers[walletAddressToMute].muted;
+        newMutedUsers[walletAddressToMute].muted =
+          !newMutedUsers[walletAddressToMute].muted;
       } else {
         // User is not in the list, so add them and set their muted status to true
         newMutedUsers[walletAddressToMute] = { muted: true };
@@ -158,7 +168,6 @@ const Chat: FC = () => {
       mutedUsersRef.current = newMutedUsers; // Update the ref
       return newMutedUsers;
     });
-
   };
 
   const unmuteUser = (walletAddressToUnmute) => {
@@ -166,7 +175,9 @@ const Chat: FC = () => {
       prevMessages.map((msg) => {
         if (msg.walletAddress === walletAddressToUnmute) {
           const unmutedMessage = { ...msg, muted: false };
-          const originalMsg = originalMessages[walletAddressToUnmute]?.find((item) => item._id === msg._id);
+          const originalMsg = originalMessages[walletAddressToUnmute]?.find(
+            (item) => item._id === msg._id
+          );
           if (originalMsg) {
             unmutedMessage.message = originalMsg.message;
             unmutedMessage.elements = originalMsg.elements;
@@ -178,7 +189,6 @@ const Chat: FC = () => {
       })
     );
 
-
     setMutedUsers((prevMutedUsers) => {
       const newMutedUsers = { ...prevMutedUsers };
       if (newMutedUsers[walletAddressToUnmute]) {
@@ -186,7 +196,8 @@ const Chat: FC = () => {
         delete newMutedUsers[walletAddressToUnmute];
       }
       setOriginalMessages((prevOriginalMessages) => {
-        const { [walletAddressToUnmute]: deletedItem, ...rest } = prevOriginalMessages;
+        const { [walletAddressToUnmute]: deletedItem, ...rest } =
+          prevOriginalMessages;
         return rest;
       });
       mutedUsersRef.current = newMutedUsers; // Update the ref
@@ -194,14 +205,16 @@ const Chat: FC = () => {
     });
   };
 
-
-  const longPressActions = useLongPress(() => {
-    muteUser(walletAddress);
-  }, 500, walletAddress);
-
+  const longPressActions = useLongPress(
+    () => {
+      muteUser(walletAddress);
+    },
+    500,
+    walletAddress
+  );
 
   const toggleEmojiPicker = () => {
-    if (walletAddress === '') {
+    if (walletAddress === "") {
       return;
     }
 
@@ -213,25 +226,25 @@ const Chat: FC = () => {
       });
     }
     setModalIsOpen(!modalIsOpen);
-  }
-
+  };
 
   useEffect(() => {
     setIsLoading(true); // Begin loading state
     socketRef.current = socketIOClient(ENDPOINT2);
-    if (walletAddress !== '') {
-      socketRef.current.emit('registerWallet', walletAddress);
+    if (walletAddress !== "") {
+      socketRef.current.emit("registerWallet", walletAddress);
     }
 
-    socketRef.current.on("initialMessages", initialMessages => {
+    socketRef.current.on("initialMessages", (initialMessages) => {
       setMessages(initialMessages.reverse());
       setIsLoading(false); // End loading state
     });
 
-    socketRef.current.on("newMessage", newMessage => {
+    socketRef.current.on("newMessage", (newMessage) => {
       // Only add the new message to the list if the sender is not muted
-      if (!mutedUsersRef.current[newMessage.walletAddress]?.muted) {  // Use the ref here
-        setMessages(prevMessages => [...prevMessages, newMessage]);
+      if (!mutedUsersRef.current[newMessage.walletAddress]?.muted) {
+        // Use the ref here
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
       }
     });
 
@@ -248,7 +261,7 @@ const Chat: FC = () => {
           container.scrollTop = container.scrollHeight;
         }, 100); // adjust delay to your needs
       });
-      observer.observe(container, { childList: true, subtree: true });  // Note the addition of "subtree: true"
+      observer.observe(container, { childList: true, subtree: true }); // Note the addition of "subtree: true"
       return () => {
         observer.disconnect();
       };
@@ -266,7 +279,6 @@ const Chat: FC = () => {
     inputRef.current.focus();
   };
 
-
   const processInput = (input) => {
     const emojiRegex = /\(([\w\s_]+)\)/g;
     const elements = [];
@@ -274,7 +286,10 @@ const Chat: FC = () => {
 
     input.replace(emojiRegex, (match, emojiName, index) => {
       if (index > lastIndex) {
-        elements.push({ type: "text", value: input.substring(lastIndex, index).trim() });
+        elements.push({
+          type: "text",
+          value: input.substring(lastIndex, index).trim(),
+        });
       }
 
       const emoji = CustomEmojis.find((emoji) => emoji.name === match); // Use the full match (including parentheses) as the emoji name
@@ -296,7 +311,6 @@ const Chat: FC = () => {
     return elements.filter((el) => el.value !== "");
   };
 
-
   // Modify this function
   const sendMessage = () => {
     const trimmedInput = input.trim();
@@ -305,20 +319,35 @@ const Chat: FC = () => {
     }
     if (socketRef.current && walletAddress !== "") {
       const inputElements = processInput(trimmedInput); // Process the input here
-      const messageObject = { walletAddress: walletAddress, message: trimmedInput, elements: inputElements };
+      const messageObject = {
+        walletAddress: walletAddress,
+        message: trimmedInput,
+        elements: inputElements,
+      };
       socketRef.current.emit("sendMessage", messageObject);
       setInput(""); // Clear the input
     }
   };
 
-  const handleInputFocus: React.FocusEventHandler<HTMLInputElement> = (event) => {
+  const handleInputFocus: React.FocusEventHandler<HTMLInputElement> = (
+    event
+  ) => {
     // Disables zooming
-    document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0');
+    document
+      .querySelector('meta[name="viewport"]')
+      .setAttribute(
+        "content",
+        "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+      );
   };
 
-  const handleInputBlur: React.FocusEventHandler<HTMLInputElement> = (event) => {
+  const handleInputBlur: React.FocusEventHandler<HTMLInputElement> = (
+    event
+  ) => {
     // Enables zooming again
-    document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0');
+    document
+      .querySelector('meta[name="viewport"]')
+      .setAttribute("content", "width=device-width, initial-scale=1.0");
   };
 
   const customColors = [
@@ -334,8 +363,6 @@ const Chat: FC = () => {
     "#58D68D", // Brighter shade of color 10
   ];
 
-
-
   // Function to get color for a wallet address
   const getColorForWalletAddress = (walletAddress, colors) => {
     // Simple hashing function to get an index for the color
@@ -347,15 +374,19 @@ const Chat: FC = () => {
     return colors[colorIndex];
   };
 
-
   const { cancel, reset, ...longPressHandlers } = longPressActions;
 
   return (
     <div className="w-full px-4 pb-1 flex flex-col custom-scrollbar overflow-x-hidden h-full  bg-[#232332] xl:order-5 lg:order-5 md:order-5 order-6 px-2 rounded-lg  flex bg-layer-1">
       <div className="sticky top-0 flex items-center z-10">
-        <h2 className="pt-4 pb-4 bankGothic leading-[18px] text-xl text-start text-grey-text">Chat</h2>
+        <h2 className="pt-4 pb-4 bankGothic leading-[18px] text-xl text-start text-grey-text">
+          Chat
+        </h2>
       </div>
-      <div ref={messagesContainerRef} className="message-container overflow-y-auto custom-scrollbar">
+      <div
+        ref={messagesContainerRef}
+        className="message-container overflow-y-auto custom-scrollbar"
+      >
         {isLoading ? (
           <div className="mt-20 mb-16 flex justify-center items-center">
             <HashLoader color="#1a1a25" />
@@ -369,24 +400,43 @@ const Chat: FC = () => {
             >
               <p
                 className="text-slate-300 text-[0.9rem] messageText"
-                style={{ display: "inline-flex", alignItems: "center", flexWrap: "wrap" }}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                }}
               >
                 <strong
                   className="font-semibold pr-1"
-                  style={{ color: getColorForWalletAddress(message.walletAddress, customColors) }} // Apply the color here
+                  style={{
+                    color: getColorForWalletAddress(
+                      message.walletAddress,
+                      customColors
+                    ),
+                  }} // Apply the color here
                 >
-                  {message.walletAddress.slice(0, 3) + "..." + message.walletAddress.slice(-2)}:
+                  {message.walletAddress.slice(0, 3) +
+                    "..." +
+                    message.walletAddress.slice(-2)}
+                  :
                 </strong>
                 {message.elements.map((element, i) => {
                   if (element.type === "text") {
-                    return <React.Fragment key={i}>{element.value}</React.Fragment>;
+                    return (
+                      <React.Fragment key={i}>{element.value}</React.Fragment>
+                    );
                   } else if (element.type === "emoji") {
                     return (
                       <img
                         key={i}
                         src={element.value}
                         alt="emoji"
-                        style={{ width: "25px", height: "25px", marginLeft: "5px", marginRight: "5px" }}
+                        style={{
+                          width: "25px",
+                          height: "25px",
+                          marginLeft: "5px",
+                          marginRight: "5px",
+                        }}
                       />
                     );
                   }
@@ -410,7 +460,6 @@ const Chat: FC = () => {
                   )}
                 </button>
               )}
-
             </div>
           ))
         )}
@@ -421,7 +470,7 @@ const Chat: FC = () => {
               sendMessage();
             }}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey && !modalIsOpen) {
+              if (e.key === "Enter" && !e.shiftKey && !modalIsOpen) {
                 e.preventDefault(); // prevent form submission
                 sendMessage();
               }
@@ -435,7 +484,9 @@ const Chat: FC = () => {
                     e.preventDefault(); // prevent form submission
                     toggleEmojiPicker();
                   }}
-                >😀</button>
+                >
+                  😀
+                </button>
 
                 <EmojiPickerModal
                   isOpen={modalIsOpen}
@@ -452,7 +503,9 @@ const Chat: FC = () => {
                 onChange={handleInput}
                 onFocus={handleInputFocus}
                 onBlur={handleInputBlur}
-                placeholder={walletAddress ? "Type a message..." : "Connect to chat..."}
+                placeholder={
+                  walletAddress ? "Type a message..." : "Connect to chat..."
+                }
                 disabled={!walletAddress}
               />
 
@@ -469,7 +522,7 @@ const Chat: FC = () => {
         </div>
       </div>
     </div>
-  )
+  );
 };
 
 export default Chat;

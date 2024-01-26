@@ -1,22 +1,26 @@
-import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
-import { PROGRAM_ID } from "../programId"
+import {
+  TransactionInstruction,
+  PublicKey,
+  AccountMeta,
+} from "@solana/web3.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import BN from "bn.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import * as borsh from "@coral-xyz/borsh"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { PROGRAM_ID } from "../programId";
 
 export interface ResolveFutContuserAccounts {
-  futCont: PublicKey
-  userAcc: PublicKey
-  ratioAcc: PublicKey
-  playerAcc: PublicKey
-  oracleAccount: PublicKey
-  pdaHouseAcc: PublicKey
-  lpAcc: PublicKey
-  signerWalletAccount: PublicKey
-  lpRevAcc: PublicKey
-  clock: PublicKey
-  systemProgram: PublicKey
-  houseAcc: PublicKey
-  nftAcc: PublicKey
+  futCont: PublicKey;
+  userAcc: PublicKey;
+  ratioAcc: PublicKey;
+  playerAcc: PublicKey;
+  oracleAccount: PublicKey;
+  pdaHouseAcc: PublicKey;
+  lpAcc: PublicKey;
+  signerWalletAccount: PublicKey;
+  lpRevAcc: PublicKey;
+  clock: PublicKey;
+  systemProgram: PublicKey;
+  houseAcc: PublicKey;
+  nftAcc: PublicKey;
 }
 
 export function resolveFutContuser(
@@ -41,9 +45,9 @@ export function resolveFutContuser(
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
     { pubkey: accounts.houseAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.nftAcc, isSigner: false, isWritable: true },
-  ]
-  const identifier = Buffer.from([29, 221, 85, 210, 247, 20, 168, 228])
-  const data = identifier
-  const ix = new TransactionInstruction({ keys, programId, data })
-  return ix
+  ];
+  const identifier = Buffer.from([29, 221, 85, 210, 247, 20, 168, 228]);
+  const data = identifier;
+  const ix = new TransactionInstruction({ keys, programId, data });
+  return ix;
 }

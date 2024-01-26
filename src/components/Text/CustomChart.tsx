@@ -1,6 +1,6 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { createChart, LineStyle } from 'lightweight-charts';
-import io from 'socket.io-client';
+import React, { useRef, useEffect, useState } from "react";
+import { createChart, LineStyle } from "lightweight-charts";
+import io from "socket.io-client";
 
 interface Price {
   _id: string;
@@ -16,10 +16,10 @@ interface Position {
   initialPrice: number;
   betAmount: number;
   priceDirection: number;
-  leverage: number,
-  stopLossPrice: number,
-  takeProfitPrice: number,
-  liquidationPrice: number,
+  leverage: number;
+  stopLossPrice: number;
+  takeProfitPrice: number;
+  liquidationPrice: number;
   symbol: number;
   resolved: boolean;
   winner: string | null;
@@ -30,10 +30,13 @@ interface Position {
 
 interface ChartComponentProps {
   symbol: string;
-  latestOpenedPosition: Record<string, Position | null>;  // Add this line
+  latestOpenedPosition: Record<string, Position | null>; // Add this line
 }
 
-const ChartComponent: React.FC<ChartComponentProps> = ({ symbol, latestOpenedPosition }) => {
+const ChartComponent: React.FC<ChartComponentProps> = ({
+  symbol,
+  latestOpenedPosition,
+}) => {
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
   const [data, setData] = useState<any[]>([]);
   const [candlestickSeries, setCandlestickSeries] = useState<any | null>(null);
@@ -41,137 +44,167 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ symbol, latestOpenedPos
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<any | null>(null);
   const seriesRef = useRef([]);
-  const [latestPositions, setLatestPositions] = useState<Record<string, Position | null>>({});
+  const [latestPositions, setLatestPositions] = useState<
+    Record<string, Position | null>
+  >({});
 
   const SYMBOL_MAPPING = {
-    0: 'Crypto.SOL/USD',
-    1: 'Crypto.BTC/USD',
+    0: "Crypto.SOL/USD",
+    1: "Crypto.BTC/USD",
     // add more pairs if needed
   };
 
   useEffect(() => {
-    if (!chart || !latestOpenedPosition || latestOpenedPosition.length === null) {
+    if (
+      !chart ||
+      !latestOpenedPosition ||
+      latestOpenedPosition.length === null
+    ) {
       return;
     }
-  
+
     const position = latestOpenedPosition[symbol];
-  
-    if (!position || !position.resolved || SYMBOL_MAPPING[position.symbol] !== symbol) {
+
+    if (
+      !position ||
+      !position.resolved ||
+      SYMBOL_MAPPING[position.symbol] !== symbol
+    ) {
       return;
     }
 
     // Remove all previous series
     seriesRef.current.forEach((series) => chart.removeSeries(series));
     seriesRef.current = []; // Reset the reference
-}, [chart, latestPositions]);
+  }, [chart, latestPositions]);
 
-useEffect(() => {
-  if (!chart) return;
+  useEffect(() => {
+    if (!chart) return;
 
-  // Remove all previous series
-  seriesRef.current.forEach((series) => chart.removeSeries(series));
-  seriesRef.current = []; // Reset the reference
+    // Remove all previous series
+    seriesRef.current.forEach((series) => chart.removeSeries(series));
+    seriesRef.current = []; // Reset the reference
 
-  const symbolPosition = latestPositions[symbol];
+    const symbolPosition = latestPositions[symbol];
 
-  if (!symbolPosition || symbolPosition.resolved) {
+    if (!symbolPosition || symbolPosition.resolved) {
       return;
-  }
+    }
 
+    let { liquidationPrice } = symbolPosition;
+    const { initialPrice, stopLossPrice, takeProfitPrice, priceDirection } =
+      symbolPosition;
 
-  let { liquidationPrice } = symbolPosition;
-  const {initialPrice, stopLossPrice, takeProfitPrice, priceDirection} = symbolPosition;
-
-  // Adjust liquidationPrice based on stopLossPrice and direction
-  if ((priceDirection === 0 && stopLossPrice !== 0 && stopLossPrice > liquidationPrice) ||
-      (priceDirection === 1 && stopLossPrice !== 0 && stopLossPrice < liquidationPrice)) {
+    // Adjust liquidationPrice based on stopLossPrice and direction
+    if (
+      (priceDirection === 0 &&
+        stopLossPrice !== 0 &&
+        stopLossPrice > liquidationPrice) ||
+      (priceDirection === 1 &&
+        stopLossPrice !== 0 &&
+        stopLossPrice < liquidationPrice)
+    ) {
       liquidationPrice = stopLossPrice;
-  }
-    const minTime = Math.min(...data.map(d => d.time));
-  const maxTime = Math.max(...data.map(d => d.time));
+    }
+    const minTime = Math.min(...data.map((d) => d.time));
+    const maxTime = Math.max(...data.map((d) => d.time));
 
-  // Create a new series for each line
-  const initialPriceLineSeries = chart.addLineSeries();
-  const stopLossLineSeries = chart.addLineSeries();
-  const takeProfitLineSeries = chart.addLineSeries();
-  const liquidationPriceLineSeries = chart.addLineSeries();
+    // Create a new series for each line
+    const initialPriceLineSeries = chart.addLineSeries();
+    const stopLossLineSeries = chart.addLineSeries();
+    const takeProfitLineSeries = chart.addLineSeries();
+    const liquidationPriceLineSeries = chart.addLineSeries();
 
-  if (initialPrice !== 0) {
+    if (initialPrice !== 0) {
       initialPriceLineSeries.setData([
-          { time: minTime, value: initialPrice / 1e8 },
-          { time: maxTime, value: initialPrice / 1e8 },
+        { time: minTime, value: initialPrice / 1e8 },
+        { time: maxTime, value: initialPrice / 1e8 },
       ]);
-      initialPriceLineSeries.applyOptions({ lineWidth: 1, color: '#fff133', lineStyle: LineStyle.Dotted });
+      initialPriceLineSeries.applyOptions({
+        lineWidth: 1,
+        color: "#fff133",
+        lineStyle: LineStyle.Dotted,
+      });
       seriesRef.current.push(initialPriceLineSeries); // Keep a reference
-  }
+    }
 
-  if (stopLossPrice !== 0) {
+    if (stopLossPrice !== 0) {
       stopLossLineSeries.setData([
-          { time: minTime, value: stopLossPrice / 1e8 },
-          { time: maxTime, value: stopLossPrice / 1e8 },
+        { time: minTime, value: stopLossPrice / 1e8 },
+        { time: maxTime, value: stopLossPrice / 1e8 },
       ]);
-      stopLossLineSeries.applyOptions({ lineWidth: 1, color: '#FF3333' , lineStyle: LineStyle.Dotted});
+      stopLossLineSeries.applyOptions({
+        lineWidth: 1,
+        color: "#FF3333",
+        lineStyle: LineStyle.Dotted,
+      });
       seriesRef.current.push(stopLossLineSeries); // Keep a reference
-  }
+    }
 
-  if (takeProfitPrice !== 0) {
+    if (takeProfitPrice !== 0) {
       takeProfitLineSeries.setData([
-          { time: minTime, value: takeProfitPrice / 1e8 },
-          { time: maxTime, value: takeProfitPrice / 1e8 },
+        { time: minTime, value: takeProfitPrice / 1e8 },
+        { time: maxTime, value: takeProfitPrice / 1e8 },
       ]);
-      takeProfitLineSeries.applyOptions({ lineWidth: 1, color: '#4bffb5' , lineStyle: LineStyle.Dotted});
+      takeProfitLineSeries.applyOptions({
+        lineWidth: 1,
+        color: "#4bffb5",
+        lineStyle: LineStyle.Dotted,
+      });
       seriesRef.current.push(takeProfitLineSeries); // Keep a reference
-  }
+    }
 
-  if (liquidationPrice !== 0) {
+    if (liquidationPrice !== 0) {
       liquidationPriceLineSeries.setData([
-          { time: minTime, value: liquidationPrice / 1e8 },
-          { time: maxTime, value: liquidationPrice / 1e8 },
+        { time: minTime, value: liquidationPrice / 1e8 },
+        { time: maxTime, value: liquidationPrice / 1e8 },
       ]);
-      liquidationPriceLineSeries.applyOptions({ lineWidth: 1, color: '#e73662' , lineStyle: LineStyle.Dotted});
+      liquidationPriceLineSeries.applyOptions({
+        lineWidth: 1,
+        color: "#e73662",
+        lineStyle: LineStyle.Dotted,
+      });
       seriesRef.current.push(liquidationPriceLineSeries); // Keep a reference
-  }
-}, [chart, latestPositions, symbol, data]);
+    }
+  }, [chart, latestPositions, symbol, data]);
 
-useEffect(() => {
-  if (!latestOpenedPosition) return;
-  console.log("latestoppo", latestOpenedPosition)
+  useEffect(() => {
+    if (!latestOpenedPosition) return;
+    console.log("latestoppo", latestOpenedPosition);
 
-  const updatedPositions = {};
+    const updatedPositions = {};
 
-  for (const key in latestOpenedPosition) {
+    for (const key in latestOpenedPosition) {
       const position = latestOpenedPosition[key];
-      
+
       // If the position is null, update it accordingly in latestPositions.
       if (position === null) {
-          updatedPositions[SYMBOL_MAPPING[key]] = null;
-          continue;
+        updatedPositions[SYMBOL_MAPPING[key]] = null;
+        continue;
       }
-    
+
       // Ensure position exists and maps to the current symbol.
       if (position && SYMBOL_MAPPING[position.symbol] === symbol) {
-          updatedPositions[SYMBOL_MAPPING[position.symbol]] = position;
+        updatedPositions[SYMBOL_MAPPING[position.symbol]] = position;
       }
-  }
+    }
 
-  if (Object.keys(updatedPositions).length) {
-      setLatestPositions(prev => ({ ...prev, ...updatedPositions }));
-  }
-}, [latestOpenedPosition, symbol]);
+    if (Object.keys(updatedPositions).length) {
+      setLatestPositions((prev) => ({ ...prev, ...updatedPositions }));
+    }
+  }, [latestOpenedPosition, symbol]);
 
-
-const ENDPOINT3 = process.env.NEXT_PUBLIC_ENDPOINT3;
-const ENDPOINT1 = process.env.NEXT_PUBLIC_ENDPOINT1;
-  
+  const ENDPOINT3 = process.env.NEXT_PUBLIC_ENDPOINT3;
+  const ENDPOINT1 = process.env.NEXT_PUBLIC_ENDPOINT1;
 
   useEffect(() => {
     const socket = io(ENDPOINT3);
-    socket.on('connect_error', (err) => {
-      console.log('Error connecting to server:', err);
+    socket.on("connect_error", (err) => {
+      console.log("Error connecting to server:", err);
       setError(err);
     });
 
-    socket.on('prices', (prices: Price[]) => {
+    socket.on("prices", (prices: Price[]) => {
       const newCandlesticks = prices.reverse().map((price) => ({
         time: Number(price.timestamp),
         id: price._id,
@@ -191,7 +224,7 @@ const ENDPOINT1 = process.env.NEXT_PUBLIC_ENDPOINT1;
     });
 
     // Emit the 'subscribe' event with the desired symbol
-    socket.emit('subscribe', symbol);
+    socket.emit("subscribe", symbol);
 
     return () => {
       socket.disconnect();
@@ -201,50 +234,53 @@ const ENDPOINT1 = process.env.NEXT_PUBLIC_ENDPOINT1;
   useEffect(() => {
     if (!loading) {
       const newSocket = io(ENDPOINT1);
-      newSocket.on('connect_error', (err) => {
-        console.log('Error connecting to server:', err);
+      newSocket.on("connect_error", (err) => {
+        console.log("Error connecting to server:", err);
         setError(err);
       });
-  
-      newSocket.on('priceUpdate', (newPrices: any[]) => {
+
+      newSocket.on("priceUpdate", (newPrices: any[]) => {
         const symbolPrice = newPrices.find((price) => price.symbol === symbol);
-        
+
         if (symbolPrice && symbolPrice.timestamp) {
           const timestamp = Number(symbolPrice.timestamp);
-          
-          if (!isNaN(timestamp)) { // Check if timestamp is valid number
+
+          if (!isNaN(timestamp)) {
+            // Check if timestamp is valid number
             const candlestick = {
               time: timestamp,
-              id: '',
+              id: "",
               open: symbolPrice.price / 1e8,
               high: symbolPrice.price / 1e8,
               low: symbolPrice.price / 1e8,
               close: symbolPrice.price / 1e8,
             };
-    
+
             setData((prevData) => {
               // only add new data if timestamp is higher than the latest data
-              if(prevData.length > 0 && prevData[prevData.length - 1].time >= timestamp) {
+              if (
+                prevData.length > 0 &&
+                prevData[prevData.length - 1].time >= timestamp
+              ) {
                 return prevData;
               }
-              
+
               const newData = mergeCandlesticks(prevData, [candlestick]);
               const sortedData = sortCandlesticks(newData);
               return sortedData;
             });
           } else {
-            console.log('Invalid timestamp:', symbolPrice.timestamp);
+            console.log("Invalid timestamp:", symbolPrice.timestamp);
           }
         }
       });
-      
-  
+
       return () => {
         newSocket.disconnect();
       };
     }
   }, [symbol, loading]);
-  
+
   useEffect(() => {
     const chartContainer = chartContainerRef.current;
 
@@ -253,21 +289,21 @@ const ENDPOINT1 = process.env.NEXT_PUBLIC_ENDPOINT1;
         width: chartContainer.clientWidth,
         height: chartContainer.clientHeight,
         layout: {
-          background: { color: '#1a1a25' },
-          textColor: '#DDD',
+          background: { color: "#1a1a25" },
+          textColor: "#DDD",
         },
         grid: {
-          vertLines: { color: '#444' },
-          horzLines: { color: '#444' },
+          vertLines: { color: "#444" },
+          horzLines: { color: "#444" },
         },
         localization: {
           timeFormatter: (timestamp: number) => {
             const date = new Date(timestamp * 1000);
             const timeOptions: Intl.DateTimeFormatOptions = {
-              day: 'numeric',
-              month: 'long',
-              hour: 'numeric',
-              minute: 'numeric',
+              day: "numeric",
+              month: "long",
+              hour: "numeric",
+              minute: "numeric",
             };
             return date.toLocaleTimeString([], timeOptions);
           },
@@ -279,11 +315,11 @@ const ENDPOINT1 = process.env.NEXT_PUBLIC_ENDPOINT1;
           lockVisibleTimeRangeOnResize: true,
           rightBarStaysOnScroll: true,
           borderVisible: false,
-          borderColor: '#fff000',
+          borderColor: "#fff000",
           visible: true,
           timeVisible: true,
           secondsVisible: false,
-      },
+        },
       });
 
       const newCandlestickSeries = newChart.addCandlestickSeries();
@@ -291,10 +327,10 @@ const ENDPOINT1 = process.env.NEXT_PUBLIC_ENDPOINT1;
       newCandlestickSeries.applyOptions({
         borderVisible: false,
         wickVisible: true,
-        upColor: '#4bffb5',
-        downColor: '#ff4976',
-        wickUpColor: '#4bffb5',
-        wickDownColor: '#ff4976',
+        upColor: "#4bffb5",
+        downColor: "#ff4976",
+        wickUpColor: "#4bffb5",
+        wickDownColor: "#ff4976",
       });
 
       newCandlestickSeries.setData(data);
@@ -304,7 +340,7 @@ const ENDPOINT1 = process.env.NEXT_PUBLIC_ENDPOINT1;
       });
 
       newChart.timeScale().applyOptions({
-        borderColor: '#71649C',
+        borderColor: "#71649C",
       });
 
       setChart(newChart);
@@ -329,48 +365,63 @@ const ENDPOINT1 = process.env.NEXT_PUBLIC_ENDPOINT1;
       }
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, [chart]);
 
-const mergeCandlesticks = (prevCandlesticks: any[], newCandlesticks: any[]) => {
-  const mergedCandlesticks = [...prevCandlesticks];
+  const mergeCandlesticks = (
+    prevCandlesticks: any[],
+    newCandlesticks: any[]
+  ) => {
+    const mergedCandlesticks = [...prevCandlesticks];
 
-  // Get the most recent candlestick
-  let latestCandlestick = mergedCandlesticks[mergedCandlesticks.length - 1];
+    // Get the most recent candlestick
+    let latestCandlestick = mergedCandlesticks[mergedCandlesticks.length - 1];
 
-  for (const newCandlestick of newCandlesticks) {
-    // Normalize timestamp to the nearest 4-second mark
-    newCandlestick.time = Math.floor(newCandlestick.time / 30) * 30;
+    for (const newCandlestick of newCandlesticks) {
+      // Normalize timestamp to the nearest 4-second mark
+      newCandlestick.time = Math.floor(newCandlestick.time / 30) * 30;
 
-    if (latestCandlestick && latestCandlestick.time === newCandlestick.time) {
-      // If the newCandlestick is within the 4-second window of the latestCandlestick,
-      // update the latestCandlestick instead of creating a new one
-      latestCandlestick.high = Math.max(latestCandlestick.high, newCandlestick.close);
-      latestCandlestick.low = Math.min(latestCandlestick.low, newCandlestick.close);
-      latestCandlestick.close = newCandlestick.close;
-    } else if (latestCandlestick && latestCandlestick.time >= newCandlestick.time) {
-      console.error('Received a timestamp that is earlier than the latest timestamp:', newCandlestick);
-      // Optionally throw an error or handle this case differently
-    } else {
-      // If the newCandlestick is outside the 4-second window of the latestCandlestick,
-      // create a new candlestick
-      const newCandlestickData = {
-        ...newCandlestick,
-        open: newCandlestick.close,
-        high: newCandlestick.close,
-        low: newCandlestick.close,
-      };
+      if (latestCandlestick && latestCandlestick.time === newCandlestick.time) {
+        // If the newCandlestick is within the 4-second window of the latestCandlestick,
+        // update the latestCandlestick instead of creating a new one
+        latestCandlestick.high = Math.max(
+          latestCandlestick.high,
+          newCandlestick.close
+        );
+        latestCandlestick.low = Math.min(
+          latestCandlestick.low,
+          newCandlestick.close
+        );
+        latestCandlestick.close = newCandlestick.close;
+      } else if (
+        latestCandlestick &&
+        latestCandlestick.time >= newCandlestick.time
+      ) {
+        console.error(
+          "Received a timestamp that is earlier than the latest timestamp:",
+          newCandlestick
+        );
+        // Optionally throw an error or handle this case differently
+      } else {
+        // If the newCandlestick is outside the 4-second window of the latestCandlestick,
+        // create a new candlestick
+        const newCandlestickData = {
+          ...newCandlestick,
+          open: newCandlestick.close,
+          high: newCandlestick.close,
+          low: newCandlestick.close,
+        };
 
-      mergedCandlesticks.push(newCandlestickData);
-      latestCandlestick = newCandlestickData; // Update the reference to the most recent candlestick
+        mergedCandlesticks.push(newCandlestickData);
+        latestCandlestick = newCandlestickData; // Update the reference to the most recent candlestick
+      }
     }
-  }
 
-  return mergedCandlesticks;
-};
+    return mergedCandlesticks;
+  };
 
   const sortCandlesticks = (candlesticks: any[]) => {
     return candlesticks.sort((a, b) => a.time - b.time);
@@ -378,7 +429,7 @@ const mergeCandlesticks = (prevCandlesticks: any[], newCandlesticks: any[]) => {
 
   useEffect(() => {
     const chartContainer = chartContainerRef.current;
-    const resizeObserver = new ResizeObserver(entries => {
+    const resizeObserver = new ResizeObserver((entries) => {
       if (!Array.isArray(entries) || !entries.length) {
         return;
       }
@@ -389,20 +440,25 @@ const mergeCandlesticks = (prevCandlesticks: any[], newCandlesticks: any[]) => {
         );
       }
     });
-    
-    if(chartContainer) {
+
+    if (chartContainer) {
       resizeObserver.observe(chartContainer);
     }
-    
+
     return () => {
-      if(chartContainer) {
+      if (chartContainer) {
         resizeObserver.unobserve(chartContainer);
       }
-    }
+    };
   }, [chart]);
 
-
-  return <div ref={chartContainerRef} style={{ width: '100%', height: '100%' }} className=''/>;
+  return (
+    <div
+      ref={chartContainerRef}
+      style={{ width: "100%", height: "100%" }}
+      className=""
+    />
+  );
 };
 
 export default ChartComponent;

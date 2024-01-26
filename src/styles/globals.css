@@ -2,17 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
-
-
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-  background-image:  #0b111b;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    Fira Sans,
+    Droid Sans,
+    Helvetica Neue,
+    sans-serif;
+  background-image: #0b111b;
 }
 
 .toggle-switch-bigger {
@@ -40,7 +46,7 @@ body {
 
 .slider-bigger:before {
   position: absolute;
-  content: '';
+  content: "";
   height: 8px; /* 6px * 1.33 (adjust the height of the sliding capsule) */
   width: 8px; /* 6px * 1.33 (adjust the width of the sliding capsule) */
   left: 2px;
@@ -55,7 +61,9 @@ input:checked + .slider-bigger {
 }
 
 input:checked + .slider-bigger:before {
-  transform: translateX(13px); /* 14px * 1.33 (adjust the translation for the bigger size) */
+  transform: translateX(
+    13px
+  ); /* 14px * 1.33 (adjust the translation for the bigger size) */
 }
 
 .slider-bigger.active {
@@ -63,10 +71,10 @@ input:checked + .slider-bigger:before {
 }
 
 .slider-bigger.active:before {
-  transform: translateX(12.5px); /* 14px * 1.33 (adjust the translation for the bigger size) */
+  transform: translateX(
+    12.5px
+  ); /* 14px * 1.33 (adjust the translation for the bigger size) */
 }
-
-
 
 /* Enable native scrolling on iOS */
 * {
@@ -81,7 +89,6 @@ input:checked + .slider-bigger:before {
   background-color: #b6afaf !important; /* New background color */
   color: #beb6b6 !important; /* New text color */
 }
-
 
 /* CSS file */
 
@@ -142,44 +149,38 @@ input:checked + .slider-bigger:before {
   /* ... other styles ... */
 }
 
-
-
-
-
-
 @font-face {
-  font-family: 'BankGothic';
-  src: url('../../public/gothic.ttf') format('truetype');
+  font-family: "BankGothic";
+  src: url("../../public/gothic.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
 
 .bankGothic {
-  font-family: 'BankGothic', 'Arial', sans-serif;
+  font-family: "BankGothic", "Arial", sans-serif;
 }
 
 @font-face {
-  font-family: 'BankGothicc';
-  src: url('../../public/gothicc.ttf') format('truetype');
+  font-family: "BankGothicc";
+  src: url("../../public/gothicc.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
 
 .bankGothicc {
-  font-family: 'BankGothicc', 'Arial', sans-serif;
+  font-family: "BankGothicc", "Arial", sans-serif;
 }
 
 @font-face {
-  font-family: 'Poppins';
-  src: url('../../public/Poppins-Light.ttf') format('truetype');
+  font-family: "Poppins";
+  src: url("../../public/Poppins-Light.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
 
 .font-poppins {
-  font-family: 'Poppins', 'Arial', sans-serif;
+  font-family: "Poppins", "Arial", sans-serif;
 }
-
 
 .gradient-center-big {
   background-color: #1a1a25;
@@ -198,9 +199,6 @@ input:checked + .slider-bigger:before {
   min-width: 100%;
   transition: transform 0.5s ease-in-out;
 }
-
-
-
 
 .gradient-center-l {
   background-color: #1a1a25;
@@ -237,13 +235,6 @@ input:checked + .slider-bigger:before {
 .gradient-center-r:hover {
   background-position: -100% 0;
 }
-
-
-
-
-
-
-
 
 a {
   color: inherit;
@@ -309,7 +300,7 @@ html::-webkit-scrollbar-thumb:hover {
 
 /* Handle */
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #66676d;  
+  background: #66676d;
 }
 
 /* Handle on hover */
@@ -387,8 +378,6 @@ html::-webkit-scrollbar-thumb:hover {
   background-color: #2b2e42; /* replace with the color you want on hover */
 }
 
-
-
 .custom-button {
   width: 100%;
   font-weight: 600;
@@ -401,7 +390,6 @@ html::-webkit-scrollbar-thumb:hover {
   background-image: linear-gradient(to top right, #ef4628, #9845e1);
   transition: transform 0.3s ease-in-out;
 }
-
 
 .custom-button:hover {
   background-image: linear-gradient(to bottom left, #ef4628, #9845e1);
@@ -416,14 +404,18 @@ html::-webkit-scrollbar-thumb:hover {
   padding: 0.5rem 1rem;
   height: 3rem; /* Set the same height as the toggle-button */
   border-radius: 0.5rem; /* Set half of the height value to achieve fully rounded corners */
-  background-image: linear-gradient(to top right, #34C796, #0b7a55);
-  transition: background 0.3s ease-in-out, transform 0.3s ease-in-out; /* Modified this line */}
-
+  background-image: linear-gradient(to top right, #34c796, #0b7a55);
+  transition:
+    background 0.3s ease-in-out,
+    transform 0.3s ease-in-out; /* Modified this line */
+}
 
 .custom-futures:hover {
-  background: linear-gradient(to top right, #279772, #085a3f); 
-  border:1px solid #cfa6b4;
-  transition: background 0.3s ease-in-out, transform 0.3s ease-in-out; /* Modified this line */
+  background: linear-gradient(to top right, #279772, #085a3f);
+  border: 1px solid #cfa6b4;
+  transition:
+    background 0.3s ease-in-out,
+    transform 0.3s ease-in-out; /* Modified this line */
 }
 
 .custom-futuresed {
@@ -436,15 +428,18 @@ html::-webkit-scrollbar-thumb:hover {
   height: 3rem; /* Set the same height as the toggle-button */
   border-radius: 0.5rem; /* Set half of the height value to achieve fully rounded corners */
   background-image: linear-gradient(to top right, #c44141, #7a3636);
-  transition: background 0.3s ease-in-out, transform 0.3s ease-in-out; /* Modified this line */}
-
-
-.custom-futuresed:hover {
-  background: linear-gradient(to top right, #a33636, #612b2b); 
-  border:1px solid #cfa6b4;
-  transition: background 0.3s ease-in-out, transform 0.3s ease-in-out; /* Modified this line */
+  transition:
+    background 0.3s ease-in-out,
+    transform 0.3s ease-in-out; /* Modified this line */
 }
 
+.custom-futuresed:hover {
+  background: linear-gradient(to top right, #a33636, #612b2b);
+  border: 1px solid #cfa6b4;
+  transition:
+    background 0.3s ease-in-out,
+    transform 0.3s ease-in-out; /* Modified this line */
+}
 
 .input-capsule {
   width: 100%;
@@ -599,7 +594,6 @@ html::-webkit-scrollbar-thumb:hover {
   border-bottom-right-radius: 0.25rem; /* Apply rounded border only to the right side */
 }
 
-
 .input2-capsule {
   height: 2rem;
   display: flex;
@@ -644,22 +638,21 @@ html::-webkit-scrollbar-thumb:hover {
 .dropdsown .dropdsown-content {
   position: relative;
   display: inline-block;
-  overflow: visible;  /* Add this line */
+  overflow: visible; /* Add this line */
 }
 
 .dropdsown-content .dropdsown-content {
   display: none;
   position: fixed;
-  top: 50%;    /* Adjust as needed to position the dropdown */
-  left: 50%;   /* Adjust as needed to position the dropdown */
+  top: 50%; /* Adjust as needed to position the dropdown */
+  left: 50%; /* Adjust as needed to position the dropdown */
   transform: translate(-50%, -50%);
   background-color: #f9f9f9;
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   padding: 12px 16px;
-  z-index: 1000;  /* Adjust as needed to be higher than other elements */
+  z-index: 1000; /* Adjust as needed to be higher than other elements */
 }
-
 
 .dropdsown:hover .dropdsown-content {
   display: block;
@@ -716,8 +709,6 @@ html::-webkit-scrollbar-thumb:hover {
   border-bottom-right-radius: 1.5rem; /* Apply rounded border only to the right side */
 }
 
-
-
 .input-cap2 {
   width: 100%;
   height: 2.2rem;
@@ -756,7 +747,6 @@ html::-webkit-scrollbar-thumb:hover {
   border-bottom-right-radius: 0.25rem; /* Apply rounded border only to the right side */
 }
 
-
 .chat-input-container {
   display: flex;
   justify-content: space-between;
@@ -775,7 +765,9 @@ html::-webkit-scrollbar-thumb:hover {
 .prediction-enter-active {
   opacity: 1;
   transform: translateY(0);
-  transition: opacity 500ms, transform 500ms;
+  transition:
+    opacity 500ms,
+    transform 500ms;
 }
 
 .connect-wallet-button {
@@ -787,7 +779,8 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 @keyframes float {
-  0%, 50% {
+  0%,
+  50% {
     transform: translateY(0px);
   }
   75% {
@@ -803,7 +796,8 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 @keyframes floats {
-  0%, 50% {
+  0%,
+  50% {
     transform: translateY(0px);
   }
   75% {
@@ -848,15 +842,14 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 @media (max-width: 767px) {
-.spacer-active {
-  height: 63px; /* replace with actual height */
+  .spacer-active {
+    height: 63px; /* replace with actual height */
   }
 }
 
 .negative {
   text-indent: -0.3em;
 }
-
 
 .messageContainer {
   display: flex;
@@ -891,7 +884,7 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 .gradient-button:hover {
-  border:1px solid #cfa6b4;
+  border: 1px solid #cfa6b4;
 }
 
 .candle-container {
@@ -912,7 +905,6 @@ html::-webkit-scrollbar-thumb:hover {
   height: 40px;
   background-color: grey; /* Set the color of the rectangle */
 }
-
 
 .custom-borders::before {
   content: "";
@@ -935,8 +927,6 @@ html::-webkit-scrollbar-thumb:hover {
 .container > div {
   flex-shrink: 0;
 }
-
-
 
 .custom-borderosak::before {
   content: "";
@@ -987,7 +977,7 @@ html::-webkit-scrollbar-thumb:hover {
     height: 80%;
     width: 100%;
     border-top: 0px;
-    border-left: 0px;; /* #D1D5DB is the color for border-gray-300 */
+    border-left: 0px; /* #D1D5DB is the color for border-gray-300 */
     position: absolute;
     left: 0%;
     top: 10%; /* to center the border */
@@ -995,7 +985,7 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 .tradingcard {
-  box-shadow: 0 0 5px #F7931A;
+  box-shadow: 0 0 5px #f7931a;
 }
 
 .tradingcardtrade {
@@ -1004,17 +994,14 @@ html::-webkit-scrollbar-thumb:hover {
 
 .tradingcardbo {
   box-shadow: 0 0 5px #0ac587;
-
 }
 
 .tradingcardsol {
-  box-shadow: 0 0 5px #03E1FF;
-
+  box-shadow: 0 0 5px #03e1ff;
 }
 
-
 .tradingcard:hover {
-  box-shadow: 0 0 20px #F7931A;
+  box-shadow: 0 0 20px #f7931a;
   transform: scale(1.05);
 }
 
@@ -1023,28 +1010,24 @@ html::-webkit-scrollbar-thumb:hover {
   transform: scale(1.05);
 }
 
-
 .tradingcardsol:hover {
-  box-shadow: 0 0 20px #03E1FF    ;
+  box-shadow: 0 0 20px #03e1ff;
   transform: scale(1.05);
 }
 
-
 .keyfeaturescard:hover {
-  box-shadow: 0 0 15px 3px  #505855    ;
+  box-shadow: 0 0 15px 3px #505855;
 }
 
-
 .gradient-bg {
-    background: linear-gradient(to top right, #c44141, #7a3636);
-    transition: background 0.3s; /* Smooth transition for the hover effect */
+  background: linear-gradient(to top right, #c44141, #7a3636);
+  transition: background 0.3s; /* Smooth transition for the hover effect */
 }
 
 .gradient-bg:hover {
-    background: linear-gradient(to top right, #a33636, #612b2b); 
-    /* Adjust these colors to your liking for the hover effect */
+  background: linear-gradient(to top right, #a33636, #612b2b);
+  /* Adjust these colors to your liking for the hover effect */
 }
-
 
 .gradient-bgtrade {
   background: linear-gradient(to top right, #ce8a36, #7a501d);
@@ -1052,23 +1035,21 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 .gradient-bgtrade:hover {
-  background: linear-gradient(to top right, #af752e, #5e3d16); 
+  background: linear-gradient(to top right, #af752e, #5e3d16);
   /* Adjust these colors to your liking for the hover effect */
 }
 
 .gradient-bgg {
-  background: linear-gradient(to top right, #34C796, #0b7a55);
+  background: linear-gradient(to top right, #34c796, #0b7a55);
   transition: opacity 0.3s ease-out;
 }
 
 .gradient-bgg:hover {
   background: linear-gradient(to top right, #2dac81, #0a724f);
-
-
 }
 
 .gradient-bggnew {
-  background: linear-gradient(to top right, #34C796, #0b7a55);
+  background: linear-gradient(to top right, #34c796, #0b7a55);
   background-color: #0b7a55;
   transition: opacity 0.3s ease-out;
 }
@@ -1077,15 +1058,12 @@ html::-webkit-scrollbar-thumb:hover {
   background: #258d6a;
   background-color: #258d6a;
   transition: background-color 0.3s ease-out;
-
 }
 
 .inside_shadow:hover {
   box-shadow: inset 0 0 10px #434665; /* Adjust the color and other values as per your requirements */
   transition: box-shadow 0.15s ease-out;
-
 }
-
 
 .gradient-bgggg {
   background: transparent;
@@ -1097,11 +1075,10 @@ html::-webkit-scrollbar-thumb:hover {
   transition: background-color 0.3s ease-out;
 }
 
-
 .gradient-bggs {
   position: relative;
   background: transparent; /* Make the background transparent */
-  border: 2px solid #34C796; 
+  border: 2px solid #34c796;
   transition: background 0.3s;
 }
 
@@ -1110,56 +1087,67 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 .topg {
-  background-image: radial-gradient(circle var(--gradient-size) at center top, #434665, #0B111B);
+  background-image: radial-gradient(
+    circle var(--gradient-size) at center top,
+    #434665,
+    #0b111b
+  );
 }
-
 
 .topgg {
-  background-image: radial-gradient(ellipse at bottom, #434665, #0B111B 60%, transparent 100%);
+  background-image: radial-gradient(
+    ellipse at bottom,
+    #434665,
+    #0b111b 60%,
+    transparent 100%
+  );
 }
-
-
 
 .rellax {
   transition: transform 0.1s ease-out;
 }
 
-
-
 /* Adjust gradient for smaller devices */
 @media only screen and (max-width: 776px) {
   .topg {
-    background-image: radial-gradient(circle 100vh at center top, #434665, #0B111B 70%);
+    background-image: radial-gradient(
+      circle 100vh at center top,
+      #434665,
+      #0b111b 70%
+    );
   }
   .topgg {
-    background-image: radial-gradient(ellipse at bottom, #2f3046, #0B111B 60%);
+    background-image: radial-gradient(ellipse at bottom, #2f3046, #0b111b 60%);
   }
 }
-
 
 /* Adjust gradient for larger devices */
 @media only screen and (min-width: 777px) {
   .topg {
-    background-image: radial-gradient(circle 100vh at center top, #434665, #0B111B 70%);
+    background-image: radial-gradient(
+      circle 100vh at center top,
+      #434665,
+      #0b111b 70%
+    );
   }
   .topgg {
-    background-image: radial-gradient(ellipse at bottom, #2f3046, #0B111B 70%);
+    background-image: radial-gradient(ellipse at bottom, #2f3046, #0b111b 70%);
   }
 }
 
 /* Adjust gradient for specific width and height */
 @media only screen and (max-width: 1350px) and (min-height: 1300px) {
   .topg {
-    background-image: radial-gradient(circle 100vh at center top, #434665, #0B111B 50%);
+    background-image: radial-gradient(
+      circle 100vh at center top,
+      #434665,
+      #0b111b 50%
+    );
   }
   .topgg {
-    background-image: radial-gradient(ellipse at bottom, #2f3046, #0B111B 60%);
+    background-image: radial-gradient(ellipse at bottom, #2f3046, #0b111b 60%);
   }
 }
-
-
-
-
 
 /* Create a pseudo-element for the gradient background */
 .gradient-bggs::before {
@@ -1170,7 +1158,7 @@ html::-webkit-scrollbar-thumb:hover {
   bottom: 0;
   left: 0;
   z-index: -1; /* Place it behind the content */
-  background: linear-gradient(to top right, #34C796, #0b7a55);
+  background: linear-gradient(to top right, #34c796, #0b7a55);
   background-clip: padding-box, border-box;
   background-origin: padding-box, border-box;
 }
@@ -1180,39 +1168,27 @@ html::-webkit-scrollbar-thumb:hover {
   padding: 2px; /* Adjust padding to match the border width */
 }
 
-
-
-
-
 .fa-icon {
-  color: #279772;  /* For regular text-based icons or if SVG uses the "color" property */
-  fill: #279772;   /* For SVGs which use the "fill" property for color */
+  color: #279772; /* For regular text-based icons or if SVG uses the "color" property */
+  fill: #279772; /* For SVGs which use the "fill" property for color */
 }
 
 .fa-icon-red {
-  color: #c44141;  /* For regular text-based icons or if SVG uses the "color" property */
-  fill: #c44141;   /* For SVGs which use the "fill" property for color */
+  color: #c44141; /* For regular text-based icons or if SVG uses the "color" property */
+  fill: #c44141; /* For SVGs which use the "fill" property for color */
 }
-
-
-
-
 
 .tooltip-container {
   position: absolute;
-  top: 100%;  /* positions the tooltip just below the parent */
-  left: 50%;  /* centers the tooltip horizontally */
-  transform: translateX(-50%);  /* adjusts for true centering */
+  top: 100%; /* positions the tooltip just below the parent */
+  left: 50%; /* centers the tooltip horizontally */
+  transform: translateX(-50%); /* adjusts for true centering */
 }
-
 
 .wide-tooltip {
   width: 200px;
   max-width: 100%;
 }
-
-
-
 
 /* Styling the tooltip */
 .bg-black {
@@ -1274,6 +1250,3 @@ html::-webkit-scrollbar-thumb:hover {
   transform: scale(1);
   opacity: 1;
 }
-
-
-

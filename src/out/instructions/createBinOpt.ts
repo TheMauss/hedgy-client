@@ -1,34 +1,38 @@
-import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
-import { PROGRAM_ID } from "../programId"
+import {
+  TransactionInstruction,
+  PublicKey,
+  AccountMeta,
+} from "@solana/web3.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import BN from "bn.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import * as borsh from "@coral-xyz/borsh"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { PROGRAM_ID } from "../programId";
 
 export interface CreateBinOptArgs {
-  number: BN
-  affiliateCode: Array<number>
-  betAmount: BN
-  expiration: BN
-  priceDirection: number
-  symbol: number
-  slippagePrice: BN
-  slippage: BN
+  number: BN;
+  affiliateCode: Array<number>;
+  betAmount: BN;
+  expiration: BN;
+  priceDirection: number;
+  symbol: number;
+  slippagePrice: BN;
+  slippage: BN;
 }
 
 export interface CreateBinOptAccounts {
-  binOpt: PublicKey
-  playerAcc: PublicKey
-  userAcc: PublicKey
-  ratioAcc: PublicKey
-  nftAcc: PublicKey
-  houseAcc: PublicKey
-  oracleAccount: PublicKey
-  pdaHouseAcc: PublicKey
-  affilAcc: PublicKey
-  lpAcc: PublicKey
-  signerWalletAccount: PublicKey
-  lpRevAcc: PublicKey
-  clock: PublicKey
-  systemProgram: PublicKey
+  binOpt: PublicKey;
+  playerAcc: PublicKey;
+  userAcc: PublicKey;
+  ratioAcc: PublicKey;
+  nftAcc: PublicKey;
+  houseAcc: PublicKey;
+  oracleAccount: PublicKey;
+  pdaHouseAcc: PublicKey;
+  affilAcc: PublicKey;
+  lpAcc: PublicKey;
+  signerWalletAccount: PublicKey;
+  lpRevAcc: PublicKey;
+  clock: PublicKey;
+  systemProgram: PublicKey;
 }
 
 export const layout = borsh.struct([
@@ -40,7 +44,7 @@ export const layout = borsh.struct([
   borsh.u8("symbol"),
   borsh.i64("slippagePrice"),
   borsh.i64("slippage"),
-])
+]);
 
 export function createBinOpt(
   args: CreateBinOptArgs,
@@ -66,9 +70,9 @@ export function createBinOpt(
     { pubkey: accounts.lpRevAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.clock, isSigner: false, isWritable: false },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
-  ]
-  const identifier = Buffer.from([187, 223, 82, 220, 39, 72, 145, 225])
-  const buffer = Buffer.alloc(1000)
+  ];
+  const identifier = Buffer.from([187, 223, 82, 220, 39, 72, 145, 225]);
+  const buffer = Buffer.alloc(1000);
   const len = layout.encode(
     {
       number: args.number,
@@ -81,8 +85,8 @@ export function createBinOpt(
       slippage: args.slippage,
     },
     buffer
-  )
-  const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
-  const ix = new TransactionInstruction({ keys, programId, data })
-  return ix
+  );
+  const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len);
+  const ix = new TransactionInstruction({ keys, programId, data });
+  return ix;
 }

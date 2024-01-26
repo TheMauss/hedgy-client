@@ -1,36 +1,40 @@
-import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
-import { PROGRAM_ID } from "../programId"
+import {
+  TransactionInstruction,
+  PublicKey,
+  AccountMeta,
+} from "@solana/web3.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import BN from "bn.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import * as borsh from "@coral-xyz/borsh"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { PROGRAM_ID } from "../programId";
 
 export interface CreateFutContArgs {
-  number: BN
-  affiliateCode: Array<number>
-  betAmount: BN
-  leverage: BN
-  priceDirection: number
-  symbol: number
-  stopLossPrice: BN
-  takeProfitPrice: BN
-  slippagePrice: BN
-  slippage: BN
+  number: BN;
+  affiliateCode: Array<number>;
+  betAmount: BN;
+  leverage: BN;
+  priceDirection: number;
+  symbol: number;
+  stopLossPrice: BN;
+  takeProfitPrice: BN;
+  slippagePrice: BN;
+  slippage: BN;
 }
 
 export interface CreateFutContAccounts {
-  futCont: PublicKey
-  playerAcc: PublicKey
-  userAcc: PublicKey
-  ratioAcc: PublicKey
-  houseAcc: PublicKey
-  nftAcc: PublicKey
-  oracleAccount: PublicKey
-  pdaHouseAcc: PublicKey
-  affilAcc: PublicKey
-  lpAcc: PublicKey
-  signerWalletAccount: PublicKey
-  lpRevAcc: PublicKey
-  clock: PublicKey
-  systemProgram: PublicKey
+  futCont: PublicKey;
+  playerAcc: PublicKey;
+  userAcc: PublicKey;
+  ratioAcc: PublicKey;
+  houseAcc: PublicKey;
+  nftAcc: PublicKey;
+  oracleAccount: PublicKey;
+  pdaHouseAcc: PublicKey;
+  affilAcc: PublicKey;
+  lpAcc: PublicKey;
+  signerWalletAccount: PublicKey;
+  lpRevAcc: PublicKey;
+  clock: PublicKey;
+  systemProgram: PublicKey;
 }
 
 export const layout = borsh.struct([
@@ -44,7 +48,7 @@ export const layout = borsh.struct([
   borsh.i64("takeProfitPrice"),
   borsh.i64("slippagePrice"),
   borsh.i64("slippage"),
-])
+]);
 
 export function createFutCont(
   args: CreateFutContArgs,
@@ -70,9 +74,9 @@ export function createFutCont(
     { pubkey: accounts.lpRevAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.clock, isSigner: false, isWritable: false },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
-  ]
-  const identifier = Buffer.from([155, 8, 138, 218, 226, 72, 216, 229])
-  const buffer = Buffer.alloc(1000)
+  ];
+  const identifier = Buffer.from([155, 8, 138, 218, 226, 72, 216, 229]);
+  const buffer = Buffer.alloc(1000);
   const len = layout.encode(
     {
       number: args.number,
@@ -87,8 +91,8 @@ export function createFutCont(
       slippage: args.slippage,
     },
     buffer
-  )
-  const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
-  const ix = new TransactionInstruction({ keys, programId, data })
-  return ix
+  );
+  const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len);
+  const ix = new TransactionInstruction({ keys, programId, data });
+  return ix;
 }

@@ -1,14 +1,14 @@
-import { useEffect} from 'react';
+import { useEffect } from "react";
 import {
   CheckCircleIcon,
   InformationCircleIcon,
   XCircleIcon,
-} from '@heroicons/react/outline';
-import { XIcon } from '@heroicons/react/solid';
-import useNotificationStore from '../stores/useNotificationStore';
-import { useConnection } from '@solana/wallet-adapter-react';
-import { useMediaQuery } from 'react-responsive';
-import { useNetworkConfiguration } from 'contexts/NetworkConfigurationProvider';
+} from "@heroicons/react/outline";
+import { XIcon } from "@heroicons/react/solid";
+import useNotificationStore from "../stores/useNotificationStore";
+import { useConnection } from "@solana/wallet-adapter-react";
+import { useMediaQuery } from "react-responsive";
+import { useNetworkConfiguration } from "contexts/NetworkConfigurationProvider";
 
 const NotificationList = () => {
   const { notifications, set: setNotificationStore } = useNotificationStore(
@@ -33,7 +33,7 @@ const NotificationList = () => {
     if (notifications.length > 1) {
       setNotificationStore((state) => {
         state.notifications = [
-          state.notifications[state.notifications.length - 1]
+          state.notifications[state.notifications.length - 1],
         ]; // Keep only the latest notification
       });
     }
@@ -45,12 +45,15 @@ const NotificationList = () => {
     });
   };
 
-  
-  const isMobile = useMediaQuery({ query: '(max-width: 767px)' });
+  const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
 
   return (
-    <div className={`z-20 fixed ${isMobile ? 'bottom-4 inset-x-0 justify-center' : 'bottom-2 left-4'} flex items-end px-4 py-6 pointer-events-none sm:p-6`}>
-      <div className={`flex ${isMobile ? 'flex-col items-center' : 'flex-row items-start'}`}>
+    <div
+      className={`z-20 fixed ${isMobile ? "bottom-4 inset-x-0 justify-center" : "bottom-2 left-4"} flex items-end px-4 py-6 pointer-events-none sm:p-6`}
+    >
+      <div
+        className={`flex ${isMobile ? "flex-col items-center" : "flex-row items-start"}`}
+      >
         {latestNotification && (
           <Notification
             type={latestNotification.type}
@@ -66,7 +69,14 @@ const NotificationList = () => {
   );
 };
 
-const Notification = ({ type, message, description, txid, onHide, isMobile }) => {
+const Notification = ({
+  type,
+  message,
+  description,
+  txid,
+  onHide,
+  isMobile,
+}) => {
   const { connection } = useConnection();
   const { networkConfiguration } = useNetworkConfiguration();
 
@@ -80,18 +90,15 @@ const Notification = ({ type, message, description, txid, onHide, isMobile }) =>
     };
   }, [onHide]);
 
-
-
   // Define gradient backgrounds for different notification types
   const gradientBackgrounds = {
-    success: 'linear-gradient(to right, #0B7A55, #34C796)', // replace with success gradient
-    info: 'linear-gradient(to right, #633640, #4b4e9d)', // replace with info gradient
-    error: 'linear-gradient(to right, #7A3636, #C44141)', // replace with error gradient
+    success: "linear-gradient(to right, #0B7A55, #34C796)", // replace with success gradient
+    info: "linear-gradient(to right, #633640, #4b4e9d)", // replace with info gradient
+    error: "linear-gradient(to right, #7A3636, #C44141)", // replace with error gradient
   };
 
-
   const notificationClasses = `max-w-sm ${
-    isMobile ? 'w-full' : 'w-80 h-auto'
+    isMobile ? "w-full" : "w-80 h-auto"
   } bg-bkg-1 rounded-md mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 p-2 mx-4 mb-12 overflow-hidden`;
 
   return (
@@ -100,15 +107,17 @@ const Notification = ({ type, message, description, txid, onHide, isMobile }) =>
         className={`rounded-md p-[1px]`}
         style={{ background: gradientBackgrounds[type] }}
       >
-        <div className={`p-4 rounded-md bg-base bg-opacity-90  flex items-center`}>
+        <div
+          className={`p-4 rounded-md bg-base bg-opacity-90  flex items-center`}
+        >
           <div className={`flex-shrink-0`}>
-            {type === 'success' ? (
+            {type === "success" ? (
               <CheckCircleIcon className={`h-8 w-8 mr-1 text-green`} />
             ) : null}
-            {type === 'info' && (
+            {type === "info" && (
               <InformationCircleIcon className={`h-8 w-8 mr-1 text-red`} />
             )}
-            {type === 'error' && <XCircleIcon className={`h-8 w-8 mr-1`} />}
+            {type === "error" && <XCircleIcon className={`h-8 w-8 mr-1`} />}
           </div>
           <div className={`ml-2 flex-1`}>
             <div className={`font-bold text-fgd-1`}>{message}</div>

@@ -7,10 +7,7 @@ const Basics: NextPage = () => {
     <div>
       <Head>
         <title>Solana Scaffold</title>
-        <meta
-          name="description"
-          content="Binary Finance"
-        />
+        <meta name="description" content="Binary Finance" />
       </Head>
       <BasicsView />
     </div>

@@ -1,24 +1,24 @@
 // Assuming you're working in a browser environment that supports fetch and ReadableStream
 
-const channelToSubscription = new Map()
+const channelToSubscription = new Map();
 
 function handleStreamingData(data) {
-  const { id, p, t } = data
+  const { id, p, t } = data;
 
-  const tradePrice = p
-  const tradeTime = t * 1000 // Multiplying by 1000 to get milliseconds
+  const tradePrice = p;
+  const tradeTime = t * 1000; // Multiplying by 1000 to get milliseconds
 
-  const channelString = id
-  const subscriptionItem = channelToSubscription.get(channelString)
+  const channelString = id;
+  const subscriptionItem = channelToSubscription.get(channelString);
 
   if (!subscriptionItem) {
-    return
+    return;
   }
 
-  const lastDailyBar = subscriptionItem.lastDailyBar
-  const nextDailyBarTime = getNextDailyBarTime(lastDailyBar.time)
+  const lastDailyBar = subscriptionItem.lastDailyBar;
+  const nextDailyBarTime = getNextDailyBarTime(lastDailyBar.time);
 
-  let bar
+  let bar;
   if (tradeTime >= nextDailyBarTime) {
     bar = {
       time: nextDailyBarTime,
@@ -26,85 +26,85 @@ function handleStreamingData(data) {
       high: tradePrice,
       low: tradePrice,
       close: tradePrice,
-    }
-    console.log('[stream] Generate new bar', bar)
+    };
+    console.log("[stream] Generate new bar", bar);
   } else {
     bar = {
       ...lastDailyBar,
       high: Math.max(lastDailyBar.high, tradePrice),
       low: Math.min(lastDailyBar.low, tradePrice),
       close: tradePrice,
-    }
-    console.log('[stream] Update the latest bar by price', tradePrice)
+    };
+    console.log("[stream] Update the latest bar by price", tradePrice);
   }
 
-  subscriptionItem.lastDailyBar = bar
+  subscriptionItem.lastDailyBar = bar;
 
   // Send data to every subscriber of that symbol
-  subscriptionItem.handlers.forEach((handler) => handler.callback(bar))
-  channelToSubscription.set(channelString, subscriptionItem)
+  subscriptionItem.handlers.forEach((handler) => handler.callback(bar));
+  channelToSubscription.set(channelString, subscriptionItem);
 }
 
 function startStreaming(retries = 3, delay = 3000) {
   fetch(streamingUrl)
     .then((response) => {
-      const reader = response.body.getReader()
+      const reader = response.body.getReader();
 
       function streamData() {
         reader
           .read()
           .then(({ value, done }) => {
             if (done) {
-              console.error('[stream] Streaming ended.')
-              return
+              console.error("[stream] Streaming ended.");
+              return;
             }
 
             // Assuming the streaming data is separated by line breaks
-            const dataStrings = new TextDecoder().decode(value).split('\n')
+            const dataStrings = new TextDecoder().decode(value).split("\n");
             dataStrings.forEach((dataString) => {
-              const trimmedDataString = dataString.trim()
+              const trimmedDataString = dataString.trim();
               if (trimmedDataString) {
                 try {
-                  var jsonData = JSON.parse(trimmedDataString)
-                  handleStreamingData(jsonData)
+                  var jsonData = JSON.parse(trimmedDataString);
+                  handleStreamingData(jsonData);
                 } catch (e) {
-                  console.error('Error parsing JSON:', e.message)
+                  console.error("Error parsing JSON:", e.message);
                 }
               }
-            })
+            });
 
-            streamData() // Continue processing the stream
+            streamData(); // Continue processing the stream
           })
           .catch((error) => {
-            console.error('[stream] Error reading from stream:', error)
-            attemptReconnect(retries, delay)
-          })
+            console.error("[stream] Error reading from stream:", error);
+            attemptReconnect(retries, delay);
+          });
       }
 
-      streamData()
+      streamData();
     })
     .catch((error) => {
       console.error(
-        '[stream] Error fetching from the streaming endpoint:',
+        "[stream] Error fetching from the streaming endpoint:",
         error
-      )
-    })
+      );
+    });
   function attemptReconnect(retriesLeft, delay) {
     if (retriesLeft > 0) {
-      console.log(`[stream] Attempting to reconnect in ${delay}ms...`)
+      console.log(`[stream] Attempting to reconnect in ${delay}ms...`);
       setTimeout(() => {
-        startStreaming(retriesLeft - 1, delay)
-      }, delay)
+        startStreaming(retriesLeft - 1, delay);
+      }, delay);
     } else {
-      console.error('[stream] Maximum reconnection attempts reached.')
+      console.error("[stream] Maximum reconnection attempts reached.");
     }
   }
 }
 
 function getNextDailyBarTime(barTime) {
-  const date = new Date(barTime * 1000)
-  date.setDate(date.getDate() + 1)
-  return date.getTime() / 1000
+  const date = new Date(barTime * 1000);
+  date.setDate(date.getDate() + 1);
+  return date.getTime() / 1000;
 }
 
 export function subscribeOnStream(
@@ -115,44 +115,44 @@ export function subscribeOnStream(
   onResetCacheNeededCallback,
   lastDailyBar
 ) {
-  const channelString = symbolInfo.ticker
+  const channelString = symbolInfo.ticker;
   const handler = {
     id: subscriberUID,
     callback: onRealtimeCallback,
-  }
-  let subscriptionItem = channelToSubscription.get(channelString)
+  };
+  let subscriptionItem = channelToSubscription.get(channelString);
   subscriptionItem = {
     subscriberUID,
     resolution,
     lastDailyBar,
     handlers: [handler],
-  }
-  channelToSubscription.set(channelString, subscriptionItem)
+  };
+  channelToSubscription.set(channelString, subscriptionItem);
   console.log(
-    '[subscribeBars]: Subscribe to streaming. Channel:',
+    "[subscribeBars]: Subscribe to streaming. Channel:",
     channelString
-  )
+  );
 
   // Start streaming when the first subscription is made
-  startStreaming()
+  startStreaming();
 }
 
 export function unsubscribeFromStream(subscriberUID) {
   // Find a subscription with id === subscriberUID
   for (const channelString of channelToSubscription.keys()) {
-    const subscriptionItem = channelToSubscription.get(channelString)
+    const subscriptionItem = channelToSubscription.get(channelString);
     const handlerIndex = subscriptionItem.handlers.findIndex(
       (handler) => handler.id === subscriberUID
-    )
+    );
 
     if (handlerIndex !== -1) {
       // Unsubscribe from the channel if it is the last handler
       console.log(
-        '[unsubscribeBars]: Unsubscribe from streaming. Channel:',
+        "[unsubscribeBars]: Unsubscribe from streaming. Channel:",
         channelString
-      )
-      channelToSubscription.delete(channelString)
-      break
+      );
+      channelToSubscription.delete(channelString);
+      break;
     }
   }
 }

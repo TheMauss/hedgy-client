@@ -8,10 +8,10 @@ export interface FutureContractPosition {
   initialPrice: number;
   betAmount: number;
   priceDirection: number;
-  leverage: number,
-  stopLossPrice: number,
-  takeProfitPrice: number,
-  liquidationPrice: number,
+  leverage: number;
+  stopLossPrice: number;
+  takeProfitPrice: number;
+  liquidationPrice: number;
   symbol: number;
   resolved: boolean;
   winner: string | null;
@@ -40,17 +40,29 @@ export interface BinaryOptionPosition {
 
 interface GraphProps {
   symbol: string;
-  latestOpenedPosition: Record<string, FutureContractPosition | BinaryOptionPosition | null>;
-  prices: { [key: string]: { price: number, timestamp: string } };
+  latestOpenedPosition: Record<
+    string,
+    FutureContractPosition | BinaryOptionPosition | null
+  >;
+  prices: { [key: string]: { price: number; timestamp: string } };
 }
 
-export const Graph: FC<GraphProps> = ({ latestOpenedPosition, symbol, prices }) => {
+export const Graph: FC<GraphProps> = ({
+  latestOpenedPosition,
+  symbol,
+  prices,
+}) => {
   return (
     <div className="overflow-hidden w-full h-full order-1 rounded-lg flex bg-layer-1">
       <div className="min-h-[330px] h-full w-full flex flex-col overflow-y-auto ">
         <div className="flex-1 h-full relative flex flex-col w-full">
           <div className="absolute inset-0 flex bg-layer-1 rounded ">
-            <Chart key={symbol} symbol={symbol} latestOpenedPosition={latestOpenedPosition} prices={prices} />
+            <Chart
+              key={symbol}
+              symbol={symbol}
+              latestOpenedPosition={latestOpenedPosition}
+              prices={prices}
+            />
           </div>
         </div>
       </div>

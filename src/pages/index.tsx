@@ -7,12 +7,9 @@ const Home: NextPage = () => {
     <div>
       <Head>
         <title>PopFi</title>
-        <meta
-          name="description"
-          content="PopFi"
-        />
+        <meta name="description" content="PopFi" />
       </Head>
-      <HomeView/>
+      <HomeView />
     </div>
   );
 };
