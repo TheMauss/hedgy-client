@@ -406,7 +406,11 @@ const TradeBar: React.FC<
   const handleLeverageClick = (buttonIndex: number) => {
     // Determine the max leverage based on the selected symbol
     const symbolMaxLeverage =
-      selectedCryptos.PYTH || selectedCryptos.BONK ? 50 : 200;
+      selectedCryptos.PYTH ||
+      selectedCryptos.BONK ||
+      selectedCryptos.JUP ||
+      selectedCryptos.TIA ||
+      selectedCryptos.SUI ? 50 : 200;
 
     if (buttonIndex > symbolMaxLeverage) {
       // Set to a default leverage if clicked value exceeds symbolMaxLeverage
