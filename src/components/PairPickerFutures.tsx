@@ -58,10 +58,10 @@ const options = [
   //  icon: '/coins/60x60/Tia.png'
   // },
   {
-    value: 'Crypto.SUI/USD',
-    label: 'SUI/USD',
-    icon: '/coins/60x60/Sui.png'
-   },
+   value: 'Crypto.SUI/USD',
+  label: 'SUI/USD',
+   icon: '/coins/60x60/Sui.png'
+  },
   // more options here...
 ];
 

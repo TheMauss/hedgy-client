@@ -1593,6 +1593,57 @@ const TradeBar: React.FC<
     return isNaN(finalFee) ? 0 : parseFloat(finalFee.toFixed(3)); // Check for NaN and return as a number
   };
 
+  const [spreadPrice, setSpreadPrice] = useState(0);
+
+
+  const spreadPercentage = (symbol) => {
+    // Define symbols with a 0.04% spread
+    const higherSpreadSymbols = ['BTC', 'SOL', 'ETH']; // Add more if needed
+    return higherSpreadSymbols.includes(symbol.toUpperCase()) ? 0.02 : 0.04;
+  };
+  
+  // Function to calculate spread price
+  const calculateSpreadPrice = (currentPrice, toggleState, symbol) => {
+      // Get spread based on symbol
+      const finalSpreadRatio = spreadPercentage(symbol);
+  
+      // Adjust the currentPrice with the spread to get the initial price.
+      const calculatedInitialPrice =
+        toggleState === "LONG"
+          ? (currentPrice + (currentPrice * finalSpreadRatio) / 100)
+          : (currentPrice - (currentPrice * finalSpreadRatio) / 100);
+  
+      return calculatedInitialPrice;
+  };
+
+useEffect(() => {
+  if (prices) {
+    const currentPrice = initialPrice;
+    const selectedCryptosSafe = selectedCryptos || {};
+    const selectedCrypto = Object.keys(selectedCryptosSafe).find(
+      (key) => selectedCryptosSafe[key]
+    );
+    const decimalPlacesMapping = {
+      BTC: 1, // Example: Bitcoin to 2 decimal places
+      SOL: 3,
+      PYTH: 3,
+      BONK: 8,
+      ETH: 1,
+      SUI: 3,
+      TIA: 3,
+      JUP: 3,
+
+      // Add more mappings as needed
+    };
+    const decimalPlaces =
+      decimalPlacesMapping[selectedCrypto?.toUpperCase()] || 2;
+
+    const spread = calculateSpreadPrice(currentPrice, toggleState, selectedCrypto);
+    setSpreadPrice(parseFloat(spread.toFixed(decimalPlaces)));
+  }
+}, [toggleState, prices, initialPrice, selectedCryptos]);
+
+
   // Rest of your code...
 
   useEffect(() => {
@@ -2184,7 +2235,7 @@ const TradeBar: React.FC<
         <div className="self-stretch h-4 flex flex-row items-start justify-between">
           <div className="relative leading-[14px]">Est. Entry Price</div>
           <div className="relative leading-[14px] font-medium text-white">
-            {initialPrice} USD
+            {spreadPrice} USD
           </div>
         </div>
         <div className="self-stretch h-4 flex flex-row items-start justify-between">
