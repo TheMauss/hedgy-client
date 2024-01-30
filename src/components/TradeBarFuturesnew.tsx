@@ -1633,11 +1633,11 @@ const TradeBar: React.FC<
         TIA: 3,
         JUP: 3,
       };
-    const decimalPlaces =
-      decimalPlacesMapping[selectedCrypto?.toUpperCase()] || 2;
+      const decimalPlaces =
+        decimalPlacesMapping[selectedCrypto?.toUpperCase()] || 2;
 
-    const spread = calculateSpreadPrice(currentPrice, toggleState, selectedCrypto);
-    setSpreadPrice(parseFloat(spread.toFixed(decimalPlaces)));
+      const spread = calculateSpreadPrice(currentPrice, toggleState, selectedCrypto);
+      setSpreadPrice(parseFloat(spread.toFixed(decimalPlaces)));
     }
   }, [toggleState, prices, initialPrice, selectedCryptos]);
 
