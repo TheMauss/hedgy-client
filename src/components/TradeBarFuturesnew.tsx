@@ -1616,32 +1616,30 @@ const TradeBar: React.FC<
       return calculatedInitialPrice;
   };
 
-useEffect(() => {
-  if (prices) {
-    const currentPrice = initialPrice;
-    const selectedCryptosSafe = selectedCryptos || {};
-    const selectedCrypto = Object.keys(selectedCryptosSafe).find(
-      (key) => selectedCryptosSafe[key]
-    );
-    const decimalPlacesMapping = {
-      BTC: 1, // Example: Bitcoin to 2 decimal places
-      SOL: 3,
-      PYTH: 3,
-      BONK: 8,
-      ETH: 1,
-      SUI: 3,
-      TIA: 3,
-      JUP: 3,
-
-      // Add more mappings as needed
-    };
+  useEffect(() => {
+    if (prices) {
+      const currentPrice = initialPrice;
+      const selectedCryptosSafe = selectedCryptos || {};
+      const selectedCrypto = Object.keys(selectedCryptosSafe).find(
+        (key) => selectedCryptosSafe[key]
+      );
+      const decimalPlacesMapping = {
+        BTC: 1,
+        SOL: 3,
+        PYTH: 3,
+        BONK: 8,
+        ETH: 1,
+        SUI: 3,
+        TIA: 3,
+        JUP: 3,
+      };
     const decimalPlaces =
       decimalPlacesMapping[selectedCrypto?.toUpperCase()] || 2;
 
     const spread = calculateSpreadPrice(currentPrice, toggleState, selectedCrypto);
     setSpreadPrice(parseFloat(spread.toFixed(decimalPlaces)));
-  }
-}, [toggleState, prices, initialPrice, selectedCryptos]);
+    }
+  }, [toggleState, prices, initialPrice, selectedCryptos]);
 
 
   // Rest of your code...
