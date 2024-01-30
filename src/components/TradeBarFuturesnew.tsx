@@ -309,6 +309,9 @@ const TradeBar: React.FC<
   const [maxleverage, setMaxLeverage] = useState(200); // Initially set to 1000
   const [rebateTier, setrebateTier] = useState<number>(null);
 
+  const LOWER_SPREAD_SYMBOLS = ['BTC', 'SOL', 'ETH']; // Add more if needed
+
+
   const handleButtonClick = (buttonIndex: number) => {
     setActiveButton(buttonIndex);
 
@@ -1597,10 +1600,9 @@ const TradeBar: React.FC<
 
 
   const spreadPercentage = (symbol) => {
-    // Define symbols with a 0.04% spread
-    const lowerSpreadSymbols = ['BTC', 'SOL', 'ETH']; // Add more if needed
-    return lowerSpreadSymbols.includes(symbol.toUpperCase()) ? 0.02 : 0.04;
-  };
+    return LOWER_SPREAD_SYMBOLS.includes(symbol.toUpperCase()) ? 0.02 : 0.04;
+};
+
   
   // Function to calculate spread price
   const calculateSpreadPrice = (currentPrice, toggleState, symbol) => {
