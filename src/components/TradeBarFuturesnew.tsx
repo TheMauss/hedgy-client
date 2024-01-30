@@ -1598,8 +1598,8 @@ const TradeBar: React.FC<
 
   const spreadPercentage = (symbol) => {
     // Define symbols with a 0.04% spread
-    const higherSpreadSymbols = ['BTC', 'SOL', 'ETH']; // Add more if needed
-    return higherSpreadSymbols.includes(symbol.toUpperCase()) ? 0.02 : 0.04;
+    const lowerSpreadSymbols = ['BTC', 'SOL', 'ETH']; // Add more if needed
+    return lowerSpreadSymbols.includes(symbol.toUpperCase()) ? 0.02 : 0.04;
   };
   
   // Function to calculate spread price
