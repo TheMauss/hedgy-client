@@ -42,26 +42,26 @@ const options = [
   // label: 'JUP/USD',
   //   icon: '/coins/60x60/Jup.png'
   //  },
-  {
-    value: "Crypto.PYTH/USD",
-    label: "PYTH/USD",
-    icon: "/coins/60x60/Pyth.png",
-  },
-  {
-    value: "Crypto.BONK/USD",
-    label: "BONK/USD",
-    icon: "/coins/60x60/Bonk.png",
-  },
+  // {
+  //   value: "Crypto.PYTH/USD",
+  //   label: "PYTH/USD",
+  //   icon: "/coins/60x60/Pyth.png",
+  // },
+  // {
+  //   value: "Crypto.BONK/USD",
+  //   label: "BONK/USD",
+  //   icon: "/coins/60x60/Bonk.png",
+  // },
   // {
   // value: 'Crypto.TIA/USD',
   // label: 'TIA/USD',
   //  icon: '/coins/60x60/Tia.png'
   // },
-  {
-   value: 'Crypto.SUI/USD',
-  label: 'SUI/USD',
-   icon: '/coins/60x60/Sui.png'
-  },
+  // {
+  //  value: 'Crypto.SUI/USD',
+  // label: 'SUI/USD',
+  //  icon: '/coins/60x60/Sui.png'
+  // },
   // more options here...
 ];
 

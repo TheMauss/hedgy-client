@@ -915,7 +915,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     } else if (position.symbol === 3) {
       oracleAccountAddress = "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN";
     } else if (position.symbol === 4) {
-      oracleAccountAddress = "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN";
+      oracleAccountAddress = "g6eRCbboSwK4tSWngn773RCMexr1APQr4uA9bGZBYfo";
     } else if (position.symbol === 5) {
       oracleAccountAddress = "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB";
     } else if (position.symbol === 6) {
@@ -1010,7 +1010,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     } else if (position.symbol === 3) {
       oracleAccountAddress = "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN";
     } else if (position.symbol === 4) {
-      oracleAccountAddress = "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN";
+      oracleAccountAddress = "g6eRCbboSwK4tSWngn773RCMexr1APQr4uA9bGZBYfo";
     } else if (position.symbol === 5) {
       oracleAccountAddress = "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB";
     } else if (position.symbol === 6) {
@@ -1098,7 +1098,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     } else if (position.symbol === 3) {
       oracleAccountAddress = "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN";
     } else if (position.symbol === 4) {
-      oracleAccountAddress = "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN";
+      oracleAccountAddress = "g6eRCbboSwK4tSWngn773RCMexr1APQr4uA9bGZBYfo";
     } else if (position.symbol === 5) {
       oracleAccountAddress = "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB";
     } else if (position.symbol === 6) {

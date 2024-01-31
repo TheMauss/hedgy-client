@@ -1150,7 +1150,7 @@ const TradeBar: React.FC<
 
   const onClick = useCallback(async () => {
     const maxBet =
-      (LPdata?.totalDeposits + LPdata?.pnl) / 200 / LAMPORTS_PER_SOL;
+      (LPdata?.totalDeposits + LPdata?.pnl) / 200 * 3 / 5 / LAMPORTS_PER_SOL;
     if (warning) {
       console.error("Cannot open position due to warning:", warning);
       // Optionally, show a warning notification
@@ -1171,10 +1171,10 @@ const TradeBar: React.FC<
     }
 
     if (
-      totalBetAmount + parseFloat(amountValue) >
-      3 * maxBet * LAMPORTS_PER_SOL
+      totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL >
+      2 * maxBet * LAMPORTS_PER_SOL
     ) {
-      notify({ type: "error", message: "Position size limit per user" });
+      notify({ type: "error", message: `Margin limit per user: ${( 2 * maxBet).toFixed(2)}` });
       return;
     }
 
@@ -1197,7 +1197,7 @@ const TradeBar: React.FC<
       },
       JUP: {
         symbolCode: 4,
-        oracleAddy: "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN",
+        oracleAddy: "g6eRCbboSwK4tSWngn773RCMexr1APQr4uA9bGZBYfo",
       },
       ETH: {
         symbolCode: 5,
