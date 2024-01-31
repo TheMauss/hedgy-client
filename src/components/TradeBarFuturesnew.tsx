@@ -310,6 +310,7 @@ const TradeBar: React.FC<
   const [rebateTier, setrebateTier] = useState<number>(null);
 
   const LOWER_SPREAD_SYMBOLS = ['BTC', 'SOL', 'ETH']; // Add more if needed
+  const HIGHER_SPREAD_SYMBOLS = ['JUP']; // Add more if needed
 
 
   const handleButtonClick = (buttonIndex: number) => {
@@ -1600,7 +1601,14 @@ const TradeBar: React.FC<
 
 
   const spreadPercentage = (symbol) => {
-    return LOWER_SPREAD_SYMBOLS.includes(symbol.toUpperCase()) ? 0.02 : 0.04;
+    const upperSymbol = symbol.toUpperCase();
+    if (LOWER_SPREAD_SYMBOLS.includes(upperSymbol)) {
+        return 0.02; // Spread for lower spread symbols
+    } else if (HIGHER_SPREAD_SYMBOLS.includes(upperSymbol)) {
+        return 0.08; // Spread for higher spread symbols
+    } else {
+        return 0.04; // Default spread for other symbols
+    }
 };
 
   
