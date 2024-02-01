@@ -1151,7 +1151,7 @@ const TradeBar: React.FC<
 
   const onClick = useCallback(async () => {
     const maxBet =
-      (LPdata?.totalDeposits + LPdata?.pnl) / 200 * 3 / 5 / LAMPORTS_PER_SOL;
+      (LPdata?.totalDeposits + LPdata?.pnl) / 200 * 3 / 5 / LAMPORTS_PER_SOL; // 0,3% maximálni pozice
     if (warning) {
       console.error("Cannot open position due to warning:", warning);
       // Optionally, show a warning notification
