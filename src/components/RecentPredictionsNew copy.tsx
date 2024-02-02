@@ -28,8 +28,6 @@ interface Position {
   payout: number;
   finalPrice: number;
   elapsedTime: string;
-  timestamp: number;
-
 }
 
 interface PositionFutures {
@@ -242,14 +240,11 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
             <div className="w-[38%] text-sm leading-[12px] text-grey-text py-2 ">
               Pair
             </div>
-            <div className="w-[30%] text-sm leading-[12px] text-grey-text py-2 text-end">
+            <div className="w-[32%] text-sm leading-[12px] text-grey-text py-2 text-end">
               Price
             </div>
-            <div className="w-[23%] text-sm leading-[12px] text-grey-text py-2 text-end">
+            <div className="w-[30%] text-sm leading-[12px] text-grey-text py-2 text-end">
               Size ◎
-            </div>
-            <div className="w-[20%] text-sm leading-[12px] text-grey-text py-2 text-end">
-              Time
             </div>
           </div>
           <FlipMove>
@@ -313,7 +308,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                   
                   <div
                     key={item._id}
-                    className={`flex text-sm my-1 w-full pr-4 pl-3 hover:bg-layer-3`}
+                    className={`flex text-sm my-1 w-full px-4 hover:bg-layer-3`}
                     style={{
                       background: `linear-gradient(to right, transparent ${100 - colorfill}%, ${
                         item.priceDirection === 1
@@ -414,7 +409,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                         </div>
                       </a>
                     </div>
-                    <div className={`w-[30%] leading-[12px] flex items-center justify-end ${
+                    <div className={`w-[32%] leading-[12px] flex items-center justify-end ${
                       item.priceDirection === 1
                       ? (item.resolved ? "text-[#34c796]" : "text-red-500") // If priceDirection is 1, green if resolved, otherwise red
                       : (item.resolved ? "text-red-500" : "text-[#34c796]") // If priceDirection is 0, red if resolved, otherwise green
@@ -422,15 +417,10 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                       ${item.resolved ? (item.finalPrice/100000000).toFixed(1) : (item.initialPrice/100000000).toFixed(1)}
                     </div>
                     
-                    <div className={`w-[23%] leading-[12px] flex items-center justify-end`}>
+                    <div className={`w-[30%] leading-[12px] flex items-center justify-end`}>
                     
                       {"binaryOption" in item ? `${(item.betAmount/LAMPORTS_PER_SOL).toFixed(1)}` : `${(item.leverage*item.betAmount/LAMPORTS_PER_SOL).toFixed(1)}`} 
                     </div>
-                    <div className={`w-[20%] leading-[12px] flex items-center justify-end text-grey-text`}>
-                    {
-                      new Date(item.timestamp*1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                    }
-                  </div>
                   </div>
                 );
               })}
