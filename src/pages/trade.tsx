@@ -357,7 +357,7 @@ const Transaction: FC = () => {
                         <div
                           className={`w-full md:block flex-col hidden md:order-2 order-1 mt-2 md:h-[629px] ${
                             showBottomPanel
-                              ? "lg:h-[calc((100vh-2px)-(40vh))]"
+                              ? "lg:h-[calc((100vh-2px)-(38vh))]"
                               : "lg:h-[calc(100vh-108px-33px)] "
                           }`}
                         >
@@ -368,7 +368,7 @@ const Transaction: FC = () => {
                           />
                         </div>{" "}
                         <div
-                          className={`w-full lg:flex lg:flex-col hidden order-3   lg:h-[calc((100vh-226px)-(60vh-79px))] mt-2 ${showBottomPanel ? "" : "lg:hidden"}`}
+                          className={`w-full lg:flex lg:flex-col hidden order-3   lg:h-[calc((100vh-226px)-(62vh-79px))] mt-2 ${showBottomPanel ? "" : "lg:hidden"}`}
                         >
                           <MyPositions
                             latestOpenedPosition={latestOpenedPosition}

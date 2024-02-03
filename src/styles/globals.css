@@ -21,6 +21,7 @@ body {
   background-image: #0b111b;
 }
 
+
 .toggle-switch-bigger {
   position: relative;
   display: inline-block;
@@ -1043,6 +1044,16 @@ html::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(to top right, #34c796, #0b7a55);
   transition: opacity 0.3s ease-out;
 }
+
+
+.long-short-button {
+  transition: background 0.3s ease-in-out;
+}
+
+.long-short-button:hover {
+  background: linear-gradient(180deg, rgba(67, 70, 101, 0), rgba(67, 70, 101, 0.13));
+}
+
 
 .gradient-bgg:hover {
   background: linear-gradient(to top right, #2dac81, #0a724f);

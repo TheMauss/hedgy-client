@@ -239,13 +239,13 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
       ) : (
         <div className="custom-scrollbar flex flex-col overflow-auto ">
           <div className="sticky top-0 bg-layer-1 flex z-10 pt-2 px-4">
-            <div className="w-[38%] text-sm leading-[12px] text-grey-text py-2 ">
-              Pair
+            <div className="w-[26%] text-sm leading-[12px] text-grey-text py-2 ">
+              Pair/USD
             </div>
-            <div className="w-[30%] text-sm leading-[12px] text-grey-text py-2 text-end">
+            <div className="w-[35%] text-sm leading-[12px] text-grey-text py-2 text-end">
               Price
             </div>
-            <div className="w-[23%] text-sm leading-[12px] text-grey-text py-2 text-end">
+            <div className="w-[25%] text-sm leading-[12px] text-grey-text py-2 text-end">
               Size ◎
             </div>
             <div className="w-[20%] text-sm leading-[12px] text-grey-text py-2 text-end">
@@ -322,7 +322,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                       } ${100 - colorfill}%)`
                     }}
                   >
-                    <div className="w-[38%] leading-[12px] flex items-center">
+                    <div className="w-[26%] leading-[12px] flex items-center">
                       <a
                         href={`https://solscan.io/account/${"binaryOption" in item ? item.playerAcc : item.playerAcc}`}
                         target="_blank"
@@ -335,86 +335,86 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                               <img
                                 src="/coins/60x60/Sol.png"
                                 alt="Logo"
-                                width="20"
+                                width="22"
                                 height="16"
                               />
-                              <p className="flex ml-1 items-center">SOL/USD</p>
+                              <p className="flex ml-1 items-center">SOL</p>
                             </div>
                           ) : item.symbol === 1 ? (
                            <div className="py-0.5 flex flex-row justify-start">
                               <img
                                 src="/coins/60x60/Btc.png"
                                 alt="Logo"
-                                width="20"
+                                width="22"
                                 height="16"
                               />
-                              <p className="flex ml-1 items-center">BTC/USD</p>
+                              <p className="flex ml-1 items-center">BTC</p>
                             </div>
                           ) : item.symbol === 2 ? (
                            <div className="py-0.5 flex flex-row justify-start">
                               <img
                                 src="/coins/60x60/Pyth.png"
                                 alt="Logo"
-                                width="20"
+                                width="22"
                                 height="16"
                               />
-                              <p className="flex ml-1 items-center">PYTH/USD</p>
+                              <p className="flex ml-1 items-center">PYTH</p>
                             </div>
                           ) : item.symbol === 3 ? (
                            <div className="py-0.5 flex flex-row justify-start">
                               <img
                                 src="/coins/60x60/Bonk.png"
                                 alt="Logo"
-                                width="20"
+                                width="22"
                                 height="16"
                               />
-                              <p className="flex ml-1 items-center">BONK/USD</p>
+                              <p className="flex ml-1 items-center">BONK</p>
                             </div>
                           ) : item.symbol === 4 ? (
                            <div className="py-0.5 flex flex-row justify-start">
                               <img
                                 src="/coins/60x60/Jup.png"
                                 alt="Logo"
-                                width="20"
+                                width="22"
                                 height="16"
                               />
-                              <p className="flex ml-1 items-center">JUP/USD</p>
+                              <p className="flex ml-1 items-center">JUP</p>
                             </div>
                           ) : item.symbol === 5 ? (
                            <div className="py-0.5 flex flex-row justify-start">
                               <img
                                 src="/coins/60x60/Eth.png"
                                 alt="Logo"
-                                width="20"
+                                width="22"
                                 height="16"
                               />
-                              <p className="flex ml-1 items-center">ETH/USD</p>
+                              <p className="flex ml-1 items-center">ETH</p>
                             </div>
                           ) : item.symbol === 6 ? (
                            <div className="py-0.5 flex flex-row justify-start">
                               <img
                                 src="/coins/60x60/Tia.png"
                                 alt="Logo"
-                                width="20"
+                                width="22"
                                 height="16"
                               />
-                              <p className="flex ml-1 items-center">TIA/USD</p>
+                              <p className="flex ml-1 items-center">TIA</p>
                             </div>
                           ) : item.symbol === 7 ? (
                            <div className="py-0.5 flex flex-row justify-start">
                               <img
                                 src="/coins/60x60/Sui.png"
                                 alt="Logo"
-                                width="20"
+                                width="22"
                                 height="16"
                               />
-                              <p className="flex ml-1 items-center">SUI/USD</p>
+                              <p className="flex ml-1 items-center">SUI</p>
                             </div>
                           ) : null}
                         </div>
                       </a>
                     </div>
-                    <div className={`w-[30%] leading-[12px] flex items-center justify-end ${
+                    <div className={`w-[35%] leading-[12px] flex items-center justify-end ${
                       item.priceDirection === 1
                       ? (item.resolved ? "text-[#34c796]" : "text-red-500") // If priceDirection is 1, green if resolved, otherwise red
                       : (item.resolved ? "text-red-500" : "text-[#34c796]") // If priceDirection is 0, red if resolved, otherwise green
@@ -422,7 +422,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                       ${item.resolved ? (item.finalPrice/100000000).toFixed(1) : (item.initialPrice/100000000).toFixed(1)}
                     </div>
                     
-                    <div className={`w-[23%] leading-[12px] flex items-center justify-end`}>
+                    <div className={`w-[25%] leading-[12px] flex items-center justify-end`}>
                     
                       {"binaryOption" in item ? `${(item.betAmount/LAMPORTS_PER_SOL).toFixed(1)}` : `${(item.leverage*item.betAmount/LAMPORTS_PER_SOL).toFixed(1)}`} 
                     </div>
