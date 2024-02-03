@@ -29,7 +29,6 @@ interface Position {
   finalPrice: number;
   elapsedTime: string;
   timestamp: number;
-
 }
 
 interface PositionFutures {
@@ -221,9 +220,6 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
     };
   }, []);
 
-  
-  
-
   return (
     <div className="font-poppins w-full flex flex-col overflow-hidden h-full md:overflow-y-scroll  custom-scrollbar  order-5 xl:order-3 lg:order-3 md:order-5 rounded-lg bg-layer-1 py-4  flex bg-layer-1">
       <div className="sticky top-0 flex items-center z-10">
@@ -292,34 +288,44 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                     : (item.pnl / item.betAmount) * 100;
                 percentage = Number(percentage);
 
-                const positionSize = "binaryOption" in item 
+                const positionSize =
+                  "binaryOption" in item
                     ? item.betAmount / LAMPORTS_PER_SOL
-                    : item.leverage * item.betAmount / LAMPORTS_PER_SOL;
-                    
+                    : (item.leverage * item.betAmount) / LAMPORTS_PER_SOL;
+
                 const minPositionSize = 0;
                 const maxPositionSize = 500; // The value corresponding to 100% green
-                let greenPercentage = ((positionSize - minPositionSize) / (maxPositionSize - minPositionSize)) * 100;
-                    
+                let greenPercentage =
+                  ((positionSize - minPositionSize) /
+                    (maxPositionSize - minPositionSize)) *
+                  100;
+
                 // Define a minimum visible percentage for small bet amounts
                 const minVisiblePercentage = 2; // for example, 5%
-                    
+
                 // Adjust greenPercentage to be at least the minimum visible percentage if it's too small but greater than zero
-                if (greenPercentage > 0 && greenPercentage < minVisiblePercentage) {
-                    greenPercentage = minVisiblePercentage;
-                    }                
+                if (
+                  greenPercentage > 0 &&
+                  greenPercentage < minVisiblePercentage
+                ) {
+                  greenPercentage = minVisiblePercentage;
+                }
                 const colorfill = Math.max(0, Math.min(greenPercentage, 100));
 
                 return (
-                  
                   <div
                     key={item._id}
                     className={`flex text-sm my-1 w-full pr-4 pl-3 hover:bg-layer-3`}
                     style={{
                       background: `linear-gradient(to right, transparent ${100 - colorfill}%, ${
                         item.priceDirection === 1
-                          ? (item.resolved ? "rgba(52, 199, 150, 0.2)" : "rgba(255, 76, 76, 0.2)")
-                          : (item.resolved ? "rgba(255, 76, 76, 0.2)" : "rgba(52, 199, 150, 0.2)")
-                      } ${100 - colorfill}%)`
+                          ? item.resolved
+                            ? "rgba(52, 199, 150, 0.2)"
+                            : "rgba(255, 76, 76, 0.2)"
+                          : item.resolved
+                            ? "rgba(255, 76, 76, 0.2)"
+                            : "rgba(52, 199, 150, 0.2)"
+                      } ${100 - colorfill}%)`,
                     }}
                   >
                     <div className="w-[26%] leading-[12px] flex items-center">
@@ -331,7 +337,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                       >
                         <div className="flex flex-row items-center">
                           {item.symbol === 0 ? (
-                           <div className="py-0.5 flex flex-row justify-start">
+                            <div className="py-0.5 flex flex-row justify-start">
                               <img
                                 src="/coins/60x60/Sol.png"
                                 alt="Logo"
@@ -341,7 +347,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                               <p className="flex ml-1 items-center">SOL</p>
                             </div>
                           ) : item.symbol === 1 ? (
-                           <div className="py-0.5 flex flex-row justify-start">
+                            <div className="py-0.5 flex flex-row justify-start">
                               <img
                                 src="/coins/60x60/Btc.png"
                                 alt="Logo"
@@ -351,7 +357,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                               <p className="flex ml-1 items-center">BTC</p>
                             </div>
                           ) : item.symbol === 2 ? (
-                           <div className="py-0.5 flex flex-row justify-start">
+                            <div className="py-0.5 flex flex-row justify-start">
                               <img
                                 src="/coins/60x60/Pyth.png"
                                 alt="Logo"
@@ -361,7 +367,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                               <p className="flex ml-1 items-center">PYTH</p>
                             </div>
                           ) : item.symbol === 3 ? (
-                           <div className="py-0.5 flex flex-row justify-start">
+                            <div className="py-0.5 flex flex-row justify-start">
                               <img
                                 src="/coins/60x60/Bonk.png"
                                 alt="Logo"
@@ -371,7 +377,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                               <p className="flex ml-1 items-center">BONK</p>
                             </div>
                           ) : item.symbol === 4 ? (
-                           <div className="py-0.5 flex flex-row justify-start">
+                            <div className="py-0.5 flex flex-row justify-start">
                               <img
                                 src="/coins/60x60/Jup.png"
                                 alt="Logo"
@@ -381,7 +387,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                               <p className="flex ml-1 items-center">JUP</p>
                             </div>
                           ) : item.symbol === 5 ? (
-                           <div className="py-0.5 flex flex-row justify-start">
+                            <div className="py-0.5 flex flex-row justify-start">
                               <img
                                 src="/coins/60x60/Eth.png"
                                 alt="Logo"
@@ -391,7 +397,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                               <p className="flex ml-1 items-center">ETH</p>
                             </div>
                           ) : item.symbol === 6 ? (
-                           <div className="py-0.5 flex flex-row justify-start">
+                            <div className="py-0.5 flex flex-row justify-start">
                               <img
                                 src="/coins/60x60/Tia.png"
                                 alt="Logo"
@@ -401,7 +407,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                               <p className="flex ml-1 items-center">TIA</p>
                             </div>
                           ) : item.symbol === 7 ? (
-                           <div className="py-0.5 flex flex-row justify-start">
+                            <div className="py-0.5 flex flex-row justify-start">
                               <img
                                 src="/coins/60x60/Sui.png"
                                 alt="Logo"
@@ -414,23 +420,38 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                         </div>
                       </a>
                     </div>
-                    <div className={`w-[35%] leading-[12px] flex items-center justify-end ${
-                      item.priceDirection === 1
-                      ? (item.resolved ? "text-[#34c796]" : "text-red-500") // If priceDirection is 1, green if resolved, otherwise red
-                      : (item.resolved ? "text-red-500" : "text-[#34c796]") // If priceDirection is 0, red if resolved, otherwise green
-                      }`}>
-                      ${item.resolved ? (item.finalPrice/100000000).toFixed(1) : (item.initialPrice/100000000).toFixed(1)}
+                    <div
+                      className={`w-[35%] leading-[12px] flex items-center justify-end ${
+                        item.priceDirection === 1
+                          ? item.resolved
+                            ? "text-[#34c796]"
+                            : "text-red-500" // If priceDirection is 1, green if resolved, otherwise red
+                          : item.resolved
+                            ? "text-red-500"
+                            : "text-[#34c796]" // If priceDirection is 0, red if resolved, otherwise green
+                      }`}
+                    >
+                      $
+                      {item.resolved
+                        ? (item.finalPrice / 100000000).toFixed(1)
+                        : (item.initialPrice / 100000000).toFixed(1)}
                     </div>
-                    
-                    <div className={`w-[25%] leading-[12px] flex items-center justify-end`}>
-                    
-                      {"binaryOption" in item ? `${(item.betAmount/LAMPORTS_PER_SOL).toFixed(1)}` : `${(item.leverage*item.betAmount/LAMPORTS_PER_SOL).toFixed(1)}`} 
+
+                    <div
+                      className={`w-[25%] leading-[12px] flex items-center justify-end`}
+                    >
+                      {"binaryOption" in item
+                        ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(1)}`
+                        : `${((item.leverage * item.betAmount) / LAMPORTS_PER_SOL).toFixed(1)}`}
                     </div>
-                    <div className={`w-[20%] leading-[12px] flex items-center justify-end text-grey-text`}>
-                    {
-                      new Date(item.timestamp*1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                    }
-                  </div>
+                    <div
+                      className={`w-[20%] leading-[12px] flex items-center justify-end text-grey-text`}
+                    >
+                      {new Date(item.timestamp * 1000).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </div>
                   </div>
                 );
               })}

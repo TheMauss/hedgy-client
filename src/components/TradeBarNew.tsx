@@ -1214,16 +1214,12 @@ const TradeBar: React.FC<
         >
           <div
             className={`flex justify-center items-center h-full w-full rounded-lg ${
-              toggleState === "LONG"
-                ? ""
-                : ""
+              toggleState === "LONG" ? "" : ""
             }`}
           >
             <div
               className={`bankGothic uppercase  ${
-                toggleState === "LONG"
-                  ? ""
-                  : ""
+                toggleState === "LONG" ? "" : ""
               }`}
             >
               LONG
@@ -1238,17 +1234,14 @@ const TradeBar: React.FC<
               : "text-grey long-short-button"
           }`}
         >
-            <div
-              className={`bankGothic  uppercase ${
-                toggleState === "SHORT"
-                  ? ""
-                  : ""
-              }`}
-            >
-              SHORT
+          <div
+            className={`bankGothic  uppercase ${
+              toggleState === "SHORT" ? "" : ""
+            }`}
+          >
+            SHORT
           </div>
         </button>
-
       </div>
       <div className="self-stretch h-[60px] flex flex-col items-start justify-start gap-[8px]">
         <div className="self-stretch flex flex-col items-start justify-start">
