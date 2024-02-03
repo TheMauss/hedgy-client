@@ -1970,7 +1970,7 @@ const TradeBar: React.FC<
                 className={`flex justify-center items-center  w-full h-full rounded relative leading-[14px] font-medium ${
                   activeLeverageButton === 100
                     ? "bg-[#0B111B] bg-opacity-80"
-                    : "transition duration-250 ease-in-out bg-opacity-0 hover:bg-[#484c6d5b]"
+                    : "bg-opacity-0 hover:bg-[#484c6d5b]"
                 }`}
               >
                 100X
