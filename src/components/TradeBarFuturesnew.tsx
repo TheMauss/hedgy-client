@@ -313,8 +313,9 @@ const TradeBar: React.FC<
   const [maxleverage, setMaxLeverage] = useState(200); // Initially set to 1000
   const [rebateTier, setrebateTier] = useState<number>(null);
 
-  const LOWER_SPREAD_SYMBOLS = ["BTC", "SOL", "ETH"]; // Add more if needed
-  const HIGHER_SPREAD_SYMBOLS = ["JUP"]; // Add more if needed
+  const LOWER_SPREAD_SYMBOLS = ['BTC', 'SOL', 'ETH']; // Add more if needed
+  const HIGHER_SPREAD_SYMBOLS = ['JUP']; // Add more if needed
+
 
   const handleButtonClick = (buttonIndex: number) => {
     setActiveButton(buttonIndex);
@@ -417,9 +418,7 @@ const TradeBar: React.FC<
       selectedCryptos.BONK ||
       selectedCryptos.JUP ||
       selectedCryptos.TIA ||
-      selectedCryptos.SUI
-        ? 50
-        : 200;
+      selectedCryptos.SUI ? 50 : 200;
 
     if (buttonIndex > symbolMaxLeverage) {
       // Set to a default leverage if clicked value exceeds symbolMaxLeverage
@@ -1156,10 +1155,8 @@ const TradeBar: React.FC<
 
   const onClick = useCallback(async () => {
     const countmaxBet =
-      (((LPdata?.totalDeposits + LPdata?.pnl) / 200) * 3) /
-      5 /
-      LAMPORTS_PER_SOL; // 0,3% maximálni pozice
-    const maxBet = Math.min(10, countmaxBet);
+      (LPdata?.totalDeposits + LPdata?.pnl) / 200 * 3 / 5 / LAMPORTS_PER_SOL; // 0,3% maximálni pozice
+     const maxBet = Math.min(10, countmaxBet);
     if (warning) {
       console.error("Cannot open position due to warning:", warning);
       // Optionally, show a warning notification
@@ -1183,10 +1180,7 @@ const TradeBar: React.FC<
       totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL >
       2 * maxBet * LAMPORTS_PER_SOL
     ) {
-      notify({
-        type: "error",
-        message: `Margin limit per user: ${(2 * maxBet).toFixed(2)}`,
-      });
+      notify({ type: "error", message: `Margin limit per user: ${( 2 * maxBet).toFixed(2)}` });
       return;
     }
 
@@ -1610,29 +1604,31 @@ const TradeBar: React.FC<
 
   const [spreadPrice, setSpreadPrice] = useState(0);
 
+
   const spreadPercentage = (symbol) => {
     const upperSymbol = symbol.toUpperCase();
     if (LOWER_SPREAD_SYMBOLS.includes(upperSymbol)) {
-      return 0.02; // Spread for lower spread symbols
+        return 0.02; // Spread for lower spread symbols
     } else if (HIGHER_SPREAD_SYMBOLS.includes(upperSymbol)) {
-      return 0.08; // Spread for higher spread symbols
+        return 0.08; // Spread for higher spread symbols
     } else {
-      return 0.04; // Default spread for other symbols
+        return 0.04; // Default spread for other symbols
     }
-  };
+};
 
+  
   // Function to calculate spread price
   const calculateSpreadPrice = (currentPrice, toggleState, symbol) => {
-    // Get spread based on symbol
-    const finalSpreadRatio = spreadPercentage(symbol);
-
-    // Adjust the currentPrice with the spread to get the initial price.
-    const calculatedInitialPrice =
-      toggleState === "LONG"
-        ? currentPrice + (currentPrice * finalSpreadRatio) / 100
-        : currentPrice - (currentPrice * finalSpreadRatio) / 100;
-
-    return calculatedInitialPrice;
+      // Get spread based on symbol
+      const finalSpreadRatio = spreadPercentage(symbol);
+  
+      // Adjust the currentPrice with the spread to get the initial price.
+      const calculatedInitialPrice =
+        toggleState === "LONG"
+          ? (currentPrice + (currentPrice * finalSpreadRatio) / 100)
+          : (currentPrice - (currentPrice * finalSpreadRatio) / 100);
+  
+      return calculatedInitialPrice;
   };
 
   useEffect(() => {
@@ -1655,14 +1651,11 @@ const TradeBar: React.FC<
       const decimalPlaces =
         decimalPlacesMapping[selectedCrypto?.toUpperCase()] || 2;
 
-      const spread = calculateSpreadPrice(
-        currentPrice,
-        toggleState,
-        selectedCrypto
-      );
+      const spread = calculateSpreadPrice(currentPrice, toggleState, selectedCrypto);
       setSpreadPrice(parseFloat(spread.toFixed(decimalPlaces)));
     }
   }, [toggleState, prices, initialPrice, selectedCryptos]);
+
 
   // Rest of your code...
 
@@ -1840,12 +1833,16 @@ const TradeBar: React.FC<
         >
           <div
             className={`flex justify-center items-center h-full w-full rounded-lg ${
-              toggleState === "LONG" ? "" : ""
+              toggleState === "LONG"
+                ? ""
+                : ""
             }`}
           >
             <div
               className={`bankGothic uppercase  ${
-                toggleState === "LONG" ? "" : ""
+                toggleState === "LONG"
+                  ? ""
+                  : ""
               }`}
             >
               LONG
@@ -1860,12 +1857,14 @@ const TradeBar: React.FC<
               : "text-grey long-short-button"
           }`}
         >
-          <div
-            className={`bankGothic  uppercase ${
-              toggleState === "SHORT" ? "" : ""
-            }`}
-          >
-            SHORT
+            <div
+              className={`bankGothic  uppercase ${
+                toggleState === "SHORT"
+                  ? ""
+                  : ""
+              }`}
+            >
+              SHORT
           </div>
         </button>
       </div>
@@ -2252,59 +2251,60 @@ const TradeBar: React.FC<
         </div>
       </div>
 
+
       {wallet.connected ? (
-        <button
-          onClick={onClick}
-          className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  ${
+      <button
+      onClick={onClick}
+      className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  ${
+        toggleState === "LONG"
+          ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
+          : "bg-gradient-to-t from-[#7A3636] to-[#C44141] p-[1px]"
+      }`}
+    >
+      <div
+        className={`flex justify-center items-center h-full w-full rounded-lg ${
+          toggleState === "LONG"
+            ? "bg-[#0B111B] bg-opacity-80"
+            : "bg-[#0B111B] bg-opacity-80"
+        }`}
+      >
+        <div
+          className={`bankGothic bg-clip-text text-transparent uppercase ${
             toggleState === "LONG"
-              ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
-              : "bg-gradient-to-t from-[#7A3636] to-[#C44141] p-[1px]"
+              ? "bg-gradient-to-t from-[#34C796] to-[#0B7A55]"
+              : "bg-gradient-to-t from-[#7A3636] to-[#C44141]"
           }`}
         >
-          <div
-            className={`flex justify-center items-center h-full w-full rounded-lg ${
-              toggleState === "LONG"
-                ? "bg-[#0B111B] bg-opacity-80"
-                : "bg-[#0B111B] bg-opacity-80"
-            }`}
-          >
-            <div
-              className={`bankGothic bg-clip-text text-transparent uppercase ${
-                toggleState === "LONG"
-                  ? "bg-gradient-to-t from-[#34C796] to-[#0B7A55]"
-                  : "bg-gradient-to-t from-[#7A3636] to-[#C44141]"
-              }`}
-            >
-              OPEN POSITION
-            </div>
-          </div>
-        </button>
+          OPEN POSITION
+        </div>
+      </div>
+    </button>
       ) : (
         <WalletMultiButtonDynamic
-          className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  ${
+        className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  ${
+          toggleState === "LONG"
+            ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
+            : "bg-gradient-to-t from-[#7A3636] to-[#C44141] p-[1px]"
+        }`}
+      >
+        <div
+          className={`flex justify-center items-center h-full w-full rounded-lg ${
             toggleState === "LONG"
-              ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
-              : "bg-gradient-to-t from-[#7A3636] to-[#C44141] p-[1px]"
+              ? "bg-[#0B111B] bg-opacity-80"
+              : "bg-[#0B111B] bg-opacity-80"
           }`}
         >
           <div
-            className={`flex justify-center items-center h-full w-full rounded-lg ${
+            className={`bankGothic bg-clip-text text-transparent uppercase ${
               toggleState === "LONG"
-                ? "bg-[#0B111B] bg-opacity-80"
-                : "bg-[#0B111B] bg-opacity-80"
+                ? "bg-gradient-to-t from-[#34C796] to-[#0B7A55]"
+                : "bg-gradient-to-t from-[#7A3636] to-[#C44141]"
             }`}
           >
-            <div
-              className={`bankGothic bg-clip-text text-transparent uppercase ${
-                toggleState === "LONG"
-                  ? "bg-gradient-to-t from-[#34C796] to-[#0B7A55]"
-                  : "bg-gradient-to-t from-[#7A3636] to-[#C44141]"
-              }`}
-            >
-              CONNECT WALLET
-            </div>
+            CONNECT WALLET
           </div>
-        </WalletMultiButtonDynamic>
+        </div>
+      </WalletMultiButtonDynamic>
       )}
     </div>
   );
