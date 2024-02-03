@@ -2257,32 +2257,52 @@ const TradeBar: React.FC<
           onClick={onClick}
           className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  ${
             toggleState === "LONG"
-              ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-[2px] border-solid border-primary"
-              : "[flex-1 [background:linear-gradient(180deg,_rgba(255,_76,_76,_0),_rgba(255,_76,_76,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 text-short border-[2px] border-solid border-short"
+              ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
+              : "bg-gradient-to-t from-[#7A3636] to-[#C44141] p-[1px]"
           }`}
         >
           <div
-            className={`bankGothic bg-clip-text text-transparent uppercase text-lg ${
-              toggleState === "LONG" ? "bg-primary" : "bg-short"
+            className={`flex justify-center items-center h-full w-full rounded-lg ${
+              toggleState === "LONG"
+                ? "bg-[#0B111B] bg-opacity-80"
+                : "bg-[#0B111B] bg-opacity-80"
             }`}
           >
-            OPEN POSITION
+            <div
+              className={`bankGothic bg-clip-text text-transparent uppercase ${
+                toggleState === "LONG"
+                  ? "bg-gradient-to-t from-[#34C796] to-[#0B7A55]"
+                  : "bg-gradient-to-t from-[#7A3636] to-[#C44141]"
+              }`}
+            >
+              OPEN POSITION
+            </div>
           </div>
         </button>
       ) : (
         <WalletMultiButtonDynamic
           className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  ${
             toggleState === "LONG"
-              ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-[2px] border-solid border-primary"
-              : "[flex-1 [background:linear-gradient(180deg,_rgba(255,_76,_76,_0),_rgba(255,_76,_76,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 text-short border-[2px] border-solid border-short"
+              ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
+              : "bg-gradient-to-t from-[#7A3636] to-[#C44141] p-[1px]"
           }`}
         >
           <div
-            className={`bankGothic bg-clip-text text-transparent uppercase text-lg ${
-              toggleState === "LONG" ? "bg-primary" : "bg-short"
+            className={`flex justify-center items-center h-full w-full rounded-lg ${
+              toggleState === "LONG"
+                ? "bg-[#0B111B] bg-opacity-80"
+                : "bg-[#0B111B] bg-opacity-80"
             }`}
           >
-            CONNECT WALLET
+            <div
+              className={`bankGothic bg-clip-text text-transparent uppercase ${
+                toggleState === "LONG"
+                  ? "bg-gradient-to-t from-[#34C796] to-[#0B7A55]"
+                  : "bg-gradient-to-t from-[#7A3636] to-[#C44141]"
+              }`}
+            >
+              CONNECT WALLET
+            </div>
           </div>
         </WalletMultiButtonDynamic>
       )}

@@ -30,7 +30,7 @@ export const Footer: FC = () => {
             passHref
             className="text-secondary hover:text-white"
           >
-            <img src="/solana.png" alt="Logo" width="14" height="6" />
+            <img src="/solana.png" alt="Logo" width="16" height="6" />
           </Link>
           <SolanaTPS />
         </div>

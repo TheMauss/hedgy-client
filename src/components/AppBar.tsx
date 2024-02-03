@@ -229,9 +229,9 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
           {isMobile ? (
             // Code for Mobile
 
-            <WalletMultiButtonDynamic className="[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-8 flex flex-row items-center justify-center  border-[1px] border-solid border-primary">
+            <WalletMultiButtonDynamic className="font-poppins font-semibold gradient-bgg h-[32px] w-full rounded bg-gradient-to-tr from-[#EF4628] to-[#9845E1]">
               {connected ? (
-                <div className="text-primary w-full flex flex-col h-full items-start justify-center text-[15px]">
+                <div className="w-full flex flex-col h-full items-start justify-center text-[15px]">
                   <div className="h-1/2 text-[10px]">
                     {wallet.publicKey.toBase58().slice(0, 3)}...
                     {wallet.publicKey.toBase58().slice(-3)}
@@ -244,7 +244,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
                   </div>
                 </div>
               ) : (
-                <div className="text-primary">CONNECT</div>
+                <div>CONNECT</div>
               )}
             </WalletMultiButtonDynamic>
           ) : (
@@ -352,9 +352,9 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
                 <FaUser className="mr-2 text-layer-3 hover:text-[#34c796] text-xl" />
               </Link>
               <div className="flex items-center">
-                <WalletMultiButtonDynamic className="[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-8 flex flex-row items-center justify-center  border-[1px] border-solid border-primary">
+                <WalletMultiButtonDynamic className="font-poppins font-semibold gradient-bgg h-[32px] w-full rounded bg-gradient-to-tr from-[#EF4628] to-[#9845E1]">
                   {connected ? (
-                    <div className="text-primary w-full flex flex-col h-full items-start justify-center text-[15px]">
+                    <div className="w-full flex flex-col h-full items-start justify-center text-[15px]">
                       <div className="h-1/2 text-[10px]">
                         {wallet.publicKey.toBase58().slice(0, 3)}...
                         {wallet.publicKey.toBase58().slice(-3)}
@@ -367,7 +367,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
                       </div>
                     </div>
                   ) : (
-                    <div className="text-primary">CONNECT</div>
+                    <div>CONNECT</div>
                   )}
                 </WalletMultiButtonDynamic>{" "}
               </div>
@@ -393,9 +393,9 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
               <Link href="/profile">
                 <FaUser className="mr-2 text-layer-3 hover:text-[#34c796] text-xl" />
               </Link>
-              <WalletMultiButtonDynamic className="[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-8 flex flex-row items-center justify-center  border-[1px] border-solid border-primary">
+              <WalletMultiButtonDynamic className="font-poppins font-semibold gradient-bgg h-[32px] w-full rounded bg-gradient-to-tr from-[#EF4628] to-[#9845E1]">
                 {connected ? (
-                  <div className="text-primary w-full flex flex-col h-full items-start justify-center text-[15px]">
+                  <div className="w-full flex flex-col h-full items-start justify-center text-[15px]">
                     <div className="h-1/2 text-[10px]">
                       {wallet.publicKey.toBase58().slice(0, 3)}...
                       {wallet.publicKey.toBase58().slice(-3)}
@@ -408,9 +408,10 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
                     </div>
                   </div>
                 ) : (
-                  <div className="text-primary">CONNECT</div>
+                  <div>CONNECT</div>
                 )}
               </WalletMultiButtonDynamic>{" "}
+              <span className="absolute block h-0.5 w-11 bg-zinc-600 rotate-90 right-[-17px] top-1/2 transform -translate-y-1/2"></span>
             </div>
           )}
         </div>

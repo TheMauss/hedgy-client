@@ -23,10 +23,10 @@ function SolanaTPS() {
     return () => clearInterval(intervalId); // clear interval on component unmount
   }, []);
 
-  const tpsColor = tps > 2000 ? "text-primary" : "text-short";
+  const tpsColor = tps > 2000 ? "text-green-500" : "text-red-500";
 
   return (
-    <div className="flex justify-center items-center font-poppins text-slate-300 ml-2 text-xs">
+    <div className="font-poppins text-slate-300 ml-2">
       <span className={`${tpsColor} mr-1`}>&#9679;</span>
       TPS: {tps ? tps.toFixed(0) : "-"}
     </div>

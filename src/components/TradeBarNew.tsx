@@ -1549,35 +1549,13 @@ const TradeBar: React.FC<
       {wallet.connected ? (
         <button
           onClick={onClick}
-          className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  ${
-            toggleState === "LONG"
-              ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-[2px] border-solid border-primary"
-              : "[flex-1 [background:linear-gradient(180deg,_rgba(255,_76,_76,_0),_rgba(255,_76,_76,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 text-short border-[2px] border-solid border-short"
-          }`}
+          className="h-[50px] font-semibold self-stretch rounded-lg gradient-bgg flex flex-row items-center justify-center py-3 px-6 text-center text-lg text-white"
         >
-          <div
-            className={`bankGothic bg-clip-text text-transparent uppercase text-lg ${
-              toggleState === "LONG" ? "bg-primary" : "bg-short"
-            }`}
-          >
-            OPEN POSITION
-          </div>
+          OPEN POSITION
         </button>
       ) : (
-        <WalletMultiButtonDynamic
-          className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  ${
-            toggleState === "LONG"
-              ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-[2px] border-solid border-primary"
-              : "[flex-1 [background:linear-gradient(180deg,_rgba(255,_76,_76,_0),_rgba(255,_76,_76,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 text-short border-[2px] border-solid border-short"
-          }`}
-        >
-          <div
-            className={`bankGothic bg-clip-text text-transparent uppercase text-lg ${
-              toggleState === "LONG" ? "bg-primary" : "bg-short"
-            }`}
-          >
-            CONNECT WALLET
-          </div>
+        <WalletMultiButtonDynamic className="h-[50px] font-poppins font-semibold self-stretch rounded-lg gradient-bgg flex flex-row items-center justify-center py-3 px-6 text-center text-lg text-white">
+          CONNECT WALLET
         </WalletMultiButtonDynamic>
       )}
     </div>
