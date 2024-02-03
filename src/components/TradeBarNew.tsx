@@ -1203,27 +1203,27 @@ const TradeBar: React.FC<
   return (
     <div className="custom-scrollbar overflow-x-hidden md:h-[628px] lg:h-[calc(100vh-141px)] md:w-[330px] w-full   flex flex-col items-start justify-start p-4 gap-[20px] text-left text-sm text-grey-text font-poppins">
       {ModalDetails1}
-      <div className="self-stretch flex flex-row items-start justify-start text-lg text-primary font-bankgothic-md-bt border-b-[1px] border-solid border-layer-3">
+      <div className="self-stretch flex flex-row items-start justify-start gap-[8px] text-center text-lg text-grey">
         <button
           onClick={setToggleChangeLong}
-          className={`flex-1   h-10 flex flex-row items-center justify-center py-3 px-6 transition-all duration-200 ease-in-out  ${
+          className={`w-1/2 rounded-lg h-[38px] flex flex-row items-center justify-center box-border ${
             toggleState === "LONG"
-              ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-b-[2px] border-solid border-primary"
-              : "text-grey long-short-button"
+              ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
+              : "bg-transparent border border-grey"
           }`}
         >
           <div
             className={`flex justify-center items-center h-full w-full rounded-lg ${
               toggleState === "LONG"
-                ? ""
-                : ""
+                ? "bg-[#0B111B] bg-opacity-80"
+                : "bg-opacity-0 hover:bg-[#484c6d5b]"
             }`}
           >
             <div
-              className={`bankGothic uppercase  ${
+              className={`bankGothic bg-clip-text text-transparent uppercase ${
                 toggleState === "LONG"
-                  ? ""
-                  : ""
+                  ? "bg-gradient-to-t from-[#34C796] to-[#0B7A55]"
+                  : "bg-grey"
               }`}
             >
               LONG
@@ -1232,23 +1232,30 @@ const TradeBar: React.FC<
         </button>
         <button
           onClick={setToggleChangeShort}
-          className={`flex-1   h-10 flex flex-row items-center justify-center py-3 px-6 transition-all duration-200 ease-in-out  ${
+          className={`w-1/2 rounded-lg h-[38px] flex flex-row items-center justify-center box-border ${
             toggleState === "SHORT"
-              ? "flex-1 [background:linear-gradient(180deg,_rgba(255,_76,_76,_0),_rgba(255,_76,_76,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 text-short border-b-[2px] border-solid border-short"
-              : "text-grey long-short-button"
+              ? "bg-gradient-to-t from-[#7A3636] to-[#C44141] p-[1px]"
+              : "bg-transparent border border-grey"
           }`}
         >
+          <div
+            className={`flex justify-center items-center h-full w-full rounded-lg ${
+              toggleState === "SHORT"
+                ? "bg-[#0B111B] bg-opacity-80"
+                : "bg-opacity-0 hover:bg-[#484c6d5b]"
+            }`}
+          >
             <div
-              className={`bankGothic  uppercase ${
+              className={`bankGothic bg-clip-text text-transparent uppercase ${
                 toggleState === "SHORT"
-                  ? ""
-                  : ""
+                  ? "bg-gradient-to-t from-[#7A3636] to-[#C44141]"
+                  : "bg-grey"
               }`}
             >
               SHORT
+            </div>
           </div>
         </button>
-
       </div>
       <div className="self-stretch h-[60px] flex flex-col items-start justify-start gap-[8px]">
         <div className="self-stretch flex flex-col items-start justify-start">
