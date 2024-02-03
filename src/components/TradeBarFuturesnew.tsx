@@ -1920,6 +1920,24 @@ const TradeBar: React.FC<
             value={leverage}
             onChange={handleSliderChange}
             className="w-full"
+            railStyle={{
+              backgroundColor: "#1f2435",
+              paddingTop: "0.2rem",
+              minHeight: "1.2rem",
+              borderRadius: "100px",
+            }}
+            trackStyle={{
+              minHeight: "0.7rem",
+              backgroundColor: "#30c296",
+              borderRadius: "100px",
+              top: "9px",
+              left: "5px",
+            }}
+            handleStyle={{
+              backgroundColor: "#141825",
+              border: "2px solid #30c296",
+              top: "10px",
+            }}
           />
           <div className="self-stretch flex flex-row items-start justify-start gap-[8px]">
             <button
