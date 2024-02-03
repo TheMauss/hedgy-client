@@ -1,45 +1,49 @@
-import React, { useEffect, useState, useCallback } from "react";
+import { BN } from "@project-serum/anchor";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import {
   ComputeBudgetProgram,
   Connection,
+  LAMPORTS_PER_SOL,
+  PublicKey,
   SystemProgram,
   Transaction,
   TransactionSignature,
-  PublicKey,
-  LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
-import { notify } from "../utils/notifications";
+import axios from "axios";
+import dynamic from "next/dynamic";
+import Slider from "rc-slider";
+import React, { useCallback, useEffect, useState } from "react";
+import { FaChevronUp } from "react-icons/fa";
+import { MdOutlineSettings } from "react-icons/md";
+import Modal from "react-modal";
+import socketIOClient from "socket.io-client";
+import { usePriorityFee } from "../contexts/PriorityFee";
+import { LiquidityPoolAccount } from "../out/accounts/LiquidityPoolAccount";
+import { LongShortRatio } from "../out/accounts/LongShortRatio"; // Update with the correct path
+import { UserAccount } from "../out/accounts/UserAccount"; // Update with the correct path
 import {
-  CreateFutContArgs,
   CreateFutContAccounts,
+  CreateFutContArgs,
   createFutCont,
 } from "../out/instructions/createFutCont";
-import { UserAccount } from "../out/accounts/UserAccount"; // Update with the correct path
-import { LongShortRatio } from "../out/accounts/LongShortRatio"; // Update with the correct path
 import {
-  initializeUserAcc,
-  InitializeUserAccArgs,
   InitializeUserAccAccounts,
+  InitializeUserAccArgs,
+  initializeUserAcc,
 } from "../out/instructions/initializeUserAcc"; // Update with the correct path
-import useUserSOLBalanceStore from "../stores/useUserSOLBalanceStore";
-import { BN } from "@project-serum/anchor";
 import { PROGRAM_ID } from "../out/programId";
-import { FaChevronUp } from "react-icons/fa";
-import socketIOClient from "socket.io-client";
-import Slider from "rc-slider";
-import Modal from "react-modal";
-import dynamic from "next/dynamic";
-import { LiquidityPoolAccount } from "../out/accounts/LiquidityPoolAccount";
-import axios from "axios";
-import { usePriorityFee } from "../contexts/PriorityFee";
-import { MdOutlineSettings } from "react-icons/md";
+import useUserSOLBalanceStore from "../stores/useUserSOLBalanceStore";
+import { notify } from "../utils/notifications";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
     (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
   { ssr: false }
 );
+
+/* <WalletMultiButtonDynamic className=" h-[50px] font-poppins font-semibold self-stretch rounded-lg gradient-bgg flex flex-row items-center justify-center py-3 px-6 text-center text-lg text-white">
+CONNECT WALLET
+</WalletMultiButtonDynamic> */
 
 interface TradeBarFuturesProps {
   setParentDivHeight: (height: string) => void;
@@ -1818,27 +1822,27 @@ const TradeBar: React.FC<
     <div className="custom-scrollbar overflow-x-hidden md:h-[628px] lg:h-[calc(100vh-141px)] md:w-[330px] w-full rounded-lg  flex flex-col items-start justify-start p-4 gap-[16px] text-left text-sm text-grey-text font-poppins">
       {ModalDetails1}
       {ModalDetails}
-      <div className="self-stretch flex flex-row items-start justify-start gap-[8px] text-center text-lg text-grey">
+      <div className="self-stretch flex flex-row items-start justify-start text-lg text-primary font-bankgothic-md-bt border-b-[1px] border-solid border-layer-3">
         <button
           onClick={setToggleChangeLong}
-          className={`w-1/2 rounded-lg h-[38px] flex flex-row items-center justify-center box-border ${
+          className={`flex-1   h-10 flex flex-row items-center justify-center py-3 px-6 transition-all duration-200 ease-in-out  ${
             toggleState === "LONG"
-              ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
-              : "bg-transparent border border-grey"
+              ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-b-[2px] border-solid border-primary"
+              : "text-grey long-short-button"
           }`}
         >
           <div
             className={`flex justify-center items-center h-full w-full rounded-lg ${
               toggleState === "LONG"
-                ? "bg-[#0B111B] bg-opacity-80"
-                : "bg-opacity-0 hover:bg-[#484c6d5b]"
+                ? ""
+                : ""
             }`}
           >
             <div
-              className={`bankGothic bg-clip-text text-transparent uppercase ${
+              className={`bankGothic uppercase  ${
                 toggleState === "LONG"
-                  ? "bg-gradient-to-t from-[#34C796] to-[#0B7A55]"
-                  : "bg-grey"
+                  ? ""
+                  : ""
               }`}
             >
               LONG
@@ -1847,28 +1851,20 @@ const TradeBar: React.FC<
         </button>
         <button
           onClick={setToggleChangeShort}
-          className={`w-1/2 rounded-lg h-[38px] flex flex-row items-center justify-center box-border ${
+          className={`flex-1   h-10 flex flex-row items-center justify-center py-3 px-6 transition-all duration-200 ease-in-out  ${
             toggleState === "SHORT"
-              ? "bg-gradient-to-t from-[#7A3636] to-[#C44141] p-[1px]"
-              : "bg-transparent border border-grey"
+              ? "flex-1 [background:linear-gradient(180deg,_rgba(255,_76,_76,_0),_rgba(255,_76,_76,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 text-short border-b-[2px] border-solid border-short"
+              : "text-grey long-short-button"
           }`}
         >
-          <div
-            className={`flex justify-center items-center h-full w-full rounded-lg ${
-              toggleState === "SHORT"
-                ? "bg-[#0B111B] bg-opacity-80"
-                : "bg-opacity-0 hover:bg-[#484c6d5b]"
-            }`}
-          >
             <div
-              className={`bankGothic bg-clip-text text-transparent uppercase ${
+              className={`bankGothic  uppercase ${
                 toggleState === "SHORT"
-                  ? "bg-gradient-to-t from-[#7A3636] to-[#C44141]"
-                  : "bg-grey"
+                  ? ""
+                  : ""
               }`}
             >
               SHORT
-            </div>
           </div>
         </button>
       </div>
@@ -1934,10 +1930,10 @@ const TradeBar: React.FC<
               }`}
             >
               <div
-                className={`flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${
+                className={` flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${
                   activeLeverageButton === 50
                     ? "bg-[#0B111B] bg-opacity-80"
-                    : "bg-opacity-0 hover:bg-[#484c6d5b]"
+                    : " bg-opacity-0 hover:bg-[#484c6d5b]"
                 }`}
               >
                 50X
@@ -1952,10 +1948,10 @@ const TradeBar: React.FC<
               }`}
             >
               <div
-                className={`flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${
+                className={`flex justify-center items-center  w-full h-full rounded relative leading-[14px] font-medium ${
                   activeLeverageButton === 100
                     ? "bg-[#0B111B] bg-opacity-80"
-                    : "bg-opacity-0 hover:bg-[#484c6d5b]"
+                    : "transition duration-250 ease-in-out bg-opacity-0 hover:bg-[#484c6d5b]"
                 }`}
               >
                 100X
@@ -1973,7 +1969,7 @@ const TradeBar: React.FC<
                 className={`flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${
                   activeLeverageButton === 150
                     ? "bg-[#0B111B] bg-opacity-80"
-                    : "bg-opacity-0 hover:bg-[#484c6d5b]"
+                    : " bg-opacity-0 hover:bg-[#484c6d5b]"
                 }`}
               >
                 150X
@@ -1991,7 +1987,7 @@ const TradeBar: React.FC<
                 className={`flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${
                   activeLeverageButton === 200
                     ? "bg-[#0B111B] bg-opacity-80"
-                    : "bg-opacity-0 hover:bg-[#484c6d5b]"
+                    : " bg-opacity-0 hover:bg-[#484c6d5b]"
                 }`}
               >
                 200X
@@ -2020,7 +2016,7 @@ const TradeBar: React.FC<
                 className={`flex justify-center items-center bg-[#0B111B] w-full h-full rounded relative leading-[14px] font-medium ${
                   activeButton === 1
                     ? "bg-[#0B111B] bg-opacity-80"
-                    : "bg-opacity-0 hover:bg-[#484c6d5b]"
+                    : " bg-opacity-0 hover:bg-[#484c6d5b]"
                 }`}
               >
                 0.1%
@@ -2038,7 +2034,7 @@ const TradeBar: React.FC<
                 className={`flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${
                   activeButton === 2
                     ? "bg-[#0B111B] bg-opacity-80"
-                    : "bg-opacity-0 hover:bg-[#484c6d5b]"
+                    : " bg-opacity-0 hover:bg-[#484c6d5b]"
                 }`}
               >
                 0.3%
@@ -2056,7 +2052,7 @@ const TradeBar: React.FC<
                 className={`flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${
                   activeButton === 3
                     ? "bg-[#0B111B] bg-opacity-80"
-                    : "bg-opacity-0 hover:bg-[#484c6d5b]"
+                    : " bg-opacity-0 hover:bg-[#484c6d5b]"
                 }`}
               >
                 0.5%
@@ -2067,7 +2063,7 @@ const TradeBar: React.FC<
               className={`flex hover:bg-[#484c6d5b] rounded  w-[115px] h-7 ${activeButton === 4 ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]" : "bg-layer-2"}`}
             >
               <div
-                className={`rounded flex flex-row w-full h-full px-2 ${activeButton === 4 ? "bg-[#0B111B] bg-opacity-80" : "bg-opacity-0 hover:bg-[#484c6d5b]"}`}
+                className={`rounded flex flex-row w-full h-full px-2 ${activeButton === 4 ? "bg-[#0B111B] bg-opacity-80" : " bg-opacity-0 hover:bg-[#484c6d5b]"}`}
               >
                 <input
                   type="text"
@@ -2092,7 +2088,7 @@ const TradeBar: React.FC<
           >
             <span className="mr-1">Risk management</span>
             <FaChevronUp
-              className={`ml-2 text-slate-300 transition-transform duration-300 ${showAdditionalDiv ? "" : "rotate-180"}`}
+              className={`ml-2 text-slate-300  ${showAdditionalDiv ? "" : "rotate-180"}`}
             />
           </button>
         </div>
@@ -2254,17 +2250,61 @@ const TradeBar: React.FC<
           </div>
         </div>
       </div>
+
+
       {wallet.connected ? (
-        <button
-          onClick={onClick}
-          className="h-[50px] font-semibold self-stretch rounded-lg gradient-bgg flex flex-row items-center justify-center py-3 px-6 text-center text-lg text-white"
+      <button
+      onClick={onClick}
+      className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  ${
+        toggleState === "LONG"
+          ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
+          : "bg-gradient-to-t from-[#7A3636] to-[#C44141] p-[1px]"
+      }`}
+    >
+      <div
+        className={`flex justify-center items-center h-full w-full rounded-lg ${
+          toggleState === "LONG"
+            ? "bg-[#0B111B] bg-opacity-80"
+            : "bg-[#0B111B] bg-opacity-80"
+        }`}
+      >
+        <div
+          className={`bankGothic bg-clip-text text-transparent uppercase ${
+            toggleState === "LONG"
+              ? "bg-gradient-to-t from-[#34C796] to-[#0B7A55]"
+              : "bg-gradient-to-t from-[#7A3636] to-[#C44141]"
+          }`}
         >
           OPEN POSITION
-        </button>
+        </div>
+      </div>
+    </button>
       ) : (
-        <WalletMultiButtonDynamic className="h-[50px] font-poppins font-semibold self-stretch rounded-lg gradient-bgg flex flex-row items-center justify-center py-3 px-6 text-center text-lg text-white">
-          CONNECT WALLET
-        </WalletMultiButtonDynamic>
+        <WalletMultiButtonDynamic
+        className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  ${
+          toggleState === "LONG"
+            ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
+            : "bg-gradient-to-t from-[#7A3636] to-[#C44141] p-[1px]"
+        }`}
+      >
+        <div
+          className={`flex justify-center items-center h-full w-full rounded-lg ${
+            toggleState === "LONG"
+              ? "bg-[#0B111B] bg-opacity-80"
+              : "bg-[#0B111B] bg-opacity-80"
+          }`}
+        >
+          <div
+            className={`bankGothic bg-clip-text text-transparent uppercase ${
+              toggleState === "LONG"
+                ? "bg-gradient-to-t from-[#34C796] to-[#0B7A55]"
+                : "bg-gradient-to-t from-[#7A3636] to-[#C44141]"
+            }`}
+          >
+            CONNECT WALLET
+          </div>
+        </div>
+      </WalletMultiButtonDynamic>
       )}
     </div>
   );
