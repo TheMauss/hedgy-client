@@ -409,10 +409,6 @@ const TradeBar: React.FC<
     fetchLpstatus();
   }, [connection]);
 
-  useEffect(() => {
-    console.log(`Current slippage tolerance: ${slippageTolerance}`);
-  }, [slippageTolerance]);
-
   const handleLeverageClick = (buttonIndex: number) => {
     // Determine the max leverage based on the selected symbol
     const symbolMaxLeverage =
@@ -500,7 +496,7 @@ const TradeBar: React.FC<
 
   useEffect(() => {
     let longShortRatio;
-    const THRESHOLD_BET_AMOUNT = 5000; // Replace with your threshold value
+    const THRESHOLD_BET_AMOUNT = 50000000; // Replace with your threshold value
 
     const computeLongShortRatio = (long, short) => {
       const totalBetAmount = parseInt(long) + parseInt(short);
@@ -588,13 +584,23 @@ const TradeBar: React.FC<
         : 200;
 
     if (leverage > newMaxLeverage && newMaxLeverage > defaultLeverage) {
-      setLeverage(newMaxLeverage);
-      setActiveLeverageButton(200);
+      setLeverage(50);
+      setActiveLeverageButton(50);
     } else if (leverage > newMaxLeverage && newMaxLeverage < defaultLeverage) {
       const newlvg = newMaxLeverage;
       setMaxLeverage(newlvg);
       setLeverage(newlvg);
       setActiveLeverageButton(0);
+    }
+
+    if (
+      selectedCryptos.PYTH ||
+      selectedCryptos.BONK ||
+      selectedCryptos.JUP ||
+      selectedCryptos.TIA ||
+      selectedCryptos.SUI
+    ) {
+      setMaxLeverage(defaultLeverage);
     }
   }, [
     data,
@@ -1269,7 +1275,7 @@ const TradeBar: React.FC<
       return;
     }
 
-    if ((parseFloat(amountValue)-fee)*leverage > availableLiquidity) {
+    if ((parseFloat(amountValue) - fee) * leverage > availableLiquidity) {
       notify({
         type: "error",
         message: "Not enough Available Liquidity",
@@ -1609,8 +1615,6 @@ const TradeBar: React.FC<
     return 200;
   };
 
-
-
   const calculateFee = (amount, lev, rebate, init) => {
     const baseFee = parseFloat(amount) * 0.0007 * lev;
     const hasAffiliate = init?.usedAffiliate.some((value) => value !== 0);
@@ -1731,7 +1735,7 @@ const TradeBar: React.FC<
 
     const totalDeposits = LPdata?.totalDeposits || 0;
     const oiSol = totalDeposits / 3; // Open interest for large caps
-    const poSmallPairs = totalDeposits / 20; 
+    const poSmallPairs = totalDeposits / 20;
 
     let availableLiquidity = 0;
 
@@ -1743,45 +1747,62 @@ const TradeBar: React.FC<
     const individualLong = selectedData.long;
     const individualShort = selectedData.short;
 
-    const bigCapLong = parseInt(data.solLong) + parseInt(data.btcLong) + parseInt(data.ethLong);
-    const bigCapShort = parseInt(data.solShort) + parseInt(data.btcShort) + parseInt(data.ethShort);
-    const smallCapLong = parseInt(data.pythLong) + parseInt(data.bonkLong) + parseInt(data.jupLong) + parseInt(data.tiaLong) + parseInt(data.suiLong);
-    const smallCapShort = parseInt(data.pythShort) + parseInt(data.bonkShort) + parseInt(data.jupShort) + parseInt(data.tiaShort) + parseInt(data.suiShort);
-
+    const bigCapLong =
+      parseInt(data.solLong) + parseInt(data.btcLong) + parseInt(data.ethLong);
+    const bigCapShort =
+      parseInt(data.solShort) +
+      parseInt(data.btcShort) +
+      parseInt(data.ethShort);
+    const smallCapLong =
+      parseInt(data.pythLong) +
+      parseInt(data.bonkLong) +
+      parseInt(data.jupLong) +
+      parseInt(data.tiaLong) +
+      parseInt(data.suiLong);
+    const smallCapShort =
+      parseInt(data.pythShort) +
+      parseInt(data.bonkShort) +
+      parseInt(data.jupShort) +
+      parseInt(data.tiaShort) +
+      parseInt(data.suiShort);
 
     if (toggleState === "LONG") {
       // Calculate available liquidity for selected cryptocurrency
       if (selectedCryptos.BTC || selectedCryptos.SOL || selectedCryptos.ETH) {
         if (bigCapLong <= oiSol * 2) {
-          availableLiquidity = Math.min((oiSol * 2) - bigCapLong, oiSol - individualLong - 5*LAMPORTS_PER_SOL);        }
+          availableLiquidity = Math.min(
+            oiSol * 2 - bigCapLong,
+            oiSol - individualLong - 5 * LAMPORTS_PER_SOL
+          );
+        }
       } else {
         if (smallCapLong <= totalDeposits / 10) {
-          availableLiquidity = Math.min((totalDeposits / 10) - smallCapLong, poSmallPairs - individualLong);        }
+          availableLiquidity = Math.min(
+            totalDeposits / 10 - smallCapLong,
+            poSmallPairs - individualLong
+          );
+        }
       }
     } else if (toggleState === "SHORT") {
       // Calculate available liquidity for selected cryptocurrency
       if (selectedCryptos.BTC || selectedCryptos.SOL || selectedCryptos.ETH) {
         if (bigCapShort <= oiSol * 2) {
-          availableLiquidity = Math.min((oiSol * 2) - bigCapShort, oiSol - individualShort - 5*LAMPORTS_PER_SOL);        }
-        
+          availableLiquidity = Math.min(
+            oiSol * 2 - bigCapShort,
+            oiSol - individualShort - 5 * LAMPORTS_PER_SOL
+          );
+        }
       } else {
         if (smallCapShort <= totalDeposits / 10) {
-          availableLiquidity = Math.min((totalDeposits / 10) - smallCapShort, poSmallPairs - individualShort);        }
-        
+          availableLiquidity = Math.min(
+            totalDeposits / 10 - smallCapShort,
+            poSmallPairs - individualShort
+          );
+        }
       }
     }
-    setAvailableLiquidity(((availableLiquidity/LAMPORTS_PER_SOL)));
-  
-
-
-  }, [
-    data,
-    toggleState,
-    selectedCryptos,
-    LPdata
-  ]);
-
-
+    setAvailableLiquidity(availableLiquidity / LAMPORTS_PER_SOL);
+  }, [data, toggleState, selectedCryptos, LPdata]);
 
   const ModalDetails1 = (
     <Modal
@@ -2371,7 +2392,7 @@ const TradeBar: React.FC<
         <div className="self-stretch h-4 flex flex-row items-start justify-between">
           <div className="relative leading-[14px]">Available Liquidity</div>
           <div className="relative leading-[14px] font-medium text-white">
-            {(availableLiquidity).toFixed(1)} SOL
+            {availableLiquidity.toFixed(1)} SOL
           </div>
         </div>
         <div className="self-stretch h-4 flex flex-row items-start justify-between">
