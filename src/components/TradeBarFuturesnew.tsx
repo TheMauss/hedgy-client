@@ -314,7 +314,7 @@ const TradeBar: React.FC<
   const [rebateTier, setrebateTier] = useState<number>(null);
 
   const LOWER_SPREAD_SYMBOLS = ["BTC", "SOL", "ETH"]; // Add more if needed
-  const HIGHER_SPREAD_SYMBOLS = ["JUP"]; // Add more if needed
+  const HIGHER_SPREAD_SYMBOLS = ["JUP", "PYTH", "BONK"]; // Add more if needed
 
   const [availableLiquidity, setAvailableLiquidity] = useState(0);
   const [fee, setFee] = useState(0);
@@ -1630,7 +1630,7 @@ const TradeBar: React.FC<
     } else if (HIGHER_SPREAD_SYMBOLS.includes(upperSymbol)) {
       return 0.08; // Spread for higher spread symbols
     } else {
-      return 0.04; // Default spread for other symbols
+      return 0.06; // Default spread for other symbols
     }
   };
 
