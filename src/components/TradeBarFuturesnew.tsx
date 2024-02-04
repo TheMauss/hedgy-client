@@ -1735,6 +1735,11 @@ const TradeBar: React.FC<
 
     let availableLiquidity = 0;
 
+    if (totalDeposits === 0) {
+      setAvailableLiquidity(0); // Set available liquidity to 0 if total deposits are not loaded
+      return;
+    }
+
     const individualLong = selectedData.long;
     const individualShort = selectedData.short;
 
