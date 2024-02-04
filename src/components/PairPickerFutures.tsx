@@ -38,10 +38,10 @@ const options = [
     icon: "/coins/60x60/Eth.png",
   },
   {
-  value: 'Crypto.JUP/USD',
-  label: 'JUP/USD',
-    icon: '/coins/60x60/Jup.png'
-   },
+    value: "Crypto.JUP/USD",
+    label: "JUP/USD",
+    icon: "/coins/60x60/Jup.png",
+  },
   {
     value: "Crypto.PYTH/USD",
     label: "PYTH/USD",
@@ -58,9 +58,9 @@ const options = [
   //  icon: '/coins/60x60/Tia.png'
   // },
   {
-   value: 'Crypto.SUI/USD',
-  label: 'SUI/USD',
-   icon: '/coins/60x60/Sui.png'
+    value: "Crypto.SUI/USD",
+    label: "SUI/USD",
+    icon: "/coins/60x60/Sui.png",
   },
   // more options here...
 ];
