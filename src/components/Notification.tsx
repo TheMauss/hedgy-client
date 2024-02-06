@@ -27,7 +27,7 @@ const NotificationList = () => {
 
   return (
     <div
-      className={`z-20 fixed ${isMobile ? "top-10 inset-x-0 justify-center items-center " : "bottom-2 left-4 "} flex flex-col items-end px-4 py-6 pointer-events-none sm:p-6`}
+      className={`z-20 fixed ${isMobile ? "bottom-20 inset-x-0 justify-center items-center " : "bottom-2 left-4 "} flex flex-col items-end px-4 py-6 pointer-events-none sm:p-6`}
     >
       {notifications.map((notification) => (
         <Notification
