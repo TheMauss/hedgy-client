@@ -720,12 +720,12 @@ const TradeBar: React.FC<
     const decimalPlacesMapping = {
       BTC: 1, // Example: Bitcoin to 2 decimal places
       SOL: 3,
-      PYTH: 4,
+      PYTH: 3,
       BONK: 8,
       ETH: 1,
-      SUI: 4,
+      SUI: 3,
       TIA: 3,
-      JUP: 4,
+      JUP: 3,
       // Add more mappings as needed
     };
     // Get the number of decimal places for the selected crypto, defaulting to a standard value if not found
@@ -1019,12 +1019,12 @@ const TradeBar: React.FC<
       const decimalPlacesMapping = {
         BTC: 1, // Example: Bitcoin to 2 decimal places
         SOL: 3,
-        PYTH: 4,
+        PYTH: 3,
         BONK: 8,
         ETH: 1,
-        SUI: 4,
+        SUI: 3,
         TIA: 3,
-        JUP: 4,
+        JUP: 3,
 
         // Add more mappings as needed
       };
@@ -1047,7 +1047,7 @@ const TradeBar: React.FC<
 
         return `${liquidationPrice}`;
       } else {
-        return "0";
+        return "-";
       }
     };
 
@@ -1658,12 +1658,12 @@ const TradeBar: React.FC<
       const decimalPlacesMapping = {
         BTC: 1,
         SOL: 3,
-        PYTH: 4,
+        PYTH: 3,
         BONK: 8,
         ETH: 1,
-        SUI: 4,
+        SUI: 3,
         TIA: 3,
-        JUP: 4,
+        JUP: 3,
       };
       const decimalPlaces =
         decimalPlacesMapping[selectedCrypto?.toUpperCase()] || 2;
