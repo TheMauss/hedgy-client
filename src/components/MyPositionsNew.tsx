@@ -33,7 +33,7 @@ interface Position {
   currentPrice: number;
 }
 
-interface Notification   {
+interface Notification {
   type: string;
   message: string;
   description?: string;
@@ -48,7 +48,7 @@ interface MyPositionsProps {
   >;
   handleTotalBetAmountChange: (total: number) => void; // add this line
   prices: { [key: string]: { price: number; timestamp: string } };
-  handleNewNotification: (notification: Notification) => void; 
+  handleNewNotification: (notification: Notification) => void;
 }
 
 const LAMPORTS_PER_SOL = 1_000_000_000;
@@ -58,7 +58,7 @@ const MyPositions: FC<MyPositionsProps> = ({
   prices,
   setLatestOpenedPosition,
   handleTotalBetAmountChange,
-  handleNewNotification
+  handleNewNotification,
 }) => {
   async function isUserAccountInitialized(
     account: PublicKey,

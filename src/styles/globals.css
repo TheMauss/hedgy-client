@@ -44,12 +44,13 @@ body {
 }
 
 .notification-enter {
-  animation: slideIn 0.5s forwards;
+  animation: slideIn 0.3s forwards;
 }
 
 .notification-exit {
-  animation: slideOut 0.5s forwards;
+  animation: slideOut 0.3s forwards;
 }
+
 
 .toggle-switch-bigger {
   position: relative;

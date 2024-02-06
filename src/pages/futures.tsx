@@ -14,7 +14,6 @@ import { FaChevronLeft, FaChevronUp } from "react-icons/fa";
 import { Graph } from "components/GraphNew";
 import { notify } from "../utils/notifications";
 
-
 interface Position {
   _id: string;
   futuresContract: string;
@@ -91,7 +90,6 @@ const Futures: FC = () => {
   const bottomRef = useRef(null);
   const [isStickyBottom, setIsStickyBottom] = useState(true);
 
-
   const lastNotificationRef = useRef(null);
   let debounceTimer;
   const debounceDelay = 50;
@@ -99,15 +97,15 @@ const Futures: FC = () => {
   const handleNewNotification = (newNotification) => {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
-      if (JSON.stringify(lastNotificationRef.current) !== JSON.stringify(newNotification)) {
+      if (
+        JSON.stringify(lastNotificationRef.current) !==
+        JSON.stringify(newNotification)
+      ) {
         lastNotificationRef.current = newNotification;
         notify(newNotification);
       }
     }, debounceDelay);
   };
-  
-
-
 
   const handleButtonClick = (buttonIndex: number) => {
     setActiveButton(buttonIndex);

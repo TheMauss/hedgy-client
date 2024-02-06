@@ -14,7 +14,6 @@ import { FaChevronLeft, FaChevronUp } from "react-icons/fa";
 import { Graph } from "components/GraphNew";
 import { notify } from "../utils/notifications";
 
-
 interface Position {
   _id: string;
   binaryOption: string;
@@ -71,13 +70,15 @@ const Transaction: FC = () => {
   const handleNewNotification = (newNotification) => {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
-      if (JSON.stringify(lastNotificationRef.current) !== JSON.stringify(newNotification)) {
+      if (
+        JSON.stringify(lastNotificationRef.current) !==
+        JSON.stringify(newNotification)
+      ) {
         lastNotificationRef.current = newNotification;
         notify(newNotification);
       }
     }, debounceDelay);
   };
-
 
   const handleButtonClick = (buttonIndex: number) => {
     setActiveButton(buttonIndex);

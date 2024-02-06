@@ -202,7 +202,7 @@ export const PairPicker: React.FC<PairPickerProps> = ({
           case "TIA":
             return 3;
           case "SUI":
-            return 3; // Three decimal places for SOL
+            return 4; // Three decimal places for SOL
           default:
             return 2; // Default number of decimal places
         }

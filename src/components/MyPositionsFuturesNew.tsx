@@ -57,12 +57,12 @@ interface Position {
   pnl: number;
 }
 
-interface Notification   {
-    type: string;
-    message: string;
-    description?: string;
-    txid?: string;
-    id?: string;
+interface Notification {
+  type: string;
+  message: string;
+  description?: string;
+  txid?: string;
+  id?: string;
 }
 
 interface MyPositionsProps {
@@ -72,7 +72,7 @@ interface MyPositionsProps {
   >;
   handleTotalBetAmountChange: (total: number) => void; // add this line
   prices: { [key: string]: { price: number; timestamp: string } };
-  handleNewNotification: (notification: Notification) => void; 
+  handleNewNotification: (notification: Notification) => void;
 }
 
 const LAMPORTS_PER_SOL = 1_000_000_000;
@@ -83,8 +83,8 @@ const MyPositions: FC<MyPositionsProps> = ({
   latestOpenedPosition,
   setLatestOpenedPosition,
   handleTotalBetAmountChange,
-  handleNewNotification
-  }) => {
+  handleNewNotification,
+}) => {
   async function isUserAccountInitialized(
     account: PublicKey,
     connection: Connection
@@ -369,12 +369,13 @@ const MyPositions: FC<MyPositionsProps> = ({
               return updatedPositions;
             } else {
               if (!updatedPosition.resolved) {
-              // Add the new position to the array
-              handleNewNotification({
-                type: "success",
-                message: `Position opened`,
-                description: `Entry price: ${(updatedPosition.initialPrice / 100000000).toFixed(3)} USD`,
-              });}
+                // Add the new position to the array
+                handleNewNotification({
+                  type: "success",
+                  message: `Position opened`,
+                  description: `Entry price: ${(updatedPosition.initialPrice / 100000000).toFixed(3)} USD`,
+                });
+              }
               setLatestOpenedPosition((prevPositions) => {
                 const updatedPositions = {
                   ...prevPositions,
@@ -1068,7 +1069,10 @@ const MyPositions: FC<MyPositionsProps> = ({
     try {
       // Send the transaction
       signature = await sendTransaction(transaction, connection);
-      handleNewNotification({ type: "info", message: `Trying to update the Position` });
+      handleNewNotification({
+        type: "info",
+        message: `Trying to update the Position`,
+      });
 
       // Wait for confirmation
       await connection.confirmTransaction(signature, "confirmed");
@@ -1156,7 +1160,10 @@ const MyPositions: FC<MyPositionsProps> = ({
     try {
       // Send the transaction
       signature = await sendTransaction(transaction, connection);
-      handleNewNotification({ type: "info", message: `Trying to update the Position` });
+      handleNewNotification({
+        type: "info",
+        message: `Trying to update the Position`,
+      });
 
       // Wait for confirmation
       await connection.confirmTransaction(signature, "confirmed");
@@ -2440,7 +2447,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                                 : currentItem.symbol === 4
                                   ? (
                                       currentItem.initialPrice / 100000000
-                                    ).toFixed(3)
+                                    ).toFixed(4)
                                   : currentItem.symbol === 5
                                     ? (
                                         currentItem.initialPrice / 100000000
@@ -2452,7 +2459,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                                       : currentItem.symbol === 7
                                         ? (
                                             currentItem.initialPrice / 100000000
-                                          ).toFixed(3)
+                                          ).toFixed(4)
                                         : null}
                       </div>
                     </div>
@@ -2472,7 +2479,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                                 : currentItem.symbol === 4
                                   ? (
                                       currentItem.finalPrice / 100000000
-                                    ).toFixed(3)
+                                    ).toFixed(4)
                                   : currentItem.symbol === 5
                                     ? (
                                         currentItem.finalPrice / 100000000
@@ -2484,7 +2491,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                                       : currentItem.symbol === 7
                                         ? (
                                             currentItem.finalPrice / 100000000
-                                          ).toFixed(3)
+                                          ).toFixed(4)
                                         : null}
                       </div>
                     </div>
@@ -2663,13 +2670,13 @@ const MyPositions: FC<MyPositionsProps> = ({
                         : item.symbol === 3
                           ? (item.initialPrice / 100000000).toFixed(7)
                           : item.symbol === 4
-                            ? (item.initialPrice / 100000000).toFixed(3)
+                            ? (item.initialPrice / 100000000).toFixed(4)
                             : item.symbol === 5
                               ? (item.initialPrice / 100000000).toFixed(1)
                               : item.symbol === 6
                                 ? (item.initialPrice / 100000000).toFixed(3)
                                 : item.symbol === 7
-                                  ? (item.initialPrice / 100000000).toFixed(3)
+                                  ? (item.initialPrice / 100000000).toFixed(4)
                                   : null}
                 </p>
               </div>
@@ -2684,13 +2691,13 @@ const MyPositions: FC<MyPositionsProps> = ({
                         : item.symbol === 3
                           ? (item.finalPrice / 100000000).toFixed(7)
                           : item.symbol === 4
-                            ? (item.finalPrice / 100000000).toFixed(3)
+                            ? (item.finalPrice / 100000000).toFixed(4)
                             : item.symbol === 5
                               ? (item.finalPrice / 100000000).toFixed(1)
                               : item.symbol === 6
                                 ? (item.finalPrice / 100000000).toFixed(3)
                                 : item.symbol === 7
-                                  ? (item.finalPrice / 100000000).toFixed(3)
+                                  ? (item.finalPrice / 100000000).toFixed(4)
                                   : null}
                 </div>
               </div>
@@ -2928,7 +2935,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                               : item.symbol === 3
                                 ? (item.initialPrice / 100000000).toFixed(7)
                                 : item.symbol === 4
-                                  ? (item.initialPrice / 100000000).toFixed(3)
+                                  ? (item.initialPrice / 100000000).toFixed(4)
                                   : item.symbol === 5
                                     ? (item.initialPrice / 100000000).toFixed(1)
                                     : item.symbol === 6
@@ -2938,7 +2945,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                                       : item.symbol === 7
                                         ? (
                                             item.initialPrice / 100000000
-                                          ).toFixed(3)
+                                          ).toFixed(4)
                                         : null}
                       </div>
                     </div>
@@ -2958,14 +2965,14 @@ const MyPositions: FC<MyPositionsProps> = ({
                               : item.symbol === 3
                                 ? (item.finalPrice / 100000000).toFixed(7)
                                 : item.symbol === 4
-                                  ? (item.finalPrice / 100000000).toFixed(3)
+                                  ? (item.finalPrice / 100000000).toFixed(4)
                                   : item.symbol === 5
                                     ? (item.finalPrice / 100000000).toFixed(1)
                                     : item.symbol === 6
                                       ? (item.finalPrice / 100000000).toFixed(3)
                                       : item.symbol === 7
                                         ? (item.finalPrice / 100000000).toFixed(
-                                            3
+                                            4
                                           )
                                         : null}
                       </div>

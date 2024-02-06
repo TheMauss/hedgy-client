@@ -99,11 +99,11 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
 
     function elapsedTimeInSeconds(elapsedTimeString: string) {
       // Check if elapsedTimeString is a string
-      if (typeof elapsedTimeString !== 'string') {
-        console.error('elapsedTimeString must be a string:', elapsedTimeString);
+      if (typeof elapsedTimeString !== "string") {
+        console.error("elapsedTimeString must be a string:", elapsedTimeString);
         return 0; // or throw new Error('elapsedTimeString must be a string');
       }
-    
+
       const [value, unit] = elapsedTimeString.split(" ");
       if (unit.startsWith("second")) {
         return Number(value);
@@ -115,7 +115,6 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
         return 0; // Or throw an error, etc.
       }
     }
-    
 
     // Function to handle new positions
     function handleNewPositions(newPositions, timestampKey) {
@@ -227,6 +226,18 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
     };
   }, []);
 
+  const decimalPlacesMapping = {
+    0: 3, // Example: SOL has 2 decimal places
+    1: 1, // Example: BTC has 2 decimal places
+    2: 4, // Example: PYTH has 3 decimal places
+    3: 7, // BONK
+    4: 4, // JUP
+    5: 1, // ETH
+    6: 3, // TIA
+    7: 4, // SUI
+    // ... add mappings for other symbols ...
+  };
+
   return (
     <div className="font-poppins w-full flex flex-col overflow-hidden h-full md:overflow-y-scroll  custom-scrollbar  order-5 xl:order-3 lg:order-3 md:order-5 rounded-lg bg-layer-1 py-4  flex bg-layer-1">
       <div className="sticky top-0 flex items-center z-10">
@@ -259,6 +270,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
             {Array.isArray(positions) &&
               positions.map((item, i) => {
                 let profit = 0;
+                const decimals = decimalPlacesMapping[item.symbol] || 2;
                 if ("binaryOption" in item) {
                   if (
                     item.priceDirection === 0 &&
@@ -440,8 +452,8 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                     >
                       $
                       {item.resolved
-                        ? (item.finalPrice / 100000000).toFixed(1)
-                        : (item.initialPrice / 100000000).toFixed(1)}
+                        ? (item.finalPrice / 100000000).toFixed(decimals)
+                        : (item.initialPrice / 100000000).toFixed(decimals)}
                     </div>
 
                     <div
