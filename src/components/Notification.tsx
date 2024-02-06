@@ -19,7 +19,9 @@ const NotificationList = () => {
 
   const handleHideNotification = (id) => {
     setNotificationStore((state) => {
-      state.notifications = state.notifications.filter((notification) => notification.id !== id);
+      state.notifications = state.notifications.filter(
+        (notification) => notification.id !== id
+      );
     });
   };
 
@@ -66,7 +68,7 @@ const Notification = ({
         if (newProgress === 0) {
           setExit(true); // Start exit animation
           clearInterval(interval);
-          setTimeout(() => onHide(id), 300); 
+          setTimeout(() => onHide(id), 300);
         }
         return newProgress;
       });
@@ -84,7 +86,7 @@ const Notification = ({
   const notificationClasses = `max-w-sm ${
     isMobile ? "w-full " : "w-[320px] h-auto "
   } bg-bkg-1 rounded-md mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 p-2 mx-4 mb-4 overflow-hidden font-poppins ${
-    exit ? 'notification-exit' : 'notification-enter'
+    exit ? "notification-exit" : "notification-enter"
   }`;
 
   return (
@@ -93,46 +95,53 @@ const Notification = ({
         className={`rounded-md p-[1px]`}
         style={{ background: gradientBackgrounds[type] }}
       >
-
-          <div
-            style={{ width: `${progress}%`, height: "2px", marginTop: "auto" }}
-            className={`bg-layer-3 pt-2 rounded-t-md`}
-          />
-          <div className={`p-3 rounded-b-md bg-base bg-opacity-90 flex items-center`}>
-            {/* Icon and message layout */}
-            <div className={`flex-shrink-0`}>
-              {type === "success" && <CheckCircleIcon className={`h-8 w-8 mr-1 text-green`} />}
-              {type === "info" && <InformationCircleIcon className={`h-8 w-8 mr-1 text-red`} />}
-              {type === "error" && <XCircleIcon className={`h-8 w-8 mr-1`} />}
-            </div>
-            <div className={`ml-2 flex-1`}>
-              <div className={`font-bold text-fgd-1`}>{message}</div>
-              {description && <p className={`mt-0.5 text-sm text-fgd-2`}>{description}</p>}
-              {txid && (
-                <div className="flex flex-row">
-                  <a
-                    href={`https://solscan.io/tx/${txid}?cluster=${networkConfiguration}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex flex-row link link-accent text-emerald-200"
-                  >
-                    {/* Transaction link layout */}
-                  </a>
-                </div>
-              )}
-            </div>
-            <div className={`flex-shrink-0 self-start flex`}>
-              <button
-                onClick={() => onHide(id)}
-                className={`bg-bkg-2 default-transition rounded-md inline-flex text-fgd-3 hover:text-fgd-4 focus:outline-none`}
-              >
-                <span className={`sr-only`}>Close</span>
-                <XIcon className="h-5 w-5" />
-              </button>
-            </div>
+        <div
+          style={{ width: `${progress}%`, height: "2px", marginTop: "auto" }}
+          className={`bg-layer-3 pt-2 rounded-t-md`}
+        />
+        <div
+          className={`p-3 rounded-b-md bg-base bg-opacity-90 flex items-center`}
+        >
+          {/* Icon and message layout */}
+          <div className={`flex-shrink-0`}>
+            {type === "success" && (
+              <CheckCircleIcon className={`h-8 w-8 mr-1 text-green`} />
+            )}
+            {type === "info" && (
+              <InformationCircleIcon className={`h-8 w-8 mr-1 text-red`} />
+            )}
+            {type === "error" && <XCircleIcon className={`h-8 w-8 mr-1`} />}
+          </div>
+          <div className={`ml-2 flex-1`}>
+            <div className={`font-bold text-fgd-1`}>{message}</div>
+            {description && (
+              <p className={`mt-0.5 text-sm text-fgd-2`}>{description}</p>
+            )}
+            {txid && (
+              <div className="flex flex-row">
+                <a
+                  href={`https://solscan.io/tx/${txid}?cluster=${networkConfiguration}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex flex-row link link-accent text-emerald-200"
+                >
+                  {/* Transaction link layout */}
+                </a>
+              </div>
+            )}
+          </div>
+          <div className={`flex-shrink-0 self-start flex`}>
+            <button
+              onClick={() => onHide(id)}
+              className={`bg-bkg-2 default-transition rounded-md inline-flex text-fgd-3 hover:text-fgd-4 focus:outline-none`}
+            >
+              <span className={`sr-only`}>Close</span>
+              <XIcon className="h-5 w-5" />
+            </button>
           </div>
         </div>
       </div>
+    </div>
   );
 };
 

@@ -780,18 +780,18 @@ const TradeBar: React.FC<
   const onClick = useCallback(
     async (direction = null) => {
       const countmaxBet =
-      (((LPdata?.totalDeposits + LPdata?.pnl) / 200) * 3) /
-      5 /
-      LAMPORTS_PER_SOL; // 0,3% maximálni pozice
-    const maxBet = Math.min(10, countmaxBet);
-    if (parseFloat(amountValue) > maxBet) {
-      notify({
-        type: "error",
-        message: `Position Reverted`,
-        description: `Maximum Collateral is ${maxBet.toFixed(2)} SOL`,
-      });
-      return;
-    }
+        (((LPdata?.totalDeposits + LPdata?.pnl) / 200) * 3) /
+        5 /
+        LAMPORTS_PER_SOL; // 0,3% maximálni pozice
+      const maxBet = Math.min(10, countmaxBet);
+      if (parseFloat(amountValue) > maxBet) {
+        notify({
+          type: "error",
+          message: `Position Reverted`,
+          description: `Maximum Collateral is ${maxBet.toFixed(2)} SOL`,
+        });
+        return;
+      }
 
       if (
         totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL >
@@ -865,8 +865,6 @@ const TradeBar: React.FC<
         });
         return;
       }
-
-      
 
       if (parseFloat(amountValue) > 1 || parseFloat(amountValue) < 0.05) {
         notify({
@@ -986,7 +984,6 @@ const TradeBar: React.FC<
             notify({
               type: "success",
               message: `Trading account created`,
-  
             });
           } catch (error) {
             notify({
@@ -1055,25 +1052,25 @@ const TradeBar: React.FC<
             .add(createBinOpt(args, accounts))
             .add(PRIORITY_FEE_IX);
 
-            signature = await sendTransaction(transaction, connection);
-            notify({
-              type: "info",
-              message: `Opening Position`,
-              txid: signature,
-            });
-            // Wait for transaction confirmation before showing the 'success' notification
-            await connection.confirmTransaction(signature, "confirmed");
-          }
-        } catch (error: any) {
-          // In case of an error, show only the 'error' notification
+          signature = await sendTransaction(transaction, connection);
           notify({
-            type: "error",
-            message: `Position Reverted`,
-            description: error?.message,
+            type: "info",
+            message: `Opening Position`,
             txid: signature,
           });
-          return;
+          // Wait for transaction confirmation before showing the 'success' notification
+          await connection.confirmTransaction(signature, "confirmed");
         }
+      } catch (error: any) {
+        // In case of an error, show only the 'error' notification
+        notify({
+          type: "error",
+          message: `Position Reverted`,
+          description: error?.message,
+          txid: signature,
+        });
+        return;
+      }
     },
     [
       isPriorityFee,

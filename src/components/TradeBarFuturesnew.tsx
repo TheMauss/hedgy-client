@@ -1282,7 +1282,6 @@ const TradeBar: React.FC<
         type: "error",
         message: "Insufficient balance",
         description: "Not enough available liquidity in the Vault",
-
       });
       return;
     }
@@ -1372,7 +1371,6 @@ const TradeBar: React.FC<
           notify({
             type: "success",
             message: `Trading account created`,
-
           });
         } catch (error) {
           notify({
@@ -1540,23 +1538,22 @@ const TradeBar: React.FC<
 
       const initSignature = await sendTransaction(initTransaction, connection);
 
-          // Wait for transaction confirmation
-          notify({ type: "info", message: `Creating Trading Account` });
-          await connection.confirmTransaction(initSignature, "confirmed");
-          fetchcheckuserdata();
-          setModalIsOpen(false);
-          notify({
-            type: "success",
-            message: `Trading account created`,
-
-          });
-        } catch (error) {
-          notify({
-            type: "error",
-            message: `Creation failed`,
-            description: error?.message,
-          });
-        }
+      // Wait for transaction confirmation
+      notify({ type: "info", message: `Creating Trading Account` });
+      await connection.confirmTransaction(initSignature, "confirmed");
+      fetchcheckuserdata();
+      setModalIsOpen(false);
+      notify({
+        type: "success",
+        message: `Trading account created`,
+      });
+    } catch (error) {
+      notify({
+        type: "error",
+        message: `Creation failed`,
+        description: error?.message,
+      });
+    }
   }, [isInit, publicKey]);
 
   const handleInputFocus: React.FocusEventHandler<HTMLInputElement> = (

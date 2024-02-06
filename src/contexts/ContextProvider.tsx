@@ -51,14 +51,10 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
     [network]
   );
 
-
   return (
     // TODO: updates needed for updating and referencing endpoint: wallet adapter rework
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider
-        wallets={wallets}
-        autoConnect={autoConnect}
-      >
+      <WalletProvider wallets={wallets} autoConnect={autoConnect}>
         <ReactUIWalletModalProviderDynamic>
           {children}
         </ReactUIWalletModalProviderDynamic>

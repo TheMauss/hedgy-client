@@ -372,7 +372,6 @@ const Earn: FC = () => {
         type: "success",
         message: `Account Created`,
         description: `You can now deposit into the Vault`,
-
       });
     } catch (error) {
       notify({
@@ -552,22 +551,21 @@ const Earn: FC = () => {
           );
 
           // Wait for transaction confirmation
-            // Wait for transaction confirmation
-            notify({ type: "info", message: `Creating Trading Account` });
-            await connection.confirmTransaction(initSignature, "confirmed");
-            fetchcheckuserdata();
-            notify({
-              type: "success",
-              message: `Trading account created`,
-  
-            });
-          } catch (error) {
-            notify({
-              type: "error",
-              message: `Creation Failed`,
-              description: error?.message,
-            });
-          }
+          // Wait for transaction confirmation
+          notify({ type: "info", message: `Creating Trading Account` });
+          await connection.confirmTransaction(initSignature, "confirmed");
+          fetchcheckuserdata();
+          notify({
+            type: "success",
+            message: `Trading account created`,
+          });
+        } catch (error) {
+          notify({
+            type: "error",
+            message: `Creation Failed`,
+            description: error?.message,
+          });
+        }
       } else {
         try {
           const accounts: WithdrawFeeFromLiquidityPoolAccounts = {

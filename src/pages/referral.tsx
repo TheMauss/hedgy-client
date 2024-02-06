@@ -223,7 +223,6 @@ const Referral: FC = () => {
           type: "success",
           message: `Trading account created, now create the Referral.`,
           description: `Now create the Referral.`,
-
         });
       } catch (error) {
         notify({

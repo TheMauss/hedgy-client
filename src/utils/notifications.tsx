@@ -20,9 +20,6 @@ export function notify(newNotification: {
       id: generateUniqueId(), // Assigning a unique ID
     };
 
-    state.notifications = [
-      ...notifications,
-      notificationWithId,
-    ];
+    state.notifications = [...notifications, notificationWithId];
   });
 }
