@@ -281,13 +281,13 @@ const MyPositions: FC<MyPositionsProps> = ({
             notify({
               type: "success",
               message: `Option resolved`,
-              description: `Your option ${updatedPosition.binaryOption.slice(0, 4)}...${updatedPosition.binaryOption.slice(-4)} has been resolved with payout of ${updatedPosition.payout / LAMPORTS_PER_SOL} SOL.`,
+              description: `Payout: ${updatedPosition.payout / LAMPORTS_PER_SOL} SOL.`,
             });
           } else {
             notify({
               type: "success",
               message: `Option created`,
-              description: `A new option ${updatedPosition.binaryOption.slice(0, 4)}...${updatedPosition.binaryOption.slice(-4)} has been created with entry price: ${(updatedPosition.initialPrice / 100000000).toFixed(3)} USD`,
+              description: `Entry price: ${(updatedPosition.initialPrice / 100000000).toFixed(3)} USD`,
             });
             fetchSolanaTime();
           }

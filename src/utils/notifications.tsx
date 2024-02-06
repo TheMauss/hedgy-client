@@ -9,10 +9,20 @@ export function notify(newNotification: {
   const { notifications, set: setNotificationStore } =
     useNotificationStore.getState();
 
+  const generateUniqueId = () => {
+    // Simple method to generate a unique ID
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  };
+
   setNotificationStore((state: { notifications: any[] }) => {
+    const notificationWithId = {
+      ...newNotification,
+      id: generateUniqueId(), // Assigning a unique ID
+    };
+
     state.notifications = [
       ...notifications,
-      { type: "success", ...newNotification },
+      notificationWithId,
     ];
   });
 }

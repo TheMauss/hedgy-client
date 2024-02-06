@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   CheckCircleIcon,
   InformationCircleIcon,
@@ -14,62 +14,37 @@ const NotificationList = () => {
   const { notifications, set: setNotificationStore } = useNotificationStore(
     (s) => s
   );
-  const latestNotification =
-    notifications.length > 0 ? notifications[notifications.length - 1] : null;
-
-  useEffect(() => {
-    if (latestNotification) {
-      const timer = setTimeout(() => {
-        setNotificationStore((state) => {
-          state.notifications.shift(); // Remove the oldest notification
-        });
-      }, 8000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [latestNotification, setNotificationStore]);
-
-  useEffect(() => {
-    if (notifications.length > 1) {
-      setNotificationStore((state) => {
-        state.notifications = [
-          state.notifications[state.notifications.length - 1],
-        ]; // Keep only the latest notification
-      });
-    }
-  }, [notifications, setNotificationStore]);
-
-  const handleHideNotification = () => {
-    setNotificationStore((state) => {
-      state.notifications.pop(); // Remove the latest notification
-    });
-  };
 
   const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
 
+  const handleHideNotification = (id) => {
+    setNotificationStore((state) => {
+      state.notifications = state.notifications.filter((notification) => notification.id !== id);
+    });
+  };
+
   return (
     <div
-      className={`z-20 fixed ${isMobile ? "bottom-4 inset-x-0 justify-center" : "bottom-2 left-4"} flex items-end px-4 py-6 pointer-events-none sm:p-6`}
+      className={`z-20 fixed ${isMobile ? "top-10 inset-x-0 justify-center items-center " : "bottom-2 left-4 "} flex flex-col items-end px-4 py-6 pointer-events-none sm:p-6`}
     >
-      <div
-        className={`flex ${isMobile ? "flex-col items-center" : "flex-row items-start"}`}
-      >
-        {latestNotification && (
-          <Notification
-            type={latestNotification.type}
-            message={latestNotification.message}
-            description={latestNotification.description}
-            txid={latestNotification.txid}
-            onHide={handleHideNotification}
-            isMobile={isMobile}
-          />
-        )}
-      </div>
+      {notifications.map((notification) => (
+        <Notification
+          key={notification.id}
+          id={notification.id}
+          type={notification.type}
+          message={notification.message}
+          description={notification.description}
+          txid={notification.txid}
+          onHide={() => handleHideNotification(notification.id)}
+          isMobile={isMobile}
+        />
+      ))}
     </div>
   );
 };
 
 const Notification = ({
+  id,
   type,
   message,
   description,
@@ -80,26 +55,37 @@ const Notification = ({
   const { connection } = useConnection();
   const { networkConfiguration } = useNetworkConfiguration();
 
+  const [progress, setProgress] = useState(100);
+
+  const [exit, setExit] = useState(false);
+
   useEffect(() => {
-    const id = setTimeout(() => {
-      onHide();
-    }, 8000);
+    const interval = setInterval(() => {
+      setProgress((prevProgress) => {
+        const newProgress = Math.max(prevProgress - 100 / 150, 0);
+        if (newProgress === 0) {
+          setExit(true); // Start exit animation
+          clearInterval(interval);
+          setTimeout(() => onHide(id), 300); 
+        }
+        return newProgress;
+      });
+    }, 40);
 
-    return () => {
-      clearTimeout(id);
-    };
-  }, [onHide]);
+    return () => clearInterval(interval);
+  }, [onHide, id]);
 
-  // Define gradient backgrounds for different notification types
   const gradientBackgrounds = {
-    success: "linear-gradient(to right, #0B7A55, #34C796)", // replace with success gradient
-    info: "linear-gradient(to right, #633640, #4b4e9d)", // replace with info gradient
-    error: "linear-gradient(to right, #7A3636, #C44141)", // replace with error gradient
+    success: "linear-gradient(to right, #0B7A55, #34C796)",
+    info: "linear-gradient(to right, #633640, #4b4e9d)",
+    error: "linear-gradient(to right, #7A3636, #C44141)",
   };
 
   const notificationClasses = `max-w-sm ${
-    isMobile ? "w-full" : "w-80 h-auto"
-  } bg-bkg-1 rounded-md mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 p-2 mx-4 mb-12 overflow-hidden`;
+    isMobile ? "w-full " : "w-[320px] h-auto "
+  } bg-bkg-1 rounded-md mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 p-2 mx-4 mb-4 overflow-hidden font-poppins ${
+    exit ? 'notification-exit' : 'notification-enter'
+  }`;
 
   return (
     <div className={notificationClasses}>
@@ -107,65 +93,46 @@ const Notification = ({
         className={`rounded-md p-[1px]`}
         style={{ background: gradientBackgrounds[type] }}
       >
-        <div
-          className={`p-4 rounded-md bg-base bg-opacity-90  flex items-center`}
-        >
-          <div className={`flex-shrink-0`}>
-            {type === "success" ? (
-              <CheckCircleIcon className={`h-8 w-8 mr-1 text-green`} />
-            ) : null}
-            {type === "info" && (
-              <InformationCircleIcon className={`h-8 w-8 mr-1 text-red`} />
-            )}
-            {type === "error" && <XCircleIcon className={`h-8 w-8 mr-1`} />}
-          </div>
-          <div className={`ml-2 flex-1`}>
-            <div className={`font-bold text-fgd-1`}>{message}</div>
-            {description ? (
-              <p className={`mt-0.5 text-sm text-fgd-2`}>{description}</p>
-            ) : null}
-            {txid ? (
-              <div className="flex flex-row">
-                <a
-                  href={`https://solscan.io/tx/${txid}?cluster=${networkConfiguration}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex flex-row link link-accent text-emerald-200"
-                >
-                  <svg
-                    className="flex-shrink-0 h-4 ml-2 mt-1 text-primary-light w-4"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+
+          <div
+            style={{ width: `${progress}%`, height: "2px", marginTop: "auto" }}
+            className={`bg-layer-3 pt-2 rounded-t-md`}
+          />
+          <div className={`p-3 rounded-b-md bg-base bg-opacity-90 flex items-center`}>
+            {/* Icon and message layout */}
+            <div className={`flex-shrink-0`}>
+              {type === "success" && <CheckCircleIcon className={`h-8 w-8 mr-1 text-green`} />}
+              {type === "info" && <InformationCircleIcon className={`h-8 w-8 mr-1 text-red`} />}
+              {type === "error" && <XCircleIcon className={`h-8 w-8 mr-1`} />}
+            </div>
+            <div className={`ml-2 flex-1`}>
+              <div className={`font-bold text-fgd-1`}>{message}</div>
+              {description && <p className={`mt-0.5 text-sm text-fgd-2`}>{description}</p>}
+              {txid && (
+                <div className="flex flex-row">
+                  <a
+                    href={`https://solscan.io/tx/${txid}?cluster=${networkConfiguration}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex flex-row link link-accent text-emerald-200"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                    ></path>
-                  </svg>
-                  <div className="flex mx-4">
-                    {txid.slice(0, 3)}...
-                    {txid.slice(txid.length - 3)}
-                  </div>
-                </a>
-              </div>
-            ) : null}
-          </div>
-          <div className={`flex-shrink-0 self-start flex`}>
-            <button
-              onClick={() => onHide()}
-              className={`bg-bkg-2 default-transition rounded-md inline-flex text-fgd-3 hover:text-fgd-4 focus:outline-none`}
-            >
-              <span className={`sr-only`}>Close</span>
-              <XIcon className="h-5 w-5" />
-            </button>
+                    {/* Transaction link layout */}
+                  </a>
+                </div>
+              )}
+            </div>
+            <div className={`flex-shrink-0 self-start flex`}>
+              <button
+                onClick={() => onHide(id)}
+                className={`bg-bkg-2 default-transition rounded-md inline-flex text-fgd-3 hover:text-fgd-4 focus:outline-none`}
+              >
+                <span className={`sr-only`}>Close</span>
+                <XIcon className="h-5 w-5" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

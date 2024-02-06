@@ -221,12 +221,14 @@ const Referral: FC = () => {
         setUserAffiliateData((prevState) => ({ ...prevState, isInt: true }));
         notify({
           type: "success",
-          message: `Trading account successfully created, now create the Referral.`,
+          message: `Trading account created, now create the Referral.`,
+          description: `Now create the Referral.`,
+
         });
       } catch (error) {
         notify({
           type: "error",
-          message: `Creating Trading account failed`,
+          message: `Creation Failed`,
           description: error?.message,
         });
       }
@@ -267,7 +269,7 @@ const Referral: FC = () => {
           // Notify user that the transaction was sent
           notify({
             type: "info",
-            message: `Trying to create the referral...`,
+            message: `Creating Referral Code`,
             txid: initSignature,
           });
           // Wait for transaction confirmation

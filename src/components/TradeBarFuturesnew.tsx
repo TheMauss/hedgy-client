@@ -1174,7 +1174,7 @@ const TradeBar: React.FC<
       // Optionally, show a warning notification
       notify({
         type: "info",
-        message: `Position creation prevented`,
+        message: `Position Reverted`,
         description: warning,
       });
       return; // Exit function early
@@ -1183,7 +1183,8 @@ const TradeBar: React.FC<
     if (parseFloat(amountValue) > maxBet) {
       notify({
         type: "error",
-        message: `Maximum Position amount is ${maxBet.toFixed(2)} SOL`,
+        message: `Position Reverted`,
+        description: `Maximum Collateral is ${maxBet.toFixed(2)} SOL`,
       });
       return;
     }
@@ -1194,7 +1195,8 @@ const TradeBar: React.FC<
     ) {
       notify({
         type: "error",
-        message: `Margin limit per user: ${(2 * maxBet).toFixed(2)}`,
+        message: `Position Reverted`,
+        description: `Collateral limit per user is ${(2 * maxBet).toFixed(2)}`,
       });
       return;
     }
@@ -1278,7 +1280,9 @@ const TradeBar: React.FC<
     if ((parseFloat(amountValue) - fee) * leverage > availableLiquidity) {
       notify({
         type: "error",
-        message: "Not enough Available Liquidity",
+        message: "Insufficient balance",
+        description: "Not enough available liquidity in the Vault",
+
       });
       return;
     }
@@ -1361,18 +1365,19 @@ const TradeBar: React.FC<
           );
 
           // Wait for transaction confirmation
-          notify({ type: "info", message: `Trying to create Trading Account` });
+          notify({ type: "info", message: `Creating Trading Account` });
           await connection.confirmTransaction(initSignature, "confirmed");
           fetchcheckuserdata();
           setModalIsOpen(false);
           notify({
             type: "success",
-            message: `Trading account successfully created, you can now open your position.`,
+            message: `Trading account created`,
+
           });
         } catch (error) {
           notify({
             type: "error",
-            message: `Creating Trading account failed`,
+            message: `Creation Failed`,
             description: error?.message,
           });
         }
@@ -1465,7 +1470,7 @@ const TradeBar: React.FC<
         signature = await sendTransaction(transaction, connection);
         notify({
           type: "info",
-          message: `Opening the position on chain...`,
+          message: `Opening Position`,
           txid: signature,
         });
         // Wait for transaction confirmation before showing the 'success' notification
@@ -1475,7 +1480,7 @@ const TradeBar: React.FC<
       // In case of an error, show only the 'error' notification
       notify({
         type: "error",
-        message: `Position has not been succesfully opened`,
+        message: `Position Reverted`,
         description: error?.message,
         txid: signature,
       });
@@ -1535,22 +1540,23 @@ const TradeBar: React.FC<
 
       const initSignature = await sendTransaction(initTransaction, connection);
 
-      // Wait for transaction confirmation
-      notify({ type: "info", message: `Trying to create Trading Account` });
-      await connection.confirmTransaction(initSignature, "confirmed");
-      fetchcheckuserdata();
-      setModalIsOpen(false);
-      notify({
-        type: "success",
-        message: `Trading account successfully created, you can now open your position.`,
-      });
-    } catch (error) {
-      notify({
-        type: "error",
-        message: `Creating Trading account failed`,
-        description: error?.message,
-      });
-    }
+          // Wait for transaction confirmation
+          notify({ type: "info", message: `Creating Trading Account` });
+          await connection.confirmTransaction(initSignature, "confirmed");
+          fetchcheckuserdata();
+          setModalIsOpen(false);
+          notify({
+            type: "success",
+            message: `Trading account created`,
+
+          });
+        } catch (error) {
+          notify({
+            type: "error",
+            message: `Creation failed`,
+            description: error?.message,
+          });
+        }
   }, [isInit, publicKey]);
 
   const handleInputFocus: React.FocusEventHandler<HTMLInputElement> = (

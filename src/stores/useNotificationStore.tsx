@@ -7,6 +7,7 @@ interface NotificationStore extends State {
     message: string;
     description?: string;
     txid?: string;
+    id?:string
   }>;
   set: (x: any) => void;
 }

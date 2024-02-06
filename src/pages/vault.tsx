@@ -363,19 +363,21 @@ const Earn: FC = () => {
 
       notify({
         type: "info",
-        message: `Trying to create Liquidity Provider account.`,
+        message: `Creating Liquidity Pool account`,
       });
       await connection.confirmTransaction(initSignature, "confirmed");
       const result = await checkLiquidiryProviderAcc(LProviderAcc, connection);
       setLProviderdata(result);
       notify({
         type: "success",
-        message: `Liquidity Provider account created, you can now deposit.`,
+        message: `Account Created`,
+        description: `You can now deposit into the Vault`,
+
       });
     } catch (error) {
       notify({
         type: "error",
-        message: `Creating Liquidity Provider account failed`,
+        message: `Creation Failed`,
         description: error?.message,
       });
     }
@@ -409,18 +411,18 @@ const Earn: FC = () => {
       LProviderdata?.lastKnownCumulativeFeeRate != LPdata?.cumulativeFeeRate &&
       LProviderdata?.providerDepositedAmount != 0
     ) {
-      notify({ type: "info", message: `Please withdraw your rewards first.` });
+      notify({ type: "info", message: `Claim your rewards first.` });
     } else if (parseFloat(depositValue) < 1) {
       notify({ type: "info", message: `Minimum deposit is 1 SOL.` });
     } else if (
       parseFloat(depositValue) + LPdata.totalDeposits / LAMPORTS_PER_SOL >
-      1800
+      1500
     ) {
       const remainingDeposit =
-        1800 - Number(LPdata.totalDeposits) / Number(LAMPORTS_PER_SOL);
+        1500 - Number(LPdata.totalDeposits) / Number(LAMPORTS_PER_SOL);
       notify({
         type: "info",
-        message: `Vault is full, you can deposit ${remainingDeposit.toFixed(1)} SOL.`,
+        message: `Vault is almost full, you can deposit ${remainingDeposit.toFixed(1)} SOL.`,
       });
     } else {
       try {
@@ -550,20 +552,22 @@ const Earn: FC = () => {
           );
 
           // Wait for transaction confirmation
-          notify({ type: "info", message: `Trying to create Trading Account` });
-          await connection.confirmTransaction(initSignature, "confirmed");
-          fetchcheckuserdata();
-          notify({
-            type: "success",
-            message: `Trading account successfully created, you can now claim rewards.`,
-          });
-        } catch (error) {
-          notify({
-            type: "error",
-            message: `Error Trading user account`,
-            description: error?.message,
-          });
-        }
+            // Wait for transaction confirmation
+            notify({ type: "info", message: `Creating Trading Account` });
+            await connection.confirmTransaction(initSignature, "confirmed");
+            fetchcheckuserdata();
+            notify({
+              type: "success",
+              message: `Trading account created`,
+  
+            });
+          } catch (error) {
+            notify({
+              type: "error",
+              message: `Creation Failed`,
+              description: error?.message,
+            });
+          }
       } else {
         try {
           const accounts: WithdrawFeeFromLiquidityPoolAccounts = {
@@ -592,7 +596,7 @@ const Earn: FC = () => {
 
           notify({
             type: "info",
-            message: `Requesting Rewards.`,
+            message: `Requesting Rewards`,
             txid: signature,
           });
           await connection.confirmTransaction(initSignature, "confirmed");
@@ -603,12 +607,12 @@ const Earn: FC = () => {
           setLProviderdata(result);
           notify({
             type: "success",
-            message: `Successfully withdrawn Sol from the Vault`,
+            message: `Successfully claimed`,
           });
         } catch (error) {
           notify({
             type: "error",
-            message: `Failed to withdraw Sol from the Vault`,
+            message: `Failed to claim rewards`,
             description: error?.message,
           });
         }
@@ -669,7 +673,7 @@ const Earn: FC = () => {
     } else if (
       LProviderdata?.lastKnownCumulativeFeeRate != LPdata?.cumulativeFeeRate
     ) {
-      notify({ type: "info", message: `Please withdraw your rewards first.` });
+      notify({ type: "info", message: `Claim your rewards first.` });
     } else {
       try {
         const args: WithdrawFromLiquidityPoolArgs = {
@@ -699,7 +703,7 @@ const Earn: FC = () => {
 
         notify({
           type: "info",
-          message: `Requesting withdrawal from the Vault`,
+          message: `Requesting Withdrawal`,
           txid: signature,
         });
         await connection.confirmTransaction(initSignature, "confirmed");
@@ -710,12 +714,12 @@ const Earn: FC = () => {
         setLProviderdata(result);
         notify({
           type: "success",
-          message: `Successfully withdrawn rewards from the Vault`,
+          message: `Withdrawal Successful`,
         });
       } catch (error) {
         notify({
           type: "error",
-          message: `Failed to withdraw rewards from the Vault`,
+          message: `Withdrawal Failed`,
           description: error?.message,
         });
       }

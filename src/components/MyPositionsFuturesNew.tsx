@@ -362,8 +362,8 @@ const MyPositions: FC<MyPositionsProps> = ({
               // Add the new position to the array
               notify({
                 type: "success",
-                message: `New position created`,
-                description: `A new position ${updatedPosition.futuresContract.slice(0, 4)}...${updatedPosition.futuresContract.slice(-4)} has been created with entry price: ${(updatedPosition.initialPrice / 100000000).toFixed(3)} USD`,
+                message: `Position opened`,
+                description: `Entry price: ${(updatedPosition.initialPrice / 100000000).toFixed(3)} USD`,
               });
               setLatestOpenedPosition((prevPositions) => {
                 const updatedPositions = {
@@ -459,7 +459,7 @@ const MyPositions: FC<MyPositionsProps> = ({
             notify({
               type: "success",
               message: `Position resolved`,
-              description: `Your position ${updatedPosition.futuresContract.slice(0, 4)}...${updatedPosition.futuresContract.slice(-4)} has been resolved with PnL: ${(updatedPosition.pnl / LAMPORTS_PER_SOL).toFixed(2)} SOL.`,
+              description: `PnL: ${(updatedPosition.pnl / LAMPORTS_PER_SOL).toFixed(2)} SOL.`,
             });
           }
         }

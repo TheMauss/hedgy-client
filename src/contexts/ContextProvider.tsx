@@ -51,20 +51,12 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
     [network]
   );
 
-  const onError = useCallback((error: WalletError) => {
-    notify({
-      type: "error",
-      message: error.message ? `${error.name}: ${error.message}` : error.name,
-    });
-    console.error(error);
-  }, []);
 
   return (
     // TODO: updates needed for updating and referencing endpoint: wallet adapter rework
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider
         wallets={wallets}
-        onError={onError}
         autoConnect={autoConnect}
       >
         <ReactUIWalletModalProviderDynamic>
