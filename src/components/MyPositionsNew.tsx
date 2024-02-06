@@ -33,6 +33,14 @@ interface Position {
   currentPrice: number;
 }
 
+interface Notification   {
+  type: string;
+  message: string;
+  description?: string;
+  txid?: string;
+  id?: string;
+}
+
 interface MyPositionsProps {
   latestOpenedPosition: Record<string, Position | null>;
   setLatestOpenedPosition: React.Dispatch<
@@ -40,6 +48,7 @@ interface MyPositionsProps {
   >;
   handleTotalBetAmountChange: (total: number) => void; // add this line
   prices: { [key: string]: { price: number; timestamp: string } };
+  handleNewNotification: (notification: Notification) => void; 
 }
 
 const LAMPORTS_PER_SOL = 1_000_000_000;
@@ -49,6 +58,7 @@ const MyPositions: FC<MyPositionsProps> = ({
   prices,
   setLatestOpenedPosition,
   handleTotalBetAmountChange,
+  handleNewNotification
 }) => {
   async function isUserAccountInitialized(
     account: PublicKey,
@@ -278,13 +288,13 @@ const MyPositions: FC<MyPositionsProps> = ({
 
           // Notify the user
           if (updatedPosition.resolved) {
-            notify({
+            handleNewNotification({
               type: "success",
               message: `Option resolved`,
               description: `Payout: ${updatedPosition.payout / LAMPORTS_PER_SOL} SOL.`,
             });
           } else {
-            notify({
+            handleNewNotification({
               type: "success",
               message: `Option created`,
               description: `Entry price: ${(updatedPosition.initialPrice / 100000000).toFixed(3)} USD`,

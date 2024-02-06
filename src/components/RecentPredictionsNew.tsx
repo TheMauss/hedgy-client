@@ -98,6 +98,12 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
     }
 
     function elapsedTimeInSeconds(elapsedTimeString: string) {
+      // Check if elapsedTimeString is a string
+      if (typeof elapsedTimeString !== 'string') {
+        console.error('elapsedTimeString must be a string:', elapsedTimeString);
+        return 0; // or throw new Error('elapsedTimeString must be a string');
+      }
+    
       const [value, unit] = elapsedTimeString.split(" ");
       if (unit.startsWith("second")) {
         return Number(value);
@@ -109,6 +115,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
         return 0; // Or throw an error, etc.
       }
     }
+    
 
     // Function to handle new positions
     function handleNewPositions(newPositions, timestampKey) {

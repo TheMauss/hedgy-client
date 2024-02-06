@@ -17,7 +17,6 @@ import {
   FaShareAlt,
   FaCogs,
 } from "react-icons/fa";
-import { notify } from "../utils/notifications";
 import Modal from "react-modal";
 import { BN } from "@project-serum/anchor";
 import {
@@ -58,6 +57,14 @@ interface Position {
   pnl: number;
 }
 
+interface Notification   {
+    type: string;
+    message: string;
+    description?: string;
+    txid?: string;
+    id?: string;
+}
+
 interface MyPositionsProps {
   latestOpenedPosition: Record<string, Position | null>;
   setLatestOpenedPosition: React.Dispatch<
@@ -65,6 +72,7 @@ interface MyPositionsProps {
   >;
   handleTotalBetAmountChange: (total: number) => void; // add this line
   prices: { [key: string]: { price: number; timestamp: string } };
+  handleNewNotification: (notification: Notification) => void; 
 }
 
 const LAMPORTS_PER_SOL = 1_000_000_000;
@@ -75,7 +83,8 @@ const MyPositions: FC<MyPositionsProps> = ({
   latestOpenedPosition,
   setLatestOpenedPosition,
   handleTotalBetAmountChange,
-}) => {
+  handleNewNotification
+  }) => {
   async function isUserAccountInitialized(
     account: PublicKey,
     connection: Connection
@@ -338,13 +347,13 @@ const MyPositions: FC<MyPositionsProps> = ({
                       updatedPos.stopLossPrice !== position.stopLossPrice ||
                       updatedPos.takeProfitPrice !== position.takeProfitPrice
                     ) {
-                      notify({
+                      handleNewNotification({
                         type: "success",
                         message: `Position updated`,
                         description: `Take Profit is ${(updatedPosition.takeProfitPrice / 100000000).toFixed(2)}, Stop Loss is ${(updatedPosition.stopLossPrice / 100000000).toFixed(2)}`,
                       });
                     } else {
-                      notify({
+                      handleNewNotification({
                         type: "success",
                         message: `Borrowing fee paid`,
                         description: `New Liquidation Price is  ${(updatedPosition.liquidationPrice / 100000000).toFixed(2)}`,
@@ -359,12 +368,13 @@ const MyPositions: FC<MyPositionsProps> = ({
 
               return updatedPositions;
             } else {
+              if (!updatedPosition.resolved) {
               // Add the new position to the array
-              notify({
+              handleNewNotification({
                 type: "success",
                 message: `Position opened`,
                 description: `Entry price: ${(updatedPosition.initialPrice / 100000000).toFixed(3)} USD`,
-              });
+              });}
               setLatestOpenedPosition((prevPositions) => {
                 const updatedPositions = {
                   ...prevPositions,
@@ -455,8 +465,8 @@ const MyPositions: FC<MyPositionsProps> = ({
               return remainingPositions;
             });
 
-            // Notify the user of the resolved position
-            notify({
+            // handleNewNotification the user of the resolved position
+            handleNewNotification({
               type: "success",
               message: `Position resolved`,
               description: `PnL: ${(updatedPosition.pnl / LAMPORTS_PER_SOL).toFixed(2)} SOL.`,
@@ -968,7 +978,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     try {
       // Send the transaction
       signature = await sendTransaction(transaction, connection);
-      notify({ type: "info", message: `Trying to close the Position` });
+      handleNewNotification({ type: "info", message: `Closing the Position` });
 
       // Wait for confirmation
       await connection.confirmTransaction(signature, "confirmed");
@@ -978,7 +988,7 @@ const MyPositions: FC<MyPositionsProps> = ({
       console.error("Transaction failed:", error);
 
       // Optionally, show an error notification
-      notify({
+      handleNewNotification({
         type: "error",
         message: `Contract resolution failed`,
         description: error?.message,
@@ -991,7 +1001,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     if (warning) {
       console.error("Cannot update futures contract due to warning:", warning);
       // Optionally, show a warning notification
-      notify({
+      handleNewNotification({
         type: "warning",
         message: `Position update prevented`,
         description: warning,
@@ -1058,7 +1068,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     try {
       // Send the transaction
       signature = await sendTransaction(transaction, connection);
-      notify({ type: "info", message: `Trying to update the Position` });
+      handleNewNotification({ type: "info", message: `Trying to update the Position` });
 
       // Wait for confirmation
       await connection.confirmTransaction(signature, "confirmed");
@@ -1066,7 +1076,7 @@ const MyPositions: FC<MyPositionsProps> = ({
       // Optionally, show a success notification
     } catch (error: any) {
       // Optionally, show an error notification
-      notify({
+      handleNewNotification({
         type: "error",
         message: `Position update failed`,
         description: error?.message,
@@ -1079,7 +1089,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     if (warning) {
       console.error("Cannot update futures contract due to warning:", warning);
       // Optionally, show a warning notification
-      notify({
+      handleNewNotification({
         type: "warning",
         message: `Position update prevented`,
         description: warning,
@@ -1146,7 +1156,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     try {
       // Send the transaction
       signature = await sendTransaction(transaction, connection);
-      notify({ type: "info", message: `Trying to update the Position` });
+      handleNewNotification({ type: "info", message: `Trying to update the Position` });
 
       // Wait for confirmation
       await connection.confirmTransaction(signature, "confirmed");
@@ -1154,7 +1164,7 @@ const MyPositions: FC<MyPositionsProps> = ({
       // Optionally, show a success notification
     } catch (error: any) {
       // Optionally, show an error notification
-      notify({
+      handleNewNotification({
         type: "error",
         message: `Position update failed`,
         description: error?.message,

@@ -12,6 +12,8 @@ import InterestBar from "components/InterestBarOp";
 import { priceDataState } from "components/globalStatse";
 import { FaChevronLeft, FaChevronUp } from "react-icons/fa";
 import { Graph } from "components/GraphNew";
+import { notify } from "../utils/notifications";
+
 
 interface Position {
   _id: string;
@@ -61,6 +63,21 @@ const Transaction: FC = () => {
 
   const bottomRef = useRef(null);
   const [isStickyBottom, setIsStickyBottom] = useState(true);
+
+  const lastNotificationRef = useRef(null);
+  let debounceTimer;
+  const debounceDelay = 50;
+
+  const handleNewNotification = (newNotification) => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      if (JSON.stringify(lastNotificationRef.current) !== JSON.stringify(newNotification)) {
+        lastNotificationRef.current = newNotification;
+        notify(newNotification);
+      }
+    }, debounceDelay);
+  };
+
 
   const handleButtonClick = (buttonIndex: number) => {
     setActiveButton(buttonIndex);
@@ -377,6 +394,7 @@ const Transaction: FC = () => {
                               handleTotalBetAmountChange
                             }
                             prices={prices}
+                            handleNewNotification={handleNewNotification}
                           />
                         </div>
                       </div>
@@ -406,6 +424,7 @@ const Transaction: FC = () => {
                   setLatestOpenedPosition={setLatestOpenedPosition}
                   handleTotalBetAmountChange={handleTotalBetAmountChange}
                   prices={prices}
+                  handleNewNotification={handleNewNotification}
                 />
               </div>
               <div className="flex flex-row md:py-2 md:gap-2">
