@@ -316,9 +316,6 @@ const TradeBar: React.FC<
   const LOWER_SPREAD_SYMBOLS = ["BTC", "SOL", "ETH"]; // Add more if needed
   const HIGHER_SPREAD_SYMBOLS = ["JUP"]; // Add more if needed
 
-  const [availableLiquidity, setAvailableLiquidity] = useState(0);
-  const [fee, setFee] = useState(0);
-
   const handleButtonClick = (buttonIndex: number) => {
     setActiveButton(buttonIndex);
 
@@ -1269,14 +1266,6 @@ const TradeBar: React.FC<
       return;
     }
 
-    if ((parseFloat(amountValue)-fee)*leverage > availableLiquidity) {
-      notify({
-        type: "error",
-        message: "Not enough Available Liquidity",
-      });
-      return;
-    }
-
     if (
       parseFloat(amountValue) >
         (LPdata?.totalDeposits + LPdata?.pnl) / 200 / LAMPORTS_PER_SOL ||
@@ -1476,7 +1465,6 @@ const TradeBar: React.FC<
       return;
     }
   }, [
-    fee,
     isPriorityFee,
     LPdata,
     selectedCryptos,
@@ -1495,7 +1483,6 @@ const TradeBar: React.FC<
     leverage,
     amountValue,
     toggleState,
-    availableLiquidity,
   ]);
 
   const onClick1 = useCallback(async () => {
@@ -1609,7 +1596,7 @@ const TradeBar: React.FC<
     return 200;
   };
 
-
+  const [fee, setFee] = useState(0);
 
   const calculateFee = (amount, lev, rebate, init) => {
     const baseFee = parseFloat(amount) * 0.0007 * lev;
@@ -1683,100 +1670,6 @@ const TradeBar: React.FC<
     const newFee = calculateFee(amountValue, leverage, rebateTier, isInit);
     setFee(newFee); // Set as a number
   }, [amountValue, leverage, rebateTier, isInit]);
-
-  useEffect(() => {
-    // Determine which cryptocurrency data to use based on selectedCryptos
-    let selectedData = { long: 0, short: 0 };
-    if (selectedCryptos.SOL) {
-      selectedData = {
-        long: parseInt(data.solLong),
-        short: parseInt(data.solShort),
-      };
-    } else if (selectedCryptos.BTC) {
-      selectedData = {
-        long: parseInt(data.btcLong),
-        short: parseInt(data.btcShort),
-      };
-    } else if (selectedCryptos.PYTH) {
-      selectedData = {
-        long: parseInt(data.pythLong),
-        short: parseInt(data.pythShort),
-      };
-    } else if (selectedCryptos.BONK) {
-      selectedData = {
-        long: parseInt(data.bonkLong),
-        short: parseInt(data.bonkShort),
-      };
-    } else if (selectedCryptos.ETH) {
-      selectedData = {
-        long: parseInt(data.ethLong),
-        short: parseInt(data.ethShort),
-      };
-    } else if (selectedCryptos.TIA) {
-      selectedData = {
-        long: parseInt(data.tiaLong),
-        short: parseInt(data.tiaShort),
-      };
-    } else if (selectedCryptos.SUI) {
-      selectedData = {
-        long: parseInt(data.suiLong),
-        short: parseInt(data.suiShort),
-      };
-    } else if (selectedCryptos.JUP) {
-      selectedData = {
-        long: parseInt(data.jupLong),
-        short: parseInt(data.jupShort),
-      };
-    }
-
-    const totalDeposits = LPdata?.totalDeposits || 0;
-    const oiSol = totalDeposits / 3; // Open interest for large caps
-    const poSmallPairs = totalDeposits / 20; 
-
-    let availableLiquidity = 0;
-
-    const individualLong = selectedData.long;
-    const individualShort = selectedData.short;
-
-    const bigCapLong = parseInt(data.solLong) + parseInt(data.btcLong) + parseInt(data.ethLong);
-    const bigCapShort = parseInt(data.solShort) + parseInt(data.btcShort) + parseInt(data.ethShort);
-    const smallCapLong = parseInt(data.pythLong) + parseInt(data.bonkLong) + parseInt(data.jupLong) + parseInt(data.tiaLong) + parseInt(data.suiLong);
-    const smallCapShort = parseInt(data.pythShort) + parseInt(data.bonkShort) + parseInt(data.jupShort) + parseInt(data.tiaShort) + parseInt(data.suiShort);
-
-
-    if (toggleState === "LONG") {
-      // Calculate available liquidity for selected cryptocurrency
-      if (selectedCryptos.BTC || selectedCryptos.SOL || selectedCryptos.ETH) {
-        if (bigCapLong <= oiSol * 2) {
-          availableLiquidity = Math.min((oiSol * 2) - bigCapLong, oiSol - individualLong - 5*LAMPORTS_PER_SOL);        }
-      } else {
-        if (smallCapLong <= totalDeposits / 10) {
-          availableLiquidity = Math.min((totalDeposits / 10) - smallCapLong, poSmallPairs - individualLong);        }
-      }
-    } else if (toggleState === "SHORT") {
-      // Calculate available liquidity for selected cryptocurrency
-      if (selectedCryptos.BTC || selectedCryptos.SOL || selectedCryptos.ETH) {
-        if (bigCapShort <= oiSol * 2) {
-          availableLiquidity = Math.min((oiSol * 2) - bigCapShort, oiSol - individualShort - 5*LAMPORTS_PER_SOL);        }
-        
-      } else {
-        if (smallCapShort <= totalDeposits / 10) {
-          availableLiquidity = Math.min((totalDeposits / 10) - smallCapShort, poSmallPairs - individualShort);        }
-        
-      }
-    }
-    setAvailableLiquidity(((availableLiquidity/LAMPORTS_PER_SOL)));
-  
-
-
-  }, [
-    data,
-    toggleState,
-    selectedCryptos,
-    LPdata
-  ]);
-
-
 
   const ModalDetails1 = (
     <Modal
@@ -2361,12 +2254,6 @@ const TradeBar: React.FC<
             {isNaN((parseFloat(amountValue) - fee) * leverage)
               ? "0 SOL"
               : `${((parseFloat(amountValue) - fee) * leverage).toFixed(2)} SOL`}
-          </div>
-        </div>
-        <div className="self-stretch h-4 flex flex-row items-start justify-between">
-          <div className="relative leading-[14px]">Available Liquidity</div>
-          <div className="relative leading-[14px] font-medium text-white">
-            {(availableLiquidity).toFixed(1)} SOL
           </div>
         </div>
         <div className="self-stretch h-4 flex flex-row items-start justify-between">

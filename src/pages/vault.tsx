@@ -414,10 +414,10 @@ const Earn: FC = () => {
       notify({ type: "info", message: `Minimum deposit is 1 SOL.` });
     } else if (
       parseFloat(depositValue) + LPdata.totalDeposits / LAMPORTS_PER_SOL >
-      1800
+      1000
     ) {
       const remainingDeposit =
-        1800 - Number(LPdata.totalDeposits) / Number(LAMPORTS_PER_SOL);
+        1000 - Number(LPdata.totalDeposits) / Number(LAMPORTS_PER_SOL);
       notify({
         type: "info",
         message: `Vault is full, you can deposit ${remainingDeposit.toFixed(1)} SOL.`,
