@@ -14,7 +14,7 @@ const Stats: FC = () => {
   const balance = useUserSOLBalanceStore((s) => s.balance);
   const { getUserSOLBalance } = useUserSOLBalanceStore();
 
-  const [isCompetition, setIsCompetition] = useState(true);
+  const [isCompetition, setIsCompetition] = useState(false);
   const [isTeamCompetition, setIsTeamCompetition] = useState(false);
   const [leaderboardCompetetion, setLeaderboardCompetetion] = useState([]);
   const [teamLeaderboard, setTeamLeaderboard] = useState([]);

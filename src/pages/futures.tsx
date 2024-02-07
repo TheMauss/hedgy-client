@@ -92,7 +92,7 @@ const Futures: FC = () => {
 
   const lastNotificationRef = useRef(null);
   let debounceTimer;
-  const debounceDelay = 50;
+  const debounceDelay = 75;
 
   const handleNewNotification = (newNotification) => {
     clearTimeout(debounceTimer);
