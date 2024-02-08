@@ -230,7 +230,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
     0: 3, // Example: SOL has 2 decimal places
     1: 1, // Example: BTC has 2 decimal places
     2: 4, // Example: PYTH has 3 decimal places
-    3: 7, // BONK
+    3: 6, // BONK
     4: 4, // JUP
     5: 1, // ETH
     6: 3, // TIA
@@ -252,17 +252,17 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
         </div>
       ) : (
         <div className="custom-scrollbar flex flex-col overflow-auto ">
-          <div className="sticky top-0 bg-layer-1 flex z-10 pt-2 px-4">
+          <div className="sticky top-0 bg-layer-1 flex z-10 pt-2 px-3.5">
             <div className="w-[26%] text-sm leading-[12px] text-grey-text py-2 ">
               Pair/USD
             </div>
-            <div className="w-[35%] text-sm leading-[12px] text-grey-text py-2 text-end">
+            <div className="w-[34%] text-sm leading-[12px] text-grey-text py-2 text-end">
               Price
             </div>
-            <div className="w-[25%] text-sm leading-[12px] text-grey-text py-2 text-end">
+            <div className="w-[24%] text-sm leading-[12px] text-grey-text py-2 text-end">
               Size ◎
             </div>
-            <div className="w-[20%] text-sm leading-[12px] text-grey-text py-2 text-end">
+            <div className="w-[29%] text-sm leading-[12px] text-grey-text py-2 text-end">
               Time
             </div>
           </div>
@@ -334,7 +334,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                 return (
                   <div
                     key={item._id}
-                    className={`flex text-sm my-1 w-full pr-4 pl-3 hover:bg-layer-3`}
+                    className={`flex text-sm my-1 w-full pr-3.5 pl-3 hover:bg-layer-3`}
                     style={{
                       background: `linear-gradient(to right, transparent ${100 - colorfill}%, ${
                         item.priceDirection === 1
@@ -457,14 +457,14 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                     </div>
 
                     <div
-                      className={`w-[25%] leading-[12px] flex items-center justify-end`}
+                      className={`w-[24%] leading-[12px] flex items-center justify-end`}
                     >
                       {"binaryOption" in item
                         ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(1)}`
                         : `${((item.leverage * item.betAmount) / LAMPORTS_PER_SOL).toFixed(1)}`}
                     </div>
                     <div
-                      className={`w-[20%] leading-[12px] flex items-center justify-end text-grey-text`}
+                      className={`w-[29%] leading-[12px] flex items-center justify-end text-grey-text`}
                     >
                       {new Date(item.timestamp * 1000).toLocaleTimeString([], {
                         hour: "2-digit",
