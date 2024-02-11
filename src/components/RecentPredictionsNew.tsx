@@ -200,6 +200,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
 
     socket.on("newPositiones", (newPosition: PositionFutures) => {
       setPositions((prevPositions) => {
+
         // Calculate elapsed time for the new position
         handleNewPositions([newPosition], "timestamp");
         // Prepare new positions array with the new position at the beginning
@@ -209,6 +210,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
         if (newPositions.length > 40) {
           newPositions.pop(); // Remove the last element of the array (oldest position)
         }
+
 
         return newPositions;
       });
