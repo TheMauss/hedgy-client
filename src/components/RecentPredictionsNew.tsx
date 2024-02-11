@@ -201,8 +201,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
     socket.on("newPositiones", (newPosition: PositionFutures) => {
       setPositions((prevPositions) => {
         // Calculate elapsed time for the new position
-        handleNewPositions(newPosition, "timestamp");
-
+        handleNewPositions([newPosition], "timestamp");
         // Prepare new positions array with the new position at the beginning
         const newPositions = [{ ...newPosition }, ...prevPositions];
 
