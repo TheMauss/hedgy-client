@@ -200,12 +200,10 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
 
     socket.on("newPositiones", (newPosition: PositionFutures) => {
       setPositions((prevPositions) => {
-        // Check if newPosition is already in prevPositions
-        const isAlreadyPresent = prevPositions.some(pos => pos._id === newPosition._id);
-        if (isAlreadyPresent) {
-          // If it's already present, just return the previous state
-          return prevPositions;
-        }
+        // Find the index of an existing, unresolved position with the same _id
+        const existingIndex = prevPositions.findIndex(pos => 
+          pos._id === newPosition._id && !pos.resolved
+        );
     
         // Calculate elapsed time for the new position
         const currentTime = Math.floor(Date.now() / 1000);
@@ -222,17 +220,25 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
           elapsedTime = `${seconds} ${seconds > 1 ? "seconds" : "second"} ago`;
         }
     
-        // Prepare new positions array with the new position at the beginning
-        const newPositions = [{ ...newPosition, elapsedTime }, ...prevPositions];
+        let newPositions;
+        if (existingIndex !== -1) {
+          // Update the existing, unresolved position
+          newPositions = [...prevPositions];
+          newPositions[existingIndex] = { ...newPosition, elapsedTime };
+        } else {
+          // Add the new position at the beginning if it's not already present or resolved
+          newPositions = [{ ...newPosition, elapsedTime }, ...prevPositions];
     
-        // Limit the length of the positions array to 40
-        if (newPositions.length > 40) {
-          newPositions.pop(); // Remove the last element of the array (oldest position)
+          // Limit the length of the positions array to 40
+          if (newPositions.length > 40) {
+            newPositions.pop(); // Remove the last element of the array (oldest position)
+          }
         }
     
         return newPositions;
       });
     });
+    
     
     socket.on("connect_error", (err) => {
       setError(err.message);
