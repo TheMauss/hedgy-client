@@ -1165,7 +1165,7 @@ const TradeBar: React.FC<
 
   const onClick = useCallback(async () => {
     const countmaxBet =
-      (((LPdata?.totalDeposits + LPdata?.pnl) / 200) * 3) /
+      (((LPdata?.totalDeposits + LPdata?.pnl) / 200) * 2) /
       5 /
       LAMPORTS_PER_SOL; // 0,3% maximálni pozice
     const maxBet = Math.min(10, countmaxBet);
@@ -1619,10 +1619,10 @@ const TradeBar: React.FC<
   };
 
   const calculateFee = (amount, lev, rebate, init) => {
-    const baseFee = parseFloat(amount) * 0.0007 * lev;
+    const baseFee = parseFloat(amount) * 0.0008 * lev;
     const hasAffiliate = init?.usedAffiliate.some((value) => value !== 0);
     const feeReduction = hasAffiliate ? baseFee * 0.05 : 0;
-    const rebateAmount = ((parseFloat(amount) * rebate) / 100_000) * lev;
+    const rebateAmount = (baseFee * rebate) / 100;
 
     const finalFee = baseFee - feeReduction - rebateAmount;
     return isNaN(finalFee) ? 0 : parseFloat(finalFee.toFixed(3)); // Check for NaN and return as a number
@@ -1737,8 +1737,8 @@ const TradeBar: React.FC<
     }
 
     const totalDeposits = LPdata?.totalDeposits || 0;
-    const oiSol = totalDeposits / 3; // Open interest for large caps
-    const poSmallPairs = totalDeposits / 20;
+    const oiSol = totalDeposits / 4; // Open interest for large caps
+    const poSmallPairs = totalDeposits / 25;
 
     let availableLiquidity = 0;
 
@@ -1779,7 +1779,7 @@ const TradeBar: React.FC<
           );
         }
       } else {
-        if (smallCapLong <= totalDeposits / 10) {
+        if (smallCapLong <= totalDeposits / 12) {
           availableLiquidity = Math.min(
             totalDeposits / 10 - smallCapLong,
             poSmallPairs - individualLong
@@ -1796,9 +1796,9 @@ const TradeBar: React.FC<
           );
         }
       } else {
-        if (smallCapShort <= totalDeposits / 10) {
+        if (smallCapShort <= totalDeposits / 12) {
           availableLiquidity = Math.min(
-            totalDeposits / 10 - smallCapShort,
+            totalDeposits / 12 - smallCapShort,
             poSmallPairs - individualShort
           );
         }
@@ -2360,14 +2360,14 @@ const TradeBar: React.FC<
         <div className="self-stretch h-4 flex flex-row items-start justify-between">
           <div className="relative leading-[14px]">Fees</div>
           <div className="relative leading-[14px] font-medium text-white">
-            {isNaN(parseFloat(amountValue) * 0.0007 * leverage) ? (
+            {isNaN(parseFloat(amountValue) * 0.0008 * leverage) ? (
               "0 SOL"
             ) : parseFloat(
-                (parseFloat(amountValue) * 0.0007 * leverage).toFixed(3)
+                (parseFloat(amountValue) * 0.0008 * leverage).toFixed(3)
               ) > fee ? (
               <>
                 <span className="line-through">
-                  {(parseFloat(amountValue) * 0.0007 * leverage).toFixed(3)} SOL
+                  {(parseFloat(amountValue) * 0.0008 * leverage).toFixed(3)} SOL
                 </span>
                 <span> {fee} SOL</span>
               </>

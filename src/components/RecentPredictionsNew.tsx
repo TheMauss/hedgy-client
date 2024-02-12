@@ -200,17 +200,31 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
 
     socket.on("newPositiones", (newPosition: PositionFutures) => {
       setPositions((prevPositions) => {
-
         // Calculate elapsed time for the new position
-        handleNewPositions([newPosition], "timestamp");
+        const currentTime = Math.floor(Date.now() / 1000);
+        const timeElapsed = currentTime - newPosition.timestamp;
+        const seconds = Math.floor(timeElapsed);
+        const minutes = Math.floor(timeElapsed / 60);
+        const hours = Math.floor(minutes / 60);
+        let elapsedTime = "";
+        if (hours > 0) {
+          elapsedTime = `${hours} ${hours > 1 ? "hours" : "hour"} ago`;
+        } else if (minutes > 0) {
+          elapsedTime = `${minutes} ${minutes > 1 ? "minutes" : "minute"} ago`;
+        } else {
+          elapsedTime = `${seconds} ${seconds > 1 ? "seconds" : "second"} ago`;
+        }
+
         // Prepare new positions array with the new position at the beginning
-        const newPositions = [{ ...newPosition }, ...prevPositions];
+        const newPositions = [
+          { ...newPosition, elapsedTime },
+          ...prevPositions,
+        ];
 
         // Limit the length of the positions array to 100
         if (newPositions.length > 40) {
           newPositions.pop(); // Remove the last element of the array (oldest position)
         }
-
 
         return newPositions;
       });

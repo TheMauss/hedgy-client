@@ -848,7 +848,7 @@ const Stats: FC = () => {
                     </div>
                   </div>
                   <div className="relative leading-[140%] font-semibold">
-                    0.07% Fee
+                    0% Discount
                   </div>
                   <div className="relative text-base leading-[140%] font-light text-grey-text">
                     less than 1,000 SOL Vol
@@ -879,7 +879,7 @@ const Stats: FC = () => {
                     </div>
                   </div>
                   <div className="relative leading-[140%] font-semibold">
-                    0.065% Fee
+                  5% Discount
                   </div>
                   <div className="relative text-base leading-[140%] font-light text-grey-text">
                     1,000 to 2,000 SOL Vol
@@ -910,7 +910,7 @@ const Stats: FC = () => {
                     </div>
                   </div>
                   <div className="relative leading-[140%] font-semibold">
-                    0.06% Fee
+                  10% Discount
                   </div>
                   <div className="relative text-base leading-[140%] font-light text-grey-text">
                     2,000 to 5,000 SOL Vol
@@ -941,7 +941,7 @@ const Stats: FC = () => {
                     </div>
                   </div>
                   <div className="relative leading-[140%] font-semibold">
-                    0.055% Fee
+                  15% Discount
                   </div>
                   <div className="relative text-base leading-[140%] font-light text-grey-text">
                     5,000 to 10,000 SOL Vol
@@ -975,7 +975,7 @@ const Stats: FC = () => {
                   </div>
                 </div>
                 <div className="relative leading-[140%] font-semibold">
-                  0.05% Fee
+                20% Discount
                 </div>
                 <div className="relative text-base leading-[140%] font-light text-grey-text">
                   10,000 to 20,000 SOL Vol
@@ -1006,7 +1006,7 @@ const Stats: FC = () => {
                   </div>
                 </div>
                 <div className="relative leading-[140%] font-semibold">
-                  0.045% Fee
+                25% Discount
                 </div>
                 <div className="relative text-base leading-[140%] font-light text-grey-text">
                   20,000 to 40,000 SOL Vol
@@ -1037,7 +1037,7 @@ const Stats: FC = () => {
                   </div>
                 </div>
                 <div className="relative leading-[140%] font-semibold">
-                  0.04% Fee
+                30% Discount
                 </div>
                 <div className="relative text-base leading-[140%] font-light text-grey-text">
                   40,000 to 80,000 SOL Vol
@@ -1068,7 +1068,7 @@ const Stats: FC = () => {
                   </div>
                 </div>
                 <div className="relative leading-[140%] font-semibold">
-                  0.035% Fee
+                35% Discount
                 </div>
                 <div className="relative text-base leading-[140%] font-light text-grey-text">
                   more than 80,000 SOL Vol
