@@ -200,22 +200,36 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
 
     socket.on("newPositiones", (newPosition: PositionFutures) => {
       setPositions((prevPositions) => {
-
-        // Calculate elapsed time for the new position
-        handleNewPositions(newPosition, "timestamp");
-        // Prepare new positions array with the new position at the beginning
-        const newPositions = [{ ...newPosition }, ...prevPositions];
-
-        // Limit the length of the positions array to 100
-        if (newPositions.length > 40) {
-          newPositions.pop(); // Remove the last element of the array (oldest position)
+        // Check if a resolved version of newPosition is already in prevPositions
+        const isResolvedPresent = prevPositions.some(pos => 
+          pos._id === newPosition._id && pos.resolved
+        );
+    
+        // Check if an unresolved version of newPosition is already in prevPositions
+        const isUnresolvedPresent = prevPositions.some(pos => 
+          pos._id === newPosition._id && !pos.resolved
+        );
+    
+        let newPositions;
+        if (!isResolvedPresent && (!isUnresolvedPresent || newPosition.resolved)) {
+          // Add the new position at the beginning if a resolved version isn't already present,
+          // or if the newPosition itself is resolved and there isn't an unresolved version present
+          newPositions = [{ ...newPosition }, ...prevPositions];
+    
+          // Limit the length of the positions array to 40
+          if (newPositions.length > 40) {
+            newPositions.pop(); // Remove the last element of the array (oldest position)
+          }
+        } else {
+          // If a resolved or an unresolved position is already present,
+          // just return the existing positions
+          newPositions = prevPositions;
         }
-
-
+    
         return newPositions;
       });
     });
-
+    
     socket.on("connect_error", (err) => {
       setError(err.message);
       setIsLoading(false);
