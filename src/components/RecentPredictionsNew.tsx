@@ -198,46 +198,45 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
       });
     });
 
-    socket.on("newPositiones", (newPosition: PositionFutures) => {
-      setPositions((prevPositions) => {
-        // Find the index of an existing, unresolved position with the same _id
-        const existingIndex = prevPositions.findIndex(pos => 
-          pos._id === newPosition._id && !pos.resolved
-        );
-    
-        // Calculate elapsed time for the new position
-        const currentTime = Math.floor(Date.now() / 1000);
-        const timeElapsed = currentTime - newPosition.timestamp;
-        const seconds = Math.floor(timeElapsed);
-        const minutes = Math.floor(timeElapsed / 60);
-        const hours = Math.floor(minutes / 60);
-        let elapsedTime = "";
-        if (hours > 0) {
-          elapsedTime = `${hours} ${hours > 1 ? "hours" : "hour"} ago`;
-        } else if (minutes > 0) {
-          elapsedTime = `${minutes} ${minutes > 1 ? "minutes" : "minute"} ago`;
-        } else {
-          elapsedTime = `${seconds} ${seconds > 1 ? "seconds" : "second"} ago`;
-        }
-    
-        let newPositions;
-        if (existingIndex !== -1) {
-          // Update the existing, unresolved position
-          newPositions = [...prevPositions];
-          newPositions[existingIndex] = { ...newPosition, elapsedTime };
-        } else {
-          // Add the new position at the beginning if it's not already present or resolved
-          newPositions = [{ ...newPosition, elapsedTime }, ...prevPositions];
-    
-          // Limit the length of the positions array to 40
-          if (newPositions.length > 40) {
-            newPositions.pop(); // Remove the last element of the array (oldest position)
-          }
-        }
-    
-        return newPositions;
-      });
-    });
+socket.on("newPositiones", (newPosition: PositionFutures) => {
+  setPositions((prevPositions) => {
+    // Check if newPosition (resolved or unresolved) is already in prevPositions
+    const isAlreadyPresentAndResolved = prevPositions.some(pos => 
+      pos._id === newPosition._id && pos.resolved
+    );
+
+    if (isAlreadyPresentAndResolved) {
+      // If a resolved position is already present, just return the previous state
+      return prevPositions;
+    }
+
+
+    // Calculate elapsed time for the new position
+    const currentTime = Math.floor(Date.now() / 1000);
+    const timeElapsed = currentTime - newPosition.timestamp;
+    const seconds = Math.floor(timeElapsed);
+    const minutes = Math.floor(timeElapsed / 60);
+    const hours = Math.floor(minutes / 60);
+    let elapsedTime = "";
+    if (hours > 0) {
+      elapsedTime = `${hours} ${hours > 1 ? "hours" : "hour"} ago`;
+    } else if (minutes > 0) {
+      elapsedTime = `${minutes} ${minutes > 1 ? "minutes" : "minute"} ago`;
+    } else {
+      elapsedTime = `${seconds} ${seconds > 1 ? "seconds" : "second"} ago`;
+    }
+
+    // Add the new position at the beginning
+    const newPositions = [{ ...newPosition, elapsedTime }, ...prevPositions];
+
+    // Limit the length of the positions array to 40
+    if (newPositions.length > 40) {
+      newPositions.pop(); // Remove the last element of the array (oldest position)
+    }
+
+    return newPositions;
+  });
+});
     
     
     socket.on("connect_error", (err) => {
