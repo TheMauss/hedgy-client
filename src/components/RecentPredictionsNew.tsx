@@ -200,6 +200,13 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
 
     socket.on("newPositiones", (newPosition: PositionFutures) => {
       setPositions((prevPositions) => {
+        // Check if newPosition is already in prevPositions
+        const isAlreadyPresent = prevPositions.some(pos => pos._id === newPosition._id);
+        if (isAlreadyPresent) {
+          // If it's already present, just return the previous state
+          return prevPositions;
+        }
+    
         // Calculate elapsed time for the new position
         const currentTime = Math.floor(Date.now() / 1000);
         const timeElapsed = currentTime - newPosition.timestamp;
@@ -214,22 +221,19 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
         } else {
           elapsedTime = `${seconds} ${seconds > 1 ? "seconds" : "second"} ago`;
         }
-
+    
         // Prepare new positions array with the new position at the beginning
-        const newPositions = [
-          { ...newPosition, elapsedTime },
-          ...prevPositions,
-        ];
-
-        // Limit the length of the positions array to 100
+        const newPositions = [{ ...newPosition, elapsedTime }, ...prevPositions];
+    
+        // Limit the length of the positions array to 40
         if (newPositions.length > 40) {
           newPositions.pop(); // Remove the last element of the array (oldest position)
         }
-
+    
         return newPositions;
       });
     });
-
+    
     socket.on("connect_error", (err) => {
       setError(err.message);
       setIsLoading(false);
