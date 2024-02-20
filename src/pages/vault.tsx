@@ -13,9 +13,6 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { UserAccount } from "../out/accounts/UserAccount"; // Update with the correct path
 import { LiquidityPoolAccount } from "../out/accounts/LiquidityPoolAccount";
 import { LiquidityProviderAccount } from "../out/accounts/LiquidityProviderAccount";
-import { FaStairs, FaMoneyBill, FaLockOpen, FaLock } from "react-icons/fa6";
-import { FaPaste, FaCoins, FaUsers, FaUser } from "react-icons/fa";
-import { MdTimer } from "react-icons/md";
 import {
   initializeUserAcc,
   InitializeUserAccArgs,
@@ -23,23 +20,33 @@ import {
 } from "../out/instructions/initializeUserAcc"; // Update with the correct path
 import {
   WithdrawFromLiquidityPoolArgs,
-  DepositToLiquidityPoolAccounts,
-  DepositToLiquidityPoolArgs,
-  WithdrawFeeFromLiquidityPoolAccounts,
+  StakeAndMintTokensArgs,
   WithdrawFromLiquidityPoolAccounts,
-  initializeLiqProvider,
-  withdrawFeeFromLiquidityPool,
   withdrawFromLiquidityPool,
+  StakeAndMintTokensAccounts,
+  stakeAndMintTokens,
 } from "../out/instructions/"; // Update with the correct path
 import { PROGRAM_ID } from "../out/programId";
 import { notify } from "utils/notifications";
 import useUserSOLBalanceStore from "../stores/useUserSOLBalanceStore";
-import { depositToLiquidityPool } from "out/instructions";
 import { BN } from "@project-serum/anchor";
 import moment from "moment-timezone";
+import { token } from "@project-serum/anchor/dist/cjs/utils";
+require('dotenv').config();
 
-import { useAllowlist } from "../contexts/AllowlistContext";
-import { useRouter } from "next/router";
+
+const HOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_HOUSE_WALLET);
+const SIGNERWALLET = new PublicKey(process.env.NEXT_PUBLIC_SIGNER_WALLET);
+const PDAHOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_PDA_HOUSEWALLET);
+const USDCMINT = new PublicKey(process.env.NEXT_PUBLIC_USDC_MINT);
+const ASSOCIATEDTOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM);
+const TOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_PROGRAM);
+const PUSDCMINT = new PublicKey(process.env.NEXT_PUBLIC_PUSDC_MINT);
+const PSOLMINT = new PublicKey(process.env.NEXT_PUBLIC_PSOL_MINT);
+const USDCPDAHOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_USDCPDA_HOUSEWALLET);
+
+
+
 
 async function checkLPdata(
   lpAcc: PublicKey,
@@ -49,10 +56,15 @@ async function checkLPdata(
   locked: boolean;
   epoch: number;
   totalDeposits: number;
+  usdcTotalDeposits: number;
   lpFees: number;
   pnl: number;
+  usdcLpFees: number;
+  usdcPnl: number;
   cumulativeFeeRate: number;
   cumulativePnlRate: number;
+  psolValuation: number;
+  pusdcValuation: number;
 }> {
   const accountInfo = await connection.getAccountInfo(lpAcc);
 
@@ -62,10 +74,15 @@ async function checkLPdata(
       locked: false,
       epoch: 0,
       totalDeposits: 0,
+      usdcTotalDeposits: 0,
       lpFees: 0,
       pnl: 0,
+      usdcLpFees: 0,
+      usdcPnl: 0,
       cumulativeFeeRate: 0,
       cumulativePnlRate: 0,
+      psolValuation: 0,
+      pusdcValuation: 0,
     };
   }
 
@@ -85,11 +102,16 @@ async function checkLPdata(
     IsInitialized: LpAccount.isInitialized,
     locked: LpAccount.locked,
     epoch: LpAccount.epoch.toNumber(),
+    usdcTotalDeposits: LpAccount.usdcTotalDeposits.toNumber(),
     totalDeposits: LpAccount.totalDeposits.toNumber(),
     lpFees: LpAccount.lpFees.toNumber(),
     pnl: LpAccount.pnl.toNumber(),
+    usdcLpFees: LpAccount.usdcLpFees.toNumber(),
+    usdcPnl: LpAccount.usdcPnl.toNumber(),
     cumulativeFeeRate: LpAccount.cumulativeFeeRate.toNumber(),
     cumulativePnlRate: LpAccount.cumulativePnlRate.toNumber(),
+    psolValuation: LpAccount.psolValuation.toNumber(),
+    pusdcValuation: LpAccount.pusdcValuation.toNumber(),
   };
 }
 
@@ -139,30 +161,20 @@ async function checkLiquidiryProviderAcc(
   connection: Connection
 ): Promise<{
   isInitialized: boolean;
-  lastDepositEpoch: number;
-  lastWithdrawFeeEpoch: number;
-  providerDepositedAmount: number;
-  solEarned: number;
-  lastKnownCumulativeFeeRate: number;
-  lastKnownPnlRate: number;
-  isActive: boolean;
   withdrawalRequestAmount: number;
   withdrawalRequestEpoch: number;
+  usdcWithdrawalRequestAmount: number;
+  usdcWithdrawalRequestEpoch: number;
 }> {
   const accountInfo = await connection.getAccountInfo(liqProviderAcc);
 
   if (!accountInfo) {
     return {
       isInitialized: false,
-      lastDepositEpoch: 0,
-      lastWithdrawFeeEpoch: 0,
-      providerDepositedAmount: 0,
-      solEarned: 0,
-      lastKnownCumulativeFeeRate: 0,
-      lastKnownPnlRate: 0,
-      isActive: false,
       withdrawalRequestAmount: 0,
       withdrawalRequestEpoch: 0,
+      usdcWithdrawalRequestAmount: 0,
+      usdcWithdrawalRequestEpoch: 0,
     };
   }
 
@@ -180,18 +192,99 @@ async function checkLiquidiryProviderAcc(
 
   return {
     isInitialized: LiqProviderAcc.isInitialized,
-    lastDepositEpoch: LiqProviderAcc.lastDepositEpoch.toNumber(),
-    lastWithdrawFeeEpoch: LiqProviderAcc.lastWithdrawFeeEpoch.toNumber(),
-    providerDepositedAmount: LiqProviderAcc.providerDepositedAmount.toNumber(),
-    solEarned: LiqProviderAcc.solEarned.toNumber(),
-    lastKnownCumulativeFeeRate:
-      LiqProviderAcc.lastKnownCumulativeFeeRate.toNumber(),
-    lastKnownPnlRate: LiqProviderAcc.lastKnownPnlRate.toNumber(),
-    isActive: LiqProviderAcc.isActive,
     withdrawalRequestAmount: LiqProviderAcc.withdrawalRequestAmount.toNumber(),
     withdrawalRequestEpoch: LiqProviderAcc.withdrawalRequestEpoch.toNumber(),
+    usdcWithdrawalRequestAmount: LiqProviderAcc.usdcWithdrawalRequestAmount.toNumber(),
+    usdcWithdrawalRequestEpoch: LiqProviderAcc.usdcWithdrawalRequestEpoch.toNumber(),
   };
 }
+
+async function findSplTokenAccountSync(walletAddress, currency) {
+  let mintAddress;
+
+  if (currency === 'USDC') {
+    mintAddress = PUSDCMINT;
+  } else if (currency === 'SOL') {
+    mintAddress = PSOLMINT; // Use the mint address for wSOL or your custom SPL token for SOL
+  } else {
+    throw new Error('Unsupported currency');
+  }
+
+  const [splTokenAccount] = PublicKey.findProgramAddressSync(
+    [
+      walletAddress.toBuffer(),
+      TOKENPROGRAM.toBuffer(),
+      mintAddress.toBuffer(),
+    ],
+    ASSOCIATEDTOKENPROGRAM
+  );
+
+  return splTokenAccount;
+}
+
+async function usdcSplTokenAccountSync(walletAddress) {
+  let mintAddress = USDCMINT
+
+  const [splTokenAccount] = PublicKey.findProgramAddressSync(
+    [
+      walletAddress.toBuffer(),
+      TOKENPROGRAM.toBuffer(),
+      mintAddress.toBuffer(),
+    ],
+    ASSOCIATEDTOKENPROGRAM
+  );
+
+  return splTokenAccount;
+}
+
+async function getSplTokenBalance(connection, walletAddress, selectedCurrency) {
+  try {
+    console.log('Wallet Address:', walletAddress);
+    console.log('Selected Currency:', selectedCurrency);
+
+    if (!walletAddress) {
+      throw new Error('Wallet address is undefined');
+    }
+
+    if (!(walletAddress instanceof PublicKey)) {
+      walletAddress = new PublicKey(walletAddress);
+    }
+
+
+    const tokenAccounts = await connection.getParsedTokenAccountsByOwner(walletAddress,   { programId: TOKENPROGRAM }
+      );
+
+    let mintAddress;
+
+    if (selectedCurrency === 'USDC') {
+      console.log('USDC Mint Address:', PUSDCMINT);
+      mintAddress = new PublicKey(PUSDCMINT);
+    } else if (selectedCurrency === 'SOL') {
+      console.log('SOL Mint Address:', PSOLMINT);
+      mintAddress = new PublicKey(PSOLMINT);
+    } else {
+      throw new Error(`Unsupported currency: ${selectedCurrency}`);
+    }
+
+    const specificTokenAccounts = tokenAccounts.value.filter(account => 
+      account.account.data.parsed.info.mint === mintAddress.toString()
+    );
+
+    let totalBalance = 0;
+    specificTokenAccounts.forEach(account => {
+      totalBalance += account.account.data.parsed.info.tokenAmount.uiAmount;
+    });
+
+    return totalBalance;
+
+  } catch (error) {
+    console.error('Error fetching SPL token balance:', error);
+    throw error;
+  }
+}
+
+
+
 
 const Earn: FC = () => {
   const { connection } = useConnection();
@@ -201,22 +294,22 @@ const Earn: FC = () => {
     locked: boolean;
     epoch: number;
     totalDeposits: number;
+    usdcTotalDeposits: number;
     lpFees: number;
     pnl: number;
+    usdcLpFees: number;
+    usdcPnl: number;
     cumulativeFeeRate: number;
     cumulativePnlRate: number;
+    psolValuation: number;
+    pusdcValuation: number;  
   } | null>(null);
   const [LProviderdata, setLProviderdata] = useState<{
     isInitialized: boolean;
-    lastDepositEpoch: number;
-    lastWithdrawFeeEpoch: number;
-    providerDepositedAmount: number;
-    solEarned: number;
-    lastKnownCumulativeFeeRate: number;
-    lastKnownPnlRate: number;
-    isActive: boolean;
     withdrawalRequestAmount: number;
     withdrawalRequestEpoch: number;
+    usdcWithdrawalRequestAmount: number;
+    usdcWithdrawalRequestEpoch: number;
   } | null>(null);
   const balance = useUserSOLBalanceStore((s) => s.balance);
   const [depositValue, setdepositValue] = useState("");
@@ -228,8 +321,15 @@ const Earn: FC = () => {
     myAffiliate: Uint8Array;
   }>(null);
 
-  const [Rewards, setRewards] = useState("");
   const [leaderboard30Days, setLeaderboard30Days] = useState([]);
+  const [selectedCurrency, setSelectedCurrency] = useState<'SOL' | 'USDC'>('USDC');
+  const [splTokenAccount, setSplTokenAccount] = useState<PublicKey | null>(null);
+  const [usdcSplTokenAccount, setUsdcSplTokenAccount] = useState<PublicKey | null>(null);
+  const [tokenBalance, setTokenBalance] = useState<number | null>(null);
+
+
+  
+
 
   const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT8;
   useEffect(() => {
@@ -273,6 +373,56 @@ const Earn: FC = () => {
   useEffect(() => {
     fetchcheckuserdata();
   }, [publicKey, connection]);
+
+  useEffect(() => {
+    const updateSplTokenAccounts = async () => {
+      if (publicKey) {
+        try {
+          // Find SPL token account for the preferred currency
+          const splAcc = await findSplTokenAccountSync(publicKey, selectedCurrency);
+          setSplTokenAccount(splAcc);
+
+          // Find SPL token account for USDC
+          const usdcAcc = await usdcSplTokenAccountSync(publicKey);
+          setUsdcSplTokenAccount(usdcAcc);
+        } catch (error) {
+          console.error('Error finding SPL token accounts:', error);
+          // Handle errors, e.g., reset state or show notification
+          setSplTokenAccount(null);
+          setUsdcSplTokenAccount(null);
+        }
+      } else {
+        // Reset state if no wallet is connected
+        setSplTokenAccount(null);
+        setUsdcSplTokenAccount(null);
+      }
+    };
+
+    updateSplTokenAccounts();
+  }, [publicKey, selectedCurrency]);
+
+  useEffect(() => {
+    const updateSplTokenAccounts = async () => {
+      if (publicKey) {
+        try {
+          // Find SPL token account for the preferred currency
+          const tokenBalance = await getSplTokenBalance(connection, publicKey, selectedCurrency);
+          setTokenBalance(tokenBalance);
+
+        } catch (error) {
+          console.error('Error finding SPL token accounts:', error);
+          // Handle errors, e.g., reset state or show notification
+          setTokenBalance(0);
+
+        }
+      } else {
+        // Reset state if no wallet is connected
+        setTokenBalance(0);
+      }
+    };
+
+    updateSplTokenAccounts();
+  }, [publicKey, selectedCurrency, connection]);
 
   useEffect(() => {
     if (publicKey) {
@@ -327,60 +477,6 @@ const Earn: FC = () => {
   };
 
   const signature: TransactionSignature = "";
-  const initLPAccount = useCallback(async () => {
-    if (!publicKey) {
-      notify({
-        type: "error",
-        message: `Wallet not connected`,
-        description: "Connect the wallet in the top panel",
-      });
-      return;
-    }
-    const houseHarcodedkey = new PublicKey(
-      "HME9CUNgcsVZti5x1MdoBeUuo1hkGnuKMwP4xuJHQFtQ"
-    );
-
-    const LPAccseeds = [
-      Buffer.from(houseHarcodedkey.toBytes()),
-      Buffer.from(publicKey.toBytes()),
-    ];
-
-    const [LProviderAcc] = await PublicKey.findProgramAddress(
-      LPAccseeds,
-      PROGRAM_ID
-    );
-    try {
-      // Create the instruction to initialize the user account
-      const initializeInstruction = initializeLiqProvider({
-        liqProvider: LProviderAcc,
-        providersWallet: publicKey,
-        houseAcc: houseHarcodedkey,
-        systemProgram: SystemProgram.programId,
-      });
-
-      const initTransaction = new Transaction().add(initializeInstruction);
-      const initSignature = await sendTransaction(initTransaction, connection);
-
-      notify({
-        type: "info",
-        message: `Creating Liquidity Pool account`,
-      });
-      await connection.confirmTransaction(initSignature, "confirmed");
-      const result = await checkLiquidiryProviderAcc(LProviderAcc, connection);
-      setLProviderdata(result);
-      notify({
-        type: "success",
-        message: `Account Created`,
-        description: `You can now deposit into the Vault`,
-      });
-    } catch (error) {
-      notify({
-        type: "error",
-        message: `Creation Failed`,
-        description: error?.message,
-      });
-    }
-  }, [publicKey]);
 
   const deposittoLP = useCallback(async () => {
     if (!publicKey) {
@@ -391,26 +487,32 @@ const Earn: FC = () => {
       });
       return;
     }
-    const houseHarcodedkey = new PublicKey(
-      "HME9CUNgcsVZti5x1MdoBeUuo1hkGnuKMwP4xuJHQFtQ"
-    );
-    const signerWalletAccount = new PublicKey(
-      "Fb1ABWjtSJVtoZnqogFptAAgqhBCPFY1ZcbEskF8gD1C"
-    );
+
+    const houseHarcodedkey = HOUSEWALLET;
+    const signerWalletAccount = SIGNERWALLET;
     const seedsLpAcc = [
       Buffer.from(houseHarcodedkey.toBytes()),
       Buffer.from(signerWalletAccount.toBytes()),
     ];
+
+    let mintAddress;
+    let usdc;
+    let deposit;
+        if (selectedCurrency === 'USDC') {
+      mintAddress = PUSDCMINT;
+      usdc = 1;
+      deposit = parseFloat(depositValue) * LAMPORTS_PER_SOL/1000;
+    } else if (selectedCurrency === 'SOL') {
+      mintAddress = PSOLMINT; // Use the mint address for wSOL or your custom SPL token for SOL
+      usdc = 0;
+      deposit = parseFloat(depositValue) * LAMPORTS_PER_SOL;
+
+    } 
     const [lpAcc] = await PublicKey.findProgramAddress(seedsLpAcc, PROGRAM_ID);
-    const deposit = parseFloat(depositValue) * LAMPORTS_PER_SOL;
+
 
     if (LPdata?.locked) {
       notify({ type: "info", message: `Vault is locked.` });
-    } else if (
-      LProviderdata?.lastKnownCumulativeFeeRate != LPdata?.cumulativeFeeRate &&
-      LProviderdata?.providerDepositedAmount != 0
-    ) {
-      notify({ type: "info", message: `Claim your rewards first.` });
     } else if (parseFloat(depositValue) < 1) {
       notify({ type: "info", message: `Minimum deposit is 1 SOL.` });
     } else if (
@@ -435,23 +537,28 @@ const Earn: FC = () => {
           PROGRAM_ID
         );
 
-        const args: DepositToLiquidityPoolArgs = {
+        const args: StakeAndMintTokensArgs = {
           depositAmount: new BN(deposit),
+          usdc: usdc,
         };
-        const accounts: DepositToLiquidityPoolAccounts = {
-          liqProvider: LProviderAcc,
+        const accounts: StakeAndMintTokensAccounts = {
           providersWallet: publicKey,
           lpAcc: lpAcc,
-          signerWalletAccount: signerWalletAccount,
-          houseAcc: houseHarcodedkey,
-          pdaHouseAcc: new PublicKey(
-            "3MRKR5tYQeUT8CXYkTjvzR6ivEpaqFLqK9CsNbMFvoHB"
-          ),
+          signerWalletAccount: SIGNERWALLET,
+          houseAcc: HOUSEWALLET,
+          pdaHouseAcc: PDAHOUSEWALLET,
+          mint: mintAddress,
+          usdcMint: USDCMINT,
+          providersSplTokenAccount: splTokenAccount,
+          usdcProvidersWallet: usdcSplTokenAccount,
+          usdcPdaHouseAcc: USDCPDAHOUSEWALLET,
+          associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
+          tokenProgram: TOKENPROGRAM,
           systemProgram: SystemProgram.programId,
         };
 
         const initTransaction = new Transaction().add(
-          depositToLiquidityPool(args, accounts)
+          stakeAndMintTokens(args, accounts)
         );
         const initSignature = await sendTransaction(
           initTransaction,
@@ -485,138 +592,7 @@ const Earn: FC = () => {
         });
       }
     }
-  }, [publicKey, depositValue, LPdata, LProviderdata]);
-
-  const withdrawFees = useCallback(async () => {
-    fetchcheckuserdata();
-    const houseHarcodedkey = new PublicKey(
-      "HME9CUNgcsVZti5x1MdoBeUuo1hkGnuKMwP4xuJHQFtQ"
-    );
-    const signerWalletAccount = new PublicKey(
-      "Fb1ABWjtSJVtoZnqogFptAAgqhBCPFY1ZcbEskF8gD1C"
-    );
-    const seedsLpAcc = [
-      Buffer.from(houseHarcodedkey.toBytes()),
-      Buffer.from(signerWalletAccount.toBytes()),
-    ];
-    const [lpAcc] = await PublicKey.findProgramAddress(seedsLpAcc, PROGRAM_ID);
-    const LPAccseeds = [
-      Buffer.from(houseHarcodedkey.toBytes()),
-      Buffer.from(publicKey.toBytes()),
-    ];
-
-    const [LProviderAcc] = await PublicKey.findProgramAddress(
-      LPAccseeds,
-      PROGRAM_ID
-    );
-    const seedsUser = [Buffer.from(publicKey.toBytes())];
-
-    const [userAcc] = await PublicKey.findProgramAddress(seedsUser, PROGRAM_ID);
-
-    if (LPdata?.locked) {
-      notify({ type: "info", message: `Vault is locked.` });
-    } else if (LProviderdata?.providerDepositedAmount == 0) {
-      notify({ type: "info", message: `You have no deposits.` });
-    } else if (LProviderdata?.lastWithdrawFeeEpoch == LPdata?.epoch) {
-      notify({ type: "info", message: `You have nothing to claim.` });
-    } else {
-      if (!isInit.isInitialized) {
-        try {
-          const seedsAffil = [isInit.usedAffiliate];
-
-          const [AffilAcc] = await PublicKey.findProgramAddress(
-            seedsAffil,
-            PROGRAM_ID
-          );
-
-          const accounts: InitializeUserAccAccounts = {
-            userAcc: userAcc,
-            playerAcc: publicKey,
-            affilAcc: AffilAcc,
-            systemProgram: SystemProgram.programId,
-            clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
-          };
-
-          const args: InitializeUserAccArgs = {
-            usedAffiliate: Array.from(isInit.usedAffiliate),
-          };
-
-          // Create a new transaction to initialize the user account and send it
-          const initTransaction = new Transaction().add(
-            initializeUserAcc(args, accounts)
-          );
-          const initSignature = await sendTransaction(
-            initTransaction,
-            connection
-          );
-
-          // Wait for transaction confirmation
-          // Wait for transaction confirmation
-          notify({ type: "info", message: `Creating Trading Account` });
-          await connection.confirmTransaction(initSignature, "confirmed");
-          fetchcheckuserdata();
-          notify({
-            type: "success",
-            message: `Trading account created`,
-          });
-        } catch (error) {
-          notify({
-            type: "error",
-            message: `Creation Failed`,
-            description: error?.message,
-          });
-        }
-      } else {
-        try {
-          const accounts: WithdrawFeeFromLiquidityPoolAccounts = {
-            liqProvider: LProviderAcc,
-            userAcc: userAcc,
-            providersWallet: publicKey,
-            lpAcc: lpAcc,
-            signerWalletAccount: signerWalletAccount,
-            houseAcc: houseHarcodedkey,
-            pdaHouseAcc: new PublicKey(
-              "3MRKR5tYQeUT8CXYkTjvzR6ivEpaqFLqK9CsNbMFvoHB"
-            ),
-            lpRevAcc: new PublicKey(
-              "Cr7jUVQTBEXWQKKeLBZrGa2Eqgkk7kmDvACrh35Rj5mV"
-            ),
-            systemProgram: SystemProgram.programId,
-          };
-
-          const initTransaction = new Transaction().add(
-            withdrawFeeFromLiquidityPool(accounts)
-          );
-          const initSignature = await sendTransaction(
-            initTransaction,
-            connection
-          );
-
-          notify({
-            type: "info",
-            message: `Requesting Rewards`,
-            txid: signature,
-          });
-          await connection.confirmTransaction(initSignature, "confirmed");
-          const result = await checkLiquidiryProviderAcc(
-            LProviderAcc,
-            connection
-          );
-          setLProviderdata(result);
-          notify({
-            type: "success",
-            message: `Successfully claimed`,
-          });
-        } catch (error) {
-          notify({
-            type: "error",
-            message: `Failed to claim rewards`,
-            description: error?.message,
-          });
-        }
-      }
-    }
-  }, [publicKey, depositValue, LPdata, LProviderdata, isInit]);
+  }, [publicKey, depositValue, LPdata, LProviderdata, selectedCurrency, splTokenAccount, usdcSplTokenAccount]);
 
   const withdrawfromLP = useCallback(async () => {
     if (!publicKey) {
@@ -628,12 +604,18 @@ const Earn: FC = () => {
       return;
     }
 
-    const houseHarcodedkey = new PublicKey(
-      "HME9CUNgcsVZti5x1MdoBeUuo1hkGnuKMwP4xuJHQFtQ"
-    );
-    const signerWalletAccount = new PublicKey(
-      "Fb1ABWjtSJVtoZnqogFptAAgqhBCPFY1ZcbEskF8gD1C"
-    );
+    let mintAddress;
+    let usdc;
+    if (selectedCurrency === 'USDC') {
+      mintAddress = PUSDCMINT;
+      usdc = 1;
+    } else if (selectedCurrency === 'SOL') {
+      mintAddress = PSOLMINT; // Use the mint address for wSOL or your custom SPL token for SOL
+      usdc = 0;
+    } 
+
+    const houseHarcodedkey = HOUSEWALLET;
+    const signerWalletAccount = SIGNERWALLET;
     const seedsLpAcc = [
       Buffer.from(houseHarcodedkey.toBytes()),
       Buffer.from(signerWalletAccount.toBytes()),
@@ -656,38 +638,40 @@ const Earn: FC = () => {
       PROGRAM_ID
     );
 
+    
+
     let withdraw = 0; // Initializing withdraw as a number with an initial value of 0.
     if (
       LProviderdata?.withdrawalRequestAmount != 0 &&
       LProviderdata?.withdrawalRequestEpoch == LPdata?.epoch
     ) {
       withdraw = LProviderdata?.withdrawalRequestAmount;
-    } else withdraw = parseFloat(withdrawValue) * LAMPORTS_PER_SOL;
+    } else (withdraw = parseFloat(withdrawValue) * LAMPORTS_PER_SOL);
     console.log(withdraw);
     if (LPdata?.locked) {
       notify({ type: "info", message: `Vault is locked.` });
-    } else if (LProviderdata?.providerDepositedAmount == 0) {
-      notify({ type: "info", message: `You have no deposits.` });
-    } else if (
-      LProviderdata?.lastKnownCumulativeFeeRate != LPdata?.cumulativeFeeRate
-    ) {
-      notify({ type: "info", message: `Claim your rewards first.` });
     } else {
       try {
         const args: WithdrawFromLiquidityPoolArgs = {
           withdrawAmount: new BN(withdraw),
+          usdc: usdc,
         };
 
         const accounts: WithdrawFromLiquidityPoolAccounts = {
           liqProvider: LProviderAcc,
           providersWallet: publicKey,
           lpAcc: lpAcc,
-          signerWalletAccount: signerWalletAccount,
+          signerWalletAccount: SIGNERWALLET,
+          houseAcc: HOUSEWALLET,
+          pdaHouseAcc: PDAHOUSEWALLET,
+          mint: mintAddress,
+          usdcMint: USDCMINT,
+          providersSplTokenAccount: splTokenAccount,
+          usdcProvidersWallet: usdcSplTokenAccount,
+          usdcPdaHouseAcc: USDCPDAHOUSEWALLET,
+          tokenProgram: TOKENPROGRAM,
           ratioAcc: ratioAcc,
-          houseAcc: houseHarcodedkey,
-          pdaHouseAcc: new PublicKey(
-            "3MRKR5tYQeUT8CXYkTjvzR6ivEpaqFLqK9CsNbMFvoHB"
-          ),
+          associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
           systemProgram: SystemProgram.programId,
         };
 
@@ -705,11 +689,6 @@ const Earn: FC = () => {
           txid: signature,
         });
         await connection.confirmTransaction(initSignature, "confirmed");
-        const result = await checkLiquidiryProviderAcc(
-          LProviderAcc,
-          connection
-        );
-        setLProviderdata(result);
         notify({
           type: "success",
           message: `Withdrawal Successful`,
@@ -722,7 +701,7 @@ const Earn: FC = () => {
         });
       }
     }
-  }, [publicKey, withdrawValue, LPdata, LProviderdata]);
+  }, [publicKey, withdrawValue, LPdata, LProviderdata, selectedCurrency, splTokenAccount, usdcSplTokenAccount]);
 
   const [timeUntilNextEpoch, setTimeUntilNextEpoch] = useState("");
   const [timeUntilNextlockEpoch, setTimeUntillockNextEpoch] = useState("");
@@ -795,11 +774,13 @@ const Earn: FC = () => {
 
   useEffect(() => {
     const fetchLpstatus = async () => {
+      console.log('HOUSEWALLET:', HOUSEWALLET); // Check if it's undefined or not a valid input
+
       const houseHarcodedkey = new PublicKey(
-        "HME9CUNgcsVZti5x1MdoBeUuo1hkGnuKMwP4xuJHQFtQ"
+        HOUSEWALLET
       );
       const signerWalletAccount = new PublicKey(
-        "Fb1ABWjtSJVtoZnqogFptAAgqhBCPFY1ZcbEskF8gD1C"
+        SIGNERWALLET
       );
       const seedsLpAcc = [
         Buffer.from(houseHarcodedkey.toBytes()),
@@ -828,7 +809,7 @@ const Earn: FC = () => {
       }
 
       const houseHarcodedkey = new PublicKey(
-        "HME9CUNgcsVZti5x1MdoBeUuo1hkGnuKMwP4xuJHQFtQ"
+        HOUSEWALLET
       );
 
       const seedsUser = [
@@ -850,26 +831,6 @@ const Earn: FC = () => {
     fetchcheckLiquidiryProviderAcc();
   }, [publicKey, connection]);
 
-  useEffect(() => {
-    const LPcumulativeFeeRate = LPdata?.cumulativeFeeRate || 0;
-    const LPcumulativePnlRate = LPdata?.cumulativePnlRate || 0;
-    const LProviderLastKnownCumulativeFeeRate =
-      LProviderdata?.lastKnownCumulativeFeeRate || 0;
-    const LProviderLastKnownPnlRate = LProviderdata?.lastKnownPnlRate || 0;
-    const LProviderProviderDepositedAmount =
-      LProviderdata?.providerDepositedAmount || 0;
-
-    const Reward = (
-      ((LPcumulativeFeeRate +
-        LPcumulativePnlRate -
-        (LProviderLastKnownCumulativeFeeRate + LProviderLastKnownPnlRate)) *
-        LProviderProviderDepositedAmount) /
-      LAMPORTS_PER_SOL /
-      100000
-    ).toFixed(2);
-
-    setRewards(Reward);
-  }, [LPdata, LProviderdata]);
 
   const [activeSection, setActiveSection] = useState("deposit");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -893,7 +854,16 @@ const Earn: FC = () => {
       ? (
           (LProviderdata?.withdrawalRequestAmount || 0) / LAMPORTS_PER_SOL
         ).toFixed(2)
-      : "0";
+      : "0 SOL";
+
+      const usdcresult =
+    LProviderdata?.usdcWithdrawalRequestAmount != 0 &&
+    (LProviderdata?.usdcWithdrawalRequestEpoch == LPdata?.epoch ||
+      LProviderdata?.usdcWithdrawalRequestEpoch == LPdata?.epoch + 1)
+      ? (
+          (LProviderdata?.usdcWithdrawalRequestAmount || 0) / LAMPORTS_PER_SOL
+        ).toFixed(2)
+      : "0 USDC";
 
   return (
     <div>
@@ -904,29 +874,76 @@ const Earn: FC = () => {
 
       <div className="bg-base flex justify-center items-top md:pt-2 min-h-[calc(100vh-78px)]">
         <div className="w-[98%] xl:w-[60%] lg:w-[60%] md:w-[60%] sm:w-[60%] lg:min-w-[780px] md:min-w-[780px] sm:min-w-[95%] ">
-          <div className="bankGothic flex flex-col  gap-[8px] text-4xl mt-2 lg:text-5xl text-white">
+          <div className="w-full bankGothic flex md:flex-row flex-col  gap-[8px] text-4xl mt-2 lg:text-5xl text-white md:justify-between items-center justify-center">
             <h1 className="bankGothic md:text-start text-center text-4xl mt-2 lg:text-5xl text-transparent bg-clip-text bg-white">
               Vault
             </h1>
+            <div className="w-[300px] flex flex-row items-center justify-center text-lg text-primary font-bankgothic-md-bt border-b-[1px] border-solid border-layer-3">
+        <button
+          className={`flex-1   h-10 flex flex-row  items-center justify-center py-3 px-6 transition-all duration-200 ease-in-out  ${
+            selectedCurrency === "SOL"
+              ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-b-[2px] border-solid border-primary"
+              : "text-grey long-short-button"
+          }`}
+          onClick={() => setSelectedCurrency('SOL')} 
+        >
+          <div
+            className={`flex justify-center items-center h-full w-full rounded-lg ${
+              selectedCurrency === "SOL" ? "" : ""
+            }`}
+          >
+            <div
+              className={`bankGothic uppercase  ${
+                selectedCurrency === "SOL" ? "" : ""
+              }`}
+            >
+              SOL
+            </div>
+          </div>
+        </button>
+        <button
+          className={`flex-1   h-10 flex flex-row items-center justify-center py-3 px-6 transition-all duration-200 ease-in-out  ${
+            selectedCurrency === "USDC"
+            ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-b-[2px] border-solid border-primary"
+            : "text-grey long-short-button"
+          }`}
+          onClick={() => setSelectedCurrency('USDC')} // Set selectedCurrency to 'USDC'
+        >
+          <div
+            className={`bankGothic  uppercase ${
+              selectedCurrency === "USDC" ? "" : ""
+            }`}
+          >
+            USDC
+          </div>
+        </button>
+      </div>
+
           </div>
           <img
             className="hidden md:block absolute h-[39.41%] w-[21.83%] top-[12.12%] bottom-[48.47%] right-[5%] max-w-full overflow-hidden max-h-full"
             alt=""
             src="/sheesh/abstract06.svg"
           />
-
           <div className="pt-2 bankGothic text-grey-text flex md:flex-row flex-col items-center justify-center gap-[16px] text-base  w-full px-2 md:px-0">
             <div className="z-10 md:w-[55%] w-full flex flex-col items-center justify-center relative gap-[8px] w-full self-stretch bg-gradient-to-t from-[#0B7A55] to-[#34C796] md:rounded-2xl rounded-lg p-[1px] ">
               <div className="w-full h-full self-stretch md:rounded-2xl rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#0b111b]  w-full flex flex-col items-end justify-center">
                 <div className="bg-base bg-opacity-70 w-full h-full self-stretch md:rounded-2xl rounded-lg  w-full flex flex-row items-center justify-center md:px-8 sm:gap-[16px]">
-                  <img
-                    className="my-0 mx-[!important] top-[20px] left-[calc(50%_-_143px)] sm:w-1/2 sm:min-w-[100px] w-1/2 min-w-[75px] max-w-[150px] z-[1]"
-                    alt=""
-                    src="/coins/320x320/Sol.png"
-                  />
+                <img
+  className="my-0 mx-[!important] top-[20px] left-[calc(50%_-_143px)] sm:w-1/2 sm:min-w-[100px] w-1/3 min-w-[75px] sm:max-w-[150px] max-w-[100] z-[1] sm:p-0 p-3"
+  alt={selectedCurrency}
+  src={selectedCurrency === "SOL" ? "/coins/SOLLP.png" : "/coins/USDCLP.png"}
+/>
                   <div className="flex flex-col w-2/3 text-left h-[62px] flex flex-col items-start justify-center gap-[8px] z-[0] text-[18px]">
                     <div className="relative leading-[100%] font-medium">
-                      SOLANA VAULT
+                    {selectedCurrency === "SOL" ? 
+    (
+      `SOLANA VAULT`
+    ) : 
+    (
+      `USDC VAULT`
+    )
+  }
                     </div>
                     <div className="relative text-[36px] leading-[100%] font-semibold font-poppins bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] text-left">
                       {(
@@ -966,13 +983,22 @@ const Earn: FC = () => {
                   />
                   <div className="flex flex-col items-start justify-center gap-[4px]">
                     <div className="relative leading-[100%] font-medium">
-                      REWARDS THIS EPOCH
+                      TOKEN RATIO
                     </div>
                     <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
-                      {(
-                        (LPdata?.pnl + LPdata?.lpFees || 0) / LAMPORTS_PER_SOL
-                      ).toFixed(2)}{" "}
-                      SOL
+                    {selectedCurrency === "SOL" ? 
+    (
+      `${(
+        (LPdata?.psolValuation || 0) / LAMPORTS_PER_SOL
+      ).toFixed(2)} pSOL/SOL`
+    ) : 
+    (
+      `${(
+        (LPdata?.pusdcValuation || 0) / LAMPORTS_PER_SOL
+      ).toFixed(2)} pUSDC/USD`
+    )
+  }
+
                     </div>
                   </div>
                 </div>
@@ -989,10 +1015,14 @@ const Earn: FC = () => {
                       TVL
                     </div>
                     <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
-                      {(
-                        (LPdata?.totalDeposits || 0) / LAMPORTS_PER_SOL
-                      ).toFixed(2) ?? "0"}{" "}
-                      SOL
+                    {selectedCurrency === "SOL" ? 
+    (
+      `${((LPdata?.totalDeposits || 0) / LAMPORTS_PER_SOL).toFixed(2)} SOL`
+    ) : 
+    (
+      `${((LPdata?.usdcTotalDeposits || 0) / LAMPORTS_PER_SOL*1000).toFixed(0)} USDC`
+    )
+  }
                     </div>
                   </div>
                 </div>
@@ -1088,28 +1118,22 @@ const Earn: FC = () => {
                     <div className="flex flex-col items-start justify-center gap-[4px]">
                       <div className="relative leading-[100%] font-medium">
                         DEPOSITED
+            
                       </div>
                       <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
-                        {(
-                          (LProviderdata?.providerDepositedAmount || 0) /
-                          LAMPORTS_PER_SOL
-                        ).toFixed(2)}{" "}
-                        SOL
-                      </div>
-                    </div>
-                  </div>
-                  <div className="w-1/2 flex flex-row items-center justify-start gap-[8px]">
-                    <img
-                      className="relative rounded-lg w-[42px] h-[42px]"
-                      alt=""
-                      src="/sheesh/icons8.svg"
-                    />
-                    <div className="flex flex-col items-start justify-center gap-[4px]">
-                      <div className="relative leading-[100%] font-medium">
-                        LAST DEPOSIT EPOCH
-                      </div>
-                      <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
-                        {LProviderdata?.lastDepositEpoch || 0}
+
+                      {selectedCurrency === "SOL" ? 
+    (
+      `${(
+        (tokenBalance * LPdata?.psolValuation || 0) / LAMPORTS_PER_SOL
+      ).toFixed(2)} SOL`
+    ) : 
+    (
+      `${(
+        (tokenBalance * LPdata?.pusdcValuation || 0) / LAMPORTS_PER_SOL
+      ).toFixed(0)} USDC`
+    )
+  }
                       </div>
                     </div>
                   </div>
@@ -1147,26 +1171,17 @@ const Earn: FC = () => {
                   </div>
                 </div>
                 <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]  w-full h-10   box-border text-center text-lg">
-                  {LProviderdata?.isInitialized ? (
                     <button
                       onClick={deposittoLP}
                       className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] hover:bg-opacity-60 bg-opacity-80 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
                     >
                       DEPOSIT
                     </button>
-                  ) : (
-                    <button
-                      onClick={initLPAccount}
-                      className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
-                    >
-                      DEPOSIT
-                    </button>
-                  )}
                 </div>
               </div>
             )}
             {(activeSection === "withdraw" || !isMobile) && (
-              <div className="self-stretch md:w-1/2 z-10 flex-1 rounded-lg bg-layer-1 flex flex-col items-start justify-center md:p-6 p-4 gap-[24px] border-[1px] border-solid border-layer-3">
+              <div className="self-stretch md:w-1/2 z-10 flex-1 rounded-lg bg-layer-1 flex flex-col items-start justify-start md:p-6 p-4 gap-[12px] border-[1px] border-solid border-layer-3">
                 <div className="self-stretch flex flex-col items-start justify-center gap-[16px] text-5xl text-white">
                   <div className="hidden md:flex  relative leading-[100%] font-medium  text-[30px]">
                     WITHDRAW
@@ -1180,89 +1195,8 @@ const Earn: FC = () => {
                     staking before withdrawing.
                   </div>
                 </div>
-                <div className="self-stretch flex flex-col gap-[12px] sm:gap-[0px] items-start justify-center sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex flex-row items-center justify-start gap-[8px]">
-                    <img
-                      className="relative rounded-lg w-[42px] h-[42px]"
-                      alt=""
-                      src="/sheesh/icons4.svg"
-                    />
-                    {LPdata?.locked ? (
-                      <div className="flex flex-col items-start justify-center gap-[4px]">
-                        <div className="relative leading-[100%] font-medium">
-                          UNLOCKING IN
-                        </div>
-                        <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
-                          {timeUntilNextEpoch}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-start justify-center gap-[4px]">
-                        <div className="relative leading-[100%] font-medium">
-                          LOCKING IN
-                        </div>
-                        <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
-                          {timeUntilNextlockEpoch}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <div className="w-1/2 flex flex-row items-center justify-start gap-[8px]">
-                    <img
-                      className="relative rounded-lg w-[42px] h-[42px]"
-                      alt=""
-                      src="/sheesh/icons5.svg"
-                    />
-                    <div className="flex flex-col items-start justify-center gap-[4px]">
-                      <div className="relative leading-[100%] font-medium">
-                        EARNINGS
-                      </div>
-                      <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
-                        {LPdata?.locked ? (
-                          <span className="">
-                            {(() => {
-                              const result = Number(
-                                (((LPdata?.pnl > 0
-                                  ? LPdata?.pnl
-                                  : LPdata?.pnl) + LPdata?.lpFees || 0) /
-                                  LAMPORTS_PER_SOL) *
-                                  (LProviderdata?.providerDepositedAmount /
-                                    (LPdata?.totalDeposits || 1)) +
-                                  parseFloat(Rewards) || 0
-                              ).toFixed(2);
-
-                              return isNaN(parseFloat(result))
-                                ? "0.00"
-                                : result;
-                            })()}{" "}
-                            SOL
-                          </span>
-                        ) : (
-                          <span>{Rewards} SOL</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]  w-full h-10   box-border text-center text-lg">
-                  {!LProviderdata?.isInitialized ? (
-                    <button
-                      onClick={initLPAccount}
-                      className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
-                    >
-                      CLAIM
-                    </button>
-                  ) : (
-                    <button
-                      onClick={withdrawFees}
-                      className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
-                    >
-                      CLAIM
-                    </button>
-                  )}
-                </div>
-                <div className=" self-stretch relative box-border h-px border-t-[1px] border-solid border-layer-3" />
-                <div className="self-stretch flex flex-col gap-[12px] sm:gap-[0px] items-start justify-center sm:flex-row sm:items-center sm:justify-between">
+                <div className=" self-stretch relative box-border h-px " />
+                <div className="self-stretch flex flex-col gap-[12px] items-start justify-start  sm:justify-between">
                   <div className=" flex flex-row items-center justify-start gap-[8px]">
                     <img
                       className="relative rounded-lg w-[42px]"
@@ -1274,15 +1208,23 @@ const Earn: FC = () => {
                         WITHDRAWABLE
                       </div>
                       <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
-                        {(
-                          (LProviderdata?.providerDepositedAmount || 0) /
-                          LAMPORTS_PER_SOL
-                        ).toFixed(2)}{" "}
-                        SOL
+  
+                      {selectedCurrency === "SOL" ? 
+    (
+      `${(
+        (tokenBalance  || 0)
+      ).toFixed(2)} pSOL`
+    ) : 
+    (
+      `${(
+        (tokenBalance  || 0)
+      ).toFixed(0)} pUSDC`
+    )
+  }
                       </div>
                     </div>
                   </div>
-                  <div className="w-1/2 flex flex-row items-center justify-start gap-[8px]">
+                  <div className="w-full flex flex-row items-center justify-start gap-[8px]">
                     <img
                       className="relative rounded-lg w-[42px]"
                       alt=""
@@ -1290,17 +1232,24 @@ const Earn: FC = () => {
                     />
                     <div className="flex flex-col items-start justify-center gap-[4px]">
                       <div className="relative leading-[100%] font-medium">
-                        PENDING WITHDRAWALS
+                        PENDING WITHDRAWAL
                       </div>
                       <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
-                        {result}
+                        {selectedCurrency === "SOL" ? 
+    (
+      `${result}`
+    ) : 
+    (
+      `${usdcresult}`
+    )
+  }
                       </div>
                     </div>
                   </div>
                 </div>
                 {LProviderdata?.withdrawalRequestAmount != 0 &&
                 LProviderdata?.withdrawalRequestEpoch == LPdata?.epoch ? (
-                  <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]  w-full h-10   box-border text-center text-lg">
+                  <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]   w-full h-10   box-border text-center text-lg">
                     <button
                       onClick={withdrawfromLP}
                       className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
@@ -1309,7 +1258,7 @@ const Earn: FC = () => {
                     </button>
                   </div>
                 ) : (
-                  <div className="w-full">
+                  <div className="w-full pt-3">
                     <div className="self-stretch h-[62px] flex flex-col items-start justify-start gap-[8px] font-poppins">
                       <div className="self-stretch flex flex-col items-start justify-start">
                         <div className="relative leading-[14px] inline-block max-w-[131px]">
@@ -1325,17 +1274,15 @@ const Earn: FC = () => {
                           value={withdrawValue}
                           onChange={handleInputChange2}
                           min={0.05}
-                          max={LProviderdata?.providerDepositedAmount}
+                          max="100"
                         />
                         <button
                           onClick={() => {
                             if (
-                              LProviderdata?.providerDepositedAmount &&
-                              LAMPORTS_PER_SOL
+                           0
                             ) {
                               const maxValue = (
-                                LProviderdata.providerDepositedAmount /
-                                LAMPORTS_PER_SOL
+                              0
                               ).toString();
                               setwithdrawValue(maxValue);
                             }
@@ -1347,21 +1294,13 @@ const Earn: FC = () => {
                       </div>
                     </div>
                     <div className="mt-6 rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]  w-full h-10   box-border text-center text-lg">
-                      {LProviderdata?.isInitialized ? (
                         <button
                           onClick={withdrawfromLP}
                           className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
                         >
                           WITHDRAW
                         </button>
-                      ) : (
-                        <button
-                          onClick={initLPAccount}
-                          className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
-                        >
-                          WITHDRAW
-                        </button>
-                      )}
+
                     </div>
                   </div>
                 )}

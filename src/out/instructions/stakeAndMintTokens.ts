@@ -3,13 +3,12 @@ import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
-export interface WithdrawFromLiquidityPoolArgs {
-  withdrawAmount: BN
+export interface StakeAndMintTokensArgs {
+  depositAmount: BN
   usdc: number
 }
 
-export interface WithdrawFromLiquidityPoolAccounts {
-  liqProvider: PublicKey
+export interface StakeAndMintTokensAccounts {
   providersWallet: PublicKey
   lpAcc: PublicKey
   signerWalletAccount: PublicKey
@@ -20,24 +19,22 @@ export interface WithdrawFromLiquidityPoolAccounts {
   providersSplTokenAccount: PublicKey
   usdcProvidersWallet: PublicKey
   usdcPdaHouseAcc: PublicKey
-  tokenProgram: PublicKey
-  ratioAcc: PublicKey
   associatedTokenProgram: PublicKey
+  tokenProgram: PublicKey
   systemProgram: PublicKey
 }
 
 export const layout = borsh.struct([
-  borsh.u64("withdrawAmount"),
+  borsh.u64("depositAmount"),
   borsh.u8("usdc"),
 ])
 
-export function withdrawFromLiquidityPool(
-  args: WithdrawFromLiquidityPoolArgs,
-  accounts: WithdrawFromLiquidityPoolAccounts,
+export function stakeAndMintTokens(
+  args: StakeAndMintTokensArgs,
+  accounts: StakeAndMintTokensAccounts,
   programId: PublicKey = PROGRAM_ID
 ) {
   const keys: Array<AccountMeta> = [
-    { pubkey: accounts.liqProvider, isSigner: false, isWritable: true },
     { pubkey: accounts.providersWallet, isSigner: true, isWritable: true },
     { pubkey: accounts.lpAcc, isSigner: false, isWritable: true },
     {
@@ -56,20 +53,19 @@ export function withdrawFromLiquidityPool(
     },
     { pubkey: accounts.usdcProvidersWallet, isSigner: false, isWritable: true },
     { pubkey: accounts.usdcPdaHouseAcc, isSigner: false, isWritable: true },
-    { pubkey: accounts.tokenProgram, isSigner: false, isWritable: false },
-    { pubkey: accounts.ratioAcc, isSigner: false, isWritable: true },
     {
       pubkey: accounts.associatedTokenProgram,
       isSigner: false,
       isWritable: false,
     },
+    { pubkey: accounts.tokenProgram, isSigner: false, isWritable: false },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
   ]
-  const identifier = Buffer.from([225, 90, 221, 102, 240, 250, 152, 150])
+  const identifier = Buffer.from([145, 192, 53, 161, 190, 10, 19, 77])
   const buffer = Buffer.alloc(1000)
   const len = layout.encode(
     {
-      withdrawAmount: args.withdrawAmount,
+      depositAmount: args.depositAmount,
       usdc: args.usdc,
     },
     buffer

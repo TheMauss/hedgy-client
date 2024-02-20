@@ -1,91 +1,127 @@
-import { PublicKey, Connection } from "@solana/web3.js";
-import BN from "bn.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as borsh from "@coral-xyz/borsh"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { PROGRAM_ID } from "../programId";
+import { PublicKey, Connection } from "@solana/web3.js"
+import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
+import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
+import { PROGRAM_ID } from "../programId"
 
 export interface UserAccountFields {
-  isInitialized: boolean;
-  creationTime: BN;
-  myWallet: PublicKey;
-  myAffiliate: Array<number>;
-  usedAffiliate: Array<number>;
-  userBetAmountBtc: BN;
-  userBetAmountSol: BN;
-  userBinaryBetAmountBtc: BN;
-  userBinaryBetAmountSol: BN;
-  userBetAmountBonk: BN;
-  userBinaryBetAmountBonk: BN;
-  userBetAmountPyth: BN;
-  userBinaryBetAmountPyth: BN;
-  userBetAmountJup: BN;
-  userBinaryBetAmountJup: BN;
-  totalFees: BN;
-  currentEpochVolume: BN;
-  prevTradingVolume: BN;
-  rebates: BN;
-  lastTradeEpoch: BN;
-  rebateTier: BN;
-  userBetAmountEth: BN;
-  userBetAmountSui: BN;
-  userBetAmountTia: BN;
+  isInitialized: boolean
+  creationTime: BN
+  myWallet: PublicKey
+  myAffiliate: Array<number>
+  usedAffiliate: Array<number>
+  userBetAmountBtc: BN
+  userBetAmountSol: BN
+  userBinaryBetAmountBtc: BN
+  userBinaryBetAmountSol: BN
+  userBetAmountBonk: BN
+  userBinaryBetAmountBonk: BN
+  userBetAmountPyth: BN
+  userBinaryBetAmountPyth: BN
+  userBetAmountJup: BN
+  userBinaryBetAmountJup: BN
+  totalFees: BN
+  currentEpochVolume: BN
+  prevTradingVolume: BN
+  rebates: BN
+  lastTradeEpoch: BN
+  rebateTier: BN
+  userBetAmountEth: BN
+  userBetAmountSui: BN
+  userBetAmountTia: BN
+  usdcUserBinaryBetAmountBtc: BN
+  usdcUserBinaryBetAmountSol: BN
+  usdcUserBetAmountBtc: BN
+  usdcUserBetAmountSol: BN
+  usdcUserBetAmountBonk: BN
+  usdcUserBetAmountPyth: BN
+  usdcUserBetAmountJup: BN
+  usdcUserBetAmountEth: BN
+  usdcUserBetAmountSui: BN
+  usdcUserBetAmountTia: BN
+  ordersCollateral: BN
+  usdcOrdersCollateral: BN
 }
 
 export interface UserAccountJSON {
-  isInitialized: boolean;
-  creationTime: string;
-  myWallet: string;
-  myAffiliate: Array<number>;
-  usedAffiliate: Array<number>;
-  userBetAmountBtc: string;
-  userBetAmountSol: string;
-  userBinaryBetAmountBtc: string;
-  userBinaryBetAmountSol: string;
-  userBetAmountBonk: string;
-  userBinaryBetAmountBonk: string;
-  userBetAmountPyth: string;
-  userBinaryBetAmountPyth: string;
-  userBetAmountJup: string;
-  userBinaryBetAmountJup: string;
-  totalFees: string;
-  currentEpochVolume: string;
-  prevTradingVolume: string;
-  rebates: string;
-  lastTradeEpoch: string;
-  rebateTier: string;
-  userBetAmountEth: string;
-  userBetAmountSui: string;
-  userBetAmountTia: string;
+  isInitialized: boolean
+  creationTime: string
+  myWallet: string
+  myAffiliate: Array<number>
+  usedAffiliate: Array<number>
+  userBetAmountBtc: string
+  userBetAmountSol: string
+  userBinaryBetAmountBtc: string
+  userBinaryBetAmountSol: string
+  userBetAmountBonk: string
+  userBinaryBetAmountBonk: string
+  userBetAmountPyth: string
+  userBinaryBetAmountPyth: string
+  userBetAmountJup: string
+  userBinaryBetAmountJup: string
+  totalFees: string
+  currentEpochVolume: string
+  prevTradingVolume: string
+  rebates: string
+  lastTradeEpoch: string
+  rebateTier: string
+  userBetAmountEth: string
+  userBetAmountSui: string
+  userBetAmountTia: string
+  usdcUserBinaryBetAmountBtc: string
+  usdcUserBinaryBetAmountSol: string
+  usdcUserBetAmountBtc: string
+  usdcUserBetAmountSol: string
+  usdcUserBetAmountBonk: string
+  usdcUserBetAmountPyth: string
+  usdcUserBetAmountJup: string
+  usdcUserBetAmountEth: string
+  usdcUserBetAmountSui: string
+  usdcUserBetAmountTia: string
+  ordersCollateral: string
+  usdcOrdersCollateral: string
 }
 
 export class UserAccount {
-  readonly isInitialized: boolean;
-  readonly creationTime: BN;
-  readonly myWallet: PublicKey;
-  readonly myAffiliate: Array<number>;
-  readonly usedAffiliate: Array<number>;
-  readonly userBetAmountBtc: BN;
-  readonly userBetAmountSol: BN;
-  readonly userBinaryBetAmountBtc: BN;
-  readonly userBinaryBetAmountSol: BN;
-  readonly userBetAmountBonk: BN;
-  readonly userBinaryBetAmountBonk: BN;
-  readonly userBetAmountPyth: BN;
-  readonly userBinaryBetAmountPyth: BN;
-  readonly userBetAmountJup: BN;
-  readonly userBinaryBetAmountJup: BN;
-  readonly totalFees: BN;
-  readonly currentEpochVolume: BN;
-  readonly prevTradingVolume: BN;
-  readonly rebates: BN;
-  readonly lastTradeEpoch: BN;
-  readonly rebateTier: BN;
-  readonly userBetAmountEth: BN;
-  readonly userBetAmountSui: BN;
-  readonly userBetAmountTia: BN;
+  readonly isInitialized: boolean
+  readonly creationTime: BN
+  readonly myWallet: PublicKey
+  readonly myAffiliate: Array<number>
+  readonly usedAffiliate: Array<number>
+  readonly userBetAmountBtc: BN
+  readonly userBetAmountSol: BN
+  readonly userBinaryBetAmountBtc: BN
+  readonly userBinaryBetAmountSol: BN
+  readonly userBetAmountBonk: BN
+  readonly userBinaryBetAmountBonk: BN
+  readonly userBetAmountPyth: BN
+  readonly userBinaryBetAmountPyth: BN
+  readonly userBetAmountJup: BN
+  readonly userBinaryBetAmountJup: BN
+  readonly totalFees: BN
+  readonly currentEpochVolume: BN
+  readonly prevTradingVolume: BN
+  readonly rebates: BN
+  readonly lastTradeEpoch: BN
+  readonly rebateTier: BN
+  readonly userBetAmountEth: BN
+  readonly userBetAmountSui: BN
+  readonly userBetAmountTia: BN
+  readonly usdcUserBinaryBetAmountBtc: BN
+  readonly usdcUserBinaryBetAmountSol: BN
+  readonly usdcUserBetAmountBtc: BN
+  readonly usdcUserBetAmountSol: BN
+  readonly usdcUserBetAmountBonk: BN
+  readonly usdcUserBetAmountPyth: BN
+  readonly usdcUserBetAmountJup: BN
+  readonly usdcUserBetAmountEth: BN
+  readonly usdcUserBetAmountSui: BN
+  readonly usdcUserBetAmountTia: BN
+  readonly ordersCollateral: BN
+  readonly usdcOrdersCollateral: BN
 
   static readonly discriminator = Buffer.from([
     211, 33, 136, 16, 186, 110, 242, 127,
-  ]);
+  ])
 
   static readonly layout = borsh.struct([
     borsh.bool("isInitialized"),
@@ -112,33 +148,57 @@ export class UserAccount {
     borsh.u64("userBetAmountEth"),
     borsh.u64("userBetAmountSui"),
     borsh.u64("userBetAmountTia"),
-  ]);
+    borsh.u64("usdcUserBinaryBetAmountBtc"),
+    borsh.u64("usdcUserBinaryBetAmountSol"),
+    borsh.u64("usdcUserBetAmountBtc"),
+    borsh.u64("usdcUserBetAmountSol"),
+    borsh.u64("usdcUserBetAmountBonk"),
+    borsh.u64("usdcUserBetAmountPyth"),
+    borsh.u64("usdcUserBetAmountJup"),
+    borsh.u64("usdcUserBetAmountEth"),
+    borsh.u64("usdcUserBetAmountSui"),
+    borsh.u64("usdcUserBetAmountTia"),
+    borsh.u64("ordersCollateral"),
+    borsh.u64("usdcOrdersCollateral"),
+  ])
 
   constructor(fields: UserAccountFields) {
-    this.isInitialized = fields.isInitialized;
-    this.creationTime = fields.creationTime;
-    this.myWallet = fields.myWallet;
-    this.myAffiliate = fields.myAffiliate;
-    this.usedAffiliate = fields.usedAffiliate;
-    this.userBetAmountBtc = fields.userBetAmountBtc;
-    this.userBetAmountSol = fields.userBetAmountSol;
-    this.userBinaryBetAmountBtc = fields.userBinaryBetAmountBtc;
-    this.userBinaryBetAmountSol = fields.userBinaryBetAmountSol;
-    this.userBetAmountBonk = fields.userBetAmountBonk;
-    this.userBinaryBetAmountBonk = fields.userBinaryBetAmountBonk;
-    this.userBetAmountPyth = fields.userBetAmountPyth;
-    this.userBinaryBetAmountPyth = fields.userBinaryBetAmountPyth;
-    this.userBetAmountJup = fields.userBetAmountJup;
-    this.userBinaryBetAmountJup = fields.userBinaryBetAmountJup;
-    this.totalFees = fields.totalFees;
-    this.currentEpochVolume = fields.currentEpochVolume;
-    this.prevTradingVolume = fields.prevTradingVolume;
-    this.rebates = fields.rebates;
-    this.lastTradeEpoch = fields.lastTradeEpoch;
-    this.rebateTier = fields.rebateTier;
-    this.userBetAmountEth = fields.userBetAmountEth;
-    this.userBetAmountSui = fields.userBetAmountSui;
-    this.userBetAmountTia = fields.userBetAmountTia;
+    this.isInitialized = fields.isInitialized
+    this.creationTime = fields.creationTime
+    this.myWallet = fields.myWallet
+    this.myAffiliate = fields.myAffiliate
+    this.usedAffiliate = fields.usedAffiliate
+    this.userBetAmountBtc = fields.userBetAmountBtc
+    this.userBetAmountSol = fields.userBetAmountSol
+    this.userBinaryBetAmountBtc = fields.userBinaryBetAmountBtc
+    this.userBinaryBetAmountSol = fields.userBinaryBetAmountSol
+    this.userBetAmountBonk = fields.userBetAmountBonk
+    this.userBinaryBetAmountBonk = fields.userBinaryBetAmountBonk
+    this.userBetAmountPyth = fields.userBetAmountPyth
+    this.userBinaryBetAmountPyth = fields.userBinaryBetAmountPyth
+    this.userBetAmountJup = fields.userBetAmountJup
+    this.userBinaryBetAmountJup = fields.userBinaryBetAmountJup
+    this.totalFees = fields.totalFees
+    this.currentEpochVolume = fields.currentEpochVolume
+    this.prevTradingVolume = fields.prevTradingVolume
+    this.rebates = fields.rebates
+    this.lastTradeEpoch = fields.lastTradeEpoch
+    this.rebateTier = fields.rebateTier
+    this.userBetAmountEth = fields.userBetAmountEth
+    this.userBetAmountSui = fields.userBetAmountSui
+    this.userBetAmountTia = fields.userBetAmountTia
+    this.usdcUserBinaryBetAmountBtc = fields.usdcUserBinaryBetAmountBtc
+    this.usdcUserBinaryBetAmountSol = fields.usdcUserBinaryBetAmountSol
+    this.usdcUserBetAmountBtc = fields.usdcUserBetAmountBtc
+    this.usdcUserBetAmountSol = fields.usdcUserBetAmountSol
+    this.usdcUserBetAmountBonk = fields.usdcUserBetAmountBonk
+    this.usdcUserBetAmountPyth = fields.usdcUserBetAmountPyth
+    this.usdcUserBetAmountJup = fields.usdcUserBetAmountJup
+    this.usdcUserBetAmountEth = fields.usdcUserBetAmountEth
+    this.usdcUserBetAmountSui = fields.usdcUserBetAmountSui
+    this.usdcUserBetAmountTia = fields.usdcUserBetAmountTia
+    this.ordersCollateral = fields.ordersCollateral
+    this.usdcOrdersCollateral = fields.usdcOrdersCollateral
   }
 
   static async fetch(
@@ -146,16 +206,16 @@ export class UserAccount {
     address: PublicKey,
     programId: PublicKey = PROGRAM_ID
   ): Promise<UserAccount | null> {
-    const info = await c.getAccountInfo(address);
+    const info = await c.getAccountInfo(address)
 
     if (info === null) {
-      return null;
+      return null
     }
     if (!info.owner.equals(programId)) {
-      throw new Error("account doesn't belong to this program");
+      throw new Error("account doesn't belong to this program")
     }
 
-    return this.decode(info.data);
+    return this.decode(info.data)
   }
 
   static async fetchMultiple(
@@ -163,26 +223,26 @@ export class UserAccount {
     addresses: PublicKey[],
     programId: PublicKey = PROGRAM_ID
   ): Promise<Array<UserAccount | null>> {
-    const infos = await c.getMultipleAccountsInfo(addresses);
+    const infos = await c.getMultipleAccountsInfo(addresses)
 
     return infos.map((info) => {
       if (info === null) {
-        return null;
+        return null
       }
       if (!info.owner.equals(programId)) {
-        throw new Error("account doesn't belong to this program");
+        throw new Error("account doesn't belong to this program")
       }
 
-      return this.decode(info.data);
-    });
+      return this.decode(info.data)
+    })
   }
 
   static decode(data: Buffer): UserAccount {
     if (!data.slice(0, 8).equals(UserAccount.discriminator)) {
-      throw new Error("invalid account discriminator");
+      throw new Error("invalid account discriminator")
     }
 
-    const dec = UserAccount.layout.decode(data.slice(8));
+    const dec = UserAccount.layout.decode(data.slice(8))
 
     return new UserAccount({
       isInitialized: dec.isInitialized,
@@ -209,7 +269,19 @@ export class UserAccount {
       userBetAmountEth: dec.userBetAmountEth,
       userBetAmountSui: dec.userBetAmountSui,
       userBetAmountTia: dec.userBetAmountTia,
-    });
+      usdcUserBinaryBetAmountBtc: dec.usdcUserBinaryBetAmountBtc,
+      usdcUserBinaryBetAmountSol: dec.usdcUserBinaryBetAmountSol,
+      usdcUserBetAmountBtc: dec.usdcUserBetAmountBtc,
+      usdcUserBetAmountSol: dec.usdcUserBetAmountSol,
+      usdcUserBetAmountBonk: dec.usdcUserBetAmountBonk,
+      usdcUserBetAmountPyth: dec.usdcUserBetAmountPyth,
+      usdcUserBetAmountJup: dec.usdcUserBetAmountJup,
+      usdcUserBetAmountEth: dec.usdcUserBetAmountEth,
+      usdcUserBetAmountSui: dec.usdcUserBetAmountSui,
+      usdcUserBetAmountTia: dec.usdcUserBetAmountTia,
+      ordersCollateral: dec.ordersCollateral,
+      usdcOrdersCollateral: dec.usdcOrdersCollateral,
+    })
   }
 
   toJSON(): UserAccountJSON {
@@ -238,7 +310,19 @@ export class UserAccount {
       userBetAmountEth: this.userBetAmountEth.toString(),
       userBetAmountSui: this.userBetAmountSui.toString(),
       userBetAmountTia: this.userBetAmountTia.toString(),
-    };
+      usdcUserBinaryBetAmountBtc: this.usdcUserBinaryBetAmountBtc.toString(),
+      usdcUserBinaryBetAmountSol: this.usdcUserBinaryBetAmountSol.toString(),
+      usdcUserBetAmountBtc: this.usdcUserBetAmountBtc.toString(),
+      usdcUserBetAmountSol: this.usdcUserBetAmountSol.toString(),
+      usdcUserBetAmountBonk: this.usdcUserBetAmountBonk.toString(),
+      usdcUserBetAmountPyth: this.usdcUserBetAmountPyth.toString(),
+      usdcUserBetAmountJup: this.usdcUserBetAmountJup.toString(),
+      usdcUserBetAmountEth: this.usdcUserBetAmountEth.toString(),
+      usdcUserBetAmountSui: this.usdcUserBetAmountSui.toString(),
+      usdcUserBetAmountTia: this.usdcUserBetAmountTia.toString(),
+      ordersCollateral: this.ordersCollateral.toString(),
+      usdcOrdersCollateral: this.usdcOrdersCollateral.toString(),
+    }
   }
 
   static fromJSON(obj: UserAccountJSON): UserAccount {
@@ -267,6 +351,18 @@ export class UserAccount {
       userBetAmountEth: new BN(obj.userBetAmountEth),
       userBetAmountSui: new BN(obj.userBetAmountSui),
       userBetAmountTia: new BN(obj.userBetAmountTia),
-    });
+      usdcUserBinaryBetAmountBtc: new BN(obj.usdcUserBinaryBetAmountBtc),
+      usdcUserBinaryBetAmountSol: new BN(obj.usdcUserBinaryBetAmountSol),
+      usdcUserBetAmountBtc: new BN(obj.usdcUserBetAmountBtc),
+      usdcUserBetAmountSol: new BN(obj.usdcUserBetAmountSol),
+      usdcUserBetAmountBonk: new BN(obj.usdcUserBetAmountBonk),
+      usdcUserBetAmountPyth: new BN(obj.usdcUserBetAmountPyth),
+      usdcUserBetAmountJup: new BN(obj.usdcUserBetAmountJup),
+      usdcUserBetAmountEth: new BN(obj.usdcUserBetAmountEth),
+      usdcUserBetAmountSui: new BN(obj.usdcUserBetAmountSui),
+      usdcUserBetAmountTia: new BN(obj.usdcUserBetAmountTia),
+      ordersCollateral: new BN(obj.ordersCollateral),
+      usdcOrdersCollateral: new BN(obj.usdcOrdersCollateral),
+    })
   }
 }
