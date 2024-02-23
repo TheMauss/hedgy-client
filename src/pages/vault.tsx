@@ -311,10 +311,12 @@ const Earn: FC = () => {
     usdcWithdrawalRequestAmount: number;
     usdcWithdrawalRequestEpoch: number;
   } | null>(null);
-  const balance = useUserSOLBalanceStore((s) => s.balance);
+  const balance = useUserSOLBalanceStore((s) => s.solBalance);
+  const usdcbalance = useUserSOLBalanceStore((s) => s.usdcBalance);
+
   const [depositValue, setdepositValue] = useState("");
   const [withdrawValue, setwithdrawValue] = useState("");
-  const { getUserSOLBalance } = useUserSOLBalanceStore();
+  const { getUserSOLBalance, getUserUSDCBalance } = useUserSOLBalanceStore();
   const [isInit, setisInit] = useState<{
     isInitialized: boolean;
     usedAffiliate: Uint8Array;
@@ -427,8 +429,9 @@ const Earn: FC = () => {
   useEffect(() => {
     if (publicKey) {
       getUserSOLBalance(publicKey, connection);
+      getUserUSDCBalance(publicKey, connection);
     }
-  }, [publicKey, connection, getUserSOLBalance]);
+  }, [publicKey, connection, getUserSOLBalance, selectedCurrency]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -576,14 +579,16 @@ const Earn: FC = () => {
           connection
         );
         setLProviderdata(result);
-        setLPdata((prevState) => ({
-          ...prevState,
-          totalDeposits: prevState.totalDeposits + deposit,
-        }));
+        const results = await checkLPdata(lpAcc, connection);
+        setLPdata(results);
         notify({
           type: "success",
           message: `Successfully deposited into the Vault`,
         });
+        getUserSOLBalance(publicKey, connection);
+        getUserUSDCBalance(publicKey, connection);  
+        const tokenBalance = await getSplTokenBalance(connection, publicKey, selectedCurrency);
+        setTokenBalance(tokenBalance);
       } catch (error) {
         notify({
           type: "error",
@@ -592,7 +597,7 @@ const Earn: FC = () => {
         });
       }
     }
-  }, [publicKey, depositValue, LPdata, LProviderdata, selectedCurrency, splTokenAccount, usdcSplTokenAccount]);
+  }, [connection, publicKey, depositValue, LPdata, LProviderdata, selectedCurrency, splTokenAccount, usdcSplTokenAccount]);
 
   const withdrawfromLP = useCallback(async () => {
     if (!publicKey) {
@@ -604,14 +609,20 @@ const Earn: FC = () => {
       return;
     }
 
+    
+
     let mintAddress;
     let usdc;
+    let withdrawAmount;
     if (selectedCurrency === 'USDC') {
+      withdrawAmount = parseFloat(withdrawValue) / 1000;
       mintAddress = PUSDCMINT;
       usdc = 1;
     } else if (selectedCurrency === 'SOL') {
       mintAddress = PSOLMINT; // Use the mint address for wSOL or your custom SPL token for SOL
       usdc = 0;
+      withdrawAmount = parseFloat(withdrawValue);
+
     } 
 
     const houseHarcodedkey = HOUSEWALLET;
@@ -646,7 +657,7 @@ const Earn: FC = () => {
       LProviderdata?.withdrawalRequestEpoch == LPdata?.epoch
     ) {
       withdraw = LProviderdata?.withdrawalRequestAmount;
-    } else (withdraw = parseFloat(withdrawValue) * LAMPORTS_PER_SOL);
+    } else (withdraw = withdrawAmount * LAMPORTS_PER_SOL);
     console.log(withdraw);
     if (LPdata?.locked) {
       notify({ type: "info", message: `Vault is locked.` });
@@ -693,6 +704,13 @@ const Earn: FC = () => {
           type: "success",
           message: `Withdrawal Successful`,
         });
+        getUserSOLBalance(publicKey, connection);
+        getUserUSDCBalance(publicKey, connection);  
+        const tokenBalance = await getSplTokenBalance(connection, publicKey, selectedCurrency);
+        setTokenBalance(tokenBalance);
+        const results = await checkLPdata(lpAcc, connection);
+        setLPdata(results);
+        
       } catch (error) {
         notify({
           type: "error",
@@ -701,7 +719,7 @@ const Earn: FC = () => {
         });
       }
     }
-  }, [publicKey, withdrawValue, LPdata, LProviderdata, selectedCurrency, splTokenAccount, usdcSplTokenAccount]);
+  }, [connection, publicKey, withdrawValue, LPdata, LProviderdata, selectedCurrency, splTokenAccount, usdcSplTokenAccount]);
 
   const [timeUntilNextEpoch, setTimeUntilNextEpoch] = useState("");
   const [timeUntilNextlockEpoch, setTimeUntillockNextEpoch] = useState("");
@@ -1158,8 +1176,9 @@ const Earn: FC = () => {
                     />
                     <button
                       onClick={() => {
+                        const tokenBalance = selectedCurrency === 'SOL' ? (balance - 1 / 100) : usdcbalance;
                         // Assuming 'balance' is a numeric state or prop
-                        const maxValue = (Number(balance) - 1 / 100)
+                        const maxValue = (Number(tokenBalance))
                           .toFixed(2)
                           .toString();
                         setdepositValue(maxValue); // Update the state, which will update the input value reactively
@@ -1278,15 +1297,13 @@ const Earn: FC = () => {
                         />
                         <button
                           onClick={() => {
-                            if (
-                           0
-                            ) {
-                              const maxValue = (
-                              0
-                              ).toString();
+                            const balance = tokenBalance;
+
+                          
+                              const maxValue = (Number(balance))
+                              .toString();
                               setwithdrawValue(maxValue);
-                            }
-                          }}
+                         } }
                           className="relative leading-[14px] font-medium bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]"
                         >
                           MAX

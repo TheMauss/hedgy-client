@@ -78,7 +78,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
 
   const wallet = useWallet();
   const { connection } = useConnection();
-  const balance = useUserSOLBalanceStore((s) => s.balance);
+  const balance = useUserSOLBalanceStore((s) => s.solBalance);
   const { getUserSOLBalance, subscribeToBalanceChanges } =
     useUserSOLBalanceStore();
   const [closeTimeout, setCloseTimeout] = useState(null);
