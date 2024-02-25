@@ -12,7 +12,7 @@ import {
 import axios from "axios";
 import dynamic from "next/dynamic";
 import Slider from "rc-slider";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import { FaChevronUp } from "react-icons/fa";
 import { MdOutlineSettings } from "react-icons/md";
 import Modal from "react-modal";
@@ -41,9 +41,19 @@ const WalletMultiButtonDynamic = dynamic(
   { ssr: false }
 );
 
-/* <WalletMultiButtonDynamic className=" h-[50px] font-poppins font-semibold self-stretch rounded-lg gradient-bgg flex flex-row items-center justify-center py-3 px-6 text-center text-lg text-white">
-CONNECT WALLET
-</WalletMultiButtonDynamic> */
+const HOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_HOUSE_WALLET);
+const SIGNERWALLET = new PublicKey(process.env.NEXT_PUBLIC_SIGNER_WALLET);
+const PDAHOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_PDA_HOUSEWALLET);
+const USDCMINT = new PublicKey(process.env.NEXT_PUBLIC_USDC_MINT);
+const ASSOCIATEDTOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM);
+const TOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_PROGRAM);
+const PUSDCMINT = new PublicKey(process.env.NEXT_PUBLIC_PUSDC_MINT);
+const PSOLMINT = new PublicKey(process.env.NEXT_PUBLIC_PSOL_MINT);
+const USDCPDAHOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_USDCPDA_HOUSEWALLET);
+
+
+
+
 
 interface TradeBarFuturesProps {
   setParentDivHeight: (height: string) => void;
@@ -113,6 +123,21 @@ async function checkLPdata(
     cumulativeFeeRate: LpAccount.cumulativeFeeRate.toNumber(),
     cumulativePnlRate: LpAccount.cumulativePnlRate.toNumber(),
   };
+}
+
+async function usdcSplTokenAccountSync(walletAddress) {
+  let mintAddress = USDCMINT
+
+  const [splTokenAccount] = PublicKey.findProgramAddressSync(
+    [
+      walletAddress.toBuffer(),
+      TOKENPROGRAM.toBuffer(),
+      mintAddress.toBuffer(),
+    ],
+    ASSOCIATEDTOKENPROGRAM
+  );
+
+  return splTokenAccount;
 }
 
 async function isUserAccountInitialized(
@@ -271,8 +296,10 @@ const TradeBar: React.FC<
   const { publicKey, sendTransaction } = useWallet();
   const [toggleState, setToggleState] = useState("LONG");
   const [amountValue, setAmountValue] = useState("");
-  const balance = useUserSOLBalanceStore((s) => s.balance);
-  const { getUserSOLBalance } = useUserSOLBalanceStore();
+  const balance = useUserSOLBalanceStore((s) => s.solBalance);
+  const usdcbalance = useUserSOLBalanceStore((s) => s.usdcBalance);
+
+  const { getUserSOLBalance, getUserUSDCBalance } = useUserSOLBalanceStore();
   const wallet = useWallet();
 
   const [leverage, setLeverage] = useState(50);
@@ -296,6 +323,8 @@ const TradeBar: React.FC<
   }>(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalIsOpen1, setModalIsOpen1] = useState(false);
+  const [modalIsOpen2, setModalIsOpen2] = useState(false);
+
 
   const [activeLeverageButton, setActiveLeverageButton] = useState(0);
 
@@ -318,6 +347,10 @@ const TradeBar: React.FC<
 
   const [availableLiquidity, setAvailableLiquidity] = useState(0);
   const [fee, setFee] = useState(0);
+
+  const [selectedCurrency, setSelectedCurrency] = useState<'SOL' | 'USDC'>('SOL');
+  const [selectedOrder, setSelectedOrder] = useState<'MARKET' | 'LIMIT'>('MARKET');
+
 
   const handleButtonClick = (buttonIndex: number) => {
     setActiveButton(buttonIndex);
@@ -614,8 +647,9 @@ const TradeBar: React.FC<
   useEffect(() => {
     if (publicKey) {
       getUserSOLBalance(publicKey, connection);
+      getUserUSDCBalance(publicKey, connection);
     }
-  }, [publicKey, connection, getUserSOLBalance]);
+  }, [publicKey, connection]); //selected currency
 
   useEffect(() => {
     const fetchData = async () => {
@@ -1121,6 +1155,20 @@ const TradeBar: React.FC<
     setModalIsOpen1(!modalIsOpen1);
   };
 
+  const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
+  const buttonRef = useRef(null);
+
+  const toggleModal2 = () => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setModalPosition({
+        top: rect.bottom, // Position modal below the button
+        left: rect.left,  // Align modal with the left edge of the button
+      });
+    }
+    setModalIsOpen2(!modalIsOpen2);
+  };
+
   const getPriorityFeeEstimate = async () => {
     try {
       const rpcUrl = ENDPOINT5;
@@ -1340,6 +1388,9 @@ const TradeBar: React.FC<
         PROGRAM_ID
       );
 
+      const usdcAcc = await usdcSplTokenAccountSync(publicKey);
+
+
       if (!isInit.isInitialized) {
         try {
           const accounts: InitializeUserAccAccounts = {
@@ -1348,6 +1399,10 @@ const TradeBar: React.FC<
             affilAcc: AffilAcc,
             systemProgram: SystemProgram.programId,
             clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
+            usdcMint: USDCMINT,
+            usdcPlayerAcc: usdcAcc,
+            associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
+            tokenProgram: TOKENPROGRAM,
           };
 
           const args: InitializeUserAccArgs = {
@@ -1387,10 +1442,12 @@ const TradeBar: React.FC<
           leverage: new BN(leverage),
           priceDirection: new BN(priceDirection),
           symbol: symbolCode,
-          stopLossPrice: new BN(stopLoss),
-          takeProfitPrice: new BN(takeProfit),
+          slPrice: new BN(stopLoss),
+          tpPrice: new BN(takeProfit),
           slippagePrice: new BN(initialPrice * 100000000),
           slippage: new BN(slippageTolerance),
+          backOracle: (0),
+          usdc: (0),
         };
         console.log(
           "Opening Futures Position",
@@ -1412,9 +1469,7 @@ const TradeBar: React.FC<
 
         const seedsRatio = [
           Buffer.from(
-            new PublicKey(
-              "HME9CUNgcsVZti5x1MdoBeUuo1hkGnuKMwP4xuJHQFtQ"
-            ).toBytes()
+           HOUSEWALLET.toBytes()
           ),
         ];
 
@@ -1428,24 +1483,19 @@ const TradeBar: React.FC<
           playerAcc: publicKey,
           userAcc: userAcc,
           ratioAcc: ratioAcc,
-          houseAcc: new PublicKey(
-            "HME9CUNgcsVZti5x1MdoBeUuo1hkGnuKMwP4xuJHQFtQ"
-          ),
-          nftAcc: new PublicKey("AyK9uCXne1K3BvcRnvcwMi3qGtdGrxvJqPyTes2f9Lho"),
+          houseAcc: HOUSEWALLET,
           oracleAccount: new PublicKey(oracleAddy),
-          pdaHouseAcc: new PublicKey(
-            "3MRKR5tYQeUT8CXYkTjvzR6ivEpaqFLqK9CsNbMFvoHB"
-          ),
+          solOracleAccount: new PublicKey(oracleAddy),
+          pdaHouseAcc: PDAHOUSEWALLET,
           affilAcc: AffilAcc,
           lpAcc: new PublicKey("CBaAsnsHBpr5UaCbutL3yjxGxn1E7SNZsF8xo69y7BtD"),
-          signerWalletAccount: new PublicKey(
-            "Fb1ABWjtSJVtoZnqogFptAAgqhBCPFY1ZcbEskF8gD1C"
-          ),
-          lpRevAcc: new PublicKey(
-            "Cr7jUVQTBEXWQKKeLBZrGa2Eqgkk7kmDvACrh35Rj5mV"
-          ),
-          clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
+          signerWalletAccount: SIGNERWALLET,
           systemProgram: SystemProgram.programId,
+          usdcMint: USDCMINT,
+          usdcPlayerAcc: usdcAcc,
+          usdcPdaHouseAcc: USDCPDAHOUSEWALLET,
+          tokenProgram: TOKENPROGRAM,
+          associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
         };
 
         let PRIORITY_FEE_IX;
@@ -1509,7 +1559,7 @@ const TradeBar: React.FC<
 
   const onClick1 = useCallback(async () => {
     const seedsUser = [Buffer.from(publicKey.toBytes())];
-
+    const usdcAcc = await usdcSplTokenAccountSync(publicKey);
     const [userAcc] = await PublicKey.findProgramAddress(seedsUser, PROGRAM_ID);
     try {
       const seedsAffil = [isInit.usedAffiliate];
@@ -1519,12 +1569,17 @@ const TradeBar: React.FC<
         PROGRAM_ID
       );
 
+
       const accounts: InitializeUserAccAccounts = {
         userAcc: userAcc,
         playerAcc: publicKey,
         affilAcc: AffilAcc,
         systemProgram: SystemProgram.programId,
         clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
+        usdcMint: USDCMINT,
+        usdcPlayerAcc: usdcAcc,
+        associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
+        tokenProgram: TOKENPROGRAM,
       };
 
       const args: InitializeUserAccArgs = {
@@ -1602,6 +1657,7 @@ const TradeBar: React.FC<
   const closeModalHandler1 = () => {
     setModalIsOpen1(false);
   };
+
 
   const getMaxLeverage = (selectedCryptos) => {
     // Check if either PYTH or BONK is selected
@@ -1691,52 +1747,55 @@ const TradeBar: React.FC<
     setFee(newFee); // Set as a number
   }, [amountValue, leverage, rebateTier, isInit]);
 
-  useEffect(() => {
-    // Determine which cryptocurrency data to use based on selectedCryptos
+  useEffect(() => {    const currencySuffix = selectedCurrency === 'USDC' ? 'usdc' : '';
+
+    const parseData = (key) => parseInt(data[key + currencySuffix] || 0);
+
     let selectedData = { long: 0, short: 0 };
     if (selectedCryptos.SOL) {
       selectedData = {
-        long: parseInt(data.solLong),
-        short: parseInt(data.solShort),
+        long: parseData(data.solLong),
+        short: parseData(data.solShort),
       };
     } else if (selectedCryptos.BTC) {
       selectedData = {
-        long: parseInt(data.btcLong),
-        short: parseInt(data.btcShort),
+        long: parseData(data.btcLong),
+        short: parseData(data.btcShort),
       };
     } else if (selectedCryptos.PYTH) {
       selectedData = {
-        long: parseInt(data.pythLong),
-        short: parseInt(data.pythShort),
+        long: parseData(data.pythLong),
+        short: parseData(data.pythShort),
       };
     } else if (selectedCryptos.BONK) {
       selectedData = {
-        long: parseInt(data.bonkLong),
-        short: parseInt(data.bonkShort),
+        long: parseData(data.bonkLong),
+        short: parseData(data.bonkShort),
       };
     } else if (selectedCryptos.ETH) {
       selectedData = {
-        long: parseInt(data.ethLong),
-        short: parseInt(data.ethShort),
+        long: parseData(data.ethLong),
+        short: parseData(data.ethShort),
       };
     } else if (selectedCryptos.TIA) {
       selectedData = {
-        long: parseInt(data.tiaLong),
-        short: parseInt(data.tiaShort),
+        long: parseData(data.tiaLong),
+        short: parseData(data.tiaShort),
       };
     } else if (selectedCryptos.SUI) {
       selectedData = {
-        long: parseInt(data.suiLong),
-        short: parseInt(data.suiShort),
+        long: parseData(data.suiLong),
+        short: parseData(data.suiShort),
       };
     } else if (selectedCryptos.JUP) {
       selectedData = {
-        long: parseInt(data.jupLong),
-        short: parseInt(data.jupShort),
+        long: parseData(data.jupLong),
+        short: parseData(data.jupShort),
       };
     }
 
-    const totalDeposits = LPdata?.totalDeposits || 0;
+    const totalDepositsKey = currencySuffix ? `${currencySuffix}totalDeposits` : 'totalDeposits';
+    const totalDeposits = LPdata?.[totalDepositsKey] || 0;
     const oiSol = totalDeposits / 4; // Open interest for large caps
     const poSmallPairs = totalDeposits / 25;
 
@@ -1750,24 +1809,10 @@ const TradeBar: React.FC<
     const individualLong = selectedData.long;
     const individualShort = selectedData.short;
 
-    const bigCapLong =
-      parseInt(data.solLong) + parseInt(data.btcLong) + parseInt(data.ethLong);
-    const bigCapShort =
-      parseInt(data.solShort) +
-      parseInt(data.btcShort) +
-      parseInt(data.ethShort);
-    const smallCapLong =
-      parseInt(data.pythLong) +
-      parseInt(data.bonkLong) +
-      parseInt(data.jupLong) +
-      parseInt(data.tiaLong) +
-      parseInt(data.suiLong);
-    const smallCapShort =
-      parseInt(data.pythShort) +
-      parseInt(data.bonkShort) +
-      parseInt(data.jupShort) +
-      parseInt(data.tiaShort) +
-      parseInt(data.suiShort);
+    const bigCapLong = ['solLong', 'btcLong', 'ethLong'].reduce((sum, key) => sum + parseData(key), 0);
+    const bigCapShort = ['solShort', 'btcShort', 'ethShort'].reduce((sum, key) => sum + parseData(key), 0);
+    const smallCapLong = ['pythLong', 'bonkLong', 'jupLong', 'tiaLong', 'suiLong'].reduce((sum, key) => sum + parseData(key), 0);
+    const smallCapShort = ['pythShort', 'bonkShort', 'jupShort', 'tiaShort', 'suiShort'].reduce((sum, key) => sum + parseData(key), 0);
 
     if (toggleState === "LONG") {
       // Calculate available liquidity for selected cryptocurrency
@@ -1961,10 +2006,59 @@ const TradeBar: React.FC<
     </Modal>
   );
 
+  const selectCurrencyAndCloseModal = (currency) => {
+    setSelectedCurrency(currency);
+    setModalIsOpen2(false);
+  };
+
+
+  const ModalDetails2 = (
+    <Modal
+      className="custom-scrollbar bg-layer-2 rounded-md border-[1px] border-solid border-layer-3"
+      isOpen={modalIsOpen2}
+      onRequestClose={() => setModalIsOpen2(false)}
+      style={{
+        overlay: {
+          backgroundColor: "transparent",
+          zIndex: "100",
+
+          pointerEvents: "auto", // Allow clicks through the overlay
+        },
+        content: {
+          backgroundSize: "cover",
+          position: "absolute",
+          top: `${modalPosition.top + 8}px`,
+          left: `${modalPosition.left - 98}px`,
+        },
+      }}
+    >
+      <div className="w-32 rounded-md bg-layer-2 text-grey-text">
+        <button 
+                        onClick={() => selectCurrencyAndCloseModal('SOL')}
+
+        className="w-full rounded-t-md flex flex-row gap-2 py-1 px-2 hover:bg-[#484c6d5b]">                       <img
+                className="relative w-6 h-6 overflow-hidden shrink-0"
+                alt=""
+                src="/coins/60x60/Sol.png"
+              /> SOL   </button>
+                      <button 
+                                      onClick={() => selectCurrencyAndCloseModal('USDC')}
+
+                      className="w-full rounded-b-md flex flex-row gap-2 py-1 px-2 hover:bg-[#484c6d5b]">                       <img
+                className="relative w-6 h-6 overflow-hidden shrink-0"
+                alt=""
+                src="/coins/60x60/Usdc.png"
+              /> USDC   </button>
+      </div>
+    </Modal>
+  );
+
+
   return (
     <div className="custom-scrollbar overflow-x-hidden md:h-[628px] lg:h-[calc(100vh-141px)] md:w-[330px] w-full rounded-lg  flex flex-col items-start justify-start p-4 gap-[16px] text-left text-sm text-grey-text font-poppins">
       {ModalDetails1}
       {ModalDetails}
+      {ModalDetails2}
       <div className="self-stretch flex flex-row items-start justify-start text-lg text-primary font-bankgothic-md-bt border-b-[1px] border-solid border-layer-3">
         <button
           onClick={setToggleChangeLong}
@@ -1995,6 +2089,7 @@ const TradeBar: React.FC<
               ? "flex-1 [background:linear-gradient(180deg,_rgba(255,_76,_76,_0),_rgba(255,_76,_76,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 text-short border-b-[2px] border-solid border-short"
               : "text-grey long-short-button"
           }`}
+          
         >
           <div
             className={`bankGothic  uppercase ${
@@ -2004,6 +2099,26 @@ const TradeBar: React.FC<
             SHORT
           </div>
         </button>
+      </div>
+      <div className="w-full flex flex-row font-poppins border-[1px] border-solid border-layer-3 rounded-md">
+      <button 
+      onClick={() => setSelectedOrder('MARKET')}
+          className={`w-1/2  self-stretch rounded-l-md  box-border h-[38px] flex flex-row items-center justify-center py-0 px-2   ${
+            selectedOrder === "MARKET"
+              ? "bg-layer-2 text-white"
+              : "bg-layer-1 hover:bg-[#484c6d5b]"
+          }`}>
+      Market
+      </button>
+      <button 
+      onClick={() => setSelectedOrder('LIMIT')}
+      className={`w-1/2  self-stretch rounded-r-md  box-border h-[38px] flex flex-row items-center justify-center py-0 px-2   ${
+        selectedOrder === "LIMIT"
+          ? "bg-layer-2 text-white"
+          : "bg-layer-1 hover:bg-[#484c6d5b]"
+      }`}>
+              Limit</button>
+
       </div>
       <div className="self-stretch h-[60px] flex flex-col items-start justify-start gap-[8px]">
         <div className="self-stretch flex flex-col items-start justify-start">
@@ -2028,11 +2143,21 @@ const TradeBar: React.FC<
             />
             <span className="rounded-12xs flex flex-row items-center justify-start py-[7px] px-0">
               {" "}
-              <img
+              <button
+              ref={buttonRef}
+              className=" relative leading-[20px] font-medium text-grey-text text-lg flex flex-row items-center"
+              onClick={toggleModal2}
+            >
+                            <img
                 className="relative w-6 h-6 overflow-hidden shrink-0"
-                alt=""
-                src="/coins/60x60/Sol.png"
+                alt={selectedCurrency}
+                src={selectedCurrency === "SOL" ? "/coins/60x60/Sol.png" : "/coins/60x60/Usdc.png"}
               />
+                          <FaChevronUp
+              className={`w-2.5 h-2.5 ml-1 text-slate-300  ${modalIsOpen2 ? "" : "rotate-180"}`}
+            />
+            </button>
+
             </span>
           </div>
         </div>
@@ -2361,7 +2486,7 @@ const TradeBar: React.FC<
           <div className="relative leading-[14px]">Fees</div>
           <div className="relative leading-[14px] font-medium text-white">
             {isNaN(parseFloat(amountValue) * 0.0008 * leverage) ? (
-              "0 SOL"
+               `0 ${selectedCurrency}`
             ) : parseFloat(
                 (parseFloat(amountValue) * 0.0008 * leverage).toFixed(3)
               ) > fee ? (
@@ -2369,33 +2494,34 @@ const TradeBar: React.FC<
                 <span className="line-through">
                   {(parseFloat(amountValue) * 0.0008 * leverage).toFixed(3)} SOL
                 </span>
-                <span> {fee} SOL</span>
+                <span> {fee} {selectedCurrency}</span>
               </>
             ) : (
-              `${fee} SOL`
+              <span> {fee} {selectedCurrency}</span>
             )}
           </div>
         </div>
         <div className="self-stretch h-4 flex flex-row items-start justify-between">
           <div className="relative leading-[120%]">Collateral Size</div>
           <div className="relative leading-[14px] font-medium text-white">
+            
             {isNaN(parseFloat(amountValue))
-              ? "0 SOL"
-              : `${parseFloat(amountValue)} SOL`}
+              ?  `0 ${selectedCurrency}`
+              : `${parseFloat(amountValue)} ${selectedCurrency}`}
           </div>
         </div>
         <div className="self-stretch h-4 flex flex-row items-start justify-between">
           <div className="relative leading-[14px]">Position Size</div>
           <div className="relative leading-[14px] font-medium text-white">
             {isNaN((parseFloat(amountValue) - fee) * leverage)
-              ? "0 SOL"
-              : `${((parseFloat(amountValue) - fee) * leverage).toFixed(2)} SOL`}
+              ? `0 ${selectedCurrency}`
+              : `${((parseFloat(amountValue) - fee) * leverage).toFixed(2)} ${selectedCurrency}`}
           </div>
         </div>
         <div className="self-stretch h-4 flex flex-row items-start justify-between">
           <div className="relative leading-[14px]">Available Liquidity</div>
           <div className="relative leading-[14px] font-medium text-white">
-            {availableLiquidity.toFixed(1)} SOL
+            {availableLiquidity.toFixed(1)} {selectedCurrency}
           </div>
         </div>
         <div className="self-stretch h-4 flex flex-row items-start justify-between">

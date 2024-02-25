@@ -1,5 +1,6 @@
 import { FC, useState, useEffect, useCallback, useRef } from "react";
 import Head from "next/head";
+// nastavit USDC args
 import {
   Connection,
   SystemProgram,
@@ -12,7 +13,7 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { UserAccount } from "../out/accounts/UserAccount"; // Update with the correct path
 import { AffiliateAccount } from "../out/accounts/AffiliateAccount";
 import { initializeAffilAcc } from "../out/instructions/initializeAffilAcc"; // Update with the correct path
-import { withdrawAffiliateEarnings } from "../out/instructions/withdrawAffiliateEarnings"; // Update with the correct path
+import { withdrawAffiliateEarnings, WithdrawAffiliateEarningsArgs } from "../out/instructions/withdrawAffiliateEarnings"; // Update with the correct path
 import {
   initializeUserAcc,
   InitializeUserAccArgs,
@@ -21,6 +22,26 @@ import {
 import { PROGRAM_ID } from "../out/programId";
 import { notify } from "utils/notifications";
 import useUserSOLBalanceStore from "../../src/stores/useUserSOLBalanceStore";
+
+const USDCMINT = new PublicKey(process.env.NEXT_PUBLIC_USDC_MINT);
+const ASSOCIATEDTOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM);
+const TOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_PROGRAM);
+const PDAHOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_PDA_HOUSEWALLET);
+
+async function usdcSplTokenAccountSync(walletAddress) {
+  let mintAddress = USDCMINT
+
+  const [splTokenAccount] = PublicKey.findProgramAddressSync(
+    [
+      walletAddress.toBuffer(),
+      TOKENPROGRAM.toBuffer(),
+      mintAddress.toBuffer(),
+    ],
+    ASSOCIATEDTOKENPROGRAM
+  );
+
+  return splTokenAccount;
+}
 
 async function doesUserhaveAffiliate(
   account: PublicKey,
@@ -142,7 +163,7 @@ const Referral: FC = () => {
     usedAffiliate: Uint8Array;
     isInt: boolean;
   } | null>(null);
-  const balance = useUserSOLBalanceStore((s) => s.balance);
+  const balance = useUserSOLBalanceStore((s) => s.solBalance);
   const { getUserSOLBalance } = useUserSOLBalanceStore();
 
   useEffect(() => {
@@ -167,6 +188,12 @@ const Referral: FC = () => {
     fetchAffiliateStatus();
   }, [publicKey, connection]);
 
+  useEffect(() => {
+    if (publicKey) {
+      getUserSOLBalance(publicKey, connection);
+    }
+  }, [publicKey, connection]);
+
   const onClick = useCallback(async () => {
     // Create the instruction to initialize the user account
     if (!publicKey) {
@@ -183,6 +210,8 @@ const Referral: FC = () => {
     const [userAcc] = await PublicKey.findProgramAddress(seedsUser, PROGRAM_ID);
 
     const seedsAffil = [affiliateCodeToUint8Array(affiliateCode)];
+    const usdcAcc = await usdcSplTokenAccountSync(publicKey);
+
 
     if (userAffiliateData && !userAffiliateData.isInt) {
       try {
@@ -199,6 +228,10 @@ const Referral: FC = () => {
           affilAcc: AffilAcc,
           systemProgram: SystemProgram.programId,
           clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
+          usdcMint: USDCMINT,
+          usdcPlayerAcc: usdcAcc,
+          associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
+          tokenProgram: TOKENPROGRAM,
         };
 
         const args: InitializeUserAccArgs = {
@@ -353,7 +386,7 @@ const Referral: FC = () => {
     }
   }, [userAffiliateData, connection]);
 
-  const onClick1 = useCallback(async () => {
+  const onClick1 = useCallback(async (usdc: number) => {
     // Create the instruction to initialize the user account
     if (affiliateData.totalEarned <= 0.1 * LAMPORTS_PER_SOL) {
       notify({
@@ -383,14 +416,17 @@ const Referral: FC = () => {
     const accounts = {
       affilAcc: AffilAcc,
       playerAcc: publicKey,
-      pdaHouseAcc: new PublicKey(
-        "3MRKR5tYQeUT8CXYkTjvzR6ivEpaqFLqK9CsNbMFvoHB"
-      ),
+      pdaHouseAcc: PDAHOUSEWALLET,
       systemProgram: SystemProgram.programId,
     };
+
+    const args: WithdrawAffiliateEarningsArgs = {
+      usdc: usdc,
+    };
+
     // Create a new transaction to initialize the user account and send it
     const initTransaction = new Transaction().add(
-      withdrawAffiliateEarnings(accounts)
+      withdrawAffiliateEarnings(args, accounts)
     );
 
     try {
@@ -412,6 +448,8 @@ const Referral: FC = () => {
         const updatedAffiliateData = new AffiliateAccount({
           ...affiliateData,
           totalEarned: 0,
+          usdcTotalEarned: 0,
+
         });
         setAffiliateData(updatedAffiliateData);
       }
@@ -533,9 +571,9 @@ const Referral: FC = () => {
                   </div>
                 </div>
               </div>
-              <div className=" z-10 md:w-[65%] w-full md:rounded-2xl rounded-lg bg-layer-1 flex flex-row items-center justify-start p-4 md:p-8 gap-[32px] text-sm border-[1px] border-solid border-layer-3">
-                <div className="font-poppins w-[287px] flex flex-col items-start justify-center gap-[32px]">
-                  <div className="flex flex-row items-center justify-start gap-[12px]">
+              <div className=" z-10 md:w-[65%] w-full md:rounded-2xl rounded-lg bg-layer-1 flex flex-col items-center justify-start p-4 md:p-8 gap-[32px] text-sm border-[1px] border-solid border-layer-3">
+                <div className="font-poppins w-full flex flex-row items-start justify-center gap-[32px]">
+                  <div className="flex w-1/2 flex-row items-center justify-start gap-[12px]">
                     <img
                       className="relative rounded-lg w-[42px] h-[42px]"
                       alt=""
@@ -550,27 +588,7 @@ const Referral: FC = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-row items-center justify-start gap-[12px]">
-                    <img
-                      className="relative rounded-lg w-[42px] h-[42px]"
-                      alt=""
-                      src="/sheesh/icons13.svg"
-                    />
-                    <div className=" flex flex-col items-start justify-center gap-[4px]">
-                      <div className="text-grey-text relative leading-[100%] ">
-                        TO CLAIM
-                      </div>
-                      <div className="text-start relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
-                        {(
-                          affiliateData?.totalEarned / LAMPORTS_PER_SOL
-                        ).toFixed(2)}{" "}
-                        SOL
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-col items-start justify-center gap-[32px]">
-                  <div className="flex flex-row items-center justify-start gap-[12px]">
+                  <div className="flex w-1/2 flex-row items-center justify-start gap-[12px]">
                     <img
                       className="relative rounded-lg w-[42px] h-[42px]"
                       alt=""
@@ -588,17 +606,69 @@ const Referral: FC = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px] w-full w-full h-10   box-border text-center text-lg">
+
+                </div>
+                <div className="font-poppins w-full flex flex-row items-start justify-center gap-[32px]">
+                <div className="flex w-1/2 flex-row items-center justify-start gap-[12px]">
+                    <img
+                      className="relative rounded-lg w-[42px] h-[42px]"
+                      alt=""
+                      src="/sheesh/icons13.svg"
+                    />
+                    <div className=" flex flex-col items-start justify-center gap-[4px]">
+                      <div className="text-grey-text relative leading-[100%] ">
+                        CLAIM
+                      </div>
+                      <div className="text-start relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
+                        {(
+                          affiliateData?.totalEarned / LAMPORTS_PER_SOL
+                        ).toFixed(2)}{" "}
+                        SOL
+                      </div>
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px] w-1/2 h-10   box-border text-center text-lg">
                     <button
-                      onClick={onClick1}
+                      onClick={() => onClick1(0)}
                       className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
                     >
                       <button className="font-semibold bg-clip-text text-transparent bg-gradient-to-t from-[#34C796] to-[#0B7A55]">
-                        CLAIM
+                        CLAIM SOL
                       </button>
                     </button>
                   </div>
                 </div>
+                <div className="font-poppins w-full flex flex-row items-start justify-center gap-[32px]">
+                <div className="flex w-1/2 flex-row items-center justify-start gap-[12px]">
+                <img
+                      className="relative rounded-lg w-[42px]"
+                      alt=""
+                      src="/sheesh/icons1.svg"
+                    />
+                    <div className=" flex flex-col items-start justify-center gap-[4px]">
+                      <div className="text-grey-text relative leading-[100%] ">
+                        CLAIM
+                      </div>
+                      <div className="text-start relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
+                        {(
+                          affiliateData?.usdcTotalEarned / LAMPORTS_PER_SOL
+                        ).toFixed(2)}{" "}
+                        USDC
+                      </div>
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px] w-1/2 h-10   box-border text-center text-lg">
+                    <button
+                      onClick={() => onClick1(1)}
+                      className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
+                    >
+                      <button className="font-semibold bg-clip-text text-transparent bg-gradient-to-t from-[#34C796] to-[#0B7A55]">
+                        CLAIM USDC
+                      </button>
+                    </button>
+                  </div>
+                </div>
+
               </div>
             </div>
           )}

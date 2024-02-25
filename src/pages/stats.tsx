@@ -3,15 +3,21 @@ import { FC, useEffect, useState, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import useUserSOLBalanceStore from "../../src/stores/useUserSOLBalanceStore";
+import {
+  PublicKey,
+  LAMPORTS_PER_SOL,
+} from "@solana/web3.js";
+
 
 const Stats: FC = () => {
   const [leaderboard1Day, setLeaderboard1Day] = useState([]);
   const [leaderboard7Days, setLeaderboard7Days] = useState([]);
   const [leaderboard30Days, setLeaderboard30Days] = useState([]);
+  const { publicKey } = useWallet();
   const [leaderboardallDays, setLeaderboardallDays] = useState([]);
   const [currentLeaderboard, setCurrentLeaderboard] = useState([]);
   const { connection } = useConnection();
-  const balance = useUserSOLBalanceStore((s) => s.balance);
+  const balance = useUserSOLBalanceStore((s) => s.solBalance);
   const { getUserSOLBalance } = useUserSOLBalanceStore();
 
   const [isCompetition, setIsCompetition] = useState(false);
@@ -21,7 +27,6 @@ const Stats: FC = () => {
 
   const [sortCriterion, setSortCriterion] = useState("PnL"); // Default sorting criterion
 
-  const LAMPORTS_PER_SOL = 1_000_000_000;
 
   const sortLeaderboard = (leaderboard, criterion) => {
     return [...leaderboard].sort((a, b) => {
@@ -30,6 +35,12 @@ const Stats: FC = () => {
         : b.PnL - a.PnL;
     });
   };
+
+  useEffect(() => {
+    if (publicKey) {
+      getUserSOLBalance(publicKey, connection);
+    }
+  }, [publicKey, connection]);
 
   const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT8;
   useEffect(() => {

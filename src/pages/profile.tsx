@@ -33,6 +33,12 @@ const WalletMultiButtonDynamic = dynamic(
   { ssr: false }
 );
 
+const USDCMINT = new PublicKey(process.env.NEXT_PUBLIC_USDC_MINT);
+const ASSOCIATEDTOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM);
+const TOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_PROGRAM);
+
+
+
 type UserStatsType = {
   playerAcc: string;
   totalTrades: number;
@@ -43,6 +49,21 @@ type UserStatsType = {
   ROI: number;
   // other fields...
 };
+
+async function usdcSplTokenAccountSync(walletAddress) {
+  let mintAddress = USDCMINT
+
+  const [splTokenAccount] = PublicKey.findProgramAddressSync(
+    [
+      walletAddress.toBuffer(),
+      TOKENPROGRAM.toBuffer(),
+      mintAddress.toBuffer(),
+    ],
+    ASSOCIATEDTOKENPROGRAM
+  );
+
+  return splTokenAccount;
+}
 
 async function doesUserhaveAffiliateCode(
   account: PublicKey,
@@ -157,7 +178,7 @@ const Stats: FC = () => {
   );
   const [accOld, setaccOld] = useState<number>(null);
   const [issInt, setissInt] = useState<boolean>(null);
-  const balance = useUserSOLBalanceStore((s) => s.balance);
+  const balance = useUserSOLBalanceStore((s) => s.solBalance);
   const { getUserSOLBalance } = useUserSOLBalanceStore();
   const [rebateTier, setrebateTier] = useState<number>(null);
   const [totalVolumepast4Epoch, settotalVolumepast4Epoch] =
@@ -213,6 +234,12 @@ const Stats: FC = () => {
 
     return [initialPoint, ...sortedData];
   };
+
+  useEffect(() => {
+    if (publicKey) {
+      getUserSOLBalance(publicKey, connection);
+    }
+  }, [publicKey, connection]);
 
   const createDefaultZeroLineData = (timeframe) => {
     const data = [];
@@ -353,6 +380,8 @@ const Stats: FC = () => {
     const creationTime = accOld;
     const currentTime = Math.floor(Date.now() / 1000); // Current Unix timestamp in seconds
     const timeDifference = currentTime - creationTime;
+    const usdcAcc = await usdcSplTokenAccountSync(publicKey);
+
 
     if (!IsInitialized) {
       notify({ type: "error", message: "Referral code does not exist." });
@@ -365,6 +394,10 @@ const Stats: FC = () => {
           affilAcc: AffilAcc,
           systemProgram: SystemProgram.programId,
           clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
+          usdcMint: USDCMINT,
+          usdcPlayerAcc: usdcAcc,
+          associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
+          tokenProgram: TOKENPROGRAM,
         };
 
         const args: InitializeUserAccArgs = {

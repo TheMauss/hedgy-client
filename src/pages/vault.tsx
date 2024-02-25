@@ -324,7 +324,7 @@ const Earn: FC = () => {
   }>(null);
 
   const [leaderboard30Days, setLeaderboard30Days] = useState([]);
-  const [selectedCurrency, setSelectedCurrency] = useState<'SOL' | 'USDC'>('USDC');
+  const [selectedCurrency, setSelectedCurrency] = useState<'SOL' | 'USDC'>('SOL');
   const [splTokenAccount, setSplTokenAccount] = useState<PublicKey | null>(null);
   const [usdcSplTokenAccount, setUsdcSplTokenAccount] = useState<PublicKey | null>(null);
   const [tokenBalance, setTokenBalance] = useState<number | null>(null);
@@ -431,7 +431,7 @@ const Earn: FC = () => {
       getUserSOLBalance(publicKey, connection);
       getUserUSDCBalance(publicKey, connection);
     }
-  }, [publicKey, connection, getUserSOLBalance, selectedCurrency]);
+  }, [publicKey, connection, selectedCurrency]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
