@@ -63,7 +63,6 @@ export function createLimitOrder(
     { pubkey: accounts.signerServer, isSigner: true, isWritable: false },
     { pubkey: accounts.oracleAccount, isSigner: false, isWritable: false },
     { pubkey: accounts.pdaHouseAcc, isSigner: false, isWritable: true },
-    { pubkey: accounts.clock, isSigner: false, isWritable: false },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
     { pubkey: accounts.usdcMint, isSigner: false, isWritable: true },
     { pubkey: accounts.usdcPlayerAcc, isSigner: false, isWritable: true },

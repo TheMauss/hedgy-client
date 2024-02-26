@@ -27,6 +27,11 @@ import {
   createFutCont,
 } from "../out/instructions/createFutCont";
 import {
+  CreateLimitOrderAccounts,
+  CreateLimitOrderArgs,
+  createLimitOrder,
+} from "../out/instructions/createLimitOrder";
+import {
   InitializeUserAccAccounts,
   InitializeUserAccArgs,
   initializeUserAcc,
@@ -50,6 +55,8 @@ const TOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_PROGRAM);
 const PUSDCMINT = new PublicKey(process.env.NEXT_PUBLIC_PUSDC_MINT);
 const PSOLMINT = new PublicKey(process.env.NEXT_PUBLIC_PSOL_MINT);
 const USDCPDAHOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_USDCPDA_HOUSEWALLET);
+const LONGSHORTACC = new PublicKey(process.env.NEXT_PUBLIC_LONG_SHORT_ACC);
+
 
 
 
@@ -71,7 +78,8 @@ interface TradeBarFuturesProps {
   openingPrice: number; // Add openingPrice here
   setOpeningPrice: React.Dispatch<React.SetStateAction<number>>;
   selectedCryptos: { [key: string]: boolean };
-}
+  selectedCurrency: 'SOL' | 'USDC';
+  setSelectedCurrency: React.Dispatch<React.SetStateAction<'SOL' | 'USDC'>>;}
 
 async function checkLPdata(
   lpAcc: PublicKey,
@@ -81,6 +89,8 @@ async function checkLPdata(
   locked: boolean;
   epoch: number;
   totalDeposits: number;
+  usdcTotalDeposits: number;
+  usdcPnl: number;
   lpFees: number;
   pnl: number;
   cumulativeFeeRate: number;
@@ -94,8 +104,10 @@ async function checkLPdata(
       locked: false,
       epoch: 0,
       totalDeposits: 0,
+      usdcTotalDeposits: 0,
       lpFees: 0,
       pnl: 0,
+      usdcPnl: 0,
       cumulativeFeeRate: 0,
       cumulativePnlRate: 0,
     };
@@ -118,8 +130,11 @@ async function checkLPdata(
     locked: LpAccount.locked,
     epoch: LpAccount.epoch.toNumber(),
     totalDeposits: LpAccount.totalDeposits.toNumber(),
+    usdcTotalDeposits: LpAccount.usdcTotalDeposits.toNumber(),
     lpFees: LpAccount.lpFees.toNumber(),
     pnl: LpAccount.pnl.toNumber(),
+    usdcPnl: LpAccount.usdcPnl.toNumber(),
+
     cumulativeFeeRate: LpAccount.cumulativeFeeRate.toNumber(),
     cumulativePnlRate: LpAccount.cumulativePnlRate.toNumber(),
   };
@@ -291,11 +306,15 @@ const TradeBar: React.FC<
   setOpeningPrice,
   openingPrice,
   isSoliditySelected,
+  setSelectedCurrency,
+  selectedCurrency,
 }) => {
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
   const [toggleState, setToggleState] = useState("LONG");
   const [amountValue, setAmountValue] = useState("");
+  const [limitAmount, setLimitAmount] = useState("");
+
   const balance = useUserSOLBalanceStore((s) => s.solBalance);
   const usdcbalance = useUserSOLBalanceStore((s) => s.usdcBalance);
 
@@ -335,11 +354,10 @@ const TradeBar: React.FC<
   const { isPriorityFee, setPriorityFee } = usePriorityFee();
 
   const snapPoints = [
-    1, 2, 3, 4, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175,
-    200,
+    1, 2, 3, 4, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100
   ];
-  const snapRange = 25;
-  const [maxleverage, setMaxLeverage] = useState(200); // Initially set to 1000
+  const snapRange = 0;
+  const [maxleverage, setMaxLeverage] = useState(100); // Initially set to 1000
   const [rebateTier, setrebateTier] = useState<number>(null);
 
   const LOWER_SPREAD_SYMBOLS = ["BTC", "SOL", "ETH"]; // Add more if needed
@@ -348,7 +366,6 @@ const TradeBar: React.FC<
   const [availableLiquidity, setAvailableLiquidity] = useState(0);
   const [fee, setFee] = useState(0);
 
-  const [selectedCurrency, setSelectedCurrency] = useState<'SOL' | 'USDC'>('SOL');
   const [selectedOrder, setSelectedOrder] = useState<'MARKET' | 'LIMIT'>('MARKET');
 
 
@@ -409,20 +426,20 @@ const TradeBar: React.FC<
     locked: boolean;
     epoch: number;
     totalDeposits: number;
+    usdcTotalDeposits: number;
+
     lpFees: number;
     pnl: number;
+    usdcPnl: number;
+
     cumulativeFeeRate: number;
     cumulativePnlRate: number;
   } | null>(null);
 
   useEffect(() => {
     const fetchLpstatus = async () => {
-      const houseHarcodedkey = new PublicKey(
-        "HME9CUNgcsVZti5x1MdoBeUuo1hkGnuKMwP4xuJHQFtQ"
-      );
-      const signerWalletAccount = new PublicKey(
-        "Fb1ABWjtSJVtoZnqogFptAAgqhBCPFY1ZcbEskF8gD1C"
-      );
+      const houseHarcodedkey = HOUSEWALLET;
+      const signerWalletAccount = SIGNERWALLET;
       const seedsLpAcc = [
         Buffer.from(houseHarcodedkey.toBytes()),
         Buffer.from(signerWalletAccount.toBytes()),
@@ -451,7 +468,7 @@ const TradeBar: React.FC<
       selectedCryptos.TIA ||
       selectedCryptos.SUI
         ? 50
-        : 200;
+        : 100;
 
     if (buttonIndex > symbolMaxLeverage) {
       // Set to a default leverage if clicked value exceeds symbolMaxLeverage
@@ -494,7 +511,7 @@ const TradeBar: React.FC<
     fetchcheckuserdata();
   }, [publicKey, connection]);
 
-  const buttonValues = [50, 100, 150, 200]; // Define the button values
+  const buttonValues = [25, 50, 75, 100]; // Define the button values
 
   const handleSliderChange = (value) => {
     value = parseInt(value);
@@ -614,7 +631,7 @@ const TradeBar: React.FC<
       selectedCryptos.TIA ||
       selectedCryptos.SUI
         ? 50
-        : 200;
+        : 100;
 
     if (leverage > newMaxLeverage && newMaxLeverage > defaultLeverage) {
       setLeverage(50);
@@ -654,9 +671,7 @@ const TradeBar: React.FC<
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const accountToWatch = new PublicKey(
-          "AL5uNkGAgkNQxf9pKgQKejx9rTzW2VjbYfjPBXVTMuRf"
-        );
+        const accountToWatch = LONGSHORTACC;
         const initialAccountInfo =
           await connection.getAccountInfo(accountToWatch);
 
@@ -681,9 +696,7 @@ const TradeBar: React.FC<
   }, []);
 
   useEffect(() => {
-    const accountToWatch = new PublicKey(
-      "AL5uNkGAgkNQxf9pKgQKejx9rTzW2VjbYfjPBXVTMuRf"
-    );
+    const accountToWatch = LONGSHORTACC;
     let unsubscribe;
 
     const fetchData = async () => {
@@ -839,6 +852,29 @@ const TradeBar: React.FC<
     setAmountValue(sanitizedValue);
   };
 
+  const handleInputLimit = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+
+    // Replace comma with dot, and remove non-numeric characters except dot (.) as decimal separator
+    const preNumericValue = inputValue.replace(/,/g, ".");
+    const numericValue = preNumericValue.replace(/[^0-9.]/g, "");
+
+    // Count the occurrences of dot (.)
+    const dotCount = (numericValue.match(/\./g) || []).length;
+
+    // If there is more than one dot, keep only the portion before the second dot
+    let sanitizedValue = numericValue;
+    if (dotCount > 1) {
+      sanitizedValue = sanitizedValue.substring(
+        0,
+        sanitizedValue.lastIndexOf(".")
+      );
+    }
+
+    // Set the sanitized value as the amount value
+    setLimitAmount(sanitizedValue);
+  };
+
   const handleInputChangeProfit = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
 
@@ -887,16 +923,17 @@ const TradeBar: React.FC<
 
   useEffect(() => {
     if (lastInput === "ProfitValue") {
+      const price = selectedOrder === 'LIMIT' ? parseFloat(limitAmount) : initialPrice;
       let profit;
       if (toggleState === "LONG") {
         profit = (
-          ((parseFloat(ProfitValue) - initialPrice) / initialPrice) *
+          ((parseFloat(ProfitValue) - price) / price) *
           leverage *
           parseFloat(amountValue)
         ).toFixed(2);
       } else {
         profit = (
-          (-(parseFloat(ProfitValue) - initialPrice) / initialPrice) *
+          (-(parseFloat(ProfitValue) - price) / price) *
           leverage *
           parseFloat(amountValue)
         ).toFixed(2);
@@ -904,7 +941,7 @@ const TradeBar: React.FC<
       profit = isNaN(profit) ? "" : profit;
       setProfit(profit);
     }
-  }, [ProfitValue, initialPrice, leverage, amountValue, toggleState]);
+  }, [ProfitValue, initialPrice, leverage, amountValue, toggleState, selectedOrder, limitAmount]);
 
   useEffect(() => {
     if (lastInput === "Profit") {
@@ -983,16 +1020,17 @@ const TradeBar: React.FC<
 
   useEffect(() => {
     if (lastInputL === "LossValue") {
+      const price = selectedOrder === 'LIMIT' ? parseFloat(limitAmount) : initialPrice;
       let loss;
       if (toggleState === "LONG") {
         loss = (
-          ((parseFloat(LossValue) - initialPrice) / initialPrice) *
+          ((parseFloat(LossValue) - price) / price) *
           leverage *
           parseFloat(amountValue)
         ).toFixed(2);
       } else {
         loss = (
-          (-(parseFloat(LossValue) - initialPrice) / initialPrice) *
+          (-(parseFloat(LossValue) - price) / price) *
           leverage *
           parseFloat(amountValue)
         ).toFixed(2);
@@ -1007,7 +1045,7 @@ const TradeBar: React.FC<
       loss = isNaN(loss) ? "" : loss;
       setLoss(loss);
     }
-  }, [LossValue, initialPrice, leverage, amountValue, toggleState]);
+  }, [LossValue, initialPrice, leverage, amountValue, toggleState, selectedOrder, limitAmount]);
 
   useEffect(() => {
     if (lastInputL === "Loss") {
@@ -1069,6 +1107,9 @@ const TradeBar: React.FC<
         // Add more mappings as needed
       };
 
+
+      const finalSpreadRatio = spreadPercentage(selectedCrypto)/100;
+
       const decimalPlaces =
         decimalPlacesMapping[selectedCrypto?.toUpperCase()] || 2;
 
@@ -1076,12 +1117,12 @@ const TradeBar: React.FC<
         const priceInUsd = price.price / 100000000;
         const priceDisplay =
           toggleState === "LONG"
-            ? priceInUsd * 1.0002 -
-              (priceInUsd * 1.0002) / leverage +
-              (priceInUsd * 1.0002 * 9) / 10000
-            : priceInUsd * 0.9998 +
-              (priceInUsd * 0.9998) / leverage -
-              (priceInUsd * 0.9998 * 9) / 10000;
+            ? priceInUsd *  (1 + finalSpreadRatio) -
+              (priceInUsd * (1 + finalSpreadRatio)) / leverage +
+              (priceInUsd * (1 + finalSpreadRatio) * (8+finalSpreadRatio*100)) / 10000
+            : priceInUsd * (1 - finalSpreadRatio) +
+              (priceInUsd * (1 - finalSpreadRatio)) / leverage -
+              (priceInUsd * (1 - finalSpreadRatio) * (8+finalSpreadRatio*100)) / 10000;
 
         const liquidationPrice = priceDisplay.toFixed(decimalPlaces);
 
@@ -1096,6 +1137,7 @@ const TradeBar: React.FC<
 
   useEffect(() => {
     // Check if currentItem exists
+    const price = selectedOrder === 'LIMIT' ? parseFloat(limitAmount) : initialPrice;
     const val = parseFloat(ProfitValue);
     const priceDirection =
       toggleState === "LONG" ? 0 : toggleState === "SHORT" ? 1 : -1;
@@ -1103,18 +1145,19 @@ const TradeBar: React.FC<
       throw new Error("Invalid toggle state");
     }
     // Warning handler
-    if (priceDirection === 0 && Number(val) <= initialPrice) {
-      setWarning("Take profit price should be higher than the current price.");
-    } else if (priceDirection === 1 && Number(val) >= initialPrice) {
-      setWarning("Take profit should be lower than the current price.");
+    if (priceDirection === 0 && Number(val) <= price) {
+      setWarning(`Take profit price should be higher than the ${selectedOrder === 'MARKET' ? 'current' : 'limit'} price.`);
+    } else if (priceDirection === 1 && Number(val) >= price) {
+      setWarning(`Take profit should be lower than the ${selectedOrder === 'MARKET' ? 'current' : 'limit'} price.`);
     } else {
       setWarning(null);
     }
-  }, [ProfitValue, liquidationPrice, toggleState, initialPrice]);
+  }, [ProfitValue, liquidationPrice, toggleState, initialPrice, selectedOrder, limitAmount]);
 
   useEffect(() => {
     // Warning handler
     const val = parseFloat(LossValue);
+    const price = selectedOrder === 'LIMIT' ? parseFloat(limitAmount) : initialPrice;
 
     const priceDirection =
       toggleState === "LONG" ? 0 : toggleState === "SHORT" ? 1 : -1;
@@ -1123,8 +1166,8 @@ const TradeBar: React.FC<
     }
 
     if (priceDirection === 0) {
-      if (Number(val) >= initialPrice) {
-        setWarning("Stop Loss Price should be lower than the current price.");
+      if (Number(val) >= price) {
+        setWarning(`Stop Loss Price should be lower than the ${selectedOrder === 'MARKET' ? 'current' : 'limit'} price.`);
       } else if (Number(val) < Number(liquidationPrice)) {
         setWarning(
           "Stop Loss Price should be higher than the liquidation price."
@@ -1133,8 +1176,8 @@ const TradeBar: React.FC<
         setWarning(null);
       }
     } else if (priceDirection === 1) {
-      if (Number(val) <= initialPrice) {
-        setWarning("Stop Loss Price should be higher than the current price.");
+      if (Number(val) <= price) {
+        setWarning(`Stop Loss Price should be higher than the ${selectedOrder === 'MARKET' ? 'current' : 'limit'} price.`);
       } else if (Number(val) > Number(liquidationPrice)) {
         setWarning(
           "Stop Loss Price should be lower than the liquidation price."
@@ -1145,7 +1188,7 @@ const TradeBar: React.FC<
     } else {
       setWarning(null);
     }
-  }, [LossValue, initialPrice, liquidationPrice, toggleState]);
+  }, [LossValue, initialPrice, liquidationPrice, toggleState, selectedOrder, limitAmount]);
 
   const toggleAdditionalDiv = () => {
     setShowAdditionalDiv(!showAdditionalDiv);
@@ -1179,7 +1222,7 @@ const TradeBar: React.FC<
         method: "getPriorityFeeEstimate",
         params: [
           {
-            accountKeys: ["AfjPnJz75bJiMKYeManVmPVQEGNcSaj9KeF6c5tncQEa"],
+            accountKeys: ["72GXz5HcGmnuU1M87MGRkb3cJZVTxatCjL56y1gdPRob"],
             options: {
               includeAllPriorityFeeLevels: true,
             },
@@ -1211,11 +1254,365 @@ const TradeBar: React.FC<
     setPriorityFee(!isPriorityFee);
   };
 
-  const onClick = useCallback(async () => {
-    const countmaxBet =
+  const FutOrder = useCallback(async () => {
+    const countmaxBet = selectedCurrency === 'USDC' ?       (((LPdata?.usdcTotalDeposits + LPdata?.usdcPnl) / 200) * 2) /
+    5 /
+    LAMPORTS_PER_SOL*1000 :
       (((LPdata?.totalDeposits + LPdata?.pnl) / 200) * 2) /
       5 /
       LAMPORTS_PER_SOL; // 0,3% maximálni pozice
+
+    const maxBet = Math.min(10, countmaxBet);
+    if (warning) {
+      console.error("Cannot create order due to warning:", warning);
+      // Optionally, show a warning notification
+      notify({
+        type: "info",
+        message: `Position Reverted`,
+        description: warning,
+      });
+      return; // Exit function early
+    }
+
+    // if (parseFloat(amountValue) > maxBet) {
+    //   notify({
+    //     type: "error",
+    //     message: `Position Reverted`,
+    //     description: `Maximum Collateral is ${maxBet.toFixed(2)} SOL`,
+    //   });
+    //   return;
+    // }
+
+    // if (
+    //   totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL >
+    //   2 * maxBet * LAMPORTS_PER_SOL
+    // ) {
+    //   notify({
+    //     type: "error",
+    //     message: `Position Reverted`,
+    //     description: `Collateral limit per user is ${(2 * maxBet).toFixed(2)}`,
+    //   });
+    //   return;
+    // }
+
+    const cryptoSettings = {
+      SOL: {
+        symbolCode: 0,
+        oracleAddy: "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix",
+      },
+      BTC: {
+        symbolCode: 1,
+        oracleAddy: "GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU",
+      },
+      PYTH: {
+        symbolCode: 2,
+        oracleAddy: "nrYkQQQur7z8rYTST3G9GqATviK5SxTDkrqd21MW6Ue",
+      },
+      BONK: {
+        symbolCode: 3,
+        oracleAddy: "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN",
+      },
+      JUP: {
+        symbolCode: 4,
+        oracleAddy: "g6eRCbboSwK4tSWngn773RCMexr1APQr4uA9bGZBYfo",
+      },
+      ETH: {
+        symbolCode: 5,
+        oracleAddy: "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB",
+      },
+      TIA: {
+        symbolCode: 6,
+        oracleAddy: "funeUsHgi2QKkLdUPASRLuYkaK8JaazCEz3HikbkhVt",
+      },
+      SUI: {
+        symbolCode: 7,
+        oracleAddy: "3Qub3HaAJaa2xNY7SUqPKd3vVwTqDfDDkEUMPjXD2c1q",
+      },
+      // Add more cryptocurrencies here in the same pattern
+    };
+
+    let symbolCode;
+    let oracleAddy;
+    const selectedCrypto = Object.keys(selectedCryptos).find(
+      (key) => selectedCryptos[key]
+    );
+
+    if (selectedCrypto && cryptoSettings[selectedCrypto]) {
+      symbolCode = cryptoSettings[selectedCrypto].symbolCode;
+      oracleAddy = cryptoSettings[selectedCrypto].oracleAddy;
+    } else {
+      throw new Error("Invalid or unsupported symbol");
+    }
+
+    if (!publicKey) {
+      notify({
+        type: "info",
+        message: `Wallet not connected`,
+        description: "Connect the wallet in the top panel",
+      });
+      return;
+    }
+    
+
+    if (!amountValue || parseFloat(amountValue) === 0) {
+      notify({
+        type: "info",
+        message: "Amount feels empty",
+        description: "Fill the Trade Amount",
+      });
+      return;
+    }
+
+    // if (parseFloat(amountValue) > balance) {
+    //   notify({
+    //     type: "info",
+    //     message: "Insufficient balance",
+    //     description: "Trade Amount is greater than the available balance",
+    //   });
+    //   return;
+    // }
+
+    // if ((parseFloat(amountValue) - fee) * leverage > availableLiquidity) {
+    //   notify({
+    //     type: "error",
+    //     message: "Insufficient balance",
+    //     description: "Not enough available liquidity in the Vault",
+    //   });
+    //   return;
+    // }
+
+    // if (
+    //   parseFloat(amountValue) >
+    //     (LPdata?.totalDeposits + LPdata?.pnl) / 200 / LAMPORTS_PER_SOL ||
+    //   parseFloat(amountValue) < 0.05
+    // ) {
+    //   notify({
+    //     type: "info",
+    //     message: "Invalid trade amount",
+    //     description: `Trade Amount should be between 0.05 and ${maxBet.toFixed(2)}`,
+    //   });
+    //   return;
+    // }
+
+    let signature: TransactionSignature = "";
+    try {
+      // Get the current time and add 1 to the time number
+      const now = Date.now();
+      const timeNumber = (Math.floor(now / 1000) % 1000000) + 1;
+  
+      const betAmount = selectedCurrency === 'USDC' ? (parseFloat(amountValue) * LAMPORTS_PER_SOL / 1000) : (parseFloat(amountValue) * LAMPORTS_PER_SOL);
+
+      const stopLoss = isNaN(parseFloat(LossValue))
+        ? 0
+        : parseFloat(LossValue) * 100000000;
+      const takeProfit = isNaN(parseFloat(ProfitValue))
+        ? 0
+        : parseFloat(ProfitValue) * 100000000;
+
+      const priceDirection =
+        toggleState === "LONG" ? 0 : toggleState === "SHORT" ? 1 : -1;
+      if (priceDirection === -1) {
+        throw new Error("Invalid toggle state");
+      }
+
+      const seeds = [
+        Buffer.from(publicKey.toBytes()),
+        new BN(timeNumber).toArray("le", 8),
+      ];
+
+      const [pda] = await PublicKey.findProgramAddress(seeds, PROGRAM_ID);
+
+      const seedsUser = [Buffer.from(publicKey.toBytes())];
+
+      const [userAcc] = await PublicKey.findProgramAddress(
+        seedsUser,
+        PROGRAM_ID
+      );
+
+      const seedsAffil = [isInit.usedAffiliate];
+
+      const [AffilAcc] = await PublicKey.findProgramAddress(
+        seedsAffil,
+        PROGRAM_ID
+      );
+
+      const usdcAcc = await usdcSplTokenAccountSync(publicKey);
+
+      const usdc = selectedCurrency === 'USDC' ? 1 : 0;
+
+      if (!isInit.isInitialized) {
+        try {
+          const accounts: InitializeUserAccAccounts = {
+            userAcc: userAcc,
+            playerAcc: publicKey,
+            affilAcc: AffilAcc,
+            systemProgram: SystemProgram.programId,
+            clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
+            usdcMint: USDCMINT,
+            usdcPlayerAcc: usdcAcc,
+            associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
+            tokenProgram: TOKENPROGRAM,
+          };
+
+          const args: InitializeUserAccArgs = {
+            usedAffiliate: Array.from(isInit.usedAffiliate),
+          };
+
+          // Create a new transaction to initialize the user account and send it
+          const initTransaction = new Transaction().add(
+            initializeUserAcc(args, accounts)
+          );
+          const initSignature = await sendTransaction(
+            initTransaction,
+            connection
+          );
+
+          // Wait for transaction confirmation
+          notify({ type: "info", message: `Creating Trading Account` });
+          await connection.confirmTransaction(initSignature, "confirmed");
+          fetchcheckuserdata();
+          setModalIsOpen(false);
+          notify({
+            type: "success",
+            message: `Trading account created`,
+          });
+        } catch (error) {
+          notify({
+            type: "error",
+            message: `Creation Failed`,
+            description: error?.message,
+          });
+        }
+      } else {
+        const args: CreateLimitOrderArgs = {
+          number: new BN(timeNumber),
+          betAmount: new BN(betAmount),
+          leverage: new BN(leverage),
+          priceDirection: priceDirection,
+          symbol: symbolCode,
+          slPrice: new BN(stopLoss),
+          tpPrice: new BN(takeProfit),
+          initialPrice: new BN(parseFloat(limitAmount) * 100000000),
+          backOracle: (0),
+          usdc: (usdc),
+        };
+        console.log(
+          "Creating Order",
+          "Est. Initial Price",
+          initialPrice,
+          "Collateral",
+          betAmount / LAMPORTS_PER_SOL,
+          "Leverage",
+          leverage,
+          "Direction",
+          priceDirection,
+          "Symbol",
+          symbolCode,
+          "SL",
+          stopLoss / 100000000,
+          "TP",
+          takeProfit / 100000000
+        );
+
+        const seedsRatio = [
+          Buffer.from(
+           HOUSEWALLET.toBytes()
+          ),
+        ];
+
+        const [ratioAcc] = await PublicKey.findProgramAddress(
+          seedsRatio,
+          PROGRAM_ID
+        );
+
+        const accounts: CreateLimitOrderAccounts = {
+          futCont: pda,
+          playerAcc: publicKey,
+          userAcc: userAcc,
+          ratioAcc: ratioAcc,
+          houseAcc: HOUSEWALLET,
+          lpAcc: new PublicKey("AUURRMKsMjBK1zaMUmWyy8nCABXZDVtoucwHZBUnh3bB"),
+          signerServer: SIGNERWALLET,
+          oracleAccount: new PublicKey(oracleAddy),
+          pdaHouseAcc: PDAHOUSEWALLET,
+          clock: SystemProgram.programId,
+          systemProgram: SystemProgram.programId,
+          usdcMint: USDCMINT,
+          usdcPlayerAcc: usdcAcc,
+          usdcPdaHouseAcc: USDCPDAHOUSEWALLET,
+          tokenProgram: TOKENPROGRAM,
+          associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
+        };
+
+        let PRIORITY_FEE_IX;
+
+        if (isPriorityFee) {
+          const priorityfees = await getPriorityFeeEstimate();
+          PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+            microLamports: priorityfees,
+          });
+        } else {
+          PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+            microLamports: 0,
+          });
+        }
+
+        const transaction = new Transaction()
+          .add(createLimitOrder(args, accounts))
+          .add(PRIORITY_FEE_IX);
+
+        signature = await sendTransaction(transaction, connection);
+        notify({
+          type: "info",
+          message: `Creating Order`,
+          txid: signature,
+        });
+        // Wait for transaction confirmation before showing the 'success' notification
+        await connection.confirmTransaction(signature, "confirmed");
+      }
+    } catch (error: any) {
+      // In case of an error, show only the 'error' notification
+      notify({
+        type: "error",
+        message: `Position Reverted`,
+        description: error?.message,
+        txid: signature,
+      });
+      return;
+    }
+  }, [
+    fee,
+    isPriorityFee,
+    LPdata,
+    selectedCryptos,
+    slippageTolerance,
+    isInit,
+    initialPrice,
+    balance,
+    warning,
+    totalBetAmount,
+    publicKey,
+    notify,
+    connection,
+    sendTransaction,
+    ProfitValue,
+    LossValue,
+    leverage,
+    amountValue,
+    toggleState,
+    availableLiquidity,
+    selectedCurrency,
+    limitAmount
+  ]);
+
+  const onClick = useCallback(async () => {
+    const countmaxBet = selectedCurrency === 'USDC' ?       (((LPdata?.usdcTotalDeposits + LPdata?.usdcPnl) / 200) * 2) /
+    5 /
+    LAMPORTS_PER_SOL*1000 :
+      (((LPdata?.totalDeposits + LPdata?.pnl) / 200) * 2) /
+      5 /
+      LAMPORTS_PER_SOL; // 0,3% maximálni pozice
+
     const maxBet = Math.min(10, countmaxBet);
     if (warning) {
       console.error("Cannot open position due to warning:", warning);
@@ -1228,31 +1625,31 @@ const TradeBar: React.FC<
       return; // Exit function early
     }
 
-    if (parseFloat(amountValue) > maxBet) {
-      notify({
-        type: "error",
-        message: `Position Reverted`,
-        description: `Maximum Collateral is ${maxBet.toFixed(2)} SOL`,
-      });
-      return;
-    }
+    // if (parseFloat(amountValue) > maxBet) {
+    //   notify({
+    //     type: "error",
+    //     message: `Position Reverted`,
+    //     description: `Maximum Collateral is ${maxBet.toFixed(2)} SOL`,
+    //   });
+    //   return;
+    // }
 
-    if (
-      totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL >
-      2 * maxBet * LAMPORTS_PER_SOL
-    ) {
-      notify({
-        type: "error",
-        message: `Position Reverted`,
-        description: `Collateral limit per user is ${(2 * maxBet).toFixed(2)}`,
-      });
-      return;
-    }
+    // if (
+    //   totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL >
+    //   2 * maxBet * LAMPORTS_PER_SOL
+    // ) {
+    //   notify({
+    //     type: "error",
+    //     message: `Position Reverted`,
+    //     description: `Collateral limit per user is ${(2 * maxBet).toFixed(2)}`,
+    //   });
+    //   return;
+    // }
 
     const cryptoSettings = {
       SOL: {
         symbolCode: 0,
-        oracleAddy: "H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG",
+        oracleAddy: "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix",
       },
       BTC: {
         symbolCode: 1,
@@ -1316,44 +1713,45 @@ const TradeBar: React.FC<
       return;
     }
 
-    if (parseFloat(amountValue) > balance) {
-      notify({
-        type: "info",
-        message: "Insufficient balance",
-        description: "Trade Amount is greater than the available balance",
-      });
-      return;
-    }
+    // if (parseFloat(amountValue) > balance) {
+    //   notify({
+    //     type: "info",
+    //     message: "Insufficient balance",
+    //     description: "Trade Amount is greater than the available balance",
+    //   });
+    //   return;
+    // }
 
-    if ((parseFloat(amountValue) - fee) * leverage > availableLiquidity) {
-      notify({
-        type: "error",
-        message: "Insufficient balance",
-        description: "Not enough available liquidity in the Vault",
-      });
-      return;
-    }
+    // if ((parseFloat(amountValue) - fee) * leverage > availableLiquidity) {
+    //   notify({
+    //     type: "error",
+    //     message: "Insufficient balance",
+    //     description: "Not enough available liquidity in the Vault",
+    //   });
+    //   return;
+    // }
 
-    if (
-      parseFloat(amountValue) >
-        (LPdata?.totalDeposits + LPdata?.pnl) / 200 / LAMPORTS_PER_SOL ||
-      parseFloat(amountValue) < 0.05
-    ) {
-      notify({
-        type: "info",
-        message: "Invalid trade amount",
-        description: `Trade Amount should be between 0.05 and ${maxBet.toFixed(2)}`,
-      });
-      return;
-    }
+    // if (
+    //   parseFloat(amountValue) >
+    //     (LPdata?.totalDeposits + LPdata?.pnl) / 200 / LAMPORTS_PER_SOL ||
+    //   parseFloat(amountValue) < 0.05
+    // ) {
+    //   notify({
+    //     type: "info",
+    //     message: "Invalid trade amount",
+    //     description: `Trade Amount should be between 0.05 and ${maxBet.toFixed(2)}`,
+    //   });
+    //   return;
+    // }
 
     let signature: TransactionSignature = "";
     try {
       // Get the current time and add 1 to the time number
       const now = Date.now();
       const timeNumber = (Math.floor(now / 1000) % 1000000) + 1;
+  
+      const betAmount = selectedCurrency === 'USDC' ? (parseFloat(amountValue) * LAMPORTS_PER_SOL / 1000) : (parseFloat(amountValue) * LAMPORTS_PER_SOL);
 
-      const betAmount = parseFloat(amountValue) * LAMPORTS_PER_SOL;
       const stopLoss = isNaN(parseFloat(LossValue))
         ? 0
         : parseFloat(LossValue) * 100000000;
@@ -1390,6 +1788,7 @@ const TradeBar: React.FC<
 
       const usdcAcc = await usdcSplTokenAccountSync(publicKey);
 
+      const usdc = selectedCurrency === 'USDC' ? 1 : 0;
 
       if (!isInit.isInitialized) {
         try {
@@ -1440,14 +1839,14 @@ const TradeBar: React.FC<
           affiliateCode: Array.from(isInit.usedAffiliate),
           betAmount: new BN(betAmount),
           leverage: new BN(leverage),
-          priceDirection: new BN(priceDirection),
+          priceDirection: priceDirection,
           symbol: symbolCode,
           slPrice: new BN(stopLoss),
           tpPrice: new BN(takeProfit),
-          slippagePrice: new BN(initialPrice * 100000000),
+          slippagePrice: new BN(100 * 100000000),
           slippage: new BN(slippageTolerance),
           backOracle: (0),
-          usdc: (0),
+          usdc: (usdc),
         };
         console.log(
           "Opening Futures Position",
@@ -1485,10 +1884,10 @@ const TradeBar: React.FC<
           ratioAcc: ratioAcc,
           houseAcc: HOUSEWALLET,
           oracleAccount: new PublicKey(oracleAddy),
-          solOracleAccount: new PublicKey(oracleAddy),
+          solOracleAccount: new PublicKey("J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix"),
           pdaHouseAcc: PDAHOUSEWALLET,
           affilAcc: AffilAcc,
-          lpAcc: new PublicKey("CBaAsnsHBpr5UaCbutL3yjxGxn1E7SNZsF8xo69y7BtD"),
+          lpAcc: new PublicKey("AUURRMKsMjBK1zaMUmWyy8nCABXZDVtoucwHZBUnh3bB"),
           signerWalletAccount: SIGNERWALLET,
           systemProgram: SystemProgram.programId,
           usdcMint: USDCMINT,
@@ -1555,7 +1954,9 @@ const TradeBar: React.FC<
     amountValue,
     toggleState,
     availableLiquidity,
+    selectedCurrency
   ]);
+
 
   const onClick1 = useCallback(async () => {
     const seedsUser = [Buffer.from(publicKey.toBytes())];
@@ -1671,7 +2072,7 @@ const TradeBar: React.FC<
       return 50;
     }
     // Default max leverage for other cases
-    return 200;
+    return 100;
   };
 
   const calculateFee = (amount, lev, rebate, init) => {
@@ -1747,55 +2148,58 @@ const TradeBar: React.FC<
     setFee(newFee); // Set as a number
   }, [amountValue, leverage, rebateTier, isInit]);
 
-  useEffect(() => {    const currencySuffix = selectedCurrency === 'USDC' ? 'usdc' : '';
+  useEffect(() => { 
 
-    const parseData = (key) => parseInt(data[key + currencySuffix] || 0);
+  const currencySuffix = selectedCurrency === 'USDC' ? 'usdc' : '';
 
+  const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+  const parseData = (crypto, type) => {
+    const cryptoName = currencySuffix ? capitalizeFirstLetter(crypto) : crypto;
+    const propName = `${currencySuffix}${cryptoName}${type}`;
+    return parseInt(data[propName] || 0, 10);
+  };
     let selectedData = { long: 0, short: 0 };
-    if (selectedCryptos.SOL) {
-      selectedData = {
-        long: parseData(data.solLong),
-        short: parseData(data.solShort),
-      };
+  if (selectedCryptos.SOL) {
+    selectedData = {
+      long: parseData('sol', 'Long'),
+      short: parseData('sol', 'Short'),
+    };
     } else if (selectedCryptos.BTC) {
       selectedData = {
-        long: parseData(data.btcLong),
-        short: parseData(data.btcShort),
-      };
+        long: parseData('btc', 'Long'),
+        short: parseData('btc', 'Short'),      };
     } else if (selectedCryptos.PYTH) {
       selectedData = {
-        long: parseData(data.pythLong),
-        short: parseData(data.pythShort),
-      };
+        long: parseData('pyth', 'Long'),
+        short: parseData('pyth', 'Short'),      };
     } else if (selectedCryptos.BONK) {
       selectedData = {
-        long: parseData(data.bonkLong),
-        short: parseData(data.bonkShort),
-      };
+        long: parseData('bonk', 'Long'),
+        short: parseData('bonk', 'Short'),      };
     } else if (selectedCryptos.ETH) {
       selectedData = {
-        long: parseData(data.ethLong),
-        short: parseData(data.ethShort),
-      };
+        long: parseData('eth', 'Long'),
+        short: parseData('eth', 'Short'),      };
     } else if (selectedCryptos.TIA) {
       selectedData = {
-        long: parseData(data.tiaLong),
-        short: parseData(data.tiaShort),
-      };
+        long: parseData('tia', 'Long'),
+        short: parseData('tia', 'Short'),      };
     } else if (selectedCryptos.SUI) {
       selectedData = {
-        long: parseData(data.suiLong),
-        short: parseData(data.suiShort),
-      };
+        long: parseData('sui', 'Long'),
+        short: parseData('sui', 'Short'),      };
     } else if (selectedCryptos.JUP) {
       selectedData = {
-        long: parseData(data.jupLong),
-        short: parseData(data.jupShort),
-      };
+        long: parseData('jup', 'Long'),
+        short: parseData('jup', 'Short'),      };
     }
 
-    const totalDepositsKey = currencySuffix ? `${currencySuffix}totalDeposits` : 'totalDeposits';
+    const totalDepositsKey = currencySuffix ? `usdcTotalDeposits` : 'totalDeposits';
+    console.log(totalDepositsKey, "TotalDepositss");
+
     const totalDeposits = LPdata?.[totalDepositsKey] || 0;
+    console.log(totalDeposits, "TotalDepositss");
+
     const oiSol = totalDeposits / 4; // Open interest for large caps
     const poSmallPairs = totalDeposits / 25;
 
@@ -1809,10 +2213,13 @@ const TradeBar: React.FC<
     const individualLong = selectedData.long;
     const individualShort = selectedData.short;
 
-    const bigCapLong = ['solLong', 'btcLong', 'ethLong'].reduce((sum, key) => sum + parseData(key), 0);
-    const bigCapShort = ['solShort', 'btcShort', 'ethShort'].reduce((sum, key) => sum + parseData(key), 0);
-    const smallCapLong = ['pythLong', 'bonkLong', 'jupLong', 'tiaLong', 'suiLong'].reduce((sum, key) => sum + parseData(key), 0);
-    const smallCapShort = ['pythShort', 'bonkShort', 'jupShort', 'tiaShort', 'suiShort'].reduce((sum, key) => sum + parseData(key), 0);
+    const bigCapLong = parseData('sol', 'Long') + parseData('btc', 'Long') + parseData('eth', 'Long');
+    const bigCapShort = parseData('sol', 'Short') + parseData('btc', 'Short') + parseData('eth', 'Short');
+    const smallCapLong = parseData('pyth', 'Long') + parseData('bonk', 'Long') + parseData('jup', 'Long') + parseData('tia', 'Long') + parseData('sui', 'Long');
+    const smallCapShort = parseData('pyth', 'Short') + parseData('bonk', 'Short') + parseData('jup', 'Short') + parseData('tia', 'Short') + parseData('sui', 'Short');
+
+
+    const currencyAdjustment = selectedCurrency === 'USDC' ? 1000 : 5 * LAMPORTS_PER_SOL;
 
     if (toggleState === "LONG") {
       // Calculate available liquidity for selected cryptocurrency
@@ -1820,7 +2227,7 @@ const TradeBar: React.FC<
         if (bigCapLong <= oiSol * 2) {
           availableLiquidity = Math.min(
             oiSol * 2 - bigCapLong,
-            oiSol - individualLong - 5 * LAMPORTS_PER_SOL
+            oiSol - individualLong - currencyAdjustment
           );
         }
       } else {
@@ -1837,7 +2244,7 @@ const TradeBar: React.FC<
         if (bigCapShort <= oiSol * 2) {
           availableLiquidity = Math.min(
             oiSol * 2 - bigCapShort,
-            oiSol - individualShort - 5 * LAMPORTS_PER_SOL
+            oiSol - individualShort - currencyAdjustment
           );
         }
       } else {
@@ -1849,8 +2256,8 @@ const TradeBar: React.FC<
         }
       }
     }
-    setAvailableLiquidity(availableLiquidity / LAMPORTS_PER_SOL);
-  }, [data, toggleState, selectedCryptos, LPdata]);
+    setAvailableLiquidity(selectedCurrency === 'USDC' ? availableLiquidity * 1000/LAMPORTS_PER_SOL : availableLiquidity/LAMPORTS_PER_SOL);
+    }, [data, toggleState, selectedCryptos, LPdata, selectedCurrency]);
 
   const ModalDetails1 = (
     <Modal
@@ -2020,9 +2427,6 @@ const TradeBar: React.FC<
       style={{
         overlay: {
           backgroundColor: "transparent",
-          zIndex: "100",
-
-          pointerEvents: "auto", // Allow clicks through the overlay
         },
         content: {
           backgroundSize: "cover",
@@ -2120,9 +2524,10 @@ const TradeBar: React.FC<
               Limit</button>
 
       </div>
-      <div className="self-stretch h-[60px] flex flex-col items-start justify-start gap-[8px]">
-        <div className="self-stretch flex flex-col items-start justify-start">
-          <div className="self-stretch h-4 flex flex-row items-start justify-between">
+      <div className="w-full h-[60px] flex flex-col items-start justify-start gap-[8px]">
+        <div className="w-full flex flex-row items-start justify-start gap-[8px] justify-between">
+          <div className="flex-1 flex-col">
+          <div className="w-full h-4 flex flex-row items-start justify-between">
             <div className="relative leading-[14px]">Collateral Size</div>
             <button
               className="hidden relative leading-[20px] font-medium text-grey-text text-lg"
@@ -2131,10 +2536,10 @@ const TradeBar: React.FC<
               <MdOutlineSettings></MdOutlineSettings>
             </button>
           </div>
-          <div className="mt-[12px] self-stretch rounded-lg bg-layer-2 box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-grey hover:bg-[#484c6d5b]">
+          <div className="w-full mt-[12px] rounded-lg bg-layer-2 box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-grey hover:bg-[#484c6d5b]">
             <input
               type="text"
-              className="input-capsule__input "
+              className="input-capsule__input w-full"
               placeholder="3.00"
               value={amountValue}
               onChange={handleInputChange}
@@ -2154,12 +2559,35 @@ const TradeBar: React.FC<
                 src={selectedCurrency === "SOL" ? "/coins/60x60/Sol.png" : "/coins/60x60/Usdc.png"}
               />
                           <FaChevronUp
-              className={`w-2.5 h-2.5 ml-1 text-slate-300  ${modalIsOpen2 ? "" : "rotate-180"}`}
+              className={`w-[18px] h-[18px] ml-1 text-slate-300  ${modalIsOpen2 ? "" : "rotate-180"}`}
             />
             </button>
 
             </span>
-          </div>
+          </div></div>
+          {selectedOrder === 'LIMIT' && (
+                      <div className="w-1/2 flex-col">
+                      <div className="w-full h-4 flex flex-row items-start justify-between">
+                        <div className="relative leading-[14px]">Limit Price</div>
+                        <button
+                          className="hidden relative leading-[20px] font-medium text-grey-text text-lg"
+                          onClick={toggleModal}
+                        >
+                          <MdOutlineSettings></MdOutlineSettings>
+                        </button>
+                      </div>
+          <div className="w-full mt-[12px] rounded-lg bg-layer-2 box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-grey hover:bg-[#484c6d5b]">
+          <input
+              type="text"
+              className="input-capsule__input"
+              placeholder="100$"
+              value={limitAmount} // Assume limitPriceValue is the state for this input
+              onChange={handleInputLimit} // Assume handleLimitPriceChange is the handler for this input
+              min={0}
+              step={0.01}
+            />
+          </div></div>
+        )}
         </div>
       </div>
       <div className="self-stretch flex flex-col items-start justify-start gap-[12px]">
@@ -2202,6 +2630,24 @@ const TradeBar: React.FC<
           />
           <div className="self-stretch flex flex-row items-start justify-start gap-[8px]">
             <button
+              onClick={() => handleLeverageClick(25)}
+              className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
+                activeLeverageButton === 25
+                  ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
+                  : "bg-layer-2"
+              }`}
+            >
+              <div
+                className={` flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${
+                  activeLeverageButton === 25
+                    ? "bg-[#0B111B] bg-opacity-80"
+                    : " bg-opacity-0 hover:bg-[#484c6d5b]"
+                }`}
+              >
+                25X
+              </div>{" "}
+            </button>
+            <button
               onClick={() => handleLeverageClick(50)}
               className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
                 activeLeverageButton === 50
@@ -2210,13 +2656,31 @@ const TradeBar: React.FC<
               }`}
             >
               <div
-                className={` flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${
+                className={`flex justify-center items-center  w-full h-full rounded relative leading-[14px] font-medium ${
                   activeLeverageButton === 50
+                    ? "bg-[#0B111B] bg-opacity-80"
+                    : "bg-opacity-0 hover:bg-[#484c6d5b]"
+                }`}
+              >
+                50X
+              </div>{" "}
+            </button>
+            <button
+              onClick={() => handleLeverageClick(75)}
+              className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
+                activeLeverageButton === 75
+                  ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
+                  : "bg-layer-2"
+              }`}
+            >
+              <div
+                className={`flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${
+                  activeLeverageButton === 75
                     ? "bg-[#0B111B] bg-opacity-80"
                     : " bg-opacity-0 hover:bg-[#484c6d5b]"
                 }`}
               >
-                50X
+                75X
               </div>{" "}
             </button>
             <button
@@ -2228,49 +2692,13 @@ const TradeBar: React.FC<
               }`}
             >
               <div
-                className={`flex justify-center items-center  w-full h-full rounded relative leading-[14px] font-medium ${
+                className={`flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${
                   activeLeverageButton === 100
                     ? "bg-[#0B111B] bg-opacity-80"
-                    : "bg-opacity-0 hover:bg-[#484c6d5b]"
+                    : " bg-opacity-0 hover:bg-[#484c6d5b]"
                 }`}
               >
                 100X
-              </div>{" "}
-            </button>
-            <button
-              onClick={() => handleLeverageClick(150)}
-              className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
-                activeLeverageButton === 150
-                  ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
-                  : "bg-layer-2"
-              }`}
-            >
-              <div
-                className={`flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${
-                  activeLeverageButton === 150
-                    ? "bg-[#0B111B] bg-opacity-80"
-                    : " bg-opacity-0 hover:bg-[#484c6d5b]"
-                }`}
-              >
-                150X
-              </div>{" "}
-            </button>
-            <button
-              onClick={() => handleLeverageClick(200)}
-              className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
-                activeLeverageButton === 200
-                  ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
-                  : "bg-layer-2"
-              }`}
-            >
-              <div
-                className={`flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${
-                  activeLeverageButton === 200
-                    ? "bg-[#0B111B] bg-opacity-80"
-                    : " bg-opacity-0 hover:bg-[#484c6d5b]"
-                }`}
-              >
-                200X
               </div>{" "}
             </button>
           </div>
@@ -2540,8 +2968,7 @@ const TradeBar: React.FC<
 
       {wallet.connected ? (
         <button
-          onClick={onClick}
-          className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  ${
+        onClick={selectedOrder === 'MARKET' ? onClick : FutOrder}          className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  ${
             toggleState === "LONG"
               ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-[2px] border-solid border-primary"
               : "[flex-1 [background:linear-gradient(180deg,_rgba(255,_76,_76,_0),_rgba(255,_76,_76,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 text-short border-[2px] border-solid border-short"
@@ -2552,8 +2979,7 @@ const TradeBar: React.FC<
               toggleState === "LONG" ? "bg-primary" : "bg-short"
             }`}
           >
-            OPEN POSITION
-          </div>
+{selectedOrder === 'MARKET' ? "OPEN POSITION" : "CREATE ORDER"}          </div>
         </button>
       ) : (
         <WalletMultiButtonDynamic

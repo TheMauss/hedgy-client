@@ -78,6 +78,8 @@ const Futures: FC = () => {
   const [openingPrice, setOpeningPrice] = useState(0);
   const [initialPrice, setInitialPrice] = useState(0);
   const [selectedPair, setSelectedPair] = useState("");
+  const [selectedCurrency, setSelectedCurrency] = useState<'SOL' | 'USDC'>('SOL');
+
 
   const router = useRouter();
   const { crypto } = router.query; // could be 'btc' or 'sol'
@@ -377,6 +379,7 @@ const Futures: FC = () => {
                             prices={prices}
                             EMAprice={EMAprice}
                             selectedCryptos={selectedCryptos}
+                            selectedCurrency={selectedCurrency}
                           />
                           <div className="w-full flex flex-col md:order-1 order-2 md:mt-2 mt-2">
                             <Graph
@@ -403,6 +406,8 @@ const Futures: FC = () => {
                             isBitcoinSelected={isBitcoinSelected}
                             isSoliditySelected={isSoliditySelected}
                             selectedCryptos={selectedCryptos}
+                            selectedCurrency={selectedCurrency}
+                            setSelectedCurrency={setSelectedCurrency}
                           />
                         </div>
                       </div>
@@ -415,6 +420,7 @@ const Futures: FC = () => {
                           prices={prices}
                           EMAprice={EMAprice}
                           selectedCryptos={selectedCryptos}
+                          selectedCurrency={selectedCurrency}
                         />
                         <div
                           className={`w-full md:block flex-col hidden md:order-2 order-1 mt-2 md:h-[629px] ${

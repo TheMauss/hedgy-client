@@ -27,6 +27,7 @@ interface InterestBarProps {
   prices: { [key: string]: { price: number; timestamp: string } };
   EMAprice: number;
   symbol: string;
+  selectedCurrency: 'SOL' | 'USDC';
 }
 
 const InterestBar: React.FC<InterestBarProps> = ({
@@ -36,6 +37,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
   prices,
   EMAprice,
   openingPrice,
+  selectedCurrency
 }) => {
   // You forgot to add latestOpenedPosition here
   // Safely access the properties of prices
@@ -101,10 +103,19 @@ const InterestBar: React.FC<InterestBarProps> = ({
 
   const MAX_NOTIONAL_POSITIONS = 1000;
 
-  const getOpenInterestValues = (sym) => {
+  const getOpenInterestValues = (sym, selectedCurrency) => {
+    const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+  
+    const currencySuffix = selectedCurrency === 'USDC' ? 'usdc' : '';
+  
+    const getCryptoPropertyName = (crypto, type) => {
+      const cryptoName = currencySuffix ? capitalizeFirstLetter(crypto) : crypto;
+      return `${currencySuffix}${cryptoName}${type}`;
+    };
+  
     const mapping = {
-      "Crypto.BTC/USD": { long: "btcLong", short: "btcShort" },
-      "Crypto.SOL/USD": { long: "solLong", short: "solShort" },
+      "Crypto.BTC/USD": { long: getCryptoPropertyName('btc', 'Long'), short: getCryptoPropertyName('btc', 'Short') },
+      "Crypto.SOL/USD": { long: getCryptoPropertyName('sol', 'Long'), short: getCryptoPropertyName('sol', 'Short') },
       "Crypto.PYTH/USD": { long: "pythLong", short: "pythShort" },
       "Crypto.BONK/USD": { long: "bonkLong", short: "bonkShort" },
       "Crypto.JUP/USD": { long: "jupLong", short: "jupShort" },
@@ -127,7 +138,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
     }
   };
 
-  const { long, short } = getOpenInterestValues(symbol);
+  const { long, short } = getOpenInterestValues(symbol, selectedCurrency);
 
   const computeBorrowingFee = (
     direction: "long" | "short",
@@ -224,7 +235,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
               Open (L)
             </div>
             <div className="relative text-sm leading-[16px] font-dm-sans text-white">
-              {long} SOL
+              {long} {selectedCurrency === 'SOL' ? "SOL" : "USDC"}  
             </div>
           </div>
         </div>
@@ -234,7 +245,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
               Open (S)
             </div>
             <div className="relative text-sm leading-[16px] font-dm-sans text-white">
-              {short} SOL
+              {short} {selectedCurrency === 'SOL' ? "SOL" : "USDC"}  
             </div>
           </div>
         </div>
@@ -244,7 +255,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
               Borrowing (L)
             </div>
             <div className="relative text-sm leading-[16px] font-dm-sans text-short">
-              {(Number(borrowingFeeLong) * 100).toFixed(4)}%
+            {isNaN(Number(borrowingFeeLong)) ? "0.0000%" : `${(Number(borrowingFeeLong) * 100).toFixed(4)}%`}
             </div>
           </div>
         </div>
@@ -254,7 +265,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
               Borrowing (S)
             </div>
             <div className="relative text-sm leading-[16px] font-dm-sans text-short">
-              {(Number(borrowingFeeShort) * 100).toFixed(4)}%
+            {isNaN(Number(borrowingFeeShort)) ? "0.0000%" : `${(Number(borrowingFeeShort) * 100).toFixed(4)}%%`}
             </div>
           </div>
         </div>
