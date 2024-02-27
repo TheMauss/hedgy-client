@@ -24,6 +24,10 @@ import {
   resolveFutContuser,
   ResolveFutContuserArgs,
 } from "../out/instructions/resolveFutContuser";
+import {
+  CloseLimitOrderAccounts,
+  closeLimitOrder,
+} from "../out/instructions/closeLimitOrder";
 import domtoimage from "dom-to-image";
 import {
   UpdateFutContAccounts,
@@ -163,6 +167,8 @@ const MyPositions: FC<MyPositionsProps> = ({
 
 
   const [positions, setPositions] = useState<Position[]>([]);
+  const [orders, setOrders] = useState<Position[]>([]);
+
   const [resolvedPositions, setResolvedPositions] = useState<Position[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -508,6 +514,28 @@ const MyPositions: FC<MyPositionsProps> = ({
           }
         }
       );
+
+      socket2Ref.current.on("futuresupdateOrders", (updatedOrder: Position, latestPrice: number) => {
+        console.log("Received order update:", updatedOrder, "with latest price:", latestPrice);
+        setPreviousPrice(latestPrice);
+
+        // Handle the updated order here
+        // This might involve updating the state that holds your orders, similar to how positions are handled
+        setOrders(prevOrders => {
+          // Example: Update the order in your state, or add it if it's new
+          const existingOrderIndex = prevOrders.findIndex(order => order._id === updatedOrder._id);
+          if (existingOrderIndex > -1) {
+            // Update existing order
+            const updatedOrders = [...prevOrders];
+            updatedOrders[existingOrderIndex] = { ...updatedOrder, currentPrice: latestPrice };
+            return updatedOrders;
+          } else {
+            // Add new order
+            return [...prevOrders, { ...updatedOrder, currentPrice: latestPrice }];
+          }
+        });
+      });
+      console.log(orders, "neworders")
 
       socket2Ref.current.on("connect_error", (err) => {
         setError(err.message);
@@ -930,18 +958,6 @@ const MyPositions: FC<MyPositionsProps> = ({
     const seedsUser = [Buffer.from(publicKey.toBytes())];
 
     const [userAcc] = await PublicKey.findProgramAddress(seedsUser, PROGRAM_ID);
-
-    const seedsRatio = [
-      Buffer.from(
-        HOUSEWALLET.toBytes()
-      ),
-    ];
-
-    const [ratioAcc] = await PublicKey.findProgramAddress(
-      seedsRatio,
-      PROGRAM_ID
-    );
-
     const usdcAcc = await usdcSplTokenAccountSync(publicKey);
 
     let oracleAccountAddress;
@@ -969,7 +985,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     const accounts: ResolveFutContuserAccounts = {
       futCont: new PublicKey(position.futuresContract),
       userAcc: userAcc,
-      ratioAcc: ratioAcc,
+      ratioAcc: RATIOACC,
       playerAcc: new PublicKey(walletAddress),
       oracleAccount: new PublicKey(oracleAccountAddress),
       pdaHouseAcc: PDAHOUSEWALLET,
@@ -1218,6 +1234,76 @@ const MyPositions: FC<MyPositionsProps> = ({
     }
   };
 
+  const closeOrder = async (position: Position) => {
+    const seedsUser = [Buffer.from(publicKey.toBytes())];
+    const [userAcc] = await PublicKey.findProgramAddress(seedsUser, PROGRAM_ID);
+
+    const usdcAcc = await usdcSplTokenAccountSync(publicKey);
+
+
+    const accounts: CloseLimitOrderAccounts = {
+      futCont: new PublicKey(position.futuresContract),
+      playerAcc: new PublicKey(walletAddress),
+      userAcc: userAcc,
+      ratioAcc: RATIOACC,
+      houseAcc: HOUSEWALLET,
+      signerServer: SIGNERWALLET,
+      pdaHouseAcc: PDAHOUSEWALLET,
+      systemProgram: SystemProgram.programId,
+      usdcMint: USDCMINT,
+      usdcPlayerAcc: usdcAcc,
+      usdcPdaHouseAcc: USDCPDAHOUSEWALLET,
+      tokenProgram: TOKENPROGRAM,
+      associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
+    };
+
+
+    let PRIORITY_FEE_IX;
+
+    if (isPriorityFee) {
+      const priorityfees = await getPriorityFeeEstimate();
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: priorityfees,
+      });
+    } else {
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: 0,
+      });
+    }
+
+    // Create the transaction
+    const transaction = new Transaction()
+      .add(closeLimitOrder(accounts))
+      .add(PRIORITY_FEE_IX);
+
+    let signature: TransactionSignature = "";
+    try {
+      // Send the transaction
+      signature = await sendTransaction(transaction, connection);
+      handleNewNotification({
+        type: "info",
+        message: `Closing limit order`,
+      });
+
+      // Wait for confirmation
+      await connection.confirmTransaction(signature, "confirmed");
+      handleNewNotification({
+        type: "success",
+        message: `Limit order closed`,
+      });
+      // Optionally, show a success notification
+    } catch (error: any) {
+      // Optionally, show an error notification
+      handleNewNotification({
+        type: "error",
+        message: `Closing limit order failed`,
+        description: error?.message,
+        txid: signature,
+      });
+    }
+  };
+
+
   const renderPositions = (positionsToRender: Position[]) => {
     const unresolvedPositions = positionsToRender
       .filter((item) => !item.resolved)
@@ -1252,6 +1338,8 @@ const MyPositions: FC<MyPositionsProps> = ({
                 -item.betAmount / LAMPORTS_PER_SOL
               );
     });
+
+    
 
     return (
       <div className="flex flex-col">
@@ -3078,6 +3166,439 @@ const MyPositions: FC<MyPositionsProps> = ({
     );
   };
 
+
+  const renderOrders = () => {
+    const orderstoShow = orders.filter(
+      (order) => !order.resolved
+    );
+    console.log(orderstoShow, "orderstoshow")
+
+    // Reverse the array to show positions from newest to oldest
+    orderstoShow.reverse();
+
+    // Calculate start and end indices for the slice of data you want to display
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+
+
+    // Get only the data for the current page
+    const currentPageData = orderstoShow.slice(startIndex, endIndex);
+    return (
+      <div>
+        {currentPageData.map((item, index) => {
+          const isEvenRow = index % 2 === 0;
+          const rowStyle = {
+            backgroundColor: isEvenRow ? "#232332" : "#1a1a25",
+          };
+
+          return !isMobile ? (
+            <div className="px-2 w-full  rounded-lg font-poppins custom scrollbar flex  flex-row text-start rounded">
+              <div className=" w-[20%] flex items-center min-w-[140px] text-start text-sm text-grey-text  ">
+                <a
+                  href={`https://solscan.io/account/${item.futuresContract}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:underline"
+                >
+                  <div className="flex flex-row justify-center items-center rounded-l">
+                    <div className="flex flex-row items-center">
+                      {item.symbol === 0 ? (
+                        <div className="py-0.5 flex flex-row justify-start">
+                          <img
+                            src="/coins/60x60/Sol.png"
+                            alt="Logo"
+                            width="22"
+                            height="16"
+                          />
+                          <p className="flex ml-1 items-center">SOL/USD</p>
+                        </div>
+                      ) : item.symbol === 1 ? (
+                        <div className="py-0.5 flex flex-row justify-start">
+                          <img
+                            src="/coins/60x60/Btc.png"
+                            alt="Logo"
+                            width="22"
+                            height="16"
+                          />
+                          <p className="flex ml-1 items-center">BTC/USD</p>
+                        </div>
+                      ) : item.symbol === 2 ? (
+                        <div className="py-0.5 flex flex-row justify-start">
+                          <img
+                            src="/coins/60x60/Pyth.png"
+                            alt="Logo"
+                            width="22"
+                            height="16"
+                          />
+                          <p className="flex ml-1 items-center">PYTH/USD</p>
+                        </div>
+                      ) : item.symbol === 3 ? (
+                        <div className="py-0.5 flex flex-row justify-start">
+                          <img
+                            src="/coins/60x60/Bonk.png"
+                            alt="Logo"
+                            width="22"
+                            height="16"
+                          />
+                          <p className="flex ml-1 items-center">BONK/USD</p>
+                        </div>
+                      ) : item.symbol === 4 ? (
+                        <div className="py-0.5 flex flex-row justify-start">
+                          <img
+                            src="/coins/60x60/Jup.png"
+                            alt="Logo"
+                            width="22"
+                            height="16"
+                          />
+                          <p className="flex ml-1 items-center">JUP/USD</p>
+                        </div>
+                      ) : item.symbol === 5 ? (
+                        <div className="py-0.5 flex flex-row justify-start">
+                          <img
+                            src="/coins/60x60/Eth.png"
+                            alt="Logo"
+                            width="22"
+                            height="16"
+                          />
+                          <p className="flex ml-1 items-center">ETH/USD</p>
+                        </div>
+                      ) : item.symbol === 6 ? (
+                        <div className="py-0.5 flex flex-row justify-start">
+                          <img
+                            src="/coins/60x60/Tia.png"
+                            alt="Logo"
+                            width="22"
+                            height="16"
+                          />
+                          <p className="flex ml-1 items-center">TIA/USD</p>
+                        </div>
+                      ) : item.symbol === 7 ? (
+                        <div className="py-0.5 flex flex-row justify-start">
+                          <img
+                            src="/coins/60x60/Sui.png"
+                            alt="Logo"
+                            width="22"
+                            height="16"
+                          />
+                          <p className="flex ml-1 items-center">SUI/USD</p>
+                        </div>
+                      ) : null}
+                    </div>{" "}
+                  </div>
+                </a>
+                <div
+                  className={
+                    item.priceDirection === 0
+                      ? "text-[#34c796] "
+                      : "text-red-500"
+                  }
+                >
+                  {item.priceDirection === 0 ? (
+                    <>
+                      <div className="flex flex-row items-center pl-1">
+                        {" "}
+                        <img
+                          className="relative w-5 h-5 pb-0.5"
+                          alt=""
+                          src="/new/component-82.svg"
+                        />
+                        <div className="text-[#34c796]">{item.leverage}X</div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex flex-row items-center pl-1">
+                        <img
+                          className="relative w-5 h-5 pb-0.5"
+                          alt=""
+                          src="/new/component-81.svg"
+                        />
+                        <div className="text-red-500">{item.leverage}X</div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+              <div className=" flex justify-end items-center w-[20%] min-w-[90px] text-[0.9rem] text-white   font-poppins ">
+                <p>
+                  {item.symbol === 1
+                    ? (item.initialPrice / 100000000).toFixed(1)
+                    : item.symbol === 0
+                      ? (item.initialPrice / 100000000).toFixed(3)
+                      : item.symbol === 2
+                        ? (item.initialPrice / 100000000).toFixed(4)
+                        : item.symbol === 3
+                          ? (item.initialPrice / 100000000).toFixed(7)
+                          : item.symbol === 4
+                            ? (item.initialPrice / 100000000).toFixed(4)
+                            : item.symbol === 5
+                              ? (item.initialPrice / 100000000).toFixed(1)
+                              : item.symbol === 6
+                                ? (item.initialPrice / 100000000).toFixed(3)
+                                : item.symbol === 7
+                                  ? (item.initialPrice / 100000000).toFixed(4)
+                                  : null}
+                </p>
+              </div>
+
+              <div className="flex justify-end items-center w-[20%] min-w-[90px] text-[0.9rem] text-grey-text   font-poppins ">
+              {
+  item.usdc === 0
+    ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
+    : `${(item.betAmount / LAMPORTS_PER_SOL * 1000).toFixed(1)}$`
+}        
+              </div>
+              <div className="flex justify-end items-center w-[20%] min-w-[90px] text-[0.9rem] text-grey-text   font-poppins ">
+              {
+  item.usdc === 0
+    ? `${(item.betAmount * item.leverage / LAMPORTS_PER_SOL).toFixed(2)}◎`
+    : `${(item.betAmount * item.leverage / LAMPORTS_PER_SOL * 1000).toFixed(0)}$`
+}    
+              </div>
+              <div className=" flex justify-end items-center w-[20%] min-w-[140px] text-[0.9rem] text-grey-text   font-poppins py-1.5 rounded-r">
+                <div className="flex justify-end  w-full min-w-[140px]">
+                      <button
+                        className="h-[26px] md:w-[45%] w-[95%]  bg-[#1D202F] hover:bg-[#484c6d5b] text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
+                        onClick={() => resolveFutCont(item)}
+                      >
+                        Close
+                      </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div
+              key={item._id}
+              className="text-poppins self-stretch flex flex-col items-center justify-start text-left text-xs"
+            >
+              <div className="self-stretch bg-layer-1 flex flex-col items-start justify-start p-4 gap-[8px]">
+                <div className="self-stretch flex flex-row items-start justify-between">
+                  <div className="flex flex-col items-start justify-center gap-[4px]">
+                    <div className="text-grey-text relative leading-[9.98px] flex items-center w-[50px]">
+                      Position
+                    </div>
+                    <div className="relative leading-[12px]">
+                      {" "}
+                      <a
+                        href={`https://solscan.io/account/${item.futuresContract}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="hover:underline"
+                      >
+                        <div className="flex flex-row justify-center items-center rounded-l">
+                          <div className="flex flex-row items-center">
+                            {item.symbol === 0 ? (
+                              <div className="py-0.5 flex flex-row justify-start">
+                                <img
+                                  src="/coins/60x60/Sol.png"
+                                  alt="Logo"
+                                  width="22"
+                                  height="16"
+                                />
+                                <p className="flex ml-1 items-center">
+                                  SOL/USD
+                                </p>
+                              </div>
+                            ) : item.symbol === 1 ? (
+                              <div className="py-0.5 flex flex-row justify-start">
+                                <img
+                                  src="/coins/60x60/Btc.png"
+                                  alt="Logo"
+                                  width="22"
+                                  height="16"
+                                />
+                                <p className="flex ml-1 items-center">
+                                  BTC/USD
+                                </p>
+                              </div>
+                            ) : item.symbol === 2 ? (
+                              <div className="py-0.5 flex flex-row justify-start">
+                                <img
+                                  src="/coins/60x60/Pyth.png"
+                                  alt="Logo"
+                                  width="22"
+                                  height="16"
+                                />
+                                <p className="flex ml-1 items-center">
+                                  PYTH/USD
+                                </p>
+                              </div>
+                            ) : item.symbol === 3 ? (
+                              <div className="py-0.5 flex flex-row justify-start">
+                                <img
+                                  src="/coins/60x60/Bonk.png"
+                                  alt="Logo"
+                                  width="22"
+                                  height="16"
+                                />
+                                <p className="flex ml-1 items-center">
+                                  BONK/USD
+                                </p>
+                              </div>
+                            ) : item.symbol === 4 ? (
+                              <div className="py-0.5 flex flex-row justify-start">
+                                <img
+                                  src="/coins/60x60/Jup.png"
+                                  alt="Logo"
+                                  width="22"
+                                  height="16"
+                                />
+                                <p className="flex ml-1 items-center">
+                                  JUP/USD
+                                </p>
+                              </div>
+                            ) : item.symbol === 5 ? (
+                              <div className="py-0.5 flex flex-row justify-start">
+                                <img
+                                  src="/coins/60x60/Eth.png"
+                                  alt="Logo"
+                                  width="22"
+                                  height="16"
+                                />
+                                <p className="flex ml-1 items-center">
+                                  ETH/USD
+                                </p>
+                              </div>
+                            ) : item.symbol === 6 ? (
+                              <div className="py-0.5 flex flex-row justify-start">
+                                <img
+                                  src="/coins/60x60/Tia.png"
+                                  alt="Logo"
+                                  width="22"
+                                  height="16"
+                                />
+                                <p className="flex ml-1 items-center">
+                                  TIA/USD
+                                </p>
+                              </div>
+                            ) : item.symbol === 7 ? (
+                              <div className="py-0.5 flex flex-row justify-start">
+                                <img
+                                  src="/coins/60x60/Sui.png"
+                                  alt="Logo"
+                                  width="22"
+                                  height="16"
+                                />
+                                <p className="flex ml-1 items-center">
+                                  SUI/USD
+                                </p>
+                              </div>
+                            ) : null}
+                          </div>{" "}
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end justify-center gap-[6px] text-right">
+                    <div className="flex flex-col items-end justify-center gap-[4px]">
+                      <div className="relative leading-[9.98px] text-grey-text">
+                        Collateral
+                      </div>
+                        <div className="text-grey-text">
+                        {
+  item.usdc === 0
+    ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
+    : `${(item.betAmount / LAMPORTS_PER_SOL * 1000).toFixed(1)}$`
+}    
+                        </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="self-stretch flex flex-row items-start justify-between text-right">
+                  <div className="flex flex-col items-start justify-center gap-[6px]">
+                    <div className="text-grey-text relative leading-[12px]">
+                      Leverage
+                    </div>
+                    <div className="flex flex-col items-start justify-center gap-[4px] text-left text-sm text-short">
+                      <div
+                        className={
+                          item.priceDirection === 0
+                            ? "text-[#34c796] "
+                            : "text-red-500"
+                        }
+                      >
+                        {item.priceDirection === 0 ? (
+                          <>
+                            <div className="flex flex-row items-center">
+                              {" "}
+                              <img
+                                className="relative w-5 h-5 pb-0.5"
+                                alt=""
+                                src="/new/component-82.svg"
+                              />
+                              <span className="ml-1">LONG</span>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="flex flex-row items-center ">
+                              <img
+                                className="relative w-5 h-5 pb-0.5"
+                                alt=""
+                                src="/new/component-81.svg"
+                              />
+                              <span className="ml-1">SHORT</span>
+                            </div>
+                          </>
+                        )}
+                        <div className="pl-1 text-grey-text">
+                          {item.leverage}X
+                        </div>
+                      </div>{" "}
+                    </div>
+                  </div>
+                  <div className="w-[63px] flex flex-col items-end justify-center gap-[6px]">
+                    <div className="relative leading-[12px] text-grey-text">
+                      Limit Price
+                    </div>
+                    <div className="flex flex-col items-end justify-center text-sm text-white">
+                      <div className="relative leading-[12px]">
+                        {item.symbol === 1
+                          ? (item.initialPrice / 100000000).toFixed(1)
+                          : item.symbol === 0
+                            ? (item.initialPrice / 100000000).toFixed(3)
+                            : item.symbol === 2
+                              ? (item.initialPrice / 100000000).toFixed(4)
+                              : item.symbol === 3
+                                ? (item.initialPrice / 100000000).toFixed(7)
+                                : item.symbol === 4
+                                  ? (item.initialPrice / 100000000).toFixed(4)
+                                  : item.symbol === 5
+                                    ? (item.initialPrice / 100000000).toFixed(1)
+                                    : item.symbol === 6
+                                      ? (item.initialPrice / 100000000).toFixed(
+                                          3
+                                        )
+                                      : item.symbol === 7
+                                        ? (
+                                            item.initialPrice / 100000000
+                                          ).toFixed(4)
+                                        : null}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className=" flex justify-end items-center w-[100%] min-w-[140px] text-[0.9rem] text-grey-text   font-poppins py-1.5 rounded-r">
+                  <div className="items-center flex md:flex-row flex-col w-[100%]">
+                    <div className=" w-[100%] gap-2">
+                    <button
+                      className="flex justify-center items-center h-[26px] w-full min:w-[100px] bg-[#1D202F] hover:bg-[#484c6d5b] text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
+                      onClick={() => closeOrder(item)}
+                    >
+                      Close
+                    </button>
+         
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   if (!connected) {
     return (
       <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 md:">
@@ -3124,7 +3645,7 @@ const MyPositions: FC<MyPositionsProps> = ({
         </div>
       </div>
     );
-  } else if (positions.length === 0 && resolvedPositions.length === 0) {
+  } else if (positions.length === 0 && resolvedPositions.length === 0 && orders.length === 0) {
     return (
       <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 md:">
         <div className="mx-2 pt-3.5 md:py-0 border-b-[1px] border-solid border-layer-3 flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
@@ -3168,7 +3689,7 @@ const MyPositions: FC<MyPositionsProps> = ({
         </div>
       </div>
     );
-  } else if (positions.length === 0 && resolvedPositions.length !== 0) {
+  } else if (positions.length === 0 && resolvedPositions.length !== 0 || orders.length !== 0) {
     return (
       <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 md:">
         <div
@@ -3227,7 +3748,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                   You don&apos;t have any opened positions yet.
                 </p>
               </div>
-            ) : !isMobile ? (
+            ) : selectedButton === 'History' ? (!isMobile ? (
               <div
                 className="custom-scrollbar overflow-y-scroll rounded"
                 style={{ flexGrow: 1 }}
@@ -3242,13 +3763,8 @@ const MyPositions: FC<MyPositionsProps> = ({
                     Entry
                   </div>
                   <div className="w-[18%] min-w-[90px] text-end   py-1">
-                    {selectedButton === 'Positions' ? "Mark" : "Exit"}
+                    Exit
                   </div>
-                  {selectedButton === 'Positions' && (
-                    <div className="w-[18%] min-w-[90px] text-end py-1">
-                      Liquidation
-                    </div>
-                  )}
                   <div className="w-[12%]  min-w-[90px] text-end   py-1 rounded-r">
                     Collateral
                   </div>
@@ -3263,7 +3779,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                   </div>
                 </div>
                 {renderHistoryPositions()}
-                {selectedButton === 'Positions' ? null : (
+                
                   <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
                     <button
                       className=" bg-transparent mr-2"
@@ -3297,7 +3813,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                       &gt;&gt;
                     </button>
                   </div>
-                )}
+               
               </div>
             ) : (
               <div
@@ -3307,7 +3823,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                 {" "}
                 {/* This div is your new scrolling area */}
                 {renderHistoryPositions()}
-                {selectedButton === 'Positions' ? null : (
+     
                   <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
                     <button
                       className=" bg-transparent mr-2"
@@ -3341,9 +3857,114 @@ const MyPositions: FC<MyPositionsProps> = ({
                       &gt;&gt;
                     </button>
                   </div>
-                )}
+          
               </div>
-            )}
+            )) : selectedButton === 'Order' ?(
+              !isMobile ? (
+                // Non-Mobile View for History or Orders
+                <div
+                  className="custom-scrollbar overflow-y-scroll rounded"
+                  style={{ flexGrow: 1 }}
+                >
+                  {/* Your scrolling area and content for History or Orders in non-mobile view */}
+                  <div className="px-2 custom-scrollbar w-full flex font-poppins flex-row  rounded text-grey-text text-sm">
+                  <div className="w-[20%] min-w-[140px] text-start   py-1 rounded-l">
+                    Position
+                  </div>
+                  <div className="w-[20%] min-w-[90px] text-end  py-1">
+                    Entry
+                  </div>
+                  <div className="w-[20%]  min-w-[90px] text-end   py-1 rounded-r">
+                    Collateral
+                  </div>
+                  <div className=" w-[20%] min-w-[90px] text-end   font-poppins py-1 rounded-r">
+                    Size
+                  </div>
+                  <div className="w-[20%] min-w-[140px] text-end text-grey-text  font-poppins py-1 rounded-r">
+                    Actions
+                  </div>
+                </div>
+                  {renderOrders()}
+                  <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
+                    <button
+                      className=" bg-transparent mr-2"
+                      onClick={firstPage}
+                      disabled={currentPage === 1}
+                    >
+                      &lt;&lt;
+                    </button>
+                    <button
+                      className=" bg-transparent mr-2"
+                      onClick={prevPage}
+                      disabled={currentPage === 1}
+                    >
+                      &lt;
+                    </button>
+                    <span className="">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <button
+                      className=" bg-transparent px-2"
+                      onClick={nextPage}
+                      disabled={currentPage === totalPages}
+                    >
+                      &gt;
+                    </button>
+                    <button
+                      className=" bg-transparent mr-2"
+                      onClick={lastPage}
+                      disabled={currentPage === totalPages}
+                    >
+                      &gt;&gt;
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                // Mobile View for History or Orders
+                <div
+                  className="custom-scrollbar overflow-y-scroll rounded"
+                  style={{ flexGrow: 1 }}
+                >
+                  {/* Mobile-specific content rendering for History or Orders */}
+                  {renderOrders()}
+                  <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
+                    <button
+                      className=" bg-transparent mr-2"
+                      onClick={firstPage}
+                      disabled={currentPage === 1}
+                    >
+                      &lt;&lt;
+                    </button>
+                    <button
+                      className=" bg-transparent mr-2"
+                      onClick={prevPage}
+                      disabled={currentPage === 1}
+                    >
+                      &lt;
+                    </button>
+                    <span className="">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <button
+                      className=" bg-transparent px-2"
+                      onClick={nextPage}
+                      disabled={currentPage === totalPages}
+                    >
+                      &gt;
+                    </button>
+                    <button
+                      className=" bg-transparent mr-2"
+                      onClick={lastPage}
+                      disabled={currentPage === totalPages}
+                    >
+                      &gt;&gt;
+                    </button>
+                  </div>
+                </div>
+              )
+            ) : null}
+            
+            
           </div>
         </div>
       </div>
@@ -3463,7 +4084,7 @@ const MyPositions: FC<MyPositionsProps> = ({
           >
             {" "}
             {/* This div is your new scrolling area */}
-            {selectedButton === 'Positions' ? renderPositions(positions) :
+  {selectedButton === 'Positions' ? renderPositions(positions) :
      selectedButton === 'History' ? renderHistoryPositions() :
     null}               {selectedButton === 'Positions' ? null : (
               <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
