@@ -28,7 +28,6 @@ export interface CreateBinOptAccounts {
   affilAcc: PublicKey
   lpAcc: PublicKey
   signerWalletAccount: PublicKey
-  lpRevAcc: PublicKey
   systemProgram: PublicKey
   usdcMint: PublicKey
   usdcPlayerAcc: PublicKey
@@ -71,7 +70,6 @@ export function createBinOpt(
       isSigner: false,
       isWritable: false,
     },
-    { pubkey: accounts.lpRevAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
     { pubkey: accounts.usdcMint, isSigner: false, isWritable: true },
     { pubkey: accounts.usdcPlayerAcc, isSigner: false, isWritable: true },

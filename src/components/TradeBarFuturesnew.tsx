@@ -56,6 +56,7 @@ const PUSDCMINT = new PublicKey(process.env.NEXT_PUBLIC_PUSDC_MINT);
 const PSOLMINT = new PublicKey(process.env.NEXT_PUBLIC_PSOL_MINT);
 const USDCPDAHOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_USDCPDA_HOUSEWALLET);
 const LONGSHORTACC = new PublicKey(process.env.NEXT_PUBLIC_LONG_SHORT_ACC);
+const RATIOACC = new PublicKey(process.env.NEXT_PUBLIC_RATIO_ACC);
 
 
 
@@ -1520,22 +1521,18 @@ const TradeBar: React.FC<
           ),
         ];
 
-        const [ratioAcc] = await PublicKey.findProgramAddress(
-          seedsRatio,
-          PROGRAM_ID
-        );
+
 
         const accounts: CreateLimitOrderAccounts = {
           futCont: pda,
           playerAcc: publicKey,
           userAcc: userAcc,
-          ratioAcc: ratioAcc,
+          ratioAcc: RATIOACC,
           houseAcc: HOUSEWALLET,
           lpAcc: new PublicKey("AUURRMKsMjBK1zaMUmWyy8nCABXZDVtoucwHZBUnh3bB"),
           signerServer: SIGNERWALLET,
           oracleAccount: new PublicKey(oracleAddy),
           pdaHouseAcc: PDAHOUSEWALLET,
-          clock: SystemProgram.programId,
           systemProgram: SystemProgram.programId,
           usdcMint: USDCMINT,
           usdcPlayerAcc: usdcAcc,
@@ -1653,7 +1650,7 @@ const TradeBar: React.FC<
       },
       BTC: {
         symbolCode: 1,
-        oracleAddy: "GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU",
+        oracleAddy: "HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J",
       },
       PYTH: {
         symbolCode: 2,
@@ -1843,7 +1840,7 @@ const TradeBar: React.FC<
           symbol: symbolCode,
           slPrice: new BN(stopLoss),
           tpPrice: new BN(takeProfit),
-          slippagePrice: new BN(100 * 100000000),
+          slippagePrice: new BN(initialPrice * 100000000),
           slippage: new BN(slippageTolerance),
           backOracle: (0),
           usdc: (usdc),
@@ -1872,16 +1869,11 @@ const TradeBar: React.FC<
           ),
         ];
 
-        const [ratioAcc] = await PublicKey.findProgramAddress(
-          seedsRatio,
-          PROGRAM_ID
-        );
-
         const accounts: CreateFutContAccounts = {
           futCont: pda,
           playerAcc: publicKey,
           userAcc: userAcc,
-          ratioAcc: ratioAcc,
+          ratioAcc: RATIOACC,
           houseAcc: HOUSEWALLET,
           oracleAccount: new PublicKey(oracleAddy),
           solOracleAccount: new PublicKey("J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix"),

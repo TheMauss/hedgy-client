@@ -11,7 +11,6 @@ export interface CloseLimitOrderAccounts {
   houseAcc: PublicKey
   signerServer: PublicKey
   pdaHouseAcc: PublicKey
-  clock: PublicKey
   systemProgram: PublicKey
   usdcMint: PublicKey
   usdcPlayerAcc: PublicKey
@@ -32,7 +31,6 @@ export function closeLimitOrder(
     { pubkey: accounts.houseAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.signerServer, isSigner: false, isWritable: false },
     { pubkey: accounts.pdaHouseAcc, isSigner: false, isWritable: true },
-    { pubkey: accounts.clock, isSigner: false, isWritable: false },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
     { pubkey: accounts.usdcMint, isSigner: false, isWritable: true },
     { pubkey: accounts.usdcPlayerAcc, isSigner: false, isWritable: true },

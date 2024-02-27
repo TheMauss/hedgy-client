@@ -22,6 +22,7 @@ import { BN } from "@project-serum/anchor";
 import {
   ResolveFutContuserAccounts,
   resolveFutContuser,
+  ResolveFutContuserArgs,
 } from "../out/instructions/resolveFutContuser";
 import domtoimage from "dom-to-image";
 import {
@@ -37,6 +38,20 @@ import { usePriorityFee } from "../contexts/PriorityFee";
 const ENDPOINT1 = process.env.NEXT_PUBLIC_ENDPOINT1;
 const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
 const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT5;
+
+const HOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_HOUSE_WALLET);
+const SIGNERWALLET = new PublicKey(process.env.NEXT_PUBLIC_SIGNER_WALLET);
+const PDAHOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_PDA_HOUSEWALLET);
+const USDCMINT = new PublicKey(process.env.NEXT_PUBLIC_USDC_MINT);
+const ASSOCIATEDTOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM);
+const TOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_PROGRAM);
+const PUSDCMINT = new PublicKey(process.env.NEXT_PUBLIC_PUSDC_MINT);
+const PSOLMINT = new PublicKey(process.env.NEXT_PUBLIC_PSOL_MINT);
+const USDCPDAHOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_USDCPDA_HOUSEWALLET);
+const LONGSHORTACC = new PublicKey(process.env.NEXT_PUBLIC_LONG_SHORT_ACC);
+const RATIOACC = new PublicKey(process.env.NEXT_PUBLIC_RATIO_ACC);
+
+
 
 interface Position {
   _id: string;
@@ -55,6 +70,7 @@ interface Position {
   finalPrice: number;
   currentPrice: number;
   pnl: number;
+  usdc: number;
 }
 
 interface Notification {
@@ -85,6 +101,21 @@ const MyPositions: FC<MyPositionsProps> = ({
   handleTotalBetAmountChange,
   handleNewNotification,
 }) => {
+  async function usdcSplTokenAccountSync(walletAddress) {
+    let mintAddress = USDCMINT
+  
+    const [splTokenAccount] = PublicKey.findProgramAddressSync(
+      [
+        walletAddress.toBuffer(),
+        TOKENPROGRAM.toBuffer(),
+        mintAddress.toBuffer(),
+      ],
+      ASSOCIATEDTOKENPROGRAM
+    );
+  
+    return splTokenAccount;
+  }
+
   async function isUserAccountInitialized(
     account: PublicKey,
     connection: Connection
@@ -128,7 +159,9 @@ const MyPositions: FC<MyPositionsProps> = ({
 
   const { connection } = useConnection();
   const { sendTransaction } = useWallet();
-  const [position, setPosition] = useState(true);
+  const [selectedButton, setSelectedButton] = useState('Positions');
+
+
   const [positions, setPositions] = useState<Position[]>([]);
   const [resolvedPositions, setResolvedPositions] = useState<Position[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -393,10 +426,10 @@ const MyPositions: FC<MyPositionsProps> = ({
 
           if (updatedPosition.resolved) {
             // Add the resolved position
-            setResolvedPositions((prevState) => [
-              ...prevState,
-              updatedPosition,
-            ]);
+            setResolvedPositions(prevState => {
+              const exists = prevState.some(position => position._id === updatedPosition._id);
+              return exists ? prevState : [...prevState, updatedPosition];
+            });
 
             // Remove the resolved position from the main positions array
             setPositions((prevState) => {
@@ -537,13 +570,6 @@ const MyPositions: FC<MyPositionsProps> = ({
     });
   }, [prices]);
 
-  const selectPosition = () => {
-    setPosition(true);
-  };
-
-  const selectHistory = () => {
-    setPosition(false);
-  };
 
   const handleInputChangeProfit = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -899,6 +925,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     }
   };
 
+
   const resolveFutCont = async (position: Position) => {
     const seedsUser = [Buffer.from(publicKey.toBytes())];
 
@@ -906,7 +933,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
     const seedsRatio = [
       Buffer.from(
-        new PublicKey("HME9CUNgcsVZti5x1MdoBeUuo1hkGnuKMwP4xuJHQFtQ").toBytes()
+        HOUSEWALLET.toBytes()
       ),
     ];
 
@@ -915,12 +942,14 @@ const MyPositions: FC<MyPositionsProps> = ({
       PROGRAM_ID
     );
 
+    const usdcAcc = await usdcSplTokenAccountSync(publicKey);
+
     let oracleAccountAddress;
 
     if (position.symbol === 0) {
-      oracleAccountAddress = "H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG";
+      oracleAccountAddress = "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix";
     } else if (position.symbol === 1) {
-      oracleAccountAddress = "GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU";
+      oracleAccountAddress = "HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J";
     } else if (position.symbol === 2) {
       oracleAccountAddress = "nrYkQQQur7z8rYTST3G9GqATviK5SxTDkrqd21MW6Ue";
     } else if (position.symbol === 3) {
@@ -943,18 +972,20 @@ const MyPositions: FC<MyPositionsProps> = ({
       ratioAcc: ratioAcc,
       playerAcc: new PublicKey(walletAddress),
       oracleAccount: new PublicKey(oracleAccountAddress),
-      pdaHouseAcc: new PublicKey(
-        "3MRKR5tYQeUT8CXYkTjvzR6ivEpaqFLqK9CsNbMFvoHB"
-      ),
-      lpAcc: new PublicKey("CBaAsnsHBpr5UaCbutL3yjxGxn1E7SNZsF8xo69y7BtD"),
-      signerWalletAccount: new PublicKey(
-        "Fb1ABWjtSJVtoZnqogFptAAgqhBCPFY1ZcbEskF8gD1C"
-      ),
-      lpRevAcc: new PublicKey("Cr7jUVQTBEXWQKKeLBZrGa2Eqgkk7kmDvACrh35Rj5mV"),
-      clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
+      pdaHouseAcc: PDAHOUSEWALLET,
+      lpAcc: new PublicKey("AUURRMKsMjBK1zaMUmWyy8nCABXZDVtoucwHZBUnh3bB"),
+      signerWalletAccount: SIGNERWALLET,
       systemProgram: SystemProgram.programId,
-      houseAcc: new PublicKey("HME9CUNgcsVZti5x1MdoBeUuo1hkGnuKMwP4xuJHQFtQ"),
-      nftAcc: new PublicKey("AyK9uCXne1K3BvcRnvcwMi3qGtdGrxvJqPyTes2f9Lho"),
+      houseAcc: HOUSEWALLET,
+      usdcMint: USDCMINT,
+      usdcPlayerAcc: usdcAcc,
+      usdcPdaHouseAcc: USDCPDAHOUSEWALLET,
+      tokenProgram: TOKENPROGRAM,
+      associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
+    };
+
+    const args: ResolveFutContuserArgs = {
+      backOracle: 0,
     };
 
     let PRIORITY_FEE_IX;
@@ -972,7 +1003,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
     // Create the transaction
     const transaction = new Transaction()
-      .add(resolveFutContuser(accounts))
+      .add(resolveFutContuser(args, accounts))
       .add(PRIORITY_FEE_IX);
 
     let signature: TransactionSignature = "";
@@ -1009,13 +1040,14 @@ const MyPositions: FC<MyPositionsProps> = ({
       });
       return; // Exit function early
     }
+    
 
     let oracleAccountAddress;
 
     if (position.symbol === 0) {
-      oracleAccountAddress = "H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG";
+      oracleAccountAddress = "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix";
     } else if (position.symbol === 1) {
-      oracleAccountAddress = "GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU";
+      oracleAccountAddress = "HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J";
     } else if (position.symbol === 2) {
       oracleAccountAddress = "nrYkQQQur7z8rYTST3G9GqATviK5SxTDkrqd21MW6Ue";
     } else if (position.symbol === 3) {
@@ -1036,11 +1068,14 @@ const MyPositions: FC<MyPositionsProps> = ({
       futCont: new PublicKey(position.futuresContract),
       playerAcc: new PublicKey(walletAddress),
       oracleAccount: new PublicKey(oracleAccountAddress),
+      ratioAcc: RATIOACC,
+      houseAcc: HOUSEWALLET,
+
     };
 
     const args: UpdateFutContArgs = {
-      takeProfitPrice: new BN(Number(ProfitValue) * 100000000),
-      stopLossPrice: new BN(Number(LossValue) * 100000000),
+      tpPrice: new BN(Number(ProfitValue) * 100000000),
+      slPrice: new BN(Number(LossValue) * 100000000),
     };
 
     console.log(LossValue);
@@ -1104,9 +1139,9 @@ const MyPositions: FC<MyPositionsProps> = ({
     let oracleAccountAddress;
 
     if (position.symbol === 0) {
-      oracleAccountAddress = "H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG";
+      oracleAccountAddress = "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix";
     } else if (position.symbol === 1) {
-      oracleAccountAddress = "GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU";
+      oracleAccountAddress = "HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J";
     } else if (position.symbol === 2) {
       oracleAccountAddress = "nrYkQQQur7z8rYTST3G9GqATviK5SxTDkrqd21MW6Ue";
     } else if (position.symbol === 3) {
@@ -1127,11 +1162,14 @@ const MyPositions: FC<MyPositionsProps> = ({
       futCont: new PublicKey(position.futuresContract),
       playerAcc: new PublicKey(walletAddress),
       oracleAccount: new PublicKey(oracleAccountAddress),
+      ratioAcc: RATIOACC,
+      houseAcc: HOUSEWALLET,
+
     };
 
     const args: UpdateFutContArgs = {
-      takeProfitPrice: new BN(Number(0)),
-      stopLossPrice: new BN(Number(0)),
+      tpPrice: new BN(Number(ProfitValue) * 100000000),
+      slPrice: new BN(Number(LossValue) * 100000000),
     };
 
     console.log(LossValue);
@@ -1865,13 +1903,17 @@ const MyPositions: FC<MyPositionsProps> = ({
               </div>
 
               <div className="flex justify-end items-center w-[12%] min-w-[90px] text-[0.9rem] text-grey-text   font-poppins ">
-                {(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎
-              </div>
+              {
+  item.usdc === 0
+    ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
+    : `${(item.betAmount / LAMPORTS_PER_SOL * 1000).toFixed(1)}$`
+}              </div>
               <div className="flex justify-end items-center w-[15%] min-w-[90px] text-[0.9rem] text-grey-text   font-poppins ">
-                {((item.betAmount * item.leverage) / LAMPORTS_PER_SOL).toFixed(
-                  2
-                )}
-                ◎
+              {
+  item.usdc === 0
+    ? `${(item.betAmount * item.leverage / LAMPORTS_PER_SOL).toFixed(2)}◎`
+    : `${(item.betAmount * item.leverage / LAMPORTS_PER_SOL * 1000).toFixed(0)}$`
+}    
               </div>
               <div className="flex justify-end items-center w-[12%]  min-w-[90px] text-[0.9rem] text-grey-text  font-poppins ">
                 <p
@@ -1879,7 +1921,13 @@ const MyPositions: FC<MyPositionsProps> = ({
                     item.pnl >= 0 ? "text-[#34c796] " : "text-red-500 "
                   }
                 >
-                  <div>{item.pnl.toFixed(2)}◎</div>
+                  <div>
+                  {
+  item.usdc === 0
+    ? `${item.pnl.toFixed(2)}◎`
+    : `${(item.pnl*1000).toFixed(2)}$`
+}   
+                </div>
                 </p>
               </div>
               <div className="flex justify-end items-center w-[15%] min-w-[140px] text-[0.9rem] text-grey-text   font-poppins py-1.5 rounded-r">
@@ -2054,9 +2102,17 @@ const MyPositions: FC<MyPositionsProps> = ({
                           item.pnl >= 0 ? "text-[#34c796] " : "text-red-500 "
                         }
                       >
-                        <div>{item.pnl.toFixed(2)} SOL </div>
+                        <div>                  {
+  item.usdc === 0
+    ? `${item.pnl.toFixed(2)}◎`
+    : `${(item.pnl*1000).toFixed(2)}$`
+}  </div>
                         <div className="text-grey-text">
-                          {(item.betAmount / LAMPORTS_PER_SOL).toFixed(3)} SOL
+                        {
+  item.usdc === 0
+    ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
+    : `${(item.betAmount / LAMPORTS_PER_SOL * 1000).toFixed(1)}$`
+}       
                         </div>
                       </p>
                     </div>
@@ -2703,13 +2759,18 @@ const MyPositions: FC<MyPositionsProps> = ({
               </div>
 
               <div className="flex justify-end items-center w-[12%] min-w-[90px] text-[0.9rem] text-grey-text   font-poppins ">
-                {(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎
+              {
+  item.usdc === 0
+    ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
+    : `${(item.betAmount / LAMPORTS_PER_SOL * 1000).toFixed(1)}$`
+}        
               </div>
               <div className="flex justify-end items-center w-[15%] min-w-[90px] text-[0.9rem] text-grey-text   font-poppins ">
-                {((item.betAmount * item.leverage) / LAMPORTS_PER_SOL).toFixed(
-                  2
-                )}
-                ◎
+              {
+  item.usdc === 0
+    ? `${(item.betAmount * item.leverage / LAMPORTS_PER_SOL).toFixed(2)}◎`
+    : `${(item.betAmount * item.leverage / LAMPORTS_PER_SOL * 1000).toFixed(0)}$`
+}    
               </div>
               <div className="flex justify-end items-center w-[12%]  min-w-[90px] text-[0.9rem] text-grey-text  font-poppins ">
                 <p
@@ -2717,7 +2778,11 @@ const MyPositions: FC<MyPositionsProps> = ({
                     item.pnl >= 0 ? "text-[#34c796] " : "text-red-500 "
                   }
                 >
-                  <div>{(item.pnl / LAMPORTS_PER_SOL).toFixed(2)}◎</div>
+                  <div>                 {
+  item.usdc === 0
+    ? `${(item.pnl/LAMPORTS_PER_SOL).toFixed(2)}◎`
+    : `${(item.pnl*1000/LAMPORTS_PER_SOL).toFixed(2)}$`
+}   </div>
                 </p>
               </div>
               <div className=" flex justify-end items-center w-[15%] min-w-[140px] text-[0.9rem] text-grey-text   font-poppins py-1.5 rounded-r">
@@ -2868,10 +2933,19 @@ const MyPositions: FC<MyPositionsProps> = ({
                         }
                       >
                         <div>
-                          {(item.pnl / LAMPORTS_PER_SOL).toFixed(2)} SOL{" "}
+                        {
+  item.usdc === 0
+    ? `${(item.pnl/LAMPORTS_PER_SOL).toFixed(2)}◎`
+    : `${(item.pnl*1000/LAMPORTS_PER_SOL).toFixed(2)}$`
+}  
+
                         </div>
                         <div className="text-grey-text">
-                          {(item.betAmount / LAMPORTS_PER_SOL).toFixed(3)} SOL
+                        {
+  item.usdc === 0
+    ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
+    : `${(item.betAmount / LAMPORTS_PER_SOL * 1000).toFixed(1)}$`
+}    
                         </div>
                       </p>
                     </div>
@@ -3010,23 +3084,35 @@ const MyPositions: FC<MyPositionsProps> = ({
         <div className="mx-2 pt-3.5 md:py-0 border-b-[1px] border-solid border-layer-3 flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-              position
+              selectedButton === 'Positions'
+
                 ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                 : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5 "
-            } ${position ? "" : "text-grey long-short-button"}`}
-            onClick={selectPosition}
+            } ${              selectedButton === 'Positions'
+            ? "" : "text-grey long-short-button"}`}
+            onClick={() => setSelectedButton('Positions')}
           >
             {!isMobile ? <span>My Positions</span> : <span>My Positions</span>}
           </button>
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-              !position
+              selectedButton === 'History'
                 ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                 : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
-            } ${!position ? "" : "text-grey long-short-button"}`}
-            onClick={selectHistory}
-          >
+            } ${selectedButton === 'History' ? "" : "text-grey long-short-button"}`}
+            onClick={() => setSelectedButton('History')}            >
+          
             {!isMobile ? <span>My History</span> : <span>My History</span>}
+          </button>
+          <button
+            className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
+              selectedButton === 'Order'
+                ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
+                : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
+            } ${selectedButton === 'Order' ? "" : "text-grey long-short-button"}`}
+            onClick={() => setSelectedButton('Order')}            >
+          
+            {!isMobile ? <span>My Orders</span> : <span>My Orders</span>}
           </button>
         </div>
 
@@ -3044,23 +3130,33 @@ const MyPositions: FC<MyPositionsProps> = ({
         <div className="mx-2 pt-3.5 md:py-0 border-b-[1px] border-solid border-layer-3 flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-              position
+              selectedButton === 'Positions'
                 ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                 : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5 "
-            } ${position ? "" : "text-grey long-short-button"}`}
-            onClick={selectPosition}
-          >
+            } ${selectedButton === 'Positions' ? "" : "text-grey long-short-button"}`}
+            onClick={() => setSelectedButton('Positions')}
+            >
             {!isMobile ? <span>My Positions</span> : <span>My Positions</span>}
           </button>
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-              !position
+              selectedButton === 'History'
                 ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                 : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
-            } ${!position ? "" : "text-grey long-short-button"}`}
-            onClick={selectHistory}
-          >
+            } ${selectedButton === 'History' ? "" : "text-grey long-short-button"}`}
+            onClick={() => setSelectedButton('History')}            >
+            
             {!isMobile ? <span>My History</span> : <span>My History</span>}
+          </button>
+          <button
+            className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
+              selectedButton === 'Order'
+                ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
+                : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
+            } ${selectedButton === 'Order' ? "" : "text-grey long-short-button"}`}
+            onClick={() => setSelectedButton('Order')}            >
+          
+            {!isMobile ? <span>My Orders</span> : <span>My Orders</span>}
           </button>
         </div>
 
@@ -3081,11 +3177,12 @@ const MyPositions: FC<MyPositionsProps> = ({
           <div className="mx-2 pt-3.5 md:py-0 border-b-[1px] border-solid border-layer-3 flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
             <button
               className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-                position
-                  ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
+                selectedButton === 'Positions'
+                ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                   : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5 "
-              } ${position ? "" : "text-grey long-short-button"}`}
-              onClick={selectPosition}
+              } ${              selectedButton === 'Positions'
+              ? "" : "text-grey long-short-button"}`}
+              onClick={() => setSelectedButton('Positions')}
             >
               {!isMobile ? (
                 <span>My Positions</span>
@@ -3095,14 +3192,25 @@ const MyPositions: FC<MyPositionsProps> = ({
             </button>
             <button
               className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-                !position
+                selectedButton === 'History'
+
                   ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                   : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
-              } ${!position ? "" : "text-grey long-short-button"}`}
-              onClick={selectHistory}
-            >
+              } ${              selectedButton === 'History'
+              ? "" : "text-grey long-short-button"}`}
+              onClick={() => setSelectedButton('History')}            >
               {!isMobile ? <span>My History</span> : <span>My History</span>}
             </button>
+            <button
+            className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
+              selectedButton === 'Order'
+                ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
+                : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
+            } ${selectedButton === 'Order' ? "" : "text-grey long-short-button"}`}
+            onClick={() => setSelectedButton('Order')}            >
+          
+            {!isMobile ? <span>My Orders</span> : <span>My Orders</span>}
+          </button>
           </div>
 
           <div
@@ -3111,7 +3219,8 @@ const MyPositions: FC<MyPositionsProps> = ({
           >
             {" "}
             {/* This div is your new scrolling area */}
-            {position ? (
+            {selectedButton === 'Positions'
+ ? (
               <div className=" flex flex-col items-center justify-center h-full overflow-hidden md:pb-0">
                 <FaStream className="text-4xl text-grey mb-2" />
                 <p className="justify-center text-[0.95rem] text-grey  text-center overflow-hidden">
@@ -3133,9 +3242,9 @@ const MyPositions: FC<MyPositionsProps> = ({
                     Entry
                   </div>
                   <div className="w-[18%] min-w-[90px] text-end   py-1">
-                    {position ? "Mark" : "Exit"}
+                    {selectedButton === 'Positions' ? "Mark" : "Exit"}
                   </div>
-                  {position && (
+                  {selectedButton === 'Positions' && (
                     <div className="w-[18%] min-w-[90px] text-end py-1">
                       Liquidation
                     </div>
@@ -3154,7 +3263,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                   </div>
                 </div>
                 {renderHistoryPositions()}
-                {position ? null : (
+                {selectedButton === 'Positions' ? null : (
                   <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
                     <button
                       className=" bg-transparent mr-2"
@@ -3198,7 +3307,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                 {" "}
                 {/* This div is your new scrolling area */}
                 {renderHistoryPositions()}
-                {position ? null : (
+                {selectedButton === 'Positions' ? null : (
                   <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
                     <button
                       className=" bg-transparent mr-2"
@@ -3247,23 +3356,33 @@ const MyPositions: FC<MyPositionsProps> = ({
         <div className="mx-2 pt-3.5 md:py-0 border-b-[1px] border-solid border-layer-3 flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-              position
+              selectedButton === 'Positions'
                 ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                 : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5 "
-            } ${position ? "" : "text-grey long-short-button"}`}
-            onClick={selectPosition}
-          >
+            } ${selectedButton === 'Positions' ? "" : "text-grey long-short-button"}`}
+            onClick={() => setSelectedButton('Positions')}            >
+            
             {!isMobile ? <span>My Positions</span> : <span>My Positions</span>}
           </button>
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-              !position
+              selectedButton === 'History'
                 ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                 : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
-            } ${!position ? "" : "text-grey long-short-button"}`}
-            onClick={selectHistory}
-          >
+            } ${selectedButton === 'History' ? "" : "text-grey long-short-button"}`}
+            onClick={() => setSelectedButton('History')}            >
+            
             {!isMobile ? <span>My History</span> : <span>My History</span>}
+          </button>
+          <button
+            className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
+              selectedButton === 'Order'
+                ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
+                : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
+            } ${selectedButton === 'Order' ? "" : "text-grey long-short-button"}`}
+            onClick={() => setSelectedButton('Order')}            >
+          
+            {!isMobile ? <span>My Orders</span> : <span>My Orders</span>}
           </button>
         </div>
         {!isMobile ? (
@@ -3279,9 +3398,9 @@ const MyPositions: FC<MyPositionsProps> = ({
               </div>
               <div className="w-[18%] min-w-[90px] text-end  py-1">Entry</div>
               <div className="w-[18%] min-w-[90px] text-end   py-1">
-                {position ? "Mark" : "Exit"}
+                {selectedButton === 'Positions' ? "Mark" : "Exit"}
               </div>
-              {position && (
+              {selectedButton === 'Positions' && (
                 <div className="w-[18%] min-w-[90px] text-end py-1">
                   Liquidation
                 </div>
@@ -3299,8 +3418,9 @@ const MyPositions: FC<MyPositionsProps> = ({
                 Actions
               </div>
             </div>
-            {position ? renderPositions(positions) : renderHistoryPositions()}
-            {position ? null : (
+            {selectedButton === 'Positions' ? renderPositions(positions) :
+     selectedButton === 'History' ? renderHistoryPositions() :
+    null}            {selectedButton === 'Positions' ? null : (
               <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
                 <button
                   className=" bg-transparent mr-2"
@@ -3343,8 +3463,9 @@ const MyPositions: FC<MyPositionsProps> = ({
           >
             {" "}
             {/* This div is your new scrolling area */}
-            {position ? renderPositions(positions) : renderHistoryPositions()}
-            {position ? null : (
+            {selectedButton === 'Positions' ? renderPositions(positions) :
+     selectedButton === 'History' ? renderHistoryPositions() :
+    null}               {selectedButton === 'Positions' ? null : (
               <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
                 <button
                   className=" bg-transparent mr-2"

@@ -26,7 +26,6 @@ export interface CreateLimitOrderAccounts {
   signerServer: PublicKey
   oracleAccount: PublicKey
   pdaHouseAcc: PublicKey
-  clock: PublicKey
   systemProgram: PublicKey
   usdcMint: PublicKey
   usdcPlayerAcc: PublicKey
@@ -60,7 +59,7 @@ export function createLimitOrder(
     { pubkey: accounts.ratioAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.houseAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.lpAcc, isSigner: false, isWritable: true },
-    { pubkey: accounts.signerServer, isSigner: true, isWritable: false },
+    { pubkey: accounts.signerServer, isSigner: false, isWritable: false },
     { pubkey: accounts.oracleAccount, isSigner: false, isWritable: false },
     { pubkey: accounts.pdaHouseAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },

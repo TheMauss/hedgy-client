@@ -31,6 +31,7 @@ interface Position {
   finalPrice: number;
   currentPrice: number;
   pnl: number;
+  usdc: number;
 }
 
 const Futures: FC = () => {
