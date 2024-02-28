@@ -54,6 +54,8 @@ const Transaction: FC = () => {
   const [isSoliditySelected, setIsSoliditySelected] = useState(true);
   const [initialPrice, setInitialPrice] = useState(0);
   const [selectedPair, setSelectedPair] = useState("");
+  const [selectedCurrency, setSelectedCurrency] = useState<'SOL' | 'USDC'>('SOL');
+
 
   const [isSticky, setIsSticky] = useState(false);
   const ref = useRef(null); // Ref for the element that will become sticky
@@ -65,16 +67,22 @@ const Transaction: FC = () => {
 
   const lastNotificationRef = useRef(null);
   let debounceTimer;
-  const debounceDelay = 50;
+  const debounceDelay = 75;
+  let lastNotificationTime = 0;
 
   const handleNewNotification = (newNotification) => {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
+      const currentTime = Date.now();
+      const timeSinceLastNotification = currentTime - lastNotificationTime;
+      
+      // Allow repeating the same notification if more than 1 second has passed since the last one
       if (
-        JSON.stringify(lastNotificationRef.current) !==
-        JSON.stringify(newNotification)
+        JSON.stringify(lastNotificationRef.current) !== JSON.stringify(newNotification) ||
+        timeSinceLastNotification > 1000 // 1000 milliseconds = 1 second
       ) {
         lastNotificationRef.current = newNotification;
+        lastNotificationTime = currentTime; // Update the timestamp of the last notification
         notify(newNotification);
       }
     }, debounceDelay);
@@ -360,6 +368,8 @@ const Transaction: FC = () => {
                             isBitcoinSelected={isBitcoinSelected}
                             isSoliditySelected={isSoliditySelected}
                             selectedCryptos={selectedCryptos}
+                            selectedCurrency={selectedCurrency}
+                            setSelectedCurrency={setSelectedCurrency}
                           />
                         </div>
                       </div>
