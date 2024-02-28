@@ -38,6 +38,7 @@ import { PROGRAM_ID } from "../out/programId";
 import { UserAccount } from "../out/accounts/UserAccount";
 import axios from "axios";
 import { usePriorityFee } from "../contexts/PriorityFee";
+import { publicDecrypt } from "crypto";
 
 const ENDPOINT1 = process.env.NEXT_PUBLIC_ENDPOINT1;
 const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
@@ -1243,7 +1244,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
     const accounts: CloseLimitOrderAccounts = {
       futCont: new PublicKey(position.futuresContract),
-      playerAcc: new PublicKey(walletAddress),
+      playerAcc: new PublicKey(publicKey),
       userAcc: userAcc,
       ratioAcc: RATIOACC,
       houseAcc: HOUSEWALLET,
@@ -1256,6 +1257,8 @@ const MyPositions: FC<MyPositionsProps> = ({
       tokenProgram: TOKENPROGRAM,
       associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
     };
+
+    console.log (usdcAcc, USDCPDAHOUSEWALLET)
 
 
     let PRIORITY_FEE_IX;
@@ -3171,7 +3174,6 @@ const MyPositions: FC<MyPositionsProps> = ({
     const orderstoShow = orders.filter(
       (order) => !order.resolved
     );
-    console.log(orderstoShow, "orderstoshow")
 
     // Reverse the array to show positions from newest to oldest
     orderstoShow.reverse();
@@ -3359,7 +3361,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                 <div className="flex justify-end  w-full min-w-[140px]">
                       <button
                         className="h-[26px] md:w-[45%] w-[95%]  bg-[#1D202F] hover:bg-[#484c6d5b] text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
-                        onClick={() => resolveFutCont(item)}
+                        onClick={() => closeOrder(item)}
                       >
                         Close
                       </button>
@@ -3689,7 +3691,7 @@ const MyPositions: FC<MyPositionsProps> = ({
         </div>
       </div>
     );
-  } else if (positions.length === 0 && resolvedPositions.length !== 0 || orders.length !== 0) {
+  } else if (positions.length === 0 && ((resolvedPositions.length !== 0 || orders.length !== 0) || (resolvedPositions.length !== 0 && orders.length !== 0))) {
     return (
       <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 md:">
         <div
@@ -3969,7 +3971,7 @@ const MyPositions: FC<MyPositionsProps> = ({
         </div>
       </div>
     );
-  }
+  } else {
 
   return (
     <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 md:">
@@ -4013,7 +4015,9 @@ const MyPositions: FC<MyPositionsProps> = ({
           >
             {" "}
             {/* This div is your new scrolling area */}
+            {selectedButton !== 'Order' ? (
             <div className="px-2 font-poppins custom-scrollbar w-full flex flex-row  rounded text-grey-text text-sm">
+
               <div className="w-[20%] min-w-[140px] text-start   py-1 rounded-l">
                 Position
               </div>
@@ -4032,16 +4036,37 @@ const MyPositions: FC<MyPositionsProps> = ({
               <div className=" w-[15%] min-w-[90px] text-end   font-poppins py-1 rounded-r">
                 Size
               </div>
+  
               <div className=" w-[12%] min-w-[90px] text-end text-grey-text  font-poppins py-1 rounded-r">
                 PnL
               </div>
+            
               <div className="md:pr-0 pr-2 w-[15%] min-w-[140px] text-end text-grey-text  font-poppins py-1 rounded-r">
                 Actions
               </div>
+            </div>)
+            : ( <div className="px-2 font-poppins custom-scrollbar w-full flex flex-row  rounded text-grey-text text-sm">
+
+            <div className="w-[20%] min-w-[140px] text-start   py-1 rounded-l">
+              Position
             </div>
+            <div className="w-[20%] min-w-[90px] text-end  py-1">Entry</div>
+
+            <div className="w-[20%]  min-w-[90px] text-end   py-1 rounded-r">
+              Collateral
+            </div>
+            <div className=" w-[20%] min-w-[90px] text-end   font-poppins py-1 rounded-r">
+              Size
+            </div>
+            <div className="md:pr-0 pr-2 w-[20%] min-w-[140px] text-end text-grey-text  font-poppins py-1 rounded-r">
+              Actions
+            </div>
+          </div>
+
+            )}   
             {selectedButton === 'Positions' ? renderPositions(positions) :
      selectedButton === 'History' ? renderHistoryPositions() :
-    null}            {selectedButton === 'Positions' ? null : (
+     selectedButton === 'Order' ? renderOrders(): null}        {selectedButton === 'Positions' ? null : (
               <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
                 <button
                   className=" bg-transparent mr-2"
@@ -4086,7 +4111,7 @@ const MyPositions: FC<MyPositionsProps> = ({
             {/* This div is your new scrolling area */}
   {selectedButton === 'Positions' ? renderPositions(positions) :
      selectedButton === 'History' ? renderHistoryPositions() :
-    null}               {selectedButton === 'Positions' ? null : (
+     selectedButton === 'Order' ? renderOrders(): null}               {selectedButton === 'Positions' ? null : (
               <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
                 <button
                   className=" bg-transparent mr-2"
@@ -4125,7 +4150,7 @@ const MyPositions: FC<MyPositionsProps> = ({
         )}
       </div>
     </div>
-  );
+  );}
 };
 
 export default MyPositions;

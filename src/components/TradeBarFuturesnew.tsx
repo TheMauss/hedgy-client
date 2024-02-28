@@ -1566,6 +1566,11 @@ const TradeBar: React.FC<
         });
         // Wait for transaction confirmation before showing the 'success' notification
         await connection.confirmTransaction(signature, "confirmed");
+        notify({
+          type: "success",
+          message: `Limit Order Created`,
+          txid: signature,
+        });
       }
     } catch (error: any) {
       // In case of an error, show only the 'error' notification
