@@ -324,12 +324,8 @@ const TradeBar: React.FC<
 
   useEffect(() => {
     const fetchLpstatus = async () => {
-      const houseHarcodedkey = new PublicKey(
-        "HME9CUNgcsVZti5x1MdoBeUuo1hkGnuKMwP4xuJHQFtQ"
-      );
-      const signerWalletAccount = new PublicKey(
-        "Fb1ABWjtSJVtoZnqogFptAAgqhBCPFY1ZcbEskF8gD1C"
-      );
+      const houseHarcodedkey = HOUSEWALLET;
+      const signerWalletAccount = SIGNERWALLET;
       const seedsLpAcc = [
         Buffer.from(houseHarcodedkey.toBytes()),
         Buffer.from(signerWalletAccount.toBytes()),
@@ -802,35 +798,35 @@ const TradeBar: React.FC<
         5 /
         LAMPORTS_PER_SOL; // 0,3% maximálni pozice
       const maxBet = Math.min(10, countmaxBet);
-      if (parseFloat(amountValue) > maxBet) {
-        notify({
-          type: "error",
-          message: `Position Reverted`,
-          description: `Maximum Collateral is ${maxBet.toFixed(2)} SOL`,
-        });
-        return;
-      }
+      // if (parseFloat(amountValue) > maxBet) {
+      //   notify({
+      //     type: "error",
+      //     message: `Position Reverted`,
+      //     description: `Maximum Collateral is ${maxBet.toFixed(2)} SOL`,
+      //   });
+      //   return;
+      // }
 
-      if (
-        totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL >
-        2 * maxBet * LAMPORTS_PER_SOL
-      ) {
-        notify({
-          type: "error",
-          message: `Position Reverted`,
-          description: `Collateral limit per user is ${(2 * maxBet).toFixed(2)}`,
-        });
-        return;
-      }
+      // if (
+      //   totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL >
+      //   2 * maxBet * LAMPORTS_PER_SOL
+      // ) {
+      //   notify({
+      //     type: "error",
+      //     message: `Position Reverted`,
+      //     description: `Collateral limit per user is ${(2 * maxBet).toFixed(2)}`,
+      //   });
+      //   return;
+      // }
 
       const cryptoSettings = {
         SOL: {
           symbolCode: 0,
-          oracleAddy: "H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG",
+          oracleAddy: "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix",
         },
         BTC: {
           symbolCode: 1,
-          oracleAddy: "GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU",
+          oracleAddy: "HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J",
         },
         // Add more cryptocurrencies here in the same pattern
       };
@@ -875,23 +871,23 @@ const TradeBar: React.FC<
         return;
       }
 
-      if (parseFloat(amountValue) > balance) {
-        notify({
-          type: "error",
-          message: "Insufficient balance",
-          description: "Trade Amount is greater than the available balance",
-        });
-        return;
-      }
+      // if (parseFloat(amountValue) > balance) {
+      //   notify({
+      //     type: "error",
+      //     message: "Insufficient balance",
+      //     description: "Trade Amount is greater than the available balance",
+      //   });
+      //   return;
+      // }
 
-      if (parseFloat(amountValue) > 1 || parseFloat(amountValue) < 0.05) {
-        notify({
-          type: "info",
-          message: "Invalid trade amount",
-          description: "Trade Amount should be between 0.05 and 1 SOL",
-        });
-        return;
-      }
+      // if (parseFloat(amountValue) > 1 || parseFloat(amountValue) < 0.05) {
+      //   notify({
+      //     type: "info",
+      //     message: "Invalid trade amount",
+      //     description: "Trade Amount should be between 0.05 and 1 SOL",
+      //   });
+      //   return;
+      // }
 
       const seedsAffil = [isInit.usedAffiliate];
 
@@ -1019,27 +1015,16 @@ const TradeBar: React.FC<
             });
           }
         } else {
-          const seedsRatio = [
-            Buffer.from(
-              new PublicKey(
-                "HME9CUNgcsVZti5x1MdoBeUuo1hkGnuKMwP4xuJHQFtQ"
-              ).toBytes()
-            ),
-          ];
 
-          const [ratioAcc] = await PublicKey.findProgramAddress(
-            seedsRatio,
-            PROGRAM_ID
-          );
 
           const accounts: CreateBinOptAccounts = {
             binOpt: new PublicKey(pda.toString()),
             playerAcc: publicKey,
             userAcc: userAcc,
-            ratioAcc: ratioAcc,
+            ratioAcc: RATIOACC,
             houseAcc: HOUSEWALLET,
             oracleAccount: new PublicKey(oracleAddy),
-            solOracleAccount: new PublicKey(oracleAddy),
+            solOracleAccount: new PublicKey("J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix"),
             pdaHouseAcc: PDAHOUSEWALLET,
             affilAcc: AffilAcc,
             lpAcc: new PublicKey(

@@ -265,7 +265,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
               Borrowing (S)
             </div>
             <div className="relative text-sm leading-[16px] font-dm-sans text-short">
-            {isNaN(Number(borrowingFeeShort)) ? "0.0000%" : `${(Number(borrowingFeeShort) * 100).toFixed(4)}%%`}
+            {isNaN(Number(borrowingFeeShort)) ? "0.0000%" : `${(Number(borrowingFeeShort) * 100).toFixed(4)}%`}
             </div>
           </div>
         </div>

@@ -333,6 +333,11 @@ const MyPositions: FC<MyPositionsProps> = ({
         setIsLoading(false);
       });
 
+      socket.on("futuresOrders", (positions: Position[]) => {
+        setOrders(positions);
+      });
+
+
       socket.on("connect_error", (err) => {
         setError(err.message);
         setIsLoading(false);
