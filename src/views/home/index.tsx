@@ -309,7 +309,7 @@ export const HomeView: FC = ({}) => {
               <img
                 ref={imgRef2}
                 className="rellax  absolute md:h-auto w-[22%] inset-y-[0] my-auto object-cover right-[0] z-0 md:mt-24 mt-24 md:pb-[300px] pb-[150px] z-5"
-                src="images/img_abstract07.png"
+                src="/img_abstract07.png"
                 alt="abstractSeven"
               />
               <div className="h-[159px] top-[29%] w-[67%]"></div>

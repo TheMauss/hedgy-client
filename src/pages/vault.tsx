@@ -46,6 +46,11 @@ const PSOLMINT = new PublicKey(process.env.NEXT_PUBLIC_PSOL_MINT);
 const USDCPDAHOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_USDCPDA_HOUSEWALLET);
 
 
+const SOL_TO_USDC_RATE = 100; // Assuming 1 SOL = 100 USDC for example purposes
+const MAX_DEPOSIT_SOL = 1500;
+const MAX_DEPOSIT_USDC = 200000;
+const MIN_DEPOSIT_SOL = 1; // Minimum deposit in SOL
+const MIN_DEPOSIT_USDC = 100; // Assuming the minimum deposit in USDC
 
 
 async function checkLPdata(
@@ -329,7 +334,6 @@ const Earn: FC = () => {
   const [usdcSplTokenAccount, setUsdcSplTokenAccount] = useState<PublicKey | null>(null);
   const [tokenBalance, setTokenBalance] = useState<number | null>(null);
 
-
   
 
 
@@ -512,23 +516,26 @@ const Earn: FC = () => {
 
     } 
     const [lpAcc] = await PublicKey.findProgramAddress(seedsLpAcc, PROGRAM_ID);
+    const maxDeposit = selectedCurrency === 'SOL' ? MAX_DEPOSIT_SOL : MAX_DEPOSIT_USDC;
+    const minDeposit = selectedCurrency === 'SOL' ? MIN_DEPOSIT_SOL : MIN_DEPOSIT_USDC;
+    const depositUnit = selectedCurrency;
+    
+    // Calculate the total deposits in the unit of the selected currency
+    const totalDepositsInSelectedCurrency = selectedCurrency === 'SOL' ?
+      LPdata.totalDeposits / LAMPORTS_PER_SOL :
+      (LPdata.usdcTotalDeposits / LAMPORTS_PER_SOL) * 1000;
 
-
-    if (LPdata?.locked) {
-      notify({ type: "info", message: `Vault is locked.` });
-    } else if (parseFloat(depositValue) < 1) {
-      notify({ type: "info", message: `Minimum deposit is 1 SOL.` });
-    } else if (
-      parseFloat(depositValue) + LPdata.totalDeposits / LAMPORTS_PER_SOL >
-      1500
-    ) {
-      const remainingDeposit =
-        1500 - Number(LPdata.totalDeposits) / Number(LAMPORTS_PER_SOL);
-      notify({
-        type: "info",
-        message: `Vault is almost full, you can deposit ${remainingDeposit.toFixed(1)} SOL.`,
-      });
-    } else {
+      if (LPdata?.locked) {
+        notify({ type: "info", message: `Vault is locked.` });
+      } else if (parseFloat(depositValue) < minDeposit) {
+        notify({ type: "info", message: `Minimum deposit is 1 ${depositUnit}.` });
+      } else if (parseFloat(depositValue) + totalDepositsInSelectedCurrency > maxDeposit) {
+        const remainingDeposit = maxDeposit - totalDepositsInSelectedCurrency;
+        notify({
+          type: "info",
+          message: `Vault is almost full, you can deposit ${remainingDeposit.toFixed(1)} ${depositUnit}.`,
+        });
+      } else {
       try {
         const LPAccseeds = [
           Buffer.from(houseHarcodedkey.toBytes()),

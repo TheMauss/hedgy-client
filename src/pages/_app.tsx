@@ -12,6 +12,8 @@ import { useRouter } from "next/router";
 import ReactGA from "react-ga";
 import { Analytics } from "@vercel/analytics/react";
 import { PriorityFeeProvider } from "../contexts/PriorityFee";
+import { BackupOracleProvider } from "../contexts/BackupOracle";
+
 
 require("@solana/wallet-adapter-react-ui/styles.css");
 require("../styles/globals.css");
@@ -53,6 +55,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
       </Head>
       <ContextProvider>
         <PriorityFeeProvider>
+        <BackupOracleProvider>
           <div className="flex flex-col min-h-screen overflow-hidden">
             <Notifications />
             <Analytics />
@@ -70,6 +73,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
               </ContentContainer>
             </div>
           </div>
+        </BackupOracleProvider>
         </PriorityFeeProvider>
       </ContextProvider>
     </>

@@ -235,7 +235,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
               Open (L)
             </div>
             <div className="relative text-sm leading-[16px] font-dm-sans text-white">
-              {long} {selectedCurrency === 'SOL' ? "SOL" : "USDC"}  
+            {selectedCurrency === 'SOL' ? `${long} SOL` : `${long}k USDC`}  
             </div>
           </div>
         </div>
@@ -245,8 +245,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
               Open (S)
             </div>
             <div className="relative text-sm leading-[16px] font-dm-sans text-white">
-              {short} {selectedCurrency === 'SOL' ? "SOL" : "USDC"}  
-            </div>
+            {selectedCurrency === 'SOL' ? `${short} SOL` : `${short}k USDC`}              </div>
           </div>
         </div>
         <div className="min-w-[120px] box-border h-8 flex flex-col items-center justify-center  border-l-[1px] border-solid border-layer-3">

@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState } from "react";
 
 const PriorityFeeContext = createContext({
-  isPriorityFee: true,
+  isPriorityFee: false,
   setPriorityFee: undefined, // Remove the default implementation
 });
 
 export const PriorityFeeProvider = ({ children }) => {
-  const [isPriorityFee, setIsPriorityFee] = useState(true);
+  const [isPriorityFee, setIsPriorityFee] = useState(false);
 
   const setPriorityFee = (value: boolean) => {
     setIsPriorityFee(value);

@@ -18,6 +18,8 @@ import { MdOutlineSettings } from "react-icons/md";
 import Modal from "react-modal";
 import socketIOClient from "socket.io-client";
 import { usePriorityFee } from "../contexts/PriorityFee";
+import { useBackupOracle } from "../contexts/BackupOracle";
+
 import { LiquidityPoolAccount } from "../out/accounts/LiquidityPoolAccount";
 import { LongShortRatio } from "../out/accounts/LongShortRatio"; // Update with the correct path
 import { UserAccount } from "../out/accounts/UserAccount"; // Update with the correct path
@@ -353,6 +355,8 @@ const TradeBar: React.FC<
   const [customSlippage, setCustomSlippage] = useState("");
 
   const { isPriorityFee, setPriorityFee } = usePriorityFee();
+  const { isBackupOracle, setBackupOracle } = useBackupOracle();
+
 
   const snapPoints = [
     1, 2, 3, 4, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100
@@ -1120,10 +1124,10 @@ const TradeBar: React.FC<
           toggleState === "LONG"
             ? priceInUsd *  (1 + finalSpreadRatio) -
               (priceInUsd * (1 + finalSpreadRatio)) / leverage +
-              (priceInUsd * (1 + finalSpreadRatio) * (8+finalSpreadRatio*100)) / 10000
+              (priceInUsd * (1 + finalSpreadRatio) * (18+finalSpreadRatio*100)) / 10000
             : priceInUsd * (1 - finalSpreadRatio) +
               (priceInUsd * (1 - finalSpreadRatio)) / leverage -
-              (priceInUsd * (1 - finalSpreadRatio) * (8+finalSpreadRatio*100)) / 10000;
+              (priceInUsd * (1 - finalSpreadRatio) * (18+finalSpreadRatio*100)) / 10000;
 
         const liquidationPrice = priceDisplay.toFixed(decimalPlaces);
 
@@ -1255,11 +1259,16 @@ const TradeBar: React.FC<
     setPriorityFee(!isPriorityFee);
   };
 
+  const handleToggleOracle = () => {
+    // Update the isPriorityFee state when the toggle button is clicked
+    setBackupOracle(!isBackupOracle);
+  };
+
   const FutOrder = useCallback(async () => {
-    const countmaxBet = selectedCurrency === 'USDC' ?       (((LPdata?.usdcTotalDeposits + LPdata?.usdcPnl) / 200) * 2) /
+    const countmaxBet = selectedCurrency === 'USDC' ?       (((LPdata?.usdcTotalDeposits + LPdata?.usdcPnl) / 200) * 3) /
     5 /
     LAMPORTS_PER_SOL*1000 :
-      (((LPdata?.totalDeposits + LPdata?.pnl) / 200) * 2) /
+      (((LPdata?.totalDeposits + LPdata?.pnl) / 200) * 3) /
       5 /
       LAMPORTS_PER_SOL; // 0,3% maximálni pozice
 
@@ -1440,6 +1449,8 @@ const TradeBar: React.FC<
       const usdcAcc = await usdcSplTokenAccountSync(publicKey);
 
       const usdc = selectedCurrency === 'USDC' ? 1 : 0;
+      const backOracle = isBackupOracle === true ? 0 : 1;
+
 
       if (!isInit.isInitialized) {
         try {
@@ -1458,6 +1469,8 @@ const TradeBar: React.FC<
           const args: InitializeUserAccArgs = {
             usedAffiliate: Array.from(isInit.usedAffiliate),
           };
+
+
 
           // Create a new transaction to initialize the user account and send it
           const initTransaction = new Transaction().add(
@@ -1494,7 +1507,7 @@ const TradeBar: React.FC<
           slPrice: new BN(stopLoss),
           tpPrice: new BN(takeProfit),
           initialPrice: new BN(parseFloat(limitAmount) * 100000000),
-          backOracle: (0),
+          backOracle: (backOracle),
           usdc: (usdc),
         };
         console.log(
@@ -1583,6 +1596,7 @@ const TradeBar: React.FC<
       return;
     }
   }, [
+    isBackupOracle,
     fee,
     isPriorityFee,
     LPdata,
@@ -1608,10 +1622,10 @@ const TradeBar: React.FC<
   ]);
 
   const onClick = useCallback(async () => {
-    const countmaxBet = selectedCurrency === 'USDC' ?       (((LPdata?.usdcTotalDeposits + LPdata?.usdcPnl) / 200) * 2) /
+    const countmaxBet = selectedCurrency === 'USDC' ?       (((LPdata?.usdcTotalDeposits + LPdata?.usdcPnl) / 200) * 3) /
     5 /
     LAMPORTS_PER_SOL*1000 :
-      (((LPdata?.totalDeposits + LPdata?.pnl) / 200) * 2) /
+      (((LPdata?.totalDeposits + LPdata?.pnl) / 200) * 3) /
       5 /
       LAMPORTS_PER_SOL; // 0,3% maximálni pozice
 
@@ -1627,26 +1641,26 @@ const TradeBar: React.FC<
       return; // Exit function early
     }
 
-    // if (parseFloat(amountValue) > maxBet) {
-    //   notify({
-    //     type: "error",
-    //     message: `Position Reverted`,
-    //     description: `Maximum Collateral is ${maxBet.toFixed(2)} SOL`,
-    //   });
-    //   return;
-    // }
+    if (parseFloat(amountValue) > maxBet) {
+      notify({
+        type: "error",
+        message: `Position Reverted`,
+        description: `Maximum Collateral is ${maxBet.toFixed(2)} SOL`,
+      });
+      return;
+    }
 
-    // if (
-    //   totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL >
-    //   2 * maxBet * LAMPORTS_PER_SOL
-    // ) {
-    //   notify({
-    //     type: "error",
-    //     message: `Position Reverted`,
-    //     description: `Collateral limit per user is ${(2 * maxBet).toFixed(2)}`,
-    //   });
-    //   return;
-    // }
+    if (
+      totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL >
+      2 * maxBet * LAMPORTS_PER_SOL
+    ) {
+      notify({
+        type: "error",
+        message: `Position Reverted`,
+        description: `Collateral limit per user is ${(2 * maxBet).toFixed(2)}`,
+      });
+      return;
+    }
 
     const cryptoSettings = {
       SOL: {
@@ -1715,36 +1729,36 @@ const TradeBar: React.FC<
       return;
     }
 
-    // if (parseFloat(amountValue) > balance) {
-    //   notify({
-    //     type: "info",
-    //     message: "Insufficient balance",
-    //     description: "Trade Amount is greater than the available balance",
-    //   });
-    //   return;
-    // }
+    if (parseFloat(amountValue) > balance) {
+      notify({
+        type: "info",
+        message: "Insufficient balance",
+        description: "Trade Amount is greater than the available balance",
+      });
+      return;
+    }
 
-    // if ((parseFloat(amountValue) - fee) * leverage > availableLiquidity) {
-    //   notify({
-    //     type: "error",
-    //     message: "Insufficient balance",
-    //     description: "Not enough available liquidity in the Vault",
-    //   });
-    //   return;
-    // }
+    if ((parseFloat(amountValue) - fee) * leverage > availableLiquidity) {
+      notify({
+        type: "error",
+        message: "Insufficient balance",
+        description: "Not enough available liquidity in the Vault",
+      });
+      return;
+    }
 
-    // if (
-    //   parseFloat(amountValue) >
-    //     (LPdata?.totalDeposits + LPdata?.pnl) / 200 / LAMPORTS_PER_SOL ||
-    //   parseFloat(amountValue) < 0.05
-    // ) {
-    //   notify({
-    //     type: "info",
-    //     message: "Invalid trade amount",
-    //     description: `Trade Amount should be between 0.05 and ${maxBet.toFixed(2)}`,
-    //   });
-    //   return;
-    // }
+    if (
+      parseFloat(amountValue) >
+        (LPdata?.totalDeposits + LPdata?.pnl) / 200 / LAMPORTS_PER_SOL ||
+      parseFloat(amountValue) < 0.05
+    ) {
+      notify({
+        type: "info",
+        message: "Invalid trade amount",
+        description: `Trade Amount should be between 0.05 and ${maxBet.toFixed(2)}`,
+      });
+      return;
+    }
 
     let signature: TransactionSignature = "";
     try {
@@ -1791,6 +1805,8 @@ const TradeBar: React.FC<
       const usdcAcc = await usdcSplTokenAccountSync(publicKey);
 
       const usdc = selectedCurrency === 'USDC' ? 1 : 0;
+      const backOracle = isBackupOracle === true ? 0 : 1;
+
 
       if (!isInit.isInitialized) {
         try {
@@ -1847,7 +1863,7 @@ const TradeBar: React.FC<
           tpPrice: new BN(takeProfit),
           slippagePrice: new BN(initialPrice * 100000000),
           slippage: new BN(slippageTolerance),
-          backOracle: (0),
+          backOracle: (backOracle),
           usdc: (usdc),
         };
         console.log(
@@ -1867,12 +1883,6 @@ const TradeBar: React.FC<
           "TP",
           takeProfit / 100000000
         );
-
-        const seedsRatio = [
-          Buffer.from(
-           HOUSEWALLET.toBytes()
-          ),
-        ];
 
         const accounts: CreateFutContAccounts = {
           futCont: pda,
@@ -1951,7 +1961,8 @@ const TradeBar: React.FC<
     amountValue,
     toggleState,
     availableLiquidity,
-    selectedCurrency
+    selectedCurrency,
+    isBackupOracle
   ]);
 
 
@@ -2197,8 +2208,8 @@ const TradeBar: React.FC<
     const totalDeposits = LPdata?.[totalDepositsKey] || 0;
     console.log(totalDeposits, "TotalDepositss");
 
-    const oiSol = totalDeposits / 4; // Open interest for large caps
-    const poSmallPairs = totalDeposits / 25;
+    const oiSol = totalDeposits / 3; // Open interest for large caps
+    const poSmallPairs = totalDeposits / 20;
 
     let availableLiquidity = 0;
 
@@ -2224,7 +2235,7 @@ const TradeBar: React.FC<
         if (bigCapLong <= oiSol * 2) {
           availableLiquidity = Math.min(
             oiSol * 2 - bigCapLong,
-            oiSol - individualLong - currencyAdjustment
+            oiSol - individualLong
           );
         }
       } else {
@@ -2241,7 +2252,7 @@ const TradeBar: React.FC<
         if (bigCapShort <= oiSol * 2) {
           availableLiquidity = Math.min(
             oiSol * 2 - bigCapShort,
-            oiSol - individualShort - currencyAdjustment
+            oiSol - individualShort
           );
         }
       } else {
@@ -2897,7 +2908,7 @@ const TradeBar: React.FC<
               <input
                 type="checkbox"
                 checked={isPriorityFee}
-                onChange={handleToggle}
+                // onChange={handleToggle}
                 className="hidden"
               />
               <div
@@ -2906,6 +2917,25 @@ const TradeBar: React.FC<
             </label>
           </div>
         </div>
+        <div className="self-stretch h-4 flex flex-row items-start justify-between">
+          <div className="relative leading-[14px]">
+            Backup Oracle
+          </div>
+          <div className="relative leading-[14px] font-medium text-white">
+            <label className="toggle-switch-bigger">
+              <input
+                type="checkbox"
+                checked={isBackupOracle}
+                onChange={handleToggleOracle}
+                className="hidden"
+              />
+              <div
+                className={`slider-bigger ${isBackupOracle ? "active" : ""}`}
+              ></div>
+            </label>
+          </div>
+        </div>
+        
 
         <div className="self-stretch h-4 flex flex-row items-start justify-between">
           <div className="relative leading-[14px]">Fees</div>

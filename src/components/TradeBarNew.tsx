@@ -30,6 +30,8 @@ import { PROGRAM_ID } from "../out/programId";
 import TwoDigitInput from "./TwoInputDesign";
 import { BiTimeFive } from "react-icons/bi";
 import socketIOClient from "socket.io-client";
+import { useBackupOracle } from "../contexts/BackupOracle";
+
 import Select from "react-select";
 import { components } from "react-select";
 import Modal from "react-modal";
@@ -283,6 +285,8 @@ const TradeBar: React.FC<
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { fastTradeActivated, setFastTradeActivated } = useFastTrade();
   const { isPriorityFee, setPriorityFee } = usePriorityFee();
+  const { isBackupOracle, setBackupOracle } = useBackupOracle();
+
 
   const fetchcheckuserdata = async () => {
     if (!publicKey) {
@@ -348,6 +352,11 @@ const TradeBar: React.FC<
   const handleToggle = () => {
     // Update the isPriorityFee state when the toggle button is clicked
     setPriorityFee(!isPriorityFee);
+  };
+
+  const handleToggleOracle = () => {
+    // Update the isPriorityFee state when the toggle button is clicked
+    setBackupOracle(!isBackupOracle);
   };
 
   const handleCustomSlippageChange = (event) => {
@@ -902,7 +911,8 @@ const TradeBar: React.FC<
         const now = Date.now();
         const timeNumber = (Math.floor(now / 1000) % 1000000) + 1;
 
-        const betAmount = parseFloat(amountValue) * LAMPORTS_PER_SOL;
+        const betAmount = selectedCurrency === 'USDC' ? (parseFloat(amountValue) * LAMPORTS_PER_SOL / 1000) : (parseFloat(amountValue) * LAMPORTS_PER_SOL);
+
 
         let expiration = 0;
         if (activeButton === 1) {
@@ -937,8 +947,12 @@ const TradeBar: React.FC<
           PROGRAM_ID
         );
 
+
+
         const usedAffiliate = isInit.usedAffiliate;
         const usdc = selectedCurrency === 'USDC' ? 1 : 0;
+        const backOracle = isBackupOracle === true ? 0 : 1;
+
 
         const args: CreateBinOptArgs = {
           number: new BN(timeNumber),
@@ -949,7 +963,7 @@ const TradeBar: React.FC<
           symbol: symbolCode,
           slippagePrice: new BN(initialPrice * 100000000),
           slippage: new BN(slippageTolerance),
-          backOracle: 0,
+          backOracle: (backOracle),
           usdc: usdc,
         };
         console.log(
@@ -1077,6 +1091,7 @@ const TradeBar: React.FC<
       }
     },
     [
+      isBackupOracle,
       selectedCurrency,
       isPriorityFee,
       LPdata,
@@ -1586,7 +1601,23 @@ const TradeBar: React.FC<
               <input
                 type="checkbox"
                 checked={isPriorityFee}
-                onChange={handleToggle}
+                // onChange={handleToggle}
+                className="hidden"
+              />
+              <div
+                className={`slider-bigger ${isPriorityFee ? "active" : ""}`}
+              ></div>
+            </label>
+          </div>
+        </div>
+        <div className="self-stretch h-4 flex flex-row items-start justify-between">
+          <div className="relative leading-[14px]">Backup Oracle</div>
+          <div className="relative leading-[14px] font-medium text-white">
+            <label className="toggle-switch-bigger">
+              <input
+                type="checkbox"
+                checked={isBackupOracle}
+                onChange={handleToggleOracle}
                 className="hidden"
               />
               <div

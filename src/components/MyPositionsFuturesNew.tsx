@@ -39,6 +39,7 @@ import { UserAccount } from "../out/accounts/UserAccount";
 import axios from "axios";
 import { usePriorityFee } from "../contexts/PriorityFee";
 import { publicDecrypt } from "crypto";
+import { useBackupOracle } from "contexts/BackupOracle";
 
 const ENDPOINT1 = process.env.NEXT_PUBLIC_ENDPOINT1;
 const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
@@ -76,6 +77,7 @@ interface Position {
   currentPrice: number;
   pnl: number;
   usdc: number;
+  order: boolean
 }
 
 interface Notification {
@@ -205,6 +207,8 @@ const MyPositions: FC<MyPositionsProps> = ({
     myAffiliate: Uint8Array;
   }>(null);
   const { isPriorityFee } = usePriorityFee();
+  const { isBackupOracle } = useBackupOracle();
+
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
@@ -965,7 +969,13 @@ const MyPositions: FC<MyPositionsProps> = ({
 
     const [userAcc] = await PublicKey.findProgramAddress(seedsUser, PROGRAM_ID);
     const usdcAcc = await usdcSplTokenAccountSync(publicKey);
-
+    
+    let backOracle;
+    if (isBackupOracle) {
+      backOracle = 0
+    } else {
+      backOracle = 1
+    }
     let oracleAccountAddress;
 
     if (position.symbol === 0) {
@@ -1007,7 +1017,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     };
 
     const args: ResolveFutContuserArgs = {
-      backOracle: 0,
+      backOracle: backOracle,
     };
 
     let PRIORITY_FEE_IX;
@@ -3177,7 +3187,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
   const renderOrders = () => {
     const orderstoShow = orders.filter(
-      (order) => !order.resolved
+      (order) => !order.resolved && order.order
     );
 
     // Reverse the array to show positions from newest to oldest
