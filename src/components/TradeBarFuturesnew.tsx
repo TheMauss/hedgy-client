@@ -1629,7 +1629,9 @@ const TradeBar: React.FC<
       5 /
       LAMPORTS_PER_SOL; // 0,3% maximálni pozice
 
-    const maxBet = Math.min(10, countmaxBet);
+    const maxBet = Math.min(100000, countmaxBet);
+    const realbalance = selectedCurrency === 'USDC' ?       (usdcbalance):
+     (balance); // 0,3% maximálni pozice
     if (warning) {
       console.error("Cannot open position due to warning:", warning);
       // Optionally, show a warning notification
@@ -1729,7 +1731,7 @@ const TradeBar: React.FC<
       return;
     }
 
-    if (parseFloat(amountValue) > balance) {
+    if (parseFloat(amountValue) > realbalance) {
       notify({
         type: "info",
         message: "Insufficient balance",
@@ -1749,7 +1751,7 @@ const TradeBar: React.FC<
 
     if (
       parseFloat(amountValue) >
-        (LPdata?.totalDeposits + LPdata?.pnl) / 200 / LAMPORTS_PER_SOL ||
+        maxBet ||
       parseFloat(amountValue) < 0.050
     ) {
       notify({

@@ -1,45 +1,42 @@
-import React, { FC, useEffect, useState, useCallback, useRef } from "react";
+import { BN } from "@project-serum/anchor";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import {
   ComputeBudgetProgram,
   Connection,
+  LAMPORTS_PER_SOL,
+  PublicKey,
   SystemProgram,
   Transaction,
   TransactionSignature,
-  PublicKey,
-  LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { BiTimeFive } from "react-icons/bi";
 import { FaChevronUp } from "react-icons/fa";
-import { notify } from "../utils/notifications";
+import socketIOClient from "socket.io-client";
+import useUserSOLBalanceStore from "../../src/stores/useUserSOLBalanceStore";
+import { useBackupOracle } from "../contexts/BackupOracle";
+import { LongShortRatio } from "../out/accounts/LongShortRatio"; // Update with the correct path
+import { UserAccount } from "../out/accounts/UserAccount"; // Update with the correct path
 import {
-  CreateBinOptArgs,
   CreateBinOptAccounts,
+  CreateBinOptArgs,
   createBinOpt,
 } from "../out/instructions/createBinOpt";
-import { useRouter } from "next/router";
-import { UserAccount } from "../out/accounts/UserAccount"; // Update with the correct path
-import { LongShortRatio } from "../out/accounts/LongShortRatio"; // Update with the correct path
 import {
-  initializeUserAcc,
-  InitializeUserAccArgs,
   InitializeUserAccAccounts,
+  InitializeUserAccArgs,
+  initializeUserAcc,
 } from "../out/instructions/initializeUserAcc"; // Update with the correct path
-import useUserSOLBalanceStore from "../../src/stores/useUserSOLBalanceStore";
-import { BN } from "@project-serum/anchor";
 import { PROGRAM_ID } from "../out/programId";
+import { notify } from "../utils/notifications";
 import TwoDigitInput from "./TwoInputDesign";
-import { BiTimeFive } from "react-icons/bi";
-import socketIOClient from "socket.io-client";
-import { useBackupOracle } from "../contexts/BackupOracle";
 
-import Select from "react-select";
-import { components } from "react-select";
+import axios from "axios";
+import dynamic from "next/dynamic";
 import Modal from "react-modal";
 import { useFastTrade } from "../contexts/FastTradeContext";
-import dynamic from "next/dynamic";
-import { LiquidityPoolAccount } from "../out/accounts/LiquidityPoolAccount";
-import axios from "axios";
 import { usePriorityFee } from "../contexts/PriorityFee";
+import { LiquidityPoolAccount } from "../out/accounts/LiquidityPoolAccount";
 
 const HOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_HOUSE_WALLET);
 const SIGNERWALLET = new PublicKey(process.env.NEXT_PUBLIC_SIGNER_WALLET);
