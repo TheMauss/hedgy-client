@@ -31,6 +31,7 @@ interface Position {
   timestamp: number;
   finalPrice: number;
   currentPrice: number;
+  usdc: number
 }
 
 const Transaction: FC = () => {
