@@ -322,8 +322,8 @@ const MyPositions: FC<MyPositionsProps> = ({
       socket = socketIOClient(ENDPOINT2);
       fetchPositionsByPage(currentPage);
 
-      socket.on("futuresPositions", ({ positions, totalPagess }) => {
-        setTotalPages(totalPagess);
+      socket.on("futuresPositions", ({ positions, totalPages }) => {
+        setTotalPages(totalPages);
         const unresolvedPositions = positions.filter(
           (position) => !position.resolved
         );
