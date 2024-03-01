@@ -1750,7 +1750,7 @@ const TradeBar: React.FC<
     if (
       parseFloat(amountValue) >
         (LPdata?.totalDeposits + LPdata?.pnl) / 200 / LAMPORTS_PER_SOL ||
-      parseFloat(amountValue) < 0.050
+      parseFloat(amountValue) < 0.05
     ) {
       notify({
         type: "info",
