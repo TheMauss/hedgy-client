@@ -178,6 +178,8 @@ const MyPositions: FC<MyPositionsProps> = ({
   const { publicKey, connected } = useWallet(); // Add connected variable
   const walletAddress = publicKey?.toString() || "";
   const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10; // Set the page size
+
   const [previousPrice, setPreviousPrice] = useState<number | null>(null);
   const symbolMap = {
     0: "Crypto.SOL/USD",
@@ -208,6 +210,8 @@ const MyPositions: FC<MyPositionsProps> = ({
   }>(null);
   const { isPriorityFee } = usePriorityFee();
   const { isBackupOracle } = useBackupOracle();
+  const [totalPages, setTotalPages] = useState(1);
+
 
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -304,21 +308,30 @@ const MyPositions: FC<MyPositionsProps> = ({
 
   const socket2Ref = useRef(null);
 
+
+
   useEffect(() => {
     let socket;
     let isMounted = true;
 
+    const fetchPositionsByPage = (page) => {
+      socket.emit("registerWallet", walletAddress, page, pageSize);
+    };
+
     function setupSocket1() {
       socket = socketIOClient(ENDPOINT2);
-      socket.emit("registerWallet", walletAddress);
+      fetchPositionsByPage(currentPage);
 
-      socket.on("futuresPositions", (positions: Position[]) => {
+      socket.on("futuresPositions", ({ positions, totalPagess }) => {
+        setTotalPages(totalPagess);
         const unresolvedPositions = positions.filter(
           (position) => !position.resolved
         );
         const resolvedPositions = positions.filter(
           (position) => position.resolved
         );
+
+        
 
         setLatestOpenedPosition((prevPositions) => {
           const updatedPositions: Record<string, Position | null> = {
@@ -581,7 +594,7 @@ const MyPositions: FC<MyPositionsProps> = ({
       }
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [walletAddress]);
+  }, [walletAddress, currentPage]);
 
   useEffect(() => {
     setPositions((positions) =>
@@ -887,7 +900,6 @@ const MyPositions: FC<MyPositionsProps> = ({
     }
   }, [Loss, currentItem]);
 
-  const totalPages = Math.ceil(resolvedPositions.length / ITEMS_PER_PAGE);
 
   const nextPage = () => {
     if (currentPage < totalPages) {
