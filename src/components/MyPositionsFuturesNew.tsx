@@ -904,21 +904,25 @@ const MyPositions: FC<MyPositionsProps> = ({
   const nextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
+      setResolvedPositions([]);
     }
   };
 
   const prevPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
+      setResolvedPositions([]);
     }
   };
 
   const firstPage = () => {
     setCurrentPage(1);
+    setResolvedPositions([]);
   };
 
   const lastPage = () => {
     setCurrentPage(totalPages);
+    setResolvedPositions([]);
   };
 
   const [decodedString, setDecodedString] = useState("");
@@ -2423,10 +2427,6 @@ const MyPositions: FC<MyPositionsProps> = ({
     // Reverse the array to show positions from newest to oldest
     resolvedPositionsToShow.reverse();
 
-    // Calculate start and end indices for the slice of data you want to display
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-
     const ModalDetails = (
       <Modal
         className="bg-layer-1  rounded-[2rem] border border-layer-3"
@@ -2696,7 +2696,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     );
 
     // Get only the data for the current page
-    const currentPageData = resolvedPositionsToShow.slice(startIndex, endIndex);
+    const currentPageData = resolvedPositionsToShow;
     return (
       <div>
         {currentPageData.map((item, index) => {
