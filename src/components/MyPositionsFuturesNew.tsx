@@ -324,13 +324,12 @@ const MyPositions: FC<MyPositionsProps> = ({
 
       socket.on("futuresPositions", ({ positions, totalPages }) => {
         setTotalPages(totalPages);
-        const unresolvedPositions = positions.filter(
-          (position) => !position.resolved
-        );
-        const resolvedPositions = positions.filter(
-          (position) => position.resolved
-        );
 
+        setResolvedPositions(positions);
+        setIsLoading(false);
+      });
+
+      socket.on("unresolvedfuturesPositions", (positions: Position[]) => {
         
 
         setLatestOpenedPosition((prevPositions) => {
@@ -338,15 +337,14 @@ const MyPositions: FC<MyPositionsProps> = ({
             ...prevPositions,
           };
 
-          unresolvedPositions.forEach((position) => {
+          positions.forEach((position) => {
             updatedPositions[position.symbol.toString()] = position;
           });
 
           return updatedPositions;
         });
 
-        setPositions(unresolvedPositions);
-        setResolvedPositions(resolvedPositions);
+        setPositions(positions);
         setIsLoading(false);
       });
 
@@ -3914,39 +3912,6 @@ const MyPositions: FC<MyPositionsProps> = ({
                   </div>
                 </div>
                   {renderOrders()}
-                  <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
-                    <button
-                      className=" bg-transparent mr-2"
-                      onClick={firstPage}
-                      disabled={currentPage === 1}
-                    >
-                      &lt;&lt;
-                    </button>
-                    <button
-                      className=" bg-transparent mr-2"
-                      onClick={prevPage}
-                      disabled={currentPage === 1}
-                    >
-                      &lt;
-                    </button>
-                    <span className="">
-                      Page {currentPage} of {totalPages}
-                    </span>
-                    <button
-                      className=" bg-transparent px-2"
-                      onClick={nextPage}
-                      disabled={currentPage === totalPages}
-                    >
-                      &gt;
-                    </button>
-                    <button
-                      className=" bg-transparent mr-2"
-                      onClick={lastPage}
-                      disabled={currentPage === totalPages}
-                    >
-                      &gt;&gt;
-                    </button>
-                  </div>
                 </div>
               ) : (
                 // Mobile View for History or Orders
@@ -3956,39 +3921,6 @@ const MyPositions: FC<MyPositionsProps> = ({
                 >
                   {/* Mobile-specific content rendering for History or Orders */}
                   {renderOrders()}
-                  <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
-                    <button
-                      className=" bg-transparent mr-2"
-                      onClick={firstPage}
-                      disabled={currentPage === 1}
-                    >
-                      &lt;&lt;
-                    </button>
-                    <button
-                      className=" bg-transparent mr-2"
-                      onClick={prevPage}
-                      disabled={currentPage === 1}
-                    >
-                      &lt;
-                    </button>
-                    <span className="">
-                      Page {currentPage} of {totalPages}
-                    </span>
-                    <button
-                      className=" bg-transparent px-2"
-                      onClick={nextPage}
-                      disabled={currentPage === totalPages}
-                    >
-                      &gt;
-                    </button>
-                    <button
-                      className=" bg-transparent mr-2"
-                      onClick={lastPage}
-                      disabled={currentPage === totalPages}
-                    >
-                      &gt;&gt;
-                    </button>
-                  </div>
                 </div>
               )
             ) : null}
@@ -4093,7 +4025,7 @@ const MyPositions: FC<MyPositionsProps> = ({
             )}   
             {selectedButton === 'Positions' ? renderPositions(positions) :
      selectedButton === 'History' ? renderHistoryPositions() :
-     selectedButton === 'Order' ? renderOrders(): null}        {selectedButton === 'Positions' ? null : (
+     selectedButton === 'Order' ? renderOrders(): null}         {selectedButton !== 'History' ? null : (
               <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
                 <button
                   className=" bg-transparent mr-2"
@@ -4138,7 +4070,7 @@ const MyPositions: FC<MyPositionsProps> = ({
             {/* This div is your new scrolling area */}
   {selectedButton === 'Positions' ? renderPositions(positions) :
      selectedButton === 'History' ? renderHistoryPositions() :
-     selectedButton === 'Order' ? renderOrders(): null}               {selectedButton === 'Positions' ? null : (
+     selectedButton === 'Order' ? renderOrders(): null}               {selectedButton !== 'History' ? null : (
               <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
                 <button
                   className=" bg-transparent mr-2"
