@@ -410,12 +410,14 @@ const MyPositions: FC<MyPositionsProps> = ({
                       updatedPos.takeProfitPrice !== position.takeProfitPrice
                     ) {
                       handleNewNotification({
+                         id: updatedPosition._id.toString(),
                         type: "success",
                         message: `Position updated`,
                         description: `Take Profit is ${(updatedPosition.takeProfitPrice / 100000000).toFixed(2)}, Stop Loss is ${(updatedPosition.stopLossPrice / 100000000).toFixed(2)}`,
                       });
                     } else {
                       handleNewNotification({
+                         id: updatedPosition._id.toString(),
                         type: "success",
                         message: `Borrowing fee paid`,
                         description: `New Liquidation Price is  ${(updatedPosition.liquidationPrice / 100000000).toFixed(2)}`,
@@ -433,6 +435,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               if (!updatedPosition.resolved) {
                 // Add the new position to the array
                 handleNewNotification({
+                   id: updatedPosition._id.toString(),
                   type: "success",
                   message: `Position opened`,
                   description: `Entry price: ${(updatedPosition.initialPrice / 100000000).toFixed(3)} USD`,
@@ -530,6 +533,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
             // handleNewNotification the user of the resolved position
             handleNewNotification({
+               id: updatedPosition._id.toString(),
               type: "success",
               message: `Position resolved`,
               description: `PnL: ${(updatedPosition.pnl / LAMPORTS_PER_SOL).toFixed(2)} SOL.`,
@@ -1246,7 +1250,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     try {
       // Send the transaction
       signature = await sendTransaction(transaction, connection);
-      handleNewNotification({
+      ({
         type: "info",
         message: `Trying to update the Position`,
       });

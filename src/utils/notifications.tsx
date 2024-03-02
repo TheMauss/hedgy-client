@@ -5,6 +5,7 @@ export function notify(newNotification: {
   message: string;
   description?: string;
   txid?: string;
+  id?: string;
 }) {
   const { notifications, set: setNotificationStore } =
     useNotificationStore.getState();
