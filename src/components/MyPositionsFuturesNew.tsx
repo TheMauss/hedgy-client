@@ -322,13 +322,6 @@ const MyPositions: FC<MyPositionsProps> = ({
       socket = socketIOClient(ENDPOINT2);
       fetchPositionsByPage(currentPage);
 
-      socket.on("futuresPositions", ({ positions, totalPages }) => {
-        setTotalPages(totalPages);
-
-        setResolvedPositions(positions);
-        setIsLoading(false);
-      });
-
       socket.on("unresolvedfuturesPositions", (positions: Position[]) => {
         
 
@@ -347,6 +340,15 @@ const MyPositions: FC<MyPositionsProps> = ({
         setPositions(positions);
         setIsLoading(false);
       });
+
+      socket.on("futuresPositions", ({ positions, totalPages }) => {
+        setTotalPages(totalPages);
+
+        setResolvedPositions(positions);
+        setIsLoading(false);
+      });
+
+
 
       socket.on("futuresOrders", (positions: Position[]) => {
         setOrders(positions);
