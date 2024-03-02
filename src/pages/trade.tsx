@@ -72,21 +72,22 @@ const Transaction: FC = () => {
   let lastNotificationTime = 0;
 
   const handleNewNotification = (newNotification) => {
+    const currentTime = Date.now();
+    const isNewNotificationSameAsLast = lastNotificationRef.current?.id === newNotification.id;
+    
+    if (!isNewNotificationSameAsLast) {
+      // Process for new or non-duplicate notification
+      processNotification(newNotification, currentTime);
+    } else {
+      console.log("Duplicate notification detected, skipping.");
+    }
+  };
+  
+  const processNotification = (newNotification, currentTime) => {
+    lastNotificationRef.current = newNotification;
+    lastNotificationTime = currentTime;
     clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => {
-      const currentTime = Date.now();
-      const timeSinceLastNotification = currentTime - lastNotificationTime;
-      
-      // Allow repeating the same notification if more than 1 second has passed since the last one
-      if (
-        JSON.stringify(lastNotificationRef.current) !== JSON.stringify(newNotification) ||
-        timeSinceLastNotification > 1000 // 1000 milliseconds = 1 second
-      ) {
-        lastNotificationRef.current = newNotification;
-        lastNotificationTime = currentTime; // Update the timestamp of the last notification
-        notify(newNotification);
-      }
-    }, debounceDelay);
+    debounceTimer = setTimeout(() => notify(newNotification), debounceDelay);
   };
 
   const handleButtonClick = (buttonIndex: number) => {

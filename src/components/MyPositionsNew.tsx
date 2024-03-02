@@ -123,6 +123,8 @@ const MyPositions: FC<MyPositionsProps> = ({
   const [currentItem, setCurrentItem] = useState(null);
   const socket2Ref = useRef(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [totalPages, setTotalPages] = useState(1);
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -161,32 +163,37 @@ const MyPositions: FC<MyPositionsProps> = ({
       }
     };
 
+    const pageSize = 10; // Set the page size
+
+
+    const fetchPositionsByPage = (page) => {
+      socket.emit("registerWallet", walletAddress, page, pageSize);
+    };
+
     function setupSocket1() {
       socket = socketIOClient(ENDPOINT2);
-      socket.emit("registerWallet", walletAddress);
+      fetchPositionsByPage(currentPage);
 
-      socket.on("positions", (positions: Position[]) => {
-        const unresolvedPositions = positions.filter(
-          (position) => !position.resolved
-        );
-        const resolvedPositions = positions.filter(
-          (position) => position.resolved
-        );
+      socket.on("unresolvedpositions", (positions: Position[]) => {
 
         setLatestOpenedPosition((prevPositions) => {
           const updatedPositions: Record<string, Position | null> = {
             ...prevPositions,
           };
 
-          unresolvedPositions.forEach((position) => {
+          positions.forEach((position) => {
             updatedPositions[position.symbol.toString()] = position;
           });
 
           return updatedPositions;
         });
 
-        setPositions(unresolvedPositions);
-        setResolvedPositions(resolvedPositions);
+        setPositions(positions);
+      });
+
+      socket.on("positions", ({ positions, totalPagesBin }) => {
+        setTotalPages(totalPagesBin);
+        setResolvedPositions(positions);
         fetchSolanaTime();
       });
 
@@ -290,12 +297,14 @@ const MyPositions: FC<MyPositionsProps> = ({
           // Notify the user
           if (updatedPosition.resolved) {
             handleNewNotification({
+              id: updatedPosition._id.toString(),
               type: "success",
               message: `Option resolved`,
               description: `Payout: ${updatedPosition.payout / LAMPORTS_PER_SOL} SOL.`,
             });
           } else {
             handleNewNotification({
+              id: updatedPosition._id.toString(),
               type: "success",
               message: `Option created`,
               description: `Entry price: ${(updatedPosition.initialPrice / 100000000).toFixed(3)} USD`,
@@ -392,13 +401,6 @@ const MyPositions: FC<MyPositionsProps> = ({
             remainingTime: calculateRemainingTime(position.expirationTime),
           }))
         );
-
-        setResolvedPositions((resolvedPositions) =>
-          resolvedPositions.map((position) => ({
-            ...position,
-            remainingTime: calculateRemainingTime(position.expirationTime),
-          }))
-        );
       }
     }, 1000);
 
@@ -459,7 +461,6 @@ const MyPositions: FC<MyPositionsProps> = ({
       });
   };
 
-  const totalPages = Math.ceil(resolvedPositions.length / ITEMS_PER_PAGE);
 
   const nextPage = () => {
     if (currentPage < totalPages) {
@@ -1138,12 +1139,8 @@ const MyPositions: FC<MyPositionsProps> = ({
     // Reverse the array to show positions from newest to oldest
     resolvedPositionsToShow.reverse();
 
-    // Calculate start and end indices for the slice of data you want to display
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-
     // Get only the data for the current page
-    const currentPageData = resolvedPositionsToShow.slice(startIndex, endIndex);
+    const currentPageData = resolvedPositionsToShow;
     const pnl = currentItem
       ? currentItem.priceDirection === 0
         ? currentItem.initialPrice < currentItem.finalPrice
