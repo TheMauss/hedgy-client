@@ -2210,8 +2210,8 @@ const TradeBar: React.FC<
     const totalDeposits = LPdata?.[totalDepositsKey] || 0;
     console.log(totalDeposits, "TotalDepositss");
 
-    const oiSol = totalDeposits / 3; // Open interest for large caps
-    const poSmallPairs = totalDeposits / 20;
+    const oiSol = totalDeposits / 4; // Open interest for large caps
+    const poSmallPairs = totalDeposits / 25;
 
     let availableLiquidity = 0;
 
@@ -2260,7 +2260,7 @@ const TradeBar: React.FC<
       } else {
         if (smallCapShort <= totalDeposits / 12) {
           availableLiquidity = Math.min(
-            totalDeposits / 12 - smallCapShort,
+            totalDeposits / 10 - smallCapShort,
             poSmallPairs - individualShort
           );
         }

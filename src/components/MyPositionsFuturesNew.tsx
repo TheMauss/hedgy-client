@@ -1320,21 +1320,21 @@ const MyPositions: FC<MyPositionsProps> = ({
       signature = await sendTransaction(transaction, connection);
       handleNewNotification({
         type: "info",
-        message: `Closing limit order`,
+        message: `Closing Limit Rrder`,
       });
 
       // Wait for confirmation
       await connection.confirmTransaction(signature, "confirmed");
       handleNewNotification({
         type: "success",
-        message: `Limit order closed`,
+        message: `Limit Rrder Closed`,
       });
       // Optionally, show a success notification
     } catch (error: any) {
       // Optionally, show an error notification
       handleNewNotification({
         type: "error",
-        message: `Closing limit order failed`,
+        message: `Closing Limit Order failed`,
         description: error?.message,
         txid: signature,
       });
