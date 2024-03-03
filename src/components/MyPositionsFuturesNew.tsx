@@ -88,6 +88,11 @@ interface Notification {
   id?: string;
 }
 
+const generateUniqueId = () => {
+  // Simple method to generate a unique ID
+  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+};
+
 interface MyPositionsProps {
   latestOpenedPosition: Record<string, Position | null>;
   setLatestOpenedPosition: React.Dispatch<
@@ -1062,7 +1067,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     try {
       // Send the transaction
       signature = await sendTransaction(transaction, connection);
-      handleNewNotification({ type: "info", message: `Closing the Position` });
+      handleNewNotification({ id: generateUniqueId(), type: "info", message: `Closing the Position` });
 
       // Wait for confirmation
       await connection.confirmTransaction(signature, "confirmed");
@@ -1073,6 +1078,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
       // Optionally, show an error notification
       handleNewNotification({
+        id: generateUniqueId(),
         type: "error",
         message: `Contract resolution failed`,
         description: error?.message,
@@ -1086,6 +1092,7 @@ const MyPositions: FC<MyPositionsProps> = ({
       console.error("Cannot update futures contract due to warning:", warning);
       // Optionally, show a warning notification
       handleNewNotification({
+        id: generateUniqueId(),
         type: "warning",
         message: `Position update prevented`,
         description: warning,
@@ -1157,6 +1164,7 @@ const MyPositions: FC<MyPositionsProps> = ({
       // Send the transaction
       signature = await sendTransaction(transaction, connection);
       handleNewNotification({
+        id: generateUniqueId(),
         type: "info",
         message: `Trying to update the Position`,
       });
@@ -1168,6 +1176,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     } catch (error: any) {
       // Optionally, show an error notification
       handleNewNotification({
+        id: generateUniqueId(),
         type: "error",
         message: `Position update failed`,
         description: error?.message,
@@ -1181,6 +1190,7 @@ const MyPositions: FC<MyPositionsProps> = ({
       console.error("Cannot update futures contract due to warning:", warning);
       // Optionally, show a warning notification
       handleNewNotification({
+        id: generateUniqueId(),
         type: "warning",
         message: `Position update prevented`,
         description: warning,
@@ -1262,6 +1272,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     } catch (error: any) {
       // Optionally, show an error notification
       handleNewNotification({
+        id: generateUniqueId(),
         type: "error",
         message: `Position update failed`,
         description: error?.message,
@@ -1319,20 +1330,23 @@ const MyPositions: FC<MyPositionsProps> = ({
       // Send the transaction
       signature = await sendTransaction(transaction, connection);
       handleNewNotification({
+        id: generateUniqueId(),
         type: "info",
-        message: `Closing Limit Rrder`,
+        message: `Closing Limit Order`,
       });
 
       // Wait for confirmation
       await connection.confirmTransaction(signature, "confirmed");
       handleNewNotification({
+        id: generateUniqueId(),
         type: "success",
-        message: `Limit Rrder Closed`,
+        message: `Limit Order Closed`,
       });
       // Optionally, show a success notification
     } catch (error: any) {
       // Optionally, show an error notification
       handleNewNotification({
+        id: generateUniqueId(),
         type: "error",
         message: `Closing Limit Order failed`,
         description: error?.message,

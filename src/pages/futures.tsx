@@ -35,6 +35,8 @@ interface Position {
   order: boolean
 }
 
+
+
 const Futures: FC = () => {
   const [symbol, setSymbol] = useState("Crypto.SOL/USD"); // default value
   const [latestOpenedPosition, setLatestOpenedPosition] = useState<
