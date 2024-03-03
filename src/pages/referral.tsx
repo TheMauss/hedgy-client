@@ -388,14 +388,14 @@ const Referral: FC = () => {
 
   const onClick1 = useCallback(async (usdc: number) => {
     // Create the instruction to initialize the user account
-    if (affiliateData.totalEarned <= 0.1 * LAMPORTS_PER_SOL) {
-      notify({
-        type: "error",
-        message: `Rewards are less than 0.1 SOL`,
-        description: "Try again later.",
-      });
-      return;
-    }
+    // if (affiliateData.totalEarned <= 0.1 * LAMPORTS_PER_SOL) {
+    //   notify({
+    //     type: "error",
+    //     message: `Rewards are less than 0.1 SOL`,
+    //     description: "Try again later.",
+    //   });
+    //   return;
+    // }
     if (!publicKey) {
       notify({
         type: "error",
@@ -651,7 +651,7 @@ const Referral: FC = () => {
                       </div>
                       <div className="text-start relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
                         {(
-                          affiliateData?.usdcTotalEarned / LAMPORTS_PER_SOL
+                          affiliateData?.usdcTotalEarned / LAMPORTS_PER_SOL * 1000
                         ).toFixed(2)}{" "}
                         USDC
                       </div>
