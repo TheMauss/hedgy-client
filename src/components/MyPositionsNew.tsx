@@ -344,7 +344,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [walletAddress]);
+  }, [walletAddress, currentPage]);
 
   // Price updates
   useEffect(() => {
@@ -465,21 +465,25 @@ const MyPositions: FC<MyPositionsProps> = ({
   const nextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
+      setResolvedPositions([]);
     }
   };
 
   const prevPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
+      setResolvedPositions([]);
     }
   };
 
   const firstPage = () => {
     setCurrentPage(1);
+    setResolvedPositions([]);
   };
 
   const lastPage = () => {
     setCurrentPage(totalPages);
+    setResolvedPositions([]);
   };
 
   const fetchcheckuserdata = async () => {
