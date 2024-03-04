@@ -34,10 +34,10 @@ const WalletMultiButtonDynamic = dynamic(
 );
 
 const USDCMINT = new PublicKey(process.env.NEXT_PUBLIC_USDC_MINT);
-const ASSOCIATEDTOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM);
+const ASSOCIATEDTOKENPROGRAM = new PublicKey(
+  process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM
+);
 const TOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_PROGRAM);
-
-
 
 type UserStatsType = {
   playerAcc: string;
@@ -51,14 +51,10 @@ type UserStatsType = {
 };
 
 async function usdcSplTokenAccountSync(walletAddress) {
-  let mintAddress = USDCMINT
+  let mintAddress = USDCMINT;
 
   const [splTokenAccount] = PublicKey.findProgramAddressSync(
-    [
-      walletAddress.toBuffer(),
-      TOKENPROGRAM.toBuffer(),
-      mintAddress.toBuffer(),
-    ],
+    [walletAddress.toBuffer(), TOKENPROGRAM.toBuffer(), mintAddress.toBuffer()],
     ASSOCIATEDTOKENPROGRAM
   );
 
@@ -381,7 +377,6 @@ const Stats: FC = () => {
     const currentTime = Math.floor(Date.now() / 1000); // Current Unix timestamp in seconds
     const timeDifference = currentTime - creationTime;
     const usdcAcc = await usdcSplTokenAccountSync(publicKey);
-
 
     if (!IsInitialized) {
       notify({ type: "error", message: "Referral code does not exist." });
@@ -912,7 +907,7 @@ const Stats: FC = () => {
                     </div>
                   </div>
                   <div className="relative leading-[140%] font-semibold">
-                  5% Discount
+                    5% Discount
                   </div>
                   <div className="relative text-base leading-[140%] font-light text-grey-text">
                     1,000 to 2,000 SOL Vol
@@ -943,7 +938,7 @@ const Stats: FC = () => {
                     </div>
                   </div>
                   <div className="relative leading-[140%] font-semibold">
-                  10% Discount
+                    10% Discount
                   </div>
                   <div className="relative text-base leading-[140%] font-light text-grey-text">
                     2,000 to 5,000 SOL Vol
@@ -974,7 +969,7 @@ const Stats: FC = () => {
                     </div>
                   </div>
                   <div className="relative leading-[140%] font-semibold">
-                  15% Discount
+                    15% Discount
                   </div>
                   <div className="relative text-base leading-[140%] font-light text-grey-text">
                     5,000 to 10,000 SOL Vol
@@ -1008,7 +1003,7 @@ const Stats: FC = () => {
                   </div>
                 </div>
                 <div className="relative leading-[140%] font-semibold">
-                20% Discount
+                  20% Discount
                 </div>
                 <div className="relative text-base leading-[140%] font-light text-grey-text">
                   10,000 to 20,000 SOL Vol
@@ -1039,7 +1034,7 @@ const Stats: FC = () => {
                   </div>
                 </div>
                 <div className="relative leading-[140%] font-semibold">
-                25% Discount
+                  25% Discount
                 </div>
                 <div className="relative text-base leading-[140%] font-light text-grey-text">
                   20,000 to 40,000 SOL Vol
@@ -1070,7 +1065,7 @@ const Stats: FC = () => {
                   </div>
                 </div>
                 <div className="relative leading-[140%] font-semibold">
-                30% Discount
+                  30% Discount
                 </div>
                 <div className="relative text-base leading-[140%] font-light text-grey-text">
                   40,000 to 80,000 SOL Vol
@@ -1101,7 +1096,7 @@ const Stats: FC = () => {
                   </div>
                 </div>
                 <div className="relative leading-[140%] font-semibold">
-                35% Discount
+                  35% Discount
                 </div>
                 <div className="relative text-base leading-[140%] font-light text-grey-text">
                   more than 80,000 SOL Vol

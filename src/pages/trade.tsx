@@ -55,8 +55,9 @@ const Transaction: FC = () => {
   const [isSoliditySelected, setIsSoliditySelected] = useState(true);
   const [initialPrice, setInitialPrice] = useState(0);
   const [selectedPair, setSelectedPair] = useState("");
-  const [selectedCurrency, setSelectedCurrency] = useState<'SOL' | 'USDC'>('SOL');
-
+  const [selectedCurrency, setSelectedCurrency] = useState<"SOL" | "USDC">(
+    "SOL"
+  );
 
   const [isSticky, setIsSticky] = useState(false);
   const ref = useRef(null); // Ref for the element that will become sticky
@@ -73,8 +74,9 @@ const Transaction: FC = () => {
 
   const handleNewNotification = (newNotification) => {
     const currentTime = Date.now();
-    const isNewNotificationSameAsLast = lastNotificationRef.current?.id === newNotification.id;
-    
+    const isNewNotificationSameAsLast =
+      lastNotificationRef.current?.id === newNotification.id;
+
     if (!isNewNotificationSameAsLast) {
       // Process for new or non-duplicate notification
       processNotification(newNotification, currentTime);
@@ -82,7 +84,7 @@ const Transaction: FC = () => {
       console.log("Duplicate notification detected, skipping.");
     }
   };
-  
+
   const processNotification = (newNotification, currentTime) => {
     lastNotificationRef.current = newNotification;
     lastNotificationTime = currentTime;

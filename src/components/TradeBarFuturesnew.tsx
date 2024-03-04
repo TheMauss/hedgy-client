@@ -52,18 +52,17 @@ const HOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_HOUSE_WALLET);
 const SIGNERWALLET = new PublicKey(process.env.NEXT_PUBLIC_SIGNER_WALLET);
 const PDAHOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_PDA_HOUSEWALLET);
 const USDCMINT = new PublicKey(process.env.NEXT_PUBLIC_USDC_MINT);
-const ASSOCIATEDTOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM);
+const ASSOCIATEDTOKENPROGRAM = new PublicKey(
+  process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM
+);
 const TOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_PROGRAM);
 const PUSDCMINT = new PublicKey(process.env.NEXT_PUBLIC_PUSDC_MINT);
 const PSOLMINT = new PublicKey(process.env.NEXT_PUBLIC_PSOL_MINT);
-const USDCPDAHOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_USDCPDA_HOUSEWALLET);
+const USDCPDAHOUSEWALLET = new PublicKey(
+  process.env.NEXT_PUBLIC_USDCPDA_HOUSEWALLET
+);
 const LONGSHORTACC = new PublicKey(process.env.NEXT_PUBLIC_LONG_SHORT_ACC);
 const RATIOACC = new PublicKey(process.env.NEXT_PUBLIC_RATIO_ACC);
-
-
-
-
-
 
 interface TradeBarFuturesProps {
   setParentDivHeight: (height: string) => void;
@@ -81,8 +80,9 @@ interface TradeBarFuturesProps {
   openingPrice: number; // Add openingPrice here
   setOpeningPrice: React.Dispatch<React.SetStateAction<number>>;
   selectedCryptos: { [key: string]: boolean };
-  selectedCurrency: 'SOL' | 'USDC';
-  setSelectedCurrency: React.Dispatch<React.SetStateAction<'SOL' | 'USDC'>>;}
+  selectedCurrency: "SOL" | "USDC";
+  setSelectedCurrency: React.Dispatch<React.SetStateAction<"SOL" | "USDC">>;
+}
 
 async function checkLPdata(
   lpAcc: PublicKey,
@@ -144,14 +144,10 @@ async function checkLPdata(
 }
 
 async function usdcSplTokenAccountSync(walletAddress) {
-  let mintAddress = USDCMINT
+  let mintAddress = USDCMINT;
 
   const [splTokenAccount] = PublicKey.findProgramAddressSync(
-    [
-      walletAddress.toBuffer(),
-      TOKENPROGRAM.toBuffer(),
-      mintAddress.toBuffer(),
-    ],
+    [walletAddress.toBuffer(), TOKENPROGRAM.toBuffer(), mintAddress.toBuffer()],
     ASSOCIATEDTOKENPROGRAM
   );
 
@@ -347,7 +343,6 @@ const TradeBar: React.FC<
   const [modalIsOpen1, setModalIsOpen1] = useState(false);
   const [modalIsOpen2, setModalIsOpen2] = useState(false);
 
-
   const [activeLeverageButton, setActiveLeverageButton] = useState(0);
 
   const [activeButton, setActiveButton] = useState(3);
@@ -357,9 +352,8 @@ const TradeBar: React.FC<
   const { isPriorityFee, setPriorityFee } = usePriorityFee();
   const { isBackupOracle, setBackupOracle } = useBackupOracle();
 
-
   const snapPoints = [
-    1, 2, 3, 4, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100
+    1, 2, 3, 4, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100,
   ];
   const snapRange = 0;
   const [maxleverage, setMaxLeverage] = useState(100); // Initially set to 1000
@@ -371,8 +365,9 @@ const TradeBar: React.FC<
   const [availableLiquidity, setAvailableLiquidity] = useState(0);
   const [fee, setFee] = useState(0);
 
-  const [selectedOrder, setSelectedOrder] = useState<'MARKET' | 'LIMIT'>('MARKET');
-
+  const [selectedOrder, setSelectedOrder] = useState<"MARKET" | "LIMIT">(
+    "MARKET"
+  );
 
   const handleButtonClick = (buttonIndex: number) => {
     setActiveButton(buttonIndex);
@@ -928,7 +923,8 @@ const TradeBar: React.FC<
 
   useEffect(() => {
     if (lastInput === "ProfitValue") {
-      const price = selectedOrder === 'LIMIT' ? parseFloat(limitAmount) : initialPrice;
+      const price =
+        selectedOrder === "LIMIT" ? parseFloat(limitAmount) : initialPrice;
       let profit;
       if (toggleState === "LONG") {
         profit = (
@@ -946,7 +942,15 @@ const TradeBar: React.FC<
       profit = isNaN(profit) ? "" : profit;
       setProfit(profit);
     }
-  }, [ProfitValue, initialPrice, leverage, amountValue, toggleState, selectedOrder, limitAmount]);
+  }, [
+    ProfitValue,
+    initialPrice,
+    leverage,
+    amountValue,
+    toggleState,
+    selectedOrder,
+    limitAmount,
+  ]);
 
   useEffect(() => {
     if (lastInput === "Profit") {
@@ -1025,7 +1029,8 @@ const TradeBar: React.FC<
 
   useEffect(() => {
     if (lastInputL === "LossValue") {
-      const price = selectedOrder === 'LIMIT' ? parseFloat(limitAmount) : initialPrice;
+      const price =
+        selectedOrder === "LIMIT" ? parseFloat(limitAmount) : initialPrice;
       let loss;
       if (toggleState === "LONG") {
         loss = (
@@ -1050,7 +1055,15 @@ const TradeBar: React.FC<
       loss = isNaN(loss) ? "" : loss;
       setLoss(loss);
     }
-  }, [LossValue, initialPrice, leverage, amountValue, toggleState, selectedOrder, limitAmount]);
+  }, [
+    LossValue,
+    initialPrice,
+    leverage,
+    amountValue,
+    toggleState,
+    selectedOrder,
+    limitAmount,
+  ]);
 
   useEffect(() => {
     if (lastInputL === "Loss") {
@@ -1112,8 +1125,7 @@ const TradeBar: React.FC<
         // Add more mappings as needed
       };
 
-
-      const finalSpreadRatio = spreadPercentage(selectedCrypto)/100;
+      const finalSpreadRatio = spreadPercentage(selectedCrypto) / 100;
 
       const decimalPlaces =
         decimalPlacesMapping[selectedCrypto?.toUpperCase()] || 2;
@@ -1122,12 +1134,18 @@ const TradeBar: React.FC<
         const priceInUsd = price.price / 100000000;
         const priceDisplay =
           toggleState === "LONG"
-            ? priceInUsd *  (1 + finalSpreadRatio) -
+            ? priceInUsd * (1 + finalSpreadRatio) -
               (priceInUsd * (1 + finalSpreadRatio)) / leverage +
-              (priceInUsd * (1 + finalSpreadRatio) * (18+finalSpreadRatio*100)) / 10000
+              (priceInUsd *
+                (1 + finalSpreadRatio) *
+                (18 + finalSpreadRatio * 100)) /
+                10000
             : priceInUsd * (1 - finalSpreadRatio) +
               (priceInUsd * (1 - finalSpreadRatio)) / leverage -
-              (priceInUsd * (1 - finalSpreadRatio) * (18+finalSpreadRatio*100)) / 10000;
+              (priceInUsd *
+                (1 - finalSpreadRatio) *
+                (18 + finalSpreadRatio * 100)) /
+                10000;
 
         const liquidationPrice = priceDisplay.toFixed(decimalPlaces);
 
@@ -1142,7 +1160,8 @@ const TradeBar: React.FC<
 
   useEffect(() => {
     // Check if currentItem exists
-    const price = selectedOrder === 'LIMIT' ? parseFloat(limitAmount) : initialPrice;
+    const price =
+      selectedOrder === "LIMIT" ? parseFloat(limitAmount) : initialPrice;
     const val = parseFloat(ProfitValue);
     const priceDirection =
       toggleState === "LONG" ? 0 : toggleState === "SHORT" ? 1 : -1;
@@ -1151,18 +1170,30 @@ const TradeBar: React.FC<
     }
     // Warning handler
     if (priceDirection === 0 && Number(val) <= price) {
-      setWarning(`Take profit price should be higher than the ${selectedOrder === 'MARKET' ? 'current' : 'limit'} price.`);
+      setWarning(
+        `Take profit price should be higher than the ${selectedOrder === "MARKET" ? "current" : "limit"} price.`
+      );
     } else if (priceDirection === 1 && Number(val) >= price) {
-      setWarning(`Take profit should be lower than the ${selectedOrder === 'MARKET' ? 'current' : 'limit'} price.`);
+      setWarning(
+        `Take profit should be lower than the ${selectedOrder === "MARKET" ? "current" : "limit"} price.`
+      );
     } else {
       setWarning(null);
     }
-  }, [ProfitValue, liquidationPrice, toggleState, initialPrice, selectedOrder, limitAmount]);
+  }, [
+    ProfitValue,
+    liquidationPrice,
+    toggleState,
+    initialPrice,
+    selectedOrder,
+    limitAmount,
+  ]);
 
   useEffect(() => {
     // Warning handler
     const val = parseFloat(LossValue);
-    const price = selectedOrder === 'LIMIT' ? parseFloat(limitAmount) : initialPrice;
+    const price =
+      selectedOrder === "LIMIT" ? parseFloat(limitAmount) : initialPrice;
 
     const priceDirection =
       toggleState === "LONG" ? 0 : toggleState === "SHORT" ? 1 : -1;
@@ -1172,7 +1203,9 @@ const TradeBar: React.FC<
 
     if (priceDirection === 0) {
       if (Number(val) >= price) {
-        setWarning(`Stop Loss Price should be lower than the ${selectedOrder === 'MARKET' ? 'current' : 'limit'} price.`);
+        setWarning(
+          `Stop Loss Price should be lower than the ${selectedOrder === "MARKET" ? "current" : "limit"} price.`
+        );
       } else if (Number(val) < Number(liquidationPrice)) {
         setWarning(
           "Stop Loss Price should be higher than the liquidation price."
@@ -1182,7 +1215,9 @@ const TradeBar: React.FC<
       }
     } else if (priceDirection === 1) {
       if (Number(val) <= price) {
-        setWarning(`Stop Loss Price should be higher than the ${selectedOrder === 'MARKET' ? 'current' : 'limit'} price.`);
+        setWarning(
+          `Stop Loss Price should be higher than the ${selectedOrder === "MARKET" ? "current" : "limit"} price.`
+        );
       } else if (Number(val) > Number(liquidationPrice)) {
         setWarning(
           "Stop Loss Price should be lower than the liquidation price."
@@ -1193,7 +1228,14 @@ const TradeBar: React.FC<
     } else {
       setWarning(null);
     }
-  }, [LossValue, initialPrice, liquidationPrice, toggleState, selectedOrder, limitAmount]);
+  }, [
+    LossValue,
+    initialPrice,
+    liquidationPrice,
+    toggleState,
+    selectedOrder,
+    limitAmount,
+  ]);
 
   const toggleAdditionalDiv = () => {
     setShowAdditionalDiv(!showAdditionalDiv);
@@ -1211,7 +1253,7 @@ const TradeBar: React.FC<
       const rect = buttonRef.current.getBoundingClientRect();
       setModalPosition({
         top: rect.bottom, // Position modal below the button
-        left: rect.left,  // Align modal with the left edge of the button
+        left: rect.left, // Align modal with the left edge of the button
       });
     }
     setModalIsOpen2(!modalIsOpen2);
@@ -1265,12 +1307,15 @@ const TradeBar: React.FC<
   };
 
   const FutOrder = useCallback(async () => {
-    const countmaxBet = selectedCurrency === 'USDC' ?       (((LPdata?.usdcTotalDeposits + LPdata?.usdcPnl) / 200) * 3) /
-    5 /
-    LAMPORTS_PER_SOL*1000 :
-      (((LPdata?.totalDeposits + LPdata?.pnl) / 200) * 3) /
-      5 /
-      LAMPORTS_PER_SOL; // 0,3% maximálni pozice
+    const countmaxBet =
+      selectedCurrency === "USDC"
+        ? ((((LPdata?.usdcTotalDeposits + LPdata?.usdcPnl) / 200) * 3) /
+            5 /
+            LAMPORTS_PER_SOL) *
+          1000
+        : (((LPdata?.totalDeposits + LPdata?.pnl) / 200) * 3) /
+          5 /
+          LAMPORTS_PER_SOL; // 0,3% maximálni pozice
 
     const maxBet = Math.min(10, countmaxBet);
     if (warning) {
@@ -1362,7 +1407,6 @@ const TradeBar: React.FC<
       });
       return;
     }
-    
 
     if (!amountValue || parseFloat(amountValue) === 0) {
       notify({
@@ -1409,8 +1453,11 @@ const TradeBar: React.FC<
       // Get the current time and add 1 to the time number
       const now = Date.now();
       const timeNumber = (Math.floor(now / 1000) % 1000000) + 1;
-  
-      const betAmount = selectedCurrency === 'USDC' ? (parseFloat(amountValue) * LAMPORTS_PER_SOL / 1000) : (parseFloat(amountValue) * LAMPORTS_PER_SOL);
+
+      const betAmount =
+        selectedCurrency === "USDC"
+          ? (parseFloat(amountValue) * LAMPORTS_PER_SOL) / 1000
+          : parseFloat(amountValue) * LAMPORTS_PER_SOL;
 
       const stopLoss = isNaN(parseFloat(LossValue))
         ? 0
@@ -1448,9 +1495,8 @@ const TradeBar: React.FC<
 
       const usdcAcc = await usdcSplTokenAccountSync(publicKey);
 
-      const usdc = selectedCurrency === 'USDC' ? 1 : 0;
+      const usdc = selectedCurrency === "USDC" ? 1 : 0;
       const backOracle = isBackupOracle === true ? 0 : 1;
-
 
       if (!isInit.isInitialized) {
         try {
@@ -1469,8 +1515,6 @@ const TradeBar: React.FC<
           const args: InitializeUserAccArgs = {
             usedAffiliate: Array.from(isInit.usedAffiliate),
           };
-
-
 
           // Create a new transaction to initialize the user account and send it
           const initTransaction = new Transaction().add(
@@ -1507,8 +1551,8 @@ const TradeBar: React.FC<
           slPrice: new BN(stopLoss),
           tpPrice: new BN(takeProfit),
           initialPrice: new BN(parseFloat(limitAmount) * 100000000),
-          backOracle: (backOracle),
-          usdc: (usdc),
+          backOracle: backOracle,
+          usdc: usdc,
         };
         console.log(
           "Creating Order",
@@ -1528,13 +1572,7 @@ const TradeBar: React.FC<
           takeProfit / 100000000
         );
 
-        const seedsRatio = [
-          Buffer.from(
-           HOUSEWALLET.toBytes()
-          ),
-        ];
-
-
+        const seedsRatio = [Buffer.from(HOUSEWALLET.toBytes())];
 
         const accounts: CreateLimitOrderAccounts = {
           futCont: pda,
@@ -1618,20 +1656,22 @@ const TradeBar: React.FC<
     toggleState,
     availableLiquidity,
     selectedCurrency,
-    limitAmount
+    limitAmount,
   ]);
 
   const onClick = useCallback(async () => {
-    const countmaxBet = selectedCurrency === 'USDC' ?       (((LPdata?.usdcTotalDeposits + LPdata?.usdcPnl) / 200) * 3) /
-    5 /
-    LAMPORTS_PER_SOL*1000 :
-      (((LPdata?.totalDeposits + LPdata?.pnl) / 200) * 3) /
-      5 /
-      LAMPORTS_PER_SOL; // 0,3% maximálni pozice
+    const countmaxBet =
+      selectedCurrency === "USDC"
+        ? ((((LPdata?.usdcTotalDeposits + LPdata?.usdcPnl) / 200) * 3) /
+            5 /
+            LAMPORTS_PER_SOL) *
+          1000
+        : (((LPdata?.totalDeposits + LPdata?.pnl) / 200) * 3) /
+          5 /
+          LAMPORTS_PER_SOL; // 0,3% maximálni pozice
 
     const maxBet = Math.min(100000, countmaxBet);
-    const realbalance = selectedCurrency === 'USDC' ?       (usdcbalance):
-     (balance); // 0,3% maximálni pozice
+    const realbalance = selectedCurrency === "USDC" ? usdcbalance : balance; // 0,3% maximálni pozice
     if (warning) {
       console.error("Cannot open position due to warning:", warning);
       // Optionally, show a warning notification
@@ -1749,11 +1789,7 @@ const TradeBar: React.FC<
       return;
     }
 
-    if (
-      parseFloat(amountValue) >
-        maxBet ||
-      parseFloat(amountValue) < 0.050
-    ) {
+    if (parseFloat(amountValue) > maxBet || parseFloat(amountValue) < 0.05) {
       notify({
         type: "info",
         message: "Invalid trade amount",
@@ -1767,8 +1803,11 @@ const TradeBar: React.FC<
       // Get the current time and add 1 to the time number
       const now = Date.now();
       const timeNumber = (Math.floor(now / 1000) % 1000000) + 1;
-  
-      const betAmount = selectedCurrency === 'USDC' ? (parseFloat(amountValue) * LAMPORTS_PER_SOL / 1000) : (parseFloat(amountValue) * LAMPORTS_PER_SOL);
+
+      const betAmount =
+        selectedCurrency === "USDC"
+          ? (parseFloat(amountValue) * LAMPORTS_PER_SOL) / 1000
+          : parseFloat(amountValue) * LAMPORTS_PER_SOL;
 
       const stopLoss = isNaN(parseFloat(LossValue))
         ? 0
@@ -1806,9 +1845,8 @@ const TradeBar: React.FC<
 
       const usdcAcc = await usdcSplTokenAccountSync(publicKey);
 
-      const usdc = selectedCurrency === 'USDC' ? 1 : 0;
+      const usdc = selectedCurrency === "USDC" ? 1 : 0;
       const backOracle = isBackupOracle === true ? 0 : 1;
-
 
       if (!isInit.isInitialized) {
         try {
@@ -1865,8 +1903,8 @@ const TradeBar: React.FC<
           tpPrice: new BN(takeProfit),
           slippagePrice: new BN(initialPrice * 100000000),
           slippage: new BN(slippageTolerance),
-          backOracle: (backOracle),
-          usdc: (usdc),
+          backOracle: backOracle,
+          usdc: usdc,
         };
         console.log(
           "Opening Futures Position",
@@ -1893,7 +1931,9 @@ const TradeBar: React.FC<
           ratioAcc: RATIOACC,
           houseAcc: HOUSEWALLET,
           oracleAccount: new PublicKey(oracleAddy),
-          solOracleAccount: new PublicKey("J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix"),
+          solOracleAccount: new PublicKey(
+            "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix"
+          ),
           pdaHouseAcc: PDAHOUSEWALLET,
           affilAcc: AffilAcc,
           lpAcc: new PublicKey("AUURRMKsMjBK1zaMUmWyy8nCABXZDVtoucwHZBUnh3bB"),
@@ -1964,9 +2004,8 @@ const TradeBar: React.FC<
     toggleState,
     availableLiquidity,
     selectedCurrency,
-    isBackupOracle
+    isBackupOracle,
   ]);
-
 
   const onClick1 = useCallback(async () => {
     const seedsUser = [Buffer.from(publicKey.toBytes())];
@@ -1979,7 +2018,6 @@ const TradeBar: React.FC<
         seedsAffil,
         PROGRAM_ID
       );
-
 
       const accounts: InitializeUserAccAccounts = {
         userAcc: userAcc,
@@ -2069,7 +2107,6 @@ const TradeBar: React.FC<
     setModalIsOpen1(false);
   };
 
-
   const getMaxLeverage = (selectedCryptos) => {
     // Check if either PYTH or BONK is selected
     if (
@@ -2158,53 +2195,64 @@ const TradeBar: React.FC<
     setFee(newFee); // Set as a number
   }, [amountValue, leverage, rebateTier, isInit]);
 
-  useEffect(() => { 
+  useEffect(() => {
+    const currencySuffix = selectedCurrency === "USDC" ? "usdc" : "";
 
-  const currencySuffix = selectedCurrency === 'USDC' ? 'usdc' : '';
-
-  const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
-  const parseData = (crypto, type) => {
-    const cryptoName = currencySuffix ? capitalizeFirstLetter(crypto) : crypto;
-    const propName = `${currencySuffix}${cryptoName}${type}`;
-    return parseInt(data[propName] || 0, 10);
-  };
-    let selectedData = { long: 0, short: 0 };
-  if (selectedCryptos.SOL) {
-    selectedData = {
-      long: parseData('sol', 'Long'),
-      short: parseData('sol', 'Short'),
+    const capitalizeFirstLetter = (string) =>
+      string.charAt(0).toUpperCase() + string.slice(1);
+    const parseData = (crypto, type) => {
+      const cryptoName = currencySuffix
+        ? capitalizeFirstLetter(crypto)
+        : crypto;
+      const propName = `${currencySuffix}${cryptoName}${type}`;
+      return parseInt(data[propName] || 0, 10);
     };
+    let selectedData = { long: 0, short: 0 };
+    if (selectedCryptos.SOL) {
+      selectedData = {
+        long: parseData("sol", "Long"),
+        short: parseData("sol", "Short"),
+      };
     } else if (selectedCryptos.BTC) {
       selectedData = {
-        long: parseData('btc', 'Long'),
-        short: parseData('btc', 'Short'),      };
+        long: parseData("btc", "Long"),
+        short: parseData("btc", "Short"),
+      };
     } else if (selectedCryptos.PYTH) {
       selectedData = {
-        long: parseData('pyth', 'Long'),
-        short: parseData('pyth', 'Short'),      };
+        long: parseData("pyth", "Long"),
+        short: parseData("pyth", "Short"),
+      };
     } else if (selectedCryptos.BONK) {
       selectedData = {
-        long: parseData('bonk', 'Long'),
-        short: parseData('bonk', 'Short'),      };
+        long: parseData("bonk", "Long"),
+        short: parseData("bonk", "Short"),
+      };
     } else if (selectedCryptos.ETH) {
       selectedData = {
-        long: parseData('eth', 'Long'),
-        short: parseData('eth', 'Short'),      };
+        long: parseData("eth", "Long"),
+        short: parseData("eth", "Short"),
+      };
     } else if (selectedCryptos.TIA) {
       selectedData = {
-        long: parseData('tia', 'Long'),
-        short: parseData('tia', 'Short'),      };
+        long: parseData("tia", "Long"),
+        short: parseData("tia", "Short"),
+      };
     } else if (selectedCryptos.SUI) {
       selectedData = {
-        long: parseData('sui', 'Long'),
-        short: parseData('sui', 'Short'),      };
+        long: parseData("sui", "Long"),
+        short: parseData("sui", "Short"),
+      };
     } else if (selectedCryptos.JUP) {
       selectedData = {
-        long: parseData('jup', 'Long'),
-        short: parseData('jup', 'Short'),      };
+        long: parseData("jup", "Long"),
+        short: parseData("jup", "Short"),
+      };
     }
 
-    const totalDepositsKey = currencySuffix ? `usdcTotalDeposits` : 'totalDeposits';
+    const totalDepositsKey = currencySuffix
+      ? `usdcTotalDeposits`
+      : "totalDeposits";
     console.log(totalDepositsKey, "TotalDepositss");
 
     const totalDeposits = LPdata?.[totalDepositsKey] || 0;
@@ -2223,13 +2271,29 @@ const TradeBar: React.FC<
     const individualLong = selectedData.long;
     const individualShort = selectedData.short;
 
-    const bigCapLong = parseData('sol', 'Long') + parseData('btc', 'Long') + parseData('eth', 'Long');
-    const bigCapShort = parseData('sol', 'Short') + parseData('btc', 'Short') + parseData('eth', 'Short');
-    const smallCapLong = parseData('pyth', 'Long') + parseData('bonk', 'Long') + parseData('jup', 'Long') + parseData('tia', 'Long') + parseData('sui', 'Long');
-    const smallCapShort = parseData('pyth', 'Short') + parseData('bonk', 'Short') + parseData('jup', 'Short') + parseData('tia', 'Short') + parseData('sui', 'Short');
+    const bigCapLong =
+      parseData("sol", "Long") +
+      parseData("btc", "Long") +
+      parseData("eth", "Long");
+    const bigCapShort =
+      parseData("sol", "Short") +
+      parseData("btc", "Short") +
+      parseData("eth", "Short");
+    const smallCapLong =
+      parseData("pyth", "Long") +
+      parseData("bonk", "Long") +
+      parseData("jup", "Long") +
+      parseData("tia", "Long") +
+      parseData("sui", "Long");
+    const smallCapShort =
+      parseData("pyth", "Short") +
+      parseData("bonk", "Short") +
+      parseData("jup", "Short") +
+      parseData("tia", "Short") +
+      parseData("sui", "Short");
 
-
-    const currencyAdjustment = selectedCurrency === 'USDC' ? 1000 : 5 * LAMPORTS_PER_SOL;
+    const currencyAdjustment =
+      selectedCurrency === "USDC" ? 1000 : 5 * LAMPORTS_PER_SOL;
 
     if (toggleState === "LONG") {
       // Calculate available liquidity for selected cryptocurrency
@@ -2266,8 +2330,12 @@ const TradeBar: React.FC<
         }
       }
     }
-    setAvailableLiquidity(selectedCurrency === 'USDC' ? availableLiquidity * 1000/LAMPORTS_PER_SOL : availableLiquidity/LAMPORTS_PER_SOL);
-    }, [data, toggleState, selectedCryptos, LPdata, selectedCurrency]);
+    setAvailableLiquidity(
+      selectedCurrency === "USDC"
+        ? (availableLiquidity * 1000) / LAMPORTS_PER_SOL
+        : availableLiquidity / LAMPORTS_PER_SOL
+    );
+  }, [data, toggleState, selectedCryptos, LPdata, selectedCurrency]);
 
   const ModalDetails1 = (
     <Modal
@@ -2428,7 +2496,6 @@ const TradeBar: React.FC<
     setModalIsOpen2(false);
   };
 
-
   const ModalDetails2 = (
     <Modal
       className="custom-scrollbar bg-layer-2 rounded-md border-[1px] border-solid border-layer-3"
@@ -2447,26 +2514,33 @@ const TradeBar: React.FC<
       }}
     >
       <div className="w-32 rounded-md bg-layer-2 text-grey-text">
-        <button 
-                        onClick={() => selectCurrencyAndCloseModal('SOL')}
-
-        className="w-full rounded-t-md flex flex-row gap-2 py-1 px-2 hover:bg-[#484c6d5b]">                       <img
-                className="relative w-6 h-6 overflow-hidden shrink-0"
-                alt=""
-                src="/coins/60x60/Sol.png"
-              /> SOL   </button>
-                      <button 
-                                      onClick={() => selectCurrencyAndCloseModal('USDC')}
-
-                      className="w-full rounded-b-md flex flex-row gap-2 py-1 px-2 hover:bg-[#484c6d5b]">                       <img
-                className="relative w-6 h-6 overflow-hidden shrink-0"
-                alt=""
-                src="/coins/60x60/Usdc.png"
-              /> USDC   </button>
+        <button
+          onClick={() => selectCurrencyAndCloseModal("SOL")}
+          className="w-full rounded-t-md flex flex-row gap-2 py-1 px-2 hover:bg-[#484c6d5b]"
+        >
+          {" "}
+          <img
+            className="relative w-6 h-6 overflow-hidden shrink-0"
+            alt=""
+            src="/coins/60x60/Sol.png"
+          />{" "}
+          SOL{" "}
+        </button>
+        <button
+          onClick={() => selectCurrencyAndCloseModal("USDC")}
+          className="w-full rounded-b-md flex flex-row gap-2 py-1 px-2 hover:bg-[#484c6d5b]"
+        >
+          {" "}
+          <img
+            className="relative w-6 h-6 overflow-hidden shrink-0"
+            alt=""
+            src="/coins/60x60/Usdc.png"
+          />{" "}
+          USDC{" "}
+        </button>
       </div>
     </Modal>
   );
-
 
   return (
     <div className="custom-scrollbar overflow-x-hidden md:h-[628px] lg:h-[calc(100vh-141px)] md:w-[330px] w-full rounded-lg  flex flex-col items-start justify-start p-4 gap-[16px] text-left text-sm text-grey-text font-poppins">
@@ -2503,7 +2577,6 @@ const TradeBar: React.FC<
               ? "flex-1 [background:linear-gradient(180deg,_rgba(255,_76,_76,_0),_rgba(255,_76,_76,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 text-short border-b-[2px] border-solid border-short"
               : "text-grey long-short-button"
           }`}
-          
         >
           <div
             className={`bankGothic  uppercase ${
@@ -2515,89 +2588,96 @@ const TradeBar: React.FC<
         </button>
       </div>
       <div className="w-full flex flex-row font-poppins border-[1px] border-solid border-layer-3 rounded-md">
-      <button 
-      onClick={() => setSelectedOrder('MARKET')}
+        <button
+          onClick={() => setSelectedOrder("MARKET")}
           className={`w-1/2  self-stretch rounded-l-md  box-border h-[38px] flex flex-row items-center justify-center py-0 px-2   ${
             selectedOrder === "MARKET"
               ? "bg-layer-2 text-white"
               : "bg-layer-1 hover:bg-[#484c6d5b]"
-          }`}>
-      Market
-      </button>
-      <button 
-      onClick={() => setSelectedOrder('LIMIT')}
-      className={`w-1/2  self-stretch rounded-r-md  box-border h-[38px] flex flex-row items-center justify-center py-0 px-2   ${
-        selectedOrder === "LIMIT"
-          ? "bg-layer-2 text-white"
-          : "bg-layer-1 hover:bg-[#484c6d5b]"
-      }`}>
-              Limit</button>
-
+          }`}
+        >
+          Market
+        </button>
+        <button
+          onClick={() => setSelectedOrder("LIMIT")}
+          className={`w-1/2  self-stretch rounded-r-md  box-border h-[38px] flex flex-row items-center justify-center py-0 px-2   ${
+            selectedOrder === "LIMIT"
+              ? "bg-layer-2 text-white"
+              : "bg-layer-1 hover:bg-[#484c6d5b]"
+          }`}
+        >
+          Limit
+        </button>
       </div>
       <div className="w-full h-[60px] flex flex-col items-start justify-start gap-[8px]">
         <div className="w-full flex flex-row items-start justify-start gap-[8px] justify-between">
           <div className="flex-1 flex-col">
-          <div className="w-full h-4 flex flex-row items-start justify-between">
-            <div className="relative leading-[14px]">Collateral Size</div>
-            <button
-              className="hidden relative leading-[20px] font-medium text-grey-text text-lg"
-              onClick={toggleModal}
-            >
-              <MdOutlineSettings></MdOutlineSettings>
-            </button>
-          </div>
-          <div className="w-full mt-[12px] rounded-lg bg-layer-2 box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-grey hover:bg-[#484c6d5b]">
-            <input
-              type="text"
-              className="input-capsule__input w-full"
-              placeholder="3.00"
-              value={amountValue}
-              onChange={handleInputChange}
-              min={0.05}
-              step={0.05}
-            />
-            <span className="rounded-12xs flex flex-row items-center justify-start py-[7px] px-0">
-              {" "}
+            <div className="w-full h-4 flex flex-row items-start justify-between">
+              <div className="relative leading-[14px]">Collateral Size</div>
               <button
-              ref={buttonRef}
-              className=" relative leading-[20px] font-medium text-grey-text text-lg flex flex-row items-center"
-              onClick={toggleModal2}
-            >
-                            <img
-                className="relative w-6 h-6 overflow-hidden shrink-0"
-                alt={selectedCurrency}
-                src={selectedCurrency === "SOL" ? "/coins/60x60/Sol.png" : "/coins/60x60/Usdc.png"}
+                className="hidden relative leading-[20px] font-medium text-grey-text text-lg"
+                onClick={toggleModal}
+              >
+                <MdOutlineSettings></MdOutlineSettings>
+              </button>
+            </div>
+            <div className="w-full mt-[12px] rounded-lg bg-layer-2 box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-grey hover:bg-[#484c6d5b]">
+              <input
+                type="text"
+                className="input-capsule__input w-full"
+                placeholder="3.00"
+                value={amountValue}
+                onChange={handleInputChange}
+                min={0.05}
+                step={0.05}
               />
-                          <FaChevronUp
-              className={`w-[18px] h-[18px] ml-1 text-slate-300  ${modalIsOpen2 ? "" : "rotate-180"}`}
-            />
-            </button>
-
-            </span>
-          </div></div>
-          {selectedOrder === 'LIMIT' && (
-                      <div className="w-1/2 flex-col">
-                      <div className="w-full h-4 flex flex-row items-start justify-between">
-                        <div className="relative leading-[14px]">Limit Price</div>
-                        <button
-                          className="hidden relative leading-[20px] font-medium text-grey-text text-lg"
-                          onClick={toggleModal}
-                        >
-                          <MdOutlineSettings></MdOutlineSettings>
-                        </button>
-                      </div>
-          <div className="w-full mt-[12px] rounded-lg bg-layer-2 box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-grey hover:bg-[#484c6d5b]">
-          <input
-              type="text"
-              className="input-capsule__input"
-              placeholder="100$"
-              value={limitAmount} // Assume limitPriceValue is the state for this input
-              onChange={handleInputLimit} // Assume handleLimitPriceChange is the handler for this input
-              min={0}
-              step={0.01}
-            />
-          </div></div>
-        )}
+              <span className="rounded-12xs flex flex-row items-center justify-start py-[7px] px-0">
+                {" "}
+                <button
+                  ref={buttonRef}
+                  className=" relative leading-[20px] font-medium text-grey-text text-lg flex flex-row items-center"
+                  onClick={toggleModal2}
+                >
+                  <img
+                    className="relative w-6 h-6 overflow-hidden shrink-0"
+                    alt={selectedCurrency}
+                    src={
+                      selectedCurrency === "SOL"
+                        ? "/coins/60x60/Sol.png"
+                        : "/coins/60x60/Usdc.png"
+                    }
+                  />
+                  <FaChevronUp
+                    className={`w-[18px] h-[18px] ml-1 text-slate-300  ${modalIsOpen2 ? "" : "rotate-180"}`}
+                  />
+                </button>
+              </span>
+            </div>
+          </div>
+          {selectedOrder === "LIMIT" && (
+            <div className="w-1/2 flex-col">
+              <div className="w-full h-4 flex flex-row items-start justify-between">
+                <div className="relative leading-[14px]">Limit Price</div>
+                <button
+                  className="hidden relative leading-[20px] font-medium text-grey-text text-lg"
+                  onClick={toggleModal}
+                >
+                  <MdOutlineSettings></MdOutlineSettings>
+                </button>
+              </div>
+              <div className="w-full mt-[12px] rounded-lg bg-layer-2 box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-grey hover:bg-[#484c6d5b]">
+                <input
+                  type="text"
+                  className="input-capsule__input"
+                  placeholder="100$"
+                  value={limitAmount} // Assume limitPriceValue is the state for this input
+                  onChange={handleInputLimit} // Assume handleLimitPriceChange is the handler for this input
+                  min={0}
+                  step={0.01}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
       <div className="self-stretch flex flex-col items-start justify-start gap-[12px]">
@@ -2920,9 +3000,7 @@ const TradeBar: React.FC<
           </div>
         </div>
         <div className="self-stretch h-4 flex flex-row items-start justify-between">
-          <div className="relative leading-[14px]">
-            Backup Oracle
-          </div>
+          <div className="relative leading-[14px]">Backup Oracle</div>
           <div className="relative leading-[14px] font-medium text-white">
             <label className="toggle-switch-bigger">
               <input
@@ -2937,13 +3015,12 @@ const TradeBar: React.FC<
             </label>
           </div>
         </div>
-        
 
         <div className="self-stretch h-4 flex flex-row items-start justify-between">
           <div className="relative leading-[14px]">Fees</div>
           <div className="relative leading-[14px] font-medium text-white">
             {isNaN(parseFloat(amountValue) * 0.0008 * leverage) ? (
-               `0 ${selectedCurrency}`
+              `0 ${selectedCurrency}`
             ) : parseFloat(
                 (parseFloat(amountValue) * 0.0008 * leverage).toFixed(3)
               ) > fee ? (
@@ -2951,19 +3028,24 @@ const TradeBar: React.FC<
                 <span className="line-through">
                   {(parseFloat(amountValue) * 0.0008 * leverage).toFixed(3)} SOL
                 </span>
-                <span> {fee} {selectedCurrency}</span>
+                <span>
+                  {" "}
+                  {fee} {selectedCurrency}
+                </span>
               </>
             ) : (
-              <span> {fee} {selectedCurrency}</span>
+              <span>
+                {" "}
+                {fee} {selectedCurrency}
+              </span>
             )}
           </div>
         </div>
         <div className="self-stretch h-4 flex flex-row items-start justify-between">
           <div className="relative leading-[120%]">Collateral Size</div>
           <div className="relative leading-[14px] font-medium text-white">
-            
             {isNaN(parseFloat(amountValue))
-              ?  `0 ${selectedCurrency}`
+              ? `0 ${selectedCurrency}`
               : `${parseFloat(amountValue)} ${selectedCurrency}`}
           </div>
         </div>
@@ -2997,7 +3079,8 @@ const TradeBar: React.FC<
 
       {wallet.connected ? (
         <button
-        onClick={selectedOrder === 'MARKET' ? onClick : FutOrder}          className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  ${
+          onClick={selectedOrder === "MARKET" ? onClick : FutOrder}
+          className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  ${
             toggleState === "LONG"
               ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-[2px] border-solid border-primary"
               : "[flex-1 [background:linear-gradient(180deg,_rgba(255,_76,_76,_0),_rgba(255,_76,_76,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 text-short border-[2px] border-solid border-short"
@@ -3008,7 +3091,8 @@ const TradeBar: React.FC<
               toggleState === "LONG" ? "bg-primary" : "bg-short"
             }`}
           >
-{selectedOrder === 'MARKET' ? "OPEN POSITION" : "CREATE ORDER"}          </div>
+            {selectedOrder === "MARKET" ? "OPEN POSITION" : "CREATE ORDER"}{" "}
+          </div>
         </button>
       ) : (
         <WalletMultiButtonDynamic

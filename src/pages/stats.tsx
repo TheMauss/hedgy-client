@@ -3,11 +3,7 @@ import { FC, useEffect, useState, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import useUserSOLBalanceStore from "../../src/stores/useUserSOLBalanceStore";
-import {
-  PublicKey,
-  LAMPORTS_PER_SOL,
-} from "@solana/web3.js";
-
+import { PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 
 const Stats: FC = () => {
   const [leaderboard1Day, setLeaderboard1Day] = useState([]);
@@ -26,7 +22,6 @@ const Stats: FC = () => {
   const [teamLeaderboard, setTeamLeaderboard] = useState([]);
 
   const [sortCriterion, setSortCriterion] = useState("PnL"); // Default sorting criterion
-
 
   const sortLeaderboard = (leaderboard, criterion) => {
     return [...leaderboard].sort((a, b) => {

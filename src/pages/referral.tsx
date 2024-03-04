@@ -13,7 +13,10 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { UserAccount } from "../out/accounts/UserAccount"; // Update with the correct path
 import { AffiliateAccount } from "../out/accounts/AffiliateAccount";
 import { initializeAffilAcc } from "../out/instructions/initializeAffilAcc"; // Update with the correct path
-import { withdrawAffiliateEarnings, WithdrawAffiliateEarningsArgs } from "../out/instructions/withdrawAffiliateEarnings"; // Update with the correct path
+import {
+  withdrawAffiliateEarnings,
+  WithdrawAffiliateEarningsArgs,
+} from "../out/instructions/withdrawAffiliateEarnings"; // Update with the correct path
 import {
   initializeUserAcc,
   InitializeUserAccArgs,
@@ -24,19 +27,20 @@ import { notify } from "utils/notifications";
 import useUserSOLBalanceStore from "../../src/stores/useUserSOLBalanceStore";
 
 const USDCMINT = new PublicKey(process.env.NEXT_PUBLIC_USDC_MINT);
-const ASSOCIATEDTOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM);
+const ASSOCIATEDTOKENPROGRAM = new PublicKey(
+  process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM
+);
 const TOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_PROGRAM);
 const PDAHOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_PDA_HOUSEWALLET);
+const USDCPDAHOUSEWALLET = new PublicKey(
+  process.env.NEXT_PUBLIC_USDCPDA_HOUSEWALLET
+);
 
 async function usdcSplTokenAccountSync(walletAddress) {
-  let mintAddress = USDCMINT
+  let mintAddress = USDCMINT;
 
   const [splTokenAccount] = PublicKey.findProgramAddressSync(
-    [
-      walletAddress.toBuffer(),
-      TOKENPROGRAM.toBuffer(),
-      mintAddress.toBuffer(),
-    ],
+    [walletAddress.toBuffer(), TOKENPROGRAM.toBuffer(), mintAddress.toBuffer()],
     ASSOCIATEDTOKENPROGRAM
   );
 
@@ -212,7 +216,6 @@ const Referral: FC = () => {
     const seedsAffil = [affiliateCodeToUint8Array(affiliateCode)];
     const usdcAcc = await usdcSplTokenAccountSync(publicKey);
 
-
     if (userAffiliateData && !userAffiliateData.isInt) {
       try {
         const seedsAffil = [userAffiliateData.usedAffiliate];
@@ -386,90 +389,101 @@ const Referral: FC = () => {
     }
   }, [userAffiliateData, connection]);
 
-  const onClick1 = useCallback(async (usdc: number) => {
-    // Create the instruction to initialize the user account
-    // if (affiliateData.totalEarned <= 0.1 * LAMPORTS_PER_SOL) {
-    //   notify({
-    //     type: "error",
-    //     message: `Rewards are less than 0.1 SOL`,
-    //     description: "Try again later.",
-    //   });
-    //   return;
-    // }
-    if (!publicKey) {
-      notify({
-        type: "error",
-        message: `Wallet not connected`,
-        description: "Connect the wallet in the top panel",
-      });
-      return;
-    }
-
-    const seedsAffil = [userAffiliateData.myAffiliate];
-
-    const [AffilAcc] = await PublicKey.findProgramAddress(
-      seedsAffil,
-      PROGRAM_ID
-    );
-
-    // Create the instruction to to withdrawaffilearnings
-    const accounts = {
-      affilAcc: AffilAcc,
-      playerAcc: publicKey,
-      pdaHouseAcc: PDAHOUSEWALLET,
-      systemProgram: SystemProgram.programId,
-    };
-
-    const args: WithdrawAffiliateEarningsArgs = {
-      usdc: usdc,
-    };
-
-    // Create a new transaction to initialize the user account and send it
-    const initTransaction = new Transaction().add(
-      withdrawAffiliateEarnings(args, accounts)
-    );
-
-    try {
-      const initSignature = await sendTransaction(initTransaction, connection);
-      // Notify user that the transaction was sent
-      notify({
-        type: "info",
-        message: `Trying to create the referral...`,
-        txid: initSignature,
-      });
-      // Wait for transaction confirmation
-      await connection.confirmTransaction(initSignature, "confirmed");
-      notify({
-        type: "success",
-        message: `Your referral code has been created.`,
-        txid: initSignature,
-      });
-      if (affiliateData) {
-        const updatedAffiliateData = new AffiliateAccount({
-          ...affiliateData,
-          totalEarned: 0,
-          usdcTotalEarned: 0,
-
+  const onClick1 = useCallback(
+    async (usdc: number) => {
+      // Create the instruction to initialize the user account
+      // if (affiliateData.totalEarned <= 0.1 * LAMPORTS_PER_SOL) {
+      //   notify({
+      //     type: "error",
+      //     message: `Rewards are less than 0.1 SOL`,
+      //     description: "Try again later.",
+      //   });
+      //   return;
+      // }
+      if (!publicKey) {
+        notify({
+          type: "error",
+          message: `Wallet not connected`,
+          description: "Connect the wallet in the top panel",
         });
-        setAffiliateData(updatedAffiliateData);
+        return;
       }
-    } catch (error: any) {
-      // In case of an error, show only the 'error' notification
-      notify({
-        type: "error",
-        message: `Could not withdraw the Affiliate Earnings`,
-        description: error?.message,
-      });
-      return;
-    }
-  }, [
-    userAffiliateData,
-    publicKey,
-    connection,
-    sendTransaction,
-    notify,
-    affiliateData,
-  ]);
+
+      const usdcAcc = await usdcSplTokenAccountSync(publicKey);
+      const seedsAffil = [userAffiliateData.myAffiliate];
+
+      const [AffilAcc] = await PublicKey.findProgramAddress(
+        seedsAffil,
+        PROGRAM_ID
+      );
+
+      // Create the instruction to to withdrawaffilearnings
+      const accounts = {
+        affilAcc: AffilAcc,
+        playerAcc: publicKey,
+        pdaHouseAcc: PDAHOUSEWALLET,
+        systemProgram: SystemProgram.programId,
+        usdcMint: USDCMINT,
+        usdcPlayerAcc: usdcAcc,
+        usdcPdaHouseAcc: USDCPDAHOUSEWALLET,
+        tokenProgram: TOKENPROGRAM,
+        associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
+      };
+
+      const args: WithdrawAffiliateEarningsArgs = {
+        usdc: usdc,
+      };
+
+      // Create a new transaction to initialize the user account and send it
+      const initTransaction = new Transaction().add(
+        withdrawAffiliateEarnings(args, accounts)
+      );
+
+      try {
+        const initSignature = await sendTransaction(
+          initTransaction,
+          connection
+        );
+        // Notify user that the transaction was sent
+        notify({
+          type: "info",
+          message: `Trying to create the referral...`,
+          txid: initSignature,
+        });
+        // Wait for transaction confirmation
+        await connection.confirmTransaction(initSignature, "confirmed");
+        notify({
+          type: "success",
+          message: `Your referral code has been created.`,
+          txid: initSignature,
+        });
+        if (affiliateData) {
+          const updatedAffiliateData = new AffiliateAccount({
+            ...affiliateData,
+            totalEarned: 0,
+            usdcTotalEarned: 0,
+          });
+          setAffiliateData(updatedAffiliateData);
+        }
+      } catch (error: any) {
+        // In case of an error, show only the 'error' notification
+        notify({
+          type: "error",
+          message: `Could not withdraw the Affiliate Earnings`,
+          description: error?.message,
+        });
+        return;
+      }
+    },
+    [
+      userAffiliateData,
+      publicKey,
+      connection,
+      sendTransaction,
+      notify,
+      affiliateData,
+    ]
+  );
 
   const copyToClipboard = () => {
     if (decodedString) {
@@ -606,10 +620,9 @@ const Referral: FC = () => {
                       </div>
                     </div>
                   </div>
-
                 </div>
                 <div className="font-poppins w-full flex flex-row items-start justify-center gap-[32px]">
-                <div className="flex w-1/2 flex-row items-center justify-start gap-[12px]">
+                  <div className="flex w-1/2 flex-row items-center justify-start gap-[12px]">
                     <img
                       className="relative rounded-lg w-[42px] h-[42px]"
                       alt=""
@@ -639,8 +652,8 @@ const Referral: FC = () => {
                   </div>
                 </div>
                 <div className="font-poppins w-full flex flex-row items-start justify-center gap-[32px]">
-                <div className="flex w-1/2 flex-row items-center justify-start gap-[12px]">
-                <img
+                  <div className="flex w-1/2 flex-row items-center justify-start gap-[12px]">
+                    <img
                       className="relative rounded-lg w-[42px]"
                       alt=""
                       src="/sheesh/icons1.svg"
@@ -651,7 +664,8 @@ const Referral: FC = () => {
                       </div>
                       <div className="text-start relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
                         {(
-                          affiliateData?.usdcTotalEarned / LAMPORTS_PER_SOL * 1000
+                          (affiliateData?.usdcTotalEarned / LAMPORTS_PER_SOL) *
+                          1000
                         ).toFixed(2)}{" "}
                         USDC
                       </div>
@@ -668,7 +682,6 @@ const Referral: FC = () => {
                     </button>
                   </div>
                 </div>
-
               </div>
             </div>
           )}

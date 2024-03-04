@@ -32,26 +32,27 @@ import useUserSOLBalanceStore from "../stores/useUserSOLBalanceStore";
 import { BN } from "@project-serum/anchor";
 import moment from "moment-timezone";
 import { token } from "@project-serum/anchor/dist/cjs/utils";
-require('dotenv').config();
-
+require("dotenv").config();
 
 const HOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_HOUSE_WALLET);
 const SIGNERWALLET = new PublicKey(process.env.NEXT_PUBLIC_SIGNER_WALLET);
 const PDAHOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_PDA_HOUSEWALLET);
 const USDCMINT = new PublicKey(process.env.NEXT_PUBLIC_USDC_MINT);
-const ASSOCIATEDTOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM);
+const ASSOCIATEDTOKENPROGRAM = new PublicKey(
+  process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM
+);
 const TOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_PROGRAM);
 const PUSDCMINT = new PublicKey(process.env.NEXT_PUBLIC_PUSDC_MINT);
 const PSOLMINT = new PublicKey(process.env.NEXT_PUBLIC_PSOL_MINT);
-const USDCPDAHOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_USDCPDA_HOUSEWALLET);
-
+const USDCPDAHOUSEWALLET = new PublicKey(
+  process.env.NEXT_PUBLIC_USDCPDA_HOUSEWALLET
+);
 
 const SOL_TO_USDC_RATE = 100; // Assuming 1 SOL = 100 USDC for example purposes
 const MAX_DEPOSIT_SOL = 1500;
 const MAX_DEPOSIT_USDC = 200000;
 const MIN_DEPOSIT_SOL = 1; // Minimum deposit in SOL
 const MIN_DEPOSIT_USDC = 100; // Assuming the minimum deposit in USDC
-
 
 async function checkLPdata(
   lpAcc: PublicKey,
@@ -199,28 +200,26 @@ async function checkLiquidiryProviderAcc(
     isInitialized: LiqProviderAcc.isInitialized,
     withdrawalRequestAmount: LiqProviderAcc.withdrawalRequestAmount.toNumber(),
     withdrawalRequestEpoch: LiqProviderAcc.withdrawalRequestEpoch.toNumber(),
-    usdcWithdrawalRequestAmount: LiqProviderAcc.usdcWithdrawalRequestAmount.toNumber(),
-    usdcWithdrawalRequestEpoch: LiqProviderAcc.usdcWithdrawalRequestEpoch.toNumber(),
+    usdcWithdrawalRequestAmount:
+      LiqProviderAcc.usdcWithdrawalRequestAmount.toNumber(),
+    usdcWithdrawalRequestEpoch:
+      LiqProviderAcc.usdcWithdrawalRequestEpoch.toNumber(),
   };
 }
 
 async function findSplTokenAccountSync(walletAddress, currency) {
   let mintAddress;
 
-  if (currency === 'USDC') {
+  if (currency === "USDC") {
     mintAddress = PUSDCMINT;
-  } else if (currency === 'SOL') {
+  } else if (currency === "SOL") {
     mintAddress = PSOLMINT; // Use the mint address for wSOL or your custom SPL token for SOL
   } else {
-    throw new Error('Unsupported currency');
+    throw new Error("Unsupported currency");
   }
 
   const [splTokenAccount] = PublicKey.findProgramAddressSync(
-    [
-      walletAddress.toBuffer(),
-      TOKENPROGRAM.toBuffer(),
-      mintAddress.toBuffer(),
-    ],
+    [walletAddress.toBuffer(), TOKENPROGRAM.toBuffer(), mintAddress.toBuffer()],
     ASSOCIATEDTOKENPROGRAM
   );
 
@@ -228,14 +227,10 @@ async function findSplTokenAccountSync(walletAddress, currency) {
 }
 
 async function usdcSplTokenAccountSync(walletAddress) {
-  let mintAddress = USDCMINT
+  let mintAddress = USDCMINT;
 
   const [splTokenAccount] = PublicKey.findProgramAddressSync(
-    [
-      walletAddress.toBuffer(),
-      TOKENPROGRAM.toBuffer(),
-      mintAddress.toBuffer(),
-    ],
+    [walletAddress.toBuffer(), TOKENPROGRAM.toBuffer(), mintAddress.toBuffer()],
     ASSOCIATEDTOKENPROGRAM
   );
 
@@ -244,52 +239,50 @@ async function usdcSplTokenAccountSync(walletAddress) {
 
 async function getSplTokenBalance(connection, walletAddress, selectedCurrency) {
   try {
-    console.log('Wallet Address:', walletAddress);
-    console.log('Selected Currency:', selectedCurrency);
+    console.log("Wallet Address:", walletAddress);
+    console.log("Selected Currency:", selectedCurrency);
 
     if (!walletAddress) {
-      throw new Error('Wallet address is undefined');
+      throw new Error("Wallet address is undefined");
     }
 
     if (!(walletAddress instanceof PublicKey)) {
       walletAddress = new PublicKey(walletAddress);
     }
 
-
-    const tokenAccounts = await connection.getParsedTokenAccountsByOwner(walletAddress,   { programId: TOKENPROGRAM }
-      );
+    const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
+      walletAddress,
+      { programId: TOKENPROGRAM }
+    );
 
     let mintAddress;
 
-    if (selectedCurrency === 'USDC') {
-      console.log('USDC Mint Address:', PUSDCMINT);
+    if (selectedCurrency === "USDC") {
+      console.log("USDC Mint Address:", PUSDCMINT);
       mintAddress = new PublicKey(PUSDCMINT);
-    } else if (selectedCurrency === 'SOL') {
-      console.log('SOL Mint Address:', PSOLMINT);
+    } else if (selectedCurrency === "SOL") {
+      console.log("SOL Mint Address:", PSOLMINT);
       mintAddress = new PublicKey(PSOLMINT);
     } else {
       throw new Error(`Unsupported currency: ${selectedCurrency}`);
     }
 
-    const specificTokenAccounts = tokenAccounts.value.filter(account => 
-      account.account.data.parsed.info.mint === mintAddress.toString()
+    const specificTokenAccounts = tokenAccounts.value.filter(
+      (account) =>
+        account.account.data.parsed.info.mint === mintAddress.toString()
     );
 
     let totalBalance = 0;
-    specificTokenAccounts.forEach(account => {
+    specificTokenAccounts.forEach((account) => {
       totalBalance += account.account.data.parsed.info.tokenAmount.uiAmount;
     });
 
     return totalBalance;
-
   } catch (error) {
-    console.error('Error fetching SPL token balance:', error);
+    console.error("Error fetching SPL token balance:", error);
     throw error;
   }
 }
-
-
-
 
 const Earn: FC = () => {
   const { connection } = useConnection();
@@ -307,7 +300,7 @@ const Earn: FC = () => {
     cumulativeFeeRate: number;
     cumulativePnlRate: number;
     psolValuation: number;
-    pusdcValuation: number;  
+    pusdcValuation: number;
   } | null>(null);
   const [LProviderdata, setLProviderdata] = useState<{
     isInitialized: boolean;
@@ -329,13 +322,15 @@ const Earn: FC = () => {
   }>(null);
 
   const [leaderboard30Days, setLeaderboard30Days] = useState([]);
-  const [selectedCurrency, setSelectedCurrency] = useState<'SOL' | 'USDC'>('SOL');
-  const [splTokenAccount, setSplTokenAccount] = useState<PublicKey | null>(null);
-  const [usdcSplTokenAccount, setUsdcSplTokenAccount] = useState<PublicKey | null>(null);
+  const [selectedCurrency, setSelectedCurrency] = useState<"SOL" | "USDC">(
+    "SOL"
+  );
+  const [splTokenAccount, setSplTokenAccount] = useState<PublicKey | null>(
+    null
+  );
+  const [usdcSplTokenAccount, setUsdcSplTokenAccount] =
+    useState<PublicKey | null>(null);
   const [tokenBalance, setTokenBalance] = useState<number | null>(null);
-
-  
-
 
   const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT8;
   useEffect(() => {
@@ -385,14 +380,17 @@ const Earn: FC = () => {
       if (publicKey) {
         try {
           // Find SPL token account for the preferred currency
-          const splAcc = await findSplTokenAccountSync(publicKey, selectedCurrency);
+          const splAcc = await findSplTokenAccountSync(
+            publicKey,
+            selectedCurrency
+          );
           setSplTokenAccount(splAcc);
 
           // Find SPL token account for USDC
           const usdcAcc = await usdcSplTokenAccountSync(publicKey);
           setUsdcSplTokenAccount(usdcAcc);
         } catch (error) {
-          console.error('Error finding SPL token accounts:', error);
+          console.error("Error finding SPL token accounts:", error);
           // Handle errors, e.g., reset state or show notification
           setSplTokenAccount(null);
           setUsdcSplTokenAccount(null);
@@ -412,14 +410,16 @@ const Earn: FC = () => {
       if (publicKey) {
         try {
           // Find SPL token account for the preferred currency
-          const tokenBalance = await getSplTokenBalance(connection, publicKey, selectedCurrency);
+          const tokenBalance = await getSplTokenBalance(
+            connection,
+            publicKey,
+            selectedCurrency
+          );
           setTokenBalance(tokenBalance);
-
         } catch (error) {
-          console.error('Error finding SPL token accounts:', error);
+          console.error("Error finding SPL token accounts:", error);
           // Handle errors, e.g., reset state or show notification
           setTokenBalance(0);
-
         }
       } else {
         // Reset state if no wallet is connected
@@ -505,37 +505,42 @@ const Earn: FC = () => {
     let mintAddress;
     let usdc;
     let deposit;
-        if (selectedCurrency === 'USDC') {
+    if (selectedCurrency === "USDC") {
       mintAddress = PUSDCMINT;
       usdc = 1;
-      deposit = parseFloat(depositValue) * LAMPORTS_PER_SOL/1000;
-    } else if (selectedCurrency === 'SOL') {
+      deposit = (parseFloat(depositValue) * LAMPORTS_PER_SOL) / 1000;
+    } else if (selectedCurrency === "SOL") {
       mintAddress = PSOLMINT; // Use the mint address for wSOL or your custom SPL token for SOL
       usdc = 0;
       deposit = parseFloat(depositValue) * LAMPORTS_PER_SOL;
-
-    } 
+    }
     const [lpAcc] = await PublicKey.findProgramAddress(seedsLpAcc, PROGRAM_ID);
-    const maxDeposit = selectedCurrency === 'SOL' ? MAX_DEPOSIT_SOL : MAX_DEPOSIT_USDC;
-    const minDeposit = selectedCurrency === 'SOL' ? MIN_DEPOSIT_SOL : MIN_DEPOSIT_USDC;
+    const maxDeposit =
+      selectedCurrency === "SOL" ? MAX_DEPOSIT_SOL : MAX_DEPOSIT_USDC;
+    const minDeposit =
+      selectedCurrency === "SOL" ? MIN_DEPOSIT_SOL : MIN_DEPOSIT_USDC;
     const depositUnit = selectedCurrency;
-    
-    // Calculate the total deposits in the unit of the selected currency
-    const totalDepositsInSelectedCurrency = selectedCurrency === 'SOL' ?
-      LPdata.totalDeposits / LAMPORTS_PER_SOL :
-      (LPdata.usdcTotalDeposits / LAMPORTS_PER_SOL) * 1000;
 
-      if (LPdata?.locked) {
-        notify({ type: "info", message: `Vault is locked.` });
-      } else if (parseFloat(depositValue) < minDeposit) {
-        notify({ type: "info", message: `Minimum deposit is 1 ${depositUnit}.` });
-      } else if (parseFloat(depositValue) + totalDepositsInSelectedCurrency > maxDeposit) {
-        const remainingDeposit = maxDeposit - totalDepositsInSelectedCurrency;
-        notify({
-          type: "info",
-          message: `Vault is almost full, you can deposit ${remainingDeposit.toFixed(1)} ${depositUnit}.`,
-        });
-      } else {
+    // Calculate the total deposits in the unit of the selected currency
+    const totalDepositsInSelectedCurrency =
+      selectedCurrency === "SOL"
+        ? LPdata.totalDeposits / LAMPORTS_PER_SOL
+        : (LPdata.usdcTotalDeposits / LAMPORTS_PER_SOL) * 1000;
+
+    if (LPdata?.locked) {
+      notify({ type: "info", message: `Vault is locked.` });
+    } else if (parseFloat(depositValue) < minDeposit) {
+      notify({ type: "info", message: `Minimum deposit is 1 ${depositUnit}.` });
+    } else if (
+      parseFloat(depositValue) + totalDepositsInSelectedCurrency >
+      maxDeposit
+    ) {
+      const remainingDeposit = maxDeposit - totalDepositsInSelectedCurrency;
+      notify({
+        type: "info",
+        message: `Vault is almost full, you can deposit ${remainingDeposit.toFixed(1)} ${depositUnit}.`,
+      });
+    } else {
       try {
         const LPAccseeds = [
           Buffer.from(houseHarcodedkey.toBytes()),
@@ -593,8 +598,12 @@ const Earn: FC = () => {
           message: `Successfully deposited into the Vault`,
         });
         getUserSOLBalance(publicKey, connection);
-        getUserUSDCBalance(publicKey, connection);  
-        const tokenBalance = await getSplTokenBalance(connection, publicKey, selectedCurrency);
+        getUserUSDCBalance(publicKey, connection);
+        const tokenBalance = await getSplTokenBalance(
+          connection,
+          publicKey,
+          selectedCurrency
+        );
         setTokenBalance(tokenBalance);
       } catch (error) {
         notify({
@@ -604,7 +613,16 @@ const Earn: FC = () => {
         });
       }
     }
-  }, [connection, publicKey, depositValue, LPdata, LProviderdata, selectedCurrency, splTokenAccount, usdcSplTokenAccount]);
+  }, [
+    connection,
+    publicKey,
+    depositValue,
+    LPdata,
+    LProviderdata,
+    selectedCurrency,
+    splTokenAccount,
+    usdcSplTokenAccount,
+  ]);
 
   const withdrawfromLP = useCallback(async () => {
     if (!publicKey) {
@@ -616,21 +634,18 @@ const Earn: FC = () => {
       return;
     }
 
-    
-
     let mintAddress;
     let usdc;
     let withdrawAmount;
-    if (selectedCurrency === 'USDC') {
+    if (selectedCurrency === "USDC") {
       withdrawAmount = parseFloat(withdrawValue) / 1000;
       mintAddress = PUSDCMINT;
       usdc = 1;
-    } else if (selectedCurrency === 'SOL') {
+    } else if (selectedCurrency === "SOL") {
       mintAddress = PSOLMINT; // Use the mint address for wSOL or your custom SPL token for SOL
       usdc = 0;
       withdrawAmount = parseFloat(withdrawValue);
-
-    } 
+    }
 
     const houseHarcodedkey = HOUSEWALLET;
     const signerWalletAccount = SIGNERWALLET;
@@ -656,15 +671,13 @@ const Earn: FC = () => {
       PROGRAM_ID
     );
 
-    
-
     let withdraw = 0; // Initializing withdraw as a number with an initial value of 0.
     if (
       LProviderdata?.withdrawalRequestAmount != 0 &&
       LProviderdata?.withdrawalRequestEpoch == LPdata?.epoch
     ) {
       withdraw = LProviderdata?.withdrawalRequestAmount;
-    } else (withdraw = withdrawAmount * LAMPORTS_PER_SOL);
+    } else withdraw = withdrawAmount * LAMPORTS_PER_SOL;
     console.log(withdraw);
     if (LPdata?.locked) {
       notify({ type: "info", message: `Vault is locked.` });
@@ -712,12 +725,15 @@ const Earn: FC = () => {
           message: `Withdrawal Successful`,
         });
         getUserSOLBalance(publicKey, connection);
-        getUserUSDCBalance(publicKey, connection);  
-        const tokenBalance = await getSplTokenBalance(connection, publicKey, selectedCurrency);
+        getUserUSDCBalance(publicKey, connection);
+        const tokenBalance = await getSplTokenBalance(
+          connection,
+          publicKey,
+          selectedCurrency
+        );
         setTokenBalance(tokenBalance);
         const results = await checkLPdata(lpAcc, connection);
         setLPdata(results);
-        
       } catch (error) {
         notify({
           type: "error",
@@ -726,7 +742,16 @@ const Earn: FC = () => {
         });
       }
     }
-  }, [connection, publicKey, withdrawValue, LPdata, LProviderdata, selectedCurrency, splTokenAccount, usdcSplTokenAccount]);
+  }, [
+    connection,
+    publicKey,
+    withdrawValue,
+    LPdata,
+    LProviderdata,
+    selectedCurrency,
+    splTokenAccount,
+    usdcSplTokenAccount,
+  ]);
 
   const [timeUntilNextEpoch, setTimeUntilNextEpoch] = useState("");
   const [timeUntilNextlockEpoch, setTimeUntillockNextEpoch] = useState("");
@@ -799,14 +824,10 @@ const Earn: FC = () => {
 
   useEffect(() => {
     const fetchLpstatus = async () => {
-      console.log('HOUSEWALLET:', HOUSEWALLET); // Check if it's undefined or not a valid input
+      console.log("HOUSEWALLET:", HOUSEWALLET); // Check if it's undefined or not a valid input
 
-      const houseHarcodedkey = new PublicKey(
-        HOUSEWALLET
-      );
-      const signerWalletAccount = new PublicKey(
-        SIGNERWALLET
-      );
+      const houseHarcodedkey = new PublicKey(HOUSEWALLET);
+      const signerWalletAccount = new PublicKey(SIGNERWALLET);
       const seedsLpAcc = [
         Buffer.from(houseHarcodedkey.toBytes()),
         Buffer.from(signerWalletAccount.toBytes()),
@@ -833,9 +854,7 @@ const Earn: FC = () => {
         return;
       }
 
-      const houseHarcodedkey = new PublicKey(
-        HOUSEWALLET
-      );
+      const houseHarcodedkey = new PublicKey(HOUSEWALLET);
 
       const seedsUser = [
         Buffer.from(houseHarcodedkey.toBytes()),
@@ -855,7 +874,6 @@ const Earn: FC = () => {
 
     fetchcheckLiquidiryProviderAcc();
   }, [publicKey, connection]);
-
 
   const [activeSection, setActiveSection] = useState("deposit");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -881,7 +899,7 @@ const Earn: FC = () => {
         ).toFixed(2)
       : "0 SOL";
 
-      const usdcresult =
+  const usdcresult =
     LProviderdata?.usdcWithdrawalRequestAmount != 0 &&
     (LProviderdata?.usdcWithdrawalRequestEpoch == LPdata?.epoch ||
       LProviderdata?.usdcWithdrawalRequestEpoch == LPdata?.epoch + 1)
@@ -904,46 +922,45 @@ const Earn: FC = () => {
               Vault
             </h1>
             <div className="w-[300px] flex flex-row items-center justify-center text-lg text-primary font-bankgothic-md-bt border-b-[1px] border-solid border-layer-3">
-        <button
-          className={`flex-1   h-10 flex flex-row  items-center justify-center py-3 px-6 transition-all duration-200 ease-in-out  ${
-            selectedCurrency === "SOL"
-              ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-b-[2px] border-solid border-primary"
-              : "text-grey long-short-button"
-          }`}
-          onClick={() => setSelectedCurrency('SOL')} 
-        >
-          <div
-            className={`flex justify-center items-center h-full w-full rounded-lg ${
-              selectedCurrency === "SOL" ? "" : ""
-            }`}
-          >
-            <div
-              className={`bankGothic uppercase  ${
-                selectedCurrency === "SOL" ? "" : ""
-              }`}
-            >
-              SOL
+              <button
+                className={`flex-1   h-10 flex flex-row  items-center justify-center py-3 px-6 transition-all duration-200 ease-in-out  ${
+                  selectedCurrency === "SOL"
+                    ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-b-[2px] border-solid border-primary"
+                    : "text-grey long-short-button"
+                }`}
+                onClick={() => setSelectedCurrency("SOL")}
+              >
+                <div
+                  className={`flex justify-center items-center h-full w-full rounded-lg ${
+                    selectedCurrency === "SOL" ? "" : ""
+                  }`}
+                >
+                  <div
+                    className={`bankGothic uppercase  ${
+                      selectedCurrency === "SOL" ? "" : ""
+                    }`}
+                  >
+                    SOL
+                  </div>
+                </div>
+              </button>
+              <button
+                className={`flex-1   h-10 flex flex-row items-center justify-center py-3 px-6 transition-all duration-200 ease-in-out  ${
+                  selectedCurrency === "USDC"
+                    ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-b-[2px] border-solid border-primary"
+                    : "text-grey long-short-button"
+                }`}
+                onClick={() => setSelectedCurrency("USDC")} // Set selectedCurrency to 'USDC'
+              >
+                <div
+                  className={`bankGothic  uppercase ${
+                    selectedCurrency === "USDC" ? "" : ""
+                  }`}
+                >
+                  USDC
+                </div>
+              </button>
             </div>
-          </div>
-        </button>
-        <button
-          className={`flex-1   h-10 flex flex-row items-center justify-center py-3 px-6 transition-all duration-200 ease-in-out  ${
-            selectedCurrency === "USDC"
-            ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-b-[2px] border-solid border-primary"
-            : "text-grey long-short-button"
-          }`}
-          onClick={() => setSelectedCurrency('USDC')} // Set selectedCurrency to 'USDC'
-        >
-          <div
-            className={`bankGothic  uppercase ${
-              selectedCurrency === "USDC" ? "" : ""
-            }`}
-          >
-            USDC
-          </div>
-        </button>
-      </div>
-
           </div>
           <img
             className="hidden md:block absolute h-[39.41%] w-[21.83%] top-[12.12%] bottom-[48.47%] right-[5%] max-w-full overflow-hidden max-h-full"
@@ -954,21 +971,20 @@ const Earn: FC = () => {
             <div className="z-10 md:w-[55%] w-full flex flex-col items-center justify-center relative gap-[8px] w-full self-stretch bg-gradient-to-t from-[#0B7A55] to-[#34C796] md:rounded-2xl rounded-lg p-[1px] ">
               <div className="w-full h-full self-stretch md:rounded-2xl rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#0b111b]  w-full flex flex-col items-end justify-center">
                 <div className="bg-base bg-opacity-70 w-full h-full self-stretch md:rounded-2xl rounded-lg  w-full flex flex-row items-center justify-center md:px-8 sm:gap-[16px]">
-                <img
-  className="my-0 mx-[!important] top-[20px] left-[calc(50%_-_143px)] sm:w-1/2 sm:min-w-[100px] w-1/3 min-w-[75px] sm:max-w-[150px] max-w-[100] z-[1] sm:p-0 p-3"
-  alt={selectedCurrency}
-  src={selectedCurrency === "SOL" ? "/coins/SOLLP.png" : "/coins/USDCLP.png"}
-/>
+                  <img
+                    className="my-0 mx-[!important] top-[20px] left-[calc(50%_-_143px)] sm:w-1/2 sm:min-w-[100px] w-1/3 min-w-[75px] sm:max-w-[150px] max-w-[100] z-[1] sm:p-0 p-3"
+                    alt={selectedCurrency}
+                    src={
+                      selectedCurrency === "SOL"
+                        ? "/coins/SOLLP.png"
+                        : "/coins/USDCLP.png"
+                    }
+                  />
                   <div className="flex flex-col w-2/3 text-left h-[62px] flex flex-col items-start justify-center gap-[8px] z-[0] text-[18px]">
                     <div className="relative leading-[100%] font-medium">
-                    {selectedCurrency === "SOL" ? 
-    (
-      `SOLANA VAULT`
-    ) : 
-    (
-      `USDC VAULT`
-    )
-  }
+                      {selectedCurrency === "SOL"
+                        ? `SOLANA VAULT`
+                        : `USDC VAULT`}
                     </div>
                     <div className="relative text-[36px] leading-[100%] font-semibold font-poppins bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] text-left">
                       {(
@@ -1011,19 +1027,15 @@ const Earn: FC = () => {
                       TOKEN RATIO
                     </div>
                     <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
-                    {selectedCurrency === "SOL" ? 
-    (
-      `${(
-        (LPdata?.psolValuation || 0) / LAMPORTS_PER_SOL
-      ).toFixed(2)} pSOL/SOL`
-    ) : 
-    (
-      `${(
-        (LPdata?.pusdcValuation || 0) / LAMPORTS_PER_SOL
-      ).toFixed(2)} pUSDC/USD`
-    )
-  }
-
+                      {selectedCurrency === "SOL"
+                        ? `${(
+                            ((LPdata?.psolValuation || 0) / LAMPORTS_PER_SOL) *
+                            1000
+                          ).toFixed(3)} pSOL/SOL`
+                        : `${(
+                            ((LPdata?.pusdcValuation || 0) / LAMPORTS_PER_SOL) *
+                            1000
+                          ).toFixed(3)} pUSDC/USD`}
                     </div>
                   </div>
                 </div>
@@ -1040,14 +1052,9 @@ const Earn: FC = () => {
                       TVL
                     </div>
                     <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
-                    {selectedCurrency === "SOL" ? 
-    (
-      `${((LPdata?.totalDeposits || 0) / LAMPORTS_PER_SOL).toFixed(2)} SOL`
-    ) : 
-    (
-      `${((LPdata?.usdcTotalDeposits || 0) / LAMPORTS_PER_SOL*1000).toFixed(0)} USDC`
-    )
-  }
+                      {selectedCurrency === "SOL"
+                        ? `${((LPdata?.totalDeposits || 0) / LAMPORTS_PER_SOL).toFixed(2)} SOL`
+                        : `${(((LPdata?.usdcTotalDeposits || 0) / LAMPORTS_PER_SOL) * 1000).toFixed(0)} USDC`}
                     </div>
                   </div>
                 </div>
@@ -1143,22 +1150,17 @@ const Earn: FC = () => {
                     <div className="flex flex-col items-start justify-center gap-[4px]">
                       <div className="relative leading-[100%] font-medium">
                         DEPOSITED
-            
                       </div>
                       <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
-
-                      {selectedCurrency === "SOL" ? 
-    (
-      `${(
-        (tokenBalance * LPdata?.psolValuation || 0) / LAMPORTS_PER_SOL
-      ).toFixed(2)} SOL`
-    ) : 
-    (
-      `${(
-        (tokenBalance * LPdata?.pusdcValuation || 0) / LAMPORTS_PER_SOL
-      ).toFixed(0)} USDC`
-    )
-  }
+                        {selectedCurrency === "SOL"
+                          ? `${(
+                              (tokenBalance * LPdata?.psolValuation * 1000 ||
+                                0) / LAMPORTS_PER_SOL
+                            ).toFixed(2)} SOL`
+                          : `${(
+                              (tokenBalance * LPdata?.pusdcValuation * 1000 ||
+                                0) / LAMPORTS_PER_SOL
+                            ).toFixed(0)} USDC`}
                       </div>
                     </div>
                   </div>
@@ -1183,9 +1185,12 @@ const Earn: FC = () => {
                     />
                     <button
                       onClick={() => {
-                        const tokenBalance = selectedCurrency === 'SOL' ? (balance - 1 / 100) : usdcbalance;
+                        const tokenBalance =
+                          selectedCurrency === "SOL"
+                            ? balance - 1 / 100
+                            : usdcbalance;
                         // Assuming 'balance' is a numeric state or prop
-                        const maxValue = (Number(tokenBalance))
+                        const maxValue = Number(tokenBalance)
                           .toFixed(2)
                           .toString();
                         setdepositValue(maxValue); // Update the state, which will update the input value reactively
@@ -1197,12 +1202,12 @@ const Earn: FC = () => {
                   </div>
                 </div>
                 <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]  w-full h-10   box-border text-center text-lg">
-                    <button
-                      onClick={deposittoLP}
-                      className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] hover:bg-opacity-60 bg-opacity-80 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
-                    >
-                      DEPOSIT
-                    </button>
+                  <button
+                    onClick={deposittoLP}
+                    className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] hover:bg-opacity-60 bg-opacity-80 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
+                  >
+                    DEPOSIT
+                  </button>
                 </div>
               </div>
             )}
@@ -1234,19 +1239,9 @@ const Earn: FC = () => {
                         WITHDRAWABLE
                       </div>
                       <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
-  
-                      {selectedCurrency === "SOL" ? 
-    (
-      `${(
-        (tokenBalance  || 0)
-      ).toFixed(2)} pSOL`
-    ) : 
-    (
-      `${(
-        (tokenBalance  || 0)
-      ).toFixed(0)} pUSDC`
-    )
-  }
+                        {selectedCurrency === "SOL"
+                          ? `${(tokenBalance || 0).toFixed(2)} pSOL`
+                          : `${(tokenBalance || 0).toFixed(0)} pUSDC`}
                       </div>
                     </div>
                   </div>
@@ -1261,14 +1256,9 @@ const Earn: FC = () => {
                         PENDING WITHDRAWAL
                       </div>
                       <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
-                        {selectedCurrency === "SOL" ? 
-    (
-      `${result}`
-    ) : 
-    (
-      `${usdcresult}`
-    )
-  }
+                        {selectedCurrency === "SOL"
+                          ? `${result}`
+                          : `${usdcresult}`}
                       </div>
                     </div>
                   </div>
@@ -1306,11 +1296,9 @@ const Earn: FC = () => {
                           onClick={() => {
                             const balance = tokenBalance;
 
-                          
-                              const maxValue = (Number(balance))
-                              .toString();
-                              setwithdrawValue(maxValue);
-                         } }
+                            const maxValue = Number(balance).toString();
+                            setwithdrawValue(maxValue);
+                          }}
                           className="relative leading-[14px] font-medium bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]"
                         >
                           MAX
@@ -1318,13 +1306,12 @@ const Earn: FC = () => {
                       </div>
                     </div>
                     <div className="mt-6 rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]  w-full h-10   box-border text-center text-lg">
-                        <button
-                          onClick={withdrawfromLP}
-                          className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
-                        >
-                          WITHDRAW
-                        </button>
-
+                      <button
+                        onClick={withdrawfromLP}
+                        className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
+                      >
+                        WITHDRAW
+                      </button>
                     </div>
                   </div>
                 )}

@@ -32,10 +32,8 @@ interface Position {
   currentPrice: number;
   pnl: number;
   usdc: number;
-  order: boolean
+  order: boolean;
 }
-
-
 
 const Futures: FC = () => {
   const [symbol, setSymbol] = useState("Crypto.SOL/USD"); // default value
@@ -82,8 +80,9 @@ const Futures: FC = () => {
   const [openingPrice, setOpeningPrice] = useState(0);
   const [initialPrice, setInitialPrice] = useState(0);
   const [selectedPair, setSelectedPair] = useState("");
-  const [selectedCurrency, setSelectedCurrency] = useState<'SOL' | 'USDC'>('SOL');
-
+  const [selectedCurrency, setSelectedCurrency] = useState<"SOL" | "USDC">(
+    "SOL"
+  );
 
   const router = useRouter();
   const { crypto } = router.query; // could be 'btc' or 'sol'
@@ -101,28 +100,26 @@ const Futures: FC = () => {
   const debounceDelay = 75;
   let lastNotificationTime = 0;
 
-// Example adjustment for immediate deduplication
-const handleNewNotification = (newNotification) => {
-  const currentTime = Date.now();
-  const isNewNotificationSameAsLast = lastNotificationRef.current?.id === newNotification.id;
-  
-  if (!isNewNotificationSameAsLast) {
-    // Process for new or non-duplicate notification
-    processNotification(newNotification, currentTime);
-  } else {
-    console.log("Duplicate notification detected, skipping.");
-  }
-};
+  // Example adjustment for immediate deduplication
+  const handleNewNotification = (newNotification) => {
+    const currentTime = Date.now();
+    const isNewNotificationSameAsLast =
+      lastNotificationRef.current?.id === newNotification.id;
 
-const processNotification = (newNotification, currentTime) => {
-  lastNotificationRef.current = newNotification;
-  lastNotificationTime = currentTime;
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(() => notify(newNotification), debounceDelay);
-};
+    if (!isNewNotificationSameAsLast) {
+      // Process for new or non-duplicate notification
+      processNotification(newNotification, currentTime);
+    } else {
+      console.log("Duplicate notification detected, skipping.");
+    }
+  };
 
-  
-  
+  const processNotification = (newNotification, currentTime) => {
+    lastNotificationRef.current = newNotification;
+    lastNotificationTime = currentTime;
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => notify(newNotification), debounceDelay);
+  };
 
   const handleButtonClick = (buttonIndex: number) => {
     setActiveButton(buttonIndex);

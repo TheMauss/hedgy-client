@@ -27,7 +27,7 @@ interface InterestBarProps {
   prices: { [key: string]: { price: number; timestamp: string } };
   EMAprice: number;
   symbol: string;
-  selectedCurrency: 'SOL' | 'USDC';
+  selectedCurrency: "SOL" | "USDC";
 }
 
 const InterestBar: React.FC<InterestBarProps> = ({
@@ -37,7 +37,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
   prices,
   EMAprice,
   openingPrice,
-  selectedCurrency
+  selectedCurrency,
 }) => {
   // You forgot to add latestOpenedPosition here
   // Safely access the properties of prices
@@ -104,18 +104,27 @@ const InterestBar: React.FC<InterestBarProps> = ({
   const MAX_NOTIONAL_POSITIONS = 1000;
 
   const getOpenInterestValues = (sym, selectedCurrency) => {
-    const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
-  
-    const currencySuffix = selectedCurrency === 'USDC' ? 'usdc' : '';
-  
+    const capitalizeFirstLetter = (string) =>
+      string.charAt(0).toUpperCase() + string.slice(1);
+
+    const currencySuffix = selectedCurrency === "USDC" ? "usdc" : "";
+
     const getCryptoPropertyName = (crypto, type) => {
-      const cryptoName = currencySuffix ? capitalizeFirstLetter(crypto) : crypto;
+      const cryptoName = currencySuffix
+        ? capitalizeFirstLetter(crypto)
+        : crypto;
       return `${currencySuffix}${cryptoName}${type}`;
     };
-  
+
     const mapping = {
-      "Crypto.BTC/USD": { long: getCryptoPropertyName('btc', 'Long'), short: getCryptoPropertyName('btc', 'Short') },
-      "Crypto.SOL/USD": { long: getCryptoPropertyName('sol', 'Long'), short: getCryptoPropertyName('sol', 'Short') },
+      "Crypto.BTC/USD": {
+        long: getCryptoPropertyName("btc", "Long"),
+        short: getCryptoPropertyName("btc", "Short"),
+      },
+      "Crypto.SOL/USD": {
+        long: getCryptoPropertyName("sol", "Long"),
+        short: getCryptoPropertyName("sol", "Short"),
+      },
       "Crypto.PYTH/USD": { long: "pythLong", short: "pythShort" },
       "Crypto.BONK/USD": { long: "bonkLong", short: "bonkShort" },
       "Crypto.JUP/USD": { long: "jupLong", short: "jupShort" },
@@ -235,7 +244,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
               Open (L)
             </div>
             <div className="relative text-sm leading-[16px] font-dm-sans text-white">
-            {selectedCurrency === 'SOL' ? `${long} SOL` : `${long}k USDC`}  
+              {selectedCurrency === "SOL" ? `${long} SOL` : `${long}k USDC`}
             </div>
           </div>
         </div>
@@ -245,7 +254,8 @@ const InterestBar: React.FC<InterestBarProps> = ({
               Open (S)
             </div>
             <div className="relative text-sm leading-[16px] font-dm-sans text-white">
-            {selectedCurrency === 'SOL' ? `${short} SOL` : `${short}k USDC`}              </div>
+              {selectedCurrency === "SOL" ? `${short} SOL` : `${short}k USDC`}{" "}
+            </div>
           </div>
         </div>
         <div className="min-w-[120px] box-border h-8 flex flex-col items-center justify-center  border-l-[1px] border-solid border-layer-3">
@@ -254,7 +264,9 @@ const InterestBar: React.FC<InterestBarProps> = ({
               Borrowing (L)
             </div>
             <div className="relative text-sm leading-[16px] font-dm-sans text-short">
-            {isNaN(Number(borrowingFeeLong)) ? "0.0000%" : `${(Number(borrowingFeeLong) * 100).toFixed(4)}%`}
+              {isNaN(Number(borrowingFeeLong))
+                ? "0.0000%"
+                : `${(Number(borrowingFeeLong) * 100).toFixed(4)}%`}
             </div>
           </div>
         </div>
@@ -264,7 +276,9 @@ const InterestBar: React.FC<InterestBarProps> = ({
               Borrowing (S)
             </div>
             <div className="relative text-sm leading-[16px] font-dm-sans text-short">
-            {isNaN(Number(borrowingFeeShort)) ? "0.0000%" : `${(Number(borrowingFeeShort) * 100).toFixed(4)}%`}
+              {isNaN(Number(borrowingFeeShort))
+                ? "0.0000%"
+                : `${(Number(borrowingFeeShort) * 100).toFixed(4)}%`}
             </div>
           </div>
         </div>

@@ -125,7 +125,6 @@ const MyPositions: FC<MyPositionsProps> = ({
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [totalPages, setTotalPages] = useState(1);
 
-
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -165,7 +164,6 @@ const MyPositions: FC<MyPositionsProps> = ({
 
     const pageSize = 10; // Set the page size
 
-
     const fetchPositionsByPage = (page) => {
       socket.emit("registerWallet", walletAddress, page, pageSize);
     };
@@ -175,7 +173,6 @@ const MyPositions: FC<MyPositionsProps> = ({
       fetchPositionsByPage(currentPage);
 
       socket.on("unresolvedpositions", (positions: Position[]) => {
-
         setLatestOpenedPosition((prevPositions) => {
           const updatedPositions: Record<string, Position | null> = {
             ...prevPositions,
@@ -460,7 +457,6 @@ const MyPositions: FC<MyPositionsProps> = ({
         console.error("oops, something went wrong!", error);
       });
   };
-
 
   const nextPage = () => {
     if (currentPage < totalPages) {
@@ -873,19 +869,18 @@ const MyPositions: FC<MyPositionsProps> = ({
                 <p>{timeStr}</p>
               </div>
               <div className="flex justify-end items-center   w-[12%] min-w-[90px] text-start text-sm  ">
-                <p>    {
-  item.usdc === 0
-    ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
-    : `${(item.betAmount / LAMPORTS_PER_SOL * 1000).toFixed(1)}$`
-} </p>
+                <p>
+                  {" "}
+                  {item.usdc === 0
+                    ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
+                    : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}{" "}
+                </p>
               </div>
               <div className="flex justify-end items-center   w-[10%]  min-w-[90px] text-start text-sm  ">
                 <p className={pnl >= 0 ? "text-[#34c796] " : "text-red-500 "}>
-                {
-  item.usdc === 0
-    ? `${pnl.toFixed(2)}◎`
-    : `${(pnl*1000).toFixed(2)}$`
-}   
+                  {item.usdc === 0
+                    ? `${pnl.toFixed(2)}◎`
+                    : `${(pnl * 1000).toFixed(2)}$`}
                 </p>
               </div>
               <div className="flex justify-end items-center w-[14%] min-w-[140px] text-[0.9rem] text-grey-text   font-poppins py-1.5 rounded-r">
@@ -1033,11 +1028,9 @@ const MyPositions: FC<MyPositionsProps> = ({
                             pnl >= 0 ? "text-[#34c796] " : "text-red-500 "
                           }
                         >
-                                            {
-  item.usdc === 0
-    ? `${pnl.toFixed(2)}◎`
-    : `${(pnl*1000).toFixed(2)}$`
-}   
+                          {item.usdc === 0
+                            ? `${pnl.toFixed(2)}◎`
+                            : `${(pnl * 1000).toFixed(2)}$`}
                         </p>
                       </div>
                       <div className="relative leading-[12px] text-grey-text hidden">
@@ -1490,19 +1483,18 @@ const MyPositions: FC<MyPositionsProps> = ({
                 <p>{formattedDate}</p>
               </div>
               <div className="flex justify-end items-center   w-[12%] min-w-[90px] text-start text-sm  ">
-                <p>              {
-  item.usdc === 0
-    ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
-    : `${(item.betAmount / LAMPORTS_PER_SOL * 1000).toFixed(1)}$`
-}   </p>
+                <p>
+                  {" "}
+                  {item.usdc === 0
+                    ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
+                    : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}{" "}
+                </p>
               </div>
               <div className="flex justify-end items-center   w-[10%]  min-w-[90px] text-start text-sm  ">
                 <p className={pnl >= 0 ? "text-[#34c796] " : "text-red-500 "}>
-                  {
-  item.usdc === 0
-    ? `${pnl.toFixed(2)}◎`
-    : `${(pnl*1000).toFixed(2)}$`
-}   
+                  {item.usdc === 0
+                    ? `${pnl.toFixed(2)}◎`
+                    : `${(pnl * 1000).toFixed(2)}$`}
                 </p>
               </div>
               <div className="flex justify-end items-center w-[14%] min-w-[140px] text-[0.9rem] text-grey-text   font-poppins py-1.5 rounded-r">
@@ -1650,11 +1642,9 @@ const MyPositions: FC<MyPositionsProps> = ({
                             pnl >= 0 ? "text-[#34c796] " : "text-red-500 "
                           }
                         >
-                                            {
-  item.usdc === 0
-    ? `${pnl.toFixed(2)}◎`
-    : `${(pnl*1000).toFixed(2)}$`
-}   
+                          {item.usdc === 0
+                            ? `${pnl.toFixed(2)}◎`
+                            : `${(pnl * 1000).toFixed(2)}$`}
                         </p>
                       </div>
                       <div className="relative leading-[12px] text-grey-text hidden">

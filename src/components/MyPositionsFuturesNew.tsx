@@ -49,15 +49,17 @@ const HOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_HOUSE_WALLET);
 const SIGNERWALLET = new PublicKey(process.env.NEXT_PUBLIC_SIGNER_WALLET);
 const PDAHOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_PDA_HOUSEWALLET);
 const USDCMINT = new PublicKey(process.env.NEXT_PUBLIC_USDC_MINT);
-const ASSOCIATEDTOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM);
+const ASSOCIATEDTOKENPROGRAM = new PublicKey(
+  process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM
+);
 const TOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_PROGRAM);
 const PUSDCMINT = new PublicKey(process.env.NEXT_PUBLIC_PUSDC_MINT);
 const PSOLMINT = new PublicKey(process.env.NEXT_PUBLIC_PSOL_MINT);
-const USDCPDAHOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_USDCPDA_HOUSEWALLET);
+const USDCPDAHOUSEWALLET = new PublicKey(
+  process.env.NEXT_PUBLIC_USDCPDA_HOUSEWALLET
+);
 const LONGSHORTACC = new PublicKey(process.env.NEXT_PUBLIC_LONG_SHORT_ACC);
 const RATIOACC = new PublicKey(process.env.NEXT_PUBLIC_RATIO_ACC);
-
-
 
 interface Position {
   _id: string;
@@ -77,7 +79,7 @@ interface Position {
   currentPrice: number;
   pnl: number;
   usdc: number;
-  order: boolean
+  order: boolean;
 }
 
 interface Notification {
@@ -114,8 +116,8 @@ const MyPositions: FC<MyPositionsProps> = ({
   handleNewNotification,
 }) => {
   async function usdcSplTokenAccountSync(walletAddress) {
-    let mintAddress = USDCMINT
-  
+    let mintAddress = USDCMINT;
+
     const [splTokenAccount] = PublicKey.findProgramAddressSync(
       [
         walletAddress.toBuffer(),
@@ -124,7 +126,7 @@ const MyPositions: FC<MyPositionsProps> = ({
       ],
       ASSOCIATEDTOKENPROGRAM
     );
-  
+
     return splTokenAccount;
   }
 
@@ -171,8 +173,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
   const { connection } = useConnection();
   const { sendTransaction } = useWallet();
-  const [selectedButton, setSelectedButton] = useState('Positions');
-
+  const [selectedButton, setSelectedButton] = useState("Positions");
 
   const [positions, setPositions] = useState<Position[]>([]);
   const [orders, setOrders] = useState<Position[]>([]);
@@ -216,8 +217,6 @@ const MyPositions: FC<MyPositionsProps> = ({
   const { isPriorityFee } = usePriorityFee();
   const { isBackupOracle } = useBackupOracle();
   const [totalPages, setTotalPages] = useState(1);
-
-
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
@@ -313,8 +312,6 @@ const MyPositions: FC<MyPositionsProps> = ({
 
   const socket2Ref = useRef(null);
 
-
-
   useEffect(() => {
     let socket;
     let isMounted = true;
@@ -328,8 +325,6 @@ const MyPositions: FC<MyPositionsProps> = ({
       fetchPositionsByPage(currentPage);
 
       socket.on("unresolvedfuturesPositions", (positions: Position[]) => {
-        
-
         setLatestOpenedPosition((prevPositions) => {
           const updatedPositions: Record<string, Position | null> = {
             ...prevPositions,
@@ -353,12 +348,9 @@ const MyPositions: FC<MyPositionsProps> = ({
         setIsLoading(false);
       });
 
-
-
       socket.on("futuresOrders", (positions: Position[]) => {
         setOrders(positions);
       });
-
 
       socket.on("connect_error", (err) => {
         setError(err.message);
@@ -415,14 +407,14 @@ const MyPositions: FC<MyPositionsProps> = ({
                       updatedPos.takeProfitPrice !== position.takeProfitPrice
                     ) {
                       handleNewNotification({
-                         id: updatedPosition._id.toString(),
+                        id: updatedPosition._id.toString(),
                         type: "success",
                         message: `Position updated`,
                         description: `Take Profit is ${(updatedPosition.takeProfitPrice / 100000000).toFixed(2)}, Stop Loss is ${(updatedPosition.stopLossPrice / 100000000).toFixed(2)}`,
                       });
                     } else {
                       handleNewNotification({
-                         id: updatedPosition._id.toString(),
+                        id: updatedPosition._id.toString(),
                         type: "success",
                         message: `Borrowing fee paid`,
                         description: `New Liquidation Price is  ${(updatedPosition.liquidationPrice / 100000000).toFixed(2)}`,
@@ -440,7 +432,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               if (!updatedPosition.resolved) {
                 // Add the new position to the array
                 handleNewNotification({
-                   id: updatedPosition._id.toString(),
+                  id: updatedPosition._id.toString(),
                   type: "success",
                   message: `Position opened`,
                   description: `Entry price: ${(updatedPosition.initialPrice / 100000000).toFixed(3)} USD`,
@@ -463,8 +455,10 @@ const MyPositions: FC<MyPositionsProps> = ({
 
           if (updatedPosition.resolved) {
             // Add the resolved position
-            setResolvedPositions(prevState => {
-              const exists = prevState.some(position => position._id === updatedPosition._id);
+            setResolvedPositions((prevState) => {
+              const exists = prevState.some(
+                (position) => position._id === updatedPosition._id
+              );
               return exists ? prevState : [...prevState, updatedPosition];
             });
 
@@ -538,7 +532,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
             // handleNewNotification the user of the resolved position
             handleNewNotification({
-               id: updatedPosition._id.toString(),
+              id: updatedPosition._id.toString(),
               type: "success",
               message: `Position resolved`,
               description: `PnL: ${(updatedPosition.pnl / LAMPORTS_PER_SOL).toFixed(2)} SOL.`,
@@ -547,27 +541,43 @@ const MyPositions: FC<MyPositionsProps> = ({
         }
       );
 
-      socket2Ref.current.on("futuresupdateOrders", (updatedOrder: Position, latestPrice: number) => {
-        console.log("Received order update:", updatedOrder, "with latest price:", latestPrice);
-        setPreviousPrice(latestPrice);
+      socket2Ref.current.on(
+        "futuresupdateOrders",
+        (updatedOrder: Position, latestPrice: number) => {
+          console.log(
+            "Received order update:",
+            updatedOrder,
+            "with latest price:",
+            latestPrice
+          );
+          setPreviousPrice(latestPrice);
 
-        // Handle the updated order here
-        // This might involve updating the state that holds your orders, similar to how positions are handled
-        setOrders(prevOrders => {
-          // Example: Update the order in your state, or add it if it's new
-          const existingOrderIndex = prevOrders.findIndex(order => order._id === updatedOrder._id);
-          if (existingOrderIndex > -1) {
-            // Update existing order
-            const updatedOrders = [...prevOrders];
-            updatedOrders[existingOrderIndex] = { ...updatedOrder, currentPrice: latestPrice };
-            return updatedOrders;
-          } else {
-            // Add new order
-            return [...prevOrders, { ...updatedOrder, currentPrice: latestPrice }];
-          }
-        });
-      });
-      console.log(orders, "neworders")
+          // Handle the updated order here
+          // This might involve updating the state that holds your orders, similar to how positions are handled
+          setOrders((prevOrders) => {
+            // Example: Update the order in your state, or add it if it's new
+            const existingOrderIndex = prevOrders.findIndex(
+              (order) => order._id === updatedOrder._id
+            );
+            if (existingOrderIndex > -1) {
+              // Update existing order
+              const updatedOrders = [...prevOrders];
+              updatedOrders[existingOrderIndex] = {
+                ...updatedOrder,
+                currentPrice: latestPrice,
+              };
+              return updatedOrders;
+            } else {
+              // Add new order
+              return [
+                ...prevOrders,
+                { ...updatedOrder, currentPrice: latestPrice },
+              ];
+            }
+          });
+        }
+      );
+      console.log(orders, "neworders");
 
       socket2Ref.current.on("connect_error", (err) => {
         setError(err.message);
@@ -629,7 +639,6 @@ const MyPositions: FC<MyPositionsProps> = ({
       return updatedPrice ? updatedPrice.price : previousPrice || 0;
     });
   }, [prices]);
-
 
   const handleInputChangeProfit = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -909,7 +918,6 @@ const MyPositions: FC<MyPositionsProps> = ({
     }
   }, [Loss, currentItem]);
 
-
   const nextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
@@ -988,18 +996,17 @@ const MyPositions: FC<MyPositionsProps> = ({
     }
   };
 
-
   const resolveFutCont = async (position: Position) => {
     const seedsUser = [Buffer.from(publicKey.toBytes())];
 
     const [userAcc] = await PublicKey.findProgramAddress(seedsUser, PROGRAM_ID);
     const usdcAcc = await usdcSplTokenAccountSync(publicKey);
-    
+
     let backOracle;
     if (isBackupOracle) {
-      backOracle = 0
+      backOracle = 0;
     } else {
-      backOracle = 1
+      backOracle = 1;
     }
     let oracleAccountAddress;
 
@@ -1067,7 +1074,11 @@ const MyPositions: FC<MyPositionsProps> = ({
     try {
       // Send the transaction
       signature = await sendTransaction(transaction, connection);
-      handleNewNotification({ id: generateUniqueId(), type: "info", message: `Closing the Position` });
+      handleNewNotification({
+        id: generateUniqueId(),
+        type: "info",
+        message: `Closing the Position`,
+      });
 
       // Wait for confirmation
       await connection.confirmTransaction(signature, "confirmed");
@@ -1099,7 +1110,6 @@ const MyPositions: FC<MyPositionsProps> = ({
       });
       return; // Exit function early
     }
-    
 
     let oracleAccountAddress;
 
@@ -1129,7 +1139,6 @@ const MyPositions: FC<MyPositionsProps> = ({
       oracleAccount: new PublicKey(oracleAccountAddress),
       ratioAcc: RATIOACC,
       houseAcc: HOUSEWALLET,
-
     };
 
     const args: UpdateFutContArgs = {
@@ -1226,7 +1235,6 @@ const MyPositions: FC<MyPositionsProps> = ({
       oracleAccount: new PublicKey(oracleAccountAddress),
       ratioAcc: RATIOACC,
       houseAcc: HOUSEWALLET,
-
     };
 
     const args: UpdateFutContArgs = {
@@ -1287,7 +1295,6 @@ const MyPositions: FC<MyPositionsProps> = ({
 
     const usdcAcc = await usdcSplTokenAccountSync(publicKey);
 
-
     const accounts: CloseLimitOrderAccounts = {
       futCont: new PublicKey(position.futuresContract),
       playerAcc: new PublicKey(publicKey),
@@ -1304,8 +1311,7 @@ const MyPositions: FC<MyPositionsProps> = ({
       associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
     };
 
-    console.log (usdcAcc, USDCPDAHOUSEWALLET)
-
+    console.log(usdcAcc, USDCPDAHOUSEWALLET);
 
     let PRIORITY_FEE_IX;
 
@@ -1355,7 +1361,6 @@ const MyPositions: FC<MyPositionsProps> = ({
     }
   };
 
-
   const renderPositions = (positionsToRender: Position[]) => {
     const unresolvedPositions = positionsToRender
       .filter((item) => !item.resolved)
@@ -1390,8 +1395,6 @@ const MyPositions: FC<MyPositionsProps> = ({
                 -item.betAmount / LAMPORTS_PER_SOL
               );
     });
-
-    
 
     return (
       <div className="flex flex-col">
@@ -2043,17 +2046,14 @@ const MyPositions: FC<MyPositionsProps> = ({
               </div>
 
               <div className="flex justify-end items-center w-[12%] min-w-[90px] text-[0.9rem] text-grey-text   font-poppins ">
-              {
-  item.usdc === 0
-    ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
-    : `${(item.betAmount / LAMPORTS_PER_SOL * 1000).toFixed(1)}$`
-}              </div>
+                {item.usdc === 0
+                  ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
+                  : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}{" "}
+              </div>
               <div className="flex justify-end items-center w-[15%] min-w-[90px] text-[0.9rem] text-grey-text   font-poppins ">
-              {
-  item.usdc === 0
-    ? `${(item.betAmount * item.leverage / LAMPORTS_PER_SOL).toFixed(2)}◎`
-    : `${(item.betAmount * item.leverage / LAMPORTS_PER_SOL * 1000).toFixed(0)}$`
-}    
+                {item.usdc === 0
+                  ? `${((item.betAmount * item.leverage) / LAMPORTS_PER_SOL).toFixed(2)}◎`
+                  : `${(((item.betAmount * item.leverage) / LAMPORTS_PER_SOL) * 1000).toFixed(0)}$`}
               </div>
               <div className="flex justify-end items-center w-[12%]  min-w-[90px] text-[0.9rem] text-grey-text  font-poppins ">
                 <p
@@ -2062,12 +2062,10 @@ const MyPositions: FC<MyPositionsProps> = ({
                   }
                 >
                   <div>
-                  {
-  item.usdc === 0
-    ? `${item.pnl.toFixed(2)}◎`
-    : `${(item.pnl*1000).toFixed(2)}$`
-}   
-                </div>
+                    {item.usdc === 0
+                      ? `${item.pnl.toFixed(2)}◎`
+                      : `${(item.pnl * 1000).toFixed(2)}$`}
+                  </div>
                 </p>
               </div>
               <div className="flex justify-end items-center w-[15%] min-w-[140px] text-[0.9rem] text-grey-text   font-poppins py-1.5 rounded-r">
@@ -2242,17 +2240,16 @@ const MyPositions: FC<MyPositionsProps> = ({
                           item.pnl >= 0 ? "text-[#34c796] " : "text-red-500 "
                         }
                       >
-                        <div>                  {
-  item.usdc === 0
-    ? `${item.pnl.toFixed(2)}◎`
-    : `${(item.pnl*1000).toFixed(2)}$`
-}  </div>
+                        <div>
+                          {" "}
+                          {item.usdc === 0
+                            ? `${item.pnl.toFixed(2)}◎`
+                            : `${(item.pnl * 1000).toFixed(2)}$`}{" "}
+                        </div>
                         <div className="text-grey-text">
-                        {
-  item.usdc === 0
-    ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
-    : `${(item.betAmount / LAMPORTS_PER_SOL * 1000).toFixed(1)}$`
-}       
+                          {item.usdc === 0
+                            ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
+                            : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}
                         </div>
                       </p>
                     </div>
@@ -2895,18 +2892,14 @@ const MyPositions: FC<MyPositionsProps> = ({
               </div>
 
               <div className="flex justify-end items-center w-[12%] min-w-[90px] text-[0.9rem] text-grey-text   font-poppins ">
-              {
-  item.usdc === 0
-    ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
-    : `${(item.betAmount / LAMPORTS_PER_SOL * 1000).toFixed(1)}$`
-}        
+                {item.usdc === 0
+                  ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
+                  : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}
               </div>
               <div className="flex justify-end items-center w-[15%] min-w-[90px] text-[0.9rem] text-grey-text   font-poppins ">
-              {
-  item.usdc === 0
-    ? `${(item.betAmount * item.leverage / LAMPORTS_PER_SOL).toFixed(2)}◎`
-    : `${(item.betAmount * item.leverage / LAMPORTS_PER_SOL * 1000).toFixed(0)}$`
-}    
+                {item.usdc === 0
+                  ? `${((item.betAmount * item.leverage) / LAMPORTS_PER_SOL).toFixed(2)}◎`
+                  : `${(((item.betAmount * item.leverage) / LAMPORTS_PER_SOL) * 1000).toFixed(0)}$`}
               </div>
               <div className="flex justify-end items-center w-[12%]  min-w-[90px] text-[0.9rem] text-grey-text  font-poppins ">
                 <p
@@ -2914,11 +2907,12 @@ const MyPositions: FC<MyPositionsProps> = ({
                     item.pnl >= 0 ? "text-[#34c796] " : "text-red-500 "
                   }
                 >
-                  <div>                 {
-  item.usdc === 0
-    ? `${(item.pnl/LAMPORTS_PER_SOL).toFixed(2)}◎`
-    : `${(item.pnl*1000/LAMPORTS_PER_SOL).toFixed(2)}$`
-}   </div>
+                  <div>
+                    {" "}
+                    {item.usdc === 0
+                      ? `${(item.pnl / LAMPORTS_PER_SOL).toFixed(2)}◎`
+                      : `${((item.pnl * 1000) / LAMPORTS_PER_SOL).toFixed(2)}$`}{" "}
+                  </div>
                 </p>
               </div>
               <div className=" flex justify-end items-center w-[15%] min-w-[140px] text-[0.9rem] text-grey-text   font-poppins py-1.5 rounded-r">
@@ -3069,19 +3063,14 @@ const MyPositions: FC<MyPositionsProps> = ({
                         }
                       >
                         <div>
-                        {
-  item.usdc === 0
-    ? `${(item.pnl/LAMPORTS_PER_SOL).toFixed(2)}◎`
-    : `${(item.pnl*1000/LAMPORTS_PER_SOL).toFixed(2)}$`
-}  
-
+                          {item.usdc === 0
+                            ? `${(item.pnl / LAMPORTS_PER_SOL).toFixed(2)}◎`
+                            : `${((item.pnl * 1000) / LAMPORTS_PER_SOL).toFixed(2)}$`}
                         </div>
                         <div className="text-grey-text">
-                        {
-  item.usdc === 0
-    ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
-    : `${(item.betAmount / LAMPORTS_PER_SOL * 1000).toFixed(1)}$`
-}    
+                          {item.usdc === 0
+                            ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
+                            : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}
                         </div>
                       </p>
                     </div>
@@ -3214,7 +3203,6 @@ const MyPositions: FC<MyPositionsProps> = ({
     );
   };
 
-
   const renderOrders = () => {
     const orderstoShow = orders.filter(
       (order) => !order.resolved && order.order
@@ -3226,7 +3214,6 @@ const MyPositions: FC<MyPositionsProps> = ({
     // Calculate start and end indices for the slice of data you want to display
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
-
 
     // Get only the data for the current page
     const currentPageData = orderstoShow.slice(startIndex, endIndex);
@@ -3389,27 +3376,23 @@ const MyPositions: FC<MyPositionsProps> = ({
               </div>
 
               <div className="flex justify-end items-center w-[20%] min-w-[90px] text-[0.9rem] text-grey-text   font-poppins ">
-              {
-  item.usdc === 0
-    ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
-    : `${(item.betAmount / LAMPORTS_PER_SOL * 1000).toFixed(1)}$`
-}        
+                {item.usdc === 0
+                  ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
+                  : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}
               </div>
               <div className="flex justify-end items-center w-[20%] min-w-[90px] text-[0.9rem] text-grey-text   font-poppins ">
-              {
-  item.usdc === 0
-    ? `${(item.betAmount * item.leverage / LAMPORTS_PER_SOL).toFixed(2)}◎`
-    : `${(item.betAmount * item.leverage / LAMPORTS_PER_SOL * 1000).toFixed(0)}$`
-}    
+                {item.usdc === 0
+                  ? `${((item.betAmount * item.leverage) / LAMPORTS_PER_SOL).toFixed(2)}◎`
+                  : `${(((item.betAmount * item.leverage) / LAMPORTS_PER_SOL) * 1000).toFixed(0)}$`}
               </div>
               <div className=" flex justify-end items-center w-[20%] min-w-[140px] text-[0.9rem] text-grey-text   font-poppins py-1.5 rounded-r">
                 <div className="flex justify-end  w-full min-w-[140px]">
-                      <button
-                        className="h-[26px] md:w-[45%] w-[95%]  bg-[#1D202F] hover:bg-[#484c6d5b] text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
-                        onClick={() => closeOrder(item)}
-                      >
-                        Close
-                      </button>
+                  <button
+                    className="h-[26px] md:w-[45%] w-[95%]  bg-[#1D202F] hover:bg-[#484c6d5b] text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
+                    onClick={() => closeOrder(item)}
+                  >
+                    Close
+                  </button>
                 </div>
               </div>
             </div>
@@ -3541,13 +3524,11 @@ const MyPositions: FC<MyPositionsProps> = ({
                       <div className="relative leading-[9.98px] text-grey-text">
                         Collateral
                       </div>
-                        <div className="text-grey-text">
-                        {
-  item.usdc === 0
-    ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
-    : `${(item.betAmount / LAMPORTS_PER_SOL * 1000).toFixed(1)}$`
-}    
-                        </div>
+                      <div className="text-grey-text">
+                        {item.usdc === 0
+                          ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
+                          : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -3628,13 +3609,12 @@ const MyPositions: FC<MyPositionsProps> = ({
                 <div className=" flex justify-end items-center w-[100%] min-w-[140px] text-[0.9rem] text-grey-text   font-poppins py-1.5 rounded-r">
                   <div className="items-center flex md:flex-row flex-col w-[100%]">
                     <div className=" w-[100%] gap-2">
-                    <button
-                      className="flex justify-center items-center h-[26px] w-full min:w-[100px] bg-[#1D202F] hover:bg-[#484c6d5b] text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
-                      onClick={() => closeOrder(item)}
-                    >
-                      Close
-                    </button>
-         
+                      <button
+                        className="flex justify-center items-center h-[26px] w-full min:w-[100px] bg-[#1D202F] hover:bg-[#484c6d5b] text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
+                        onClick={() => closeOrder(item)}
+                      >
+                        Close
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -3652,34 +3632,36 @@ const MyPositions: FC<MyPositionsProps> = ({
         <div className="mx-2 pt-3.5 md:py-0 border-b-[1px] border-solid border-layer-3 flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-              selectedButton === 'Positions'
-
+              selectedButton === "Positions"
                 ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                 : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5 "
-            } ${              selectedButton === 'Positions'
-            ? "" : "text-grey long-short-button"}`}
-            onClick={() => setSelectedButton('Positions')}
+            } ${
+              selectedButton === "Positions"
+                ? ""
+                : "text-grey long-short-button"
+            }`}
+            onClick={() => setSelectedButton("Positions")}
           >
             {!isMobile ? <span>My Positions</span> : <span>My Positions</span>}
           </button>
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-              selectedButton === 'History'
+              selectedButton === "History"
                 ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                 : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
-            } ${selectedButton === 'History' ? "" : "text-grey long-short-button"}`}
-            onClick={() => setSelectedButton('History')}            >
-          
+            } ${selectedButton === "History" ? "" : "text-grey long-short-button"}`}
+            onClick={() => setSelectedButton("History")}
+          >
             {!isMobile ? <span>My History</span> : <span>My History</span>}
           </button>
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-              selectedButton === 'Order'
+              selectedButton === "Order"
                 ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                 : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
-            } ${selectedButton === 'Order' ? "" : "text-grey long-short-button"}`}
-            onClick={() => setSelectedButton('Order')}            >
-          
+            } ${selectedButton === "Order" ? "" : "text-grey long-short-button"}`}
+            onClick={() => setSelectedButton("Order")}
+          >
             {!isMobile ? <span>My Orders</span> : <span>My Orders</span>}
           </button>
         </div>
@@ -3692,38 +3674,42 @@ const MyPositions: FC<MyPositionsProps> = ({
         </div>
       </div>
     );
-  } else if (positions.length === 0 && resolvedPositions.length === 0 && orders.length === 0) {
+  } else if (
+    positions.length === 0 &&
+    resolvedPositions.length === 0 &&
+    orders.length === 0
+  ) {
     return (
       <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 md:">
         <div className="mx-2 pt-3.5 md:py-0 border-b-[1px] border-solid border-layer-3 flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-              selectedButton === 'Positions'
+              selectedButton === "Positions"
                 ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                 : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5 "
-            } ${selectedButton === 'Positions' ? "" : "text-grey long-short-button"}`}
-            onClick={() => setSelectedButton('Positions')}
-            >
+            } ${selectedButton === "Positions" ? "" : "text-grey long-short-button"}`}
+            onClick={() => setSelectedButton("Positions")}
+          >
             {!isMobile ? <span>My Positions</span> : <span>My Positions</span>}
           </button>
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-              selectedButton === 'History'
+              selectedButton === "History"
                 ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                 : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
-            } ${selectedButton === 'History' ? "" : "text-grey long-short-button"}`}
-            onClick={() => setSelectedButton('History')}            >
-            
+            } ${selectedButton === "History" ? "" : "text-grey long-short-button"}`}
+            onClick={() => setSelectedButton("History")}
+          >
             {!isMobile ? <span>My History</span> : <span>My History</span>}
           </button>
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-              selectedButton === 'Order'
+              selectedButton === "Order"
                 ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                 : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
-            } ${selectedButton === 'Order' ? "" : "text-grey long-short-button"}`}
-            onClick={() => setSelectedButton('Order')}            >
-          
+            } ${selectedButton === "Order" ? "" : "text-grey long-short-button"}`}
+            onClick={() => setSelectedButton("Order")}
+          >
             {!isMobile ? <span>My Orders</span> : <span>My Orders</span>}
           </button>
         </div>
@@ -3736,7 +3722,12 @@ const MyPositions: FC<MyPositionsProps> = ({
         </div>
       </div>
     );
-  } else if (positions.length === 0 && ((resolvedPositions.length !== 0 || orders.length !== 0) || (resolvedPositions.length !== 0 && orders.length !== 0))) {
+  } else if (
+    positions.length === 0 &&
+    (resolvedPositions.length !== 0 ||
+      orders.length !== 0 ||
+      (resolvedPositions.length !== 0 && orders.length !== 0))
+  ) {
     return (
       <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 md:">
         <div
@@ -3745,12 +3736,15 @@ const MyPositions: FC<MyPositionsProps> = ({
           <div className="mx-2 pt-3.5 md:py-0 border-b-[1px] border-solid border-layer-3 flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
             <button
               className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-                selectedButton === 'Positions'
-                ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
+                selectedButton === "Positions"
+                  ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                   : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5 "
-              } ${              selectedButton === 'Positions'
-              ? "" : "text-grey long-short-button"}`}
-              onClick={() => setSelectedButton('Positions')}
+              } ${
+                selectedButton === "Positions"
+                  ? ""
+                  : "text-grey long-short-button"
+              }`}
+              onClick={() => setSelectedButton("Positions")}
             >
               {!isMobile ? (
                 <span>My Positions</span>
@@ -3760,25 +3754,28 @@ const MyPositions: FC<MyPositionsProps> = ({
             </button>
             <button
               className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-                selectedButton === 'History'
-
+                selectedButton === "History"
                   ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                   : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
-              } ${              selectedButton === 'History'
-              ? "" : "text-grey long-short-button"}`}
-              onClick={() => setSelectedButton('History')}            >
+              } ${
+                selectedButton === "History"
+                  ? ""
+                  : "text-grey long-short-button"
+              }`}
+              onClick={() => setSelectedButton("History")}
+            >
               {!isMobile ? <span>My History</span> : <span>My History</span>}
             </button>
             <button
-            className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-              selectedButton === 'Order'
-                ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
-                : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
-            } ${selectedButton === 'Order' ? "" : "text-grey long-short-button"}`}
-            onClick={() => setSelectedButton('Order')}            >
-          
-            {!isMobile ? <span>My Orders</span> : <span>My Orders</span>}
-          </button>
+              className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
+                selectedButton === "Order"
+                  ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
+                  : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
+              } ${selectedButton === "Order" ? "" : "text-grey long-short-button"}`}
+              onClick={() => setSelectedButton("Order")}
+            >
+              {!isMobile ? <span>My Orders</span> : <span>My Orders</span>}
+            </button>
           </div>
 
           <div
@@ -3787,46 +3784,87 @@ const MyPositions: FC<MyPositionsProps> = ({
           >
             {" "}
             {/* This div is your new scrolling area */}
-            {selectedButton === 'Positions'
- ? (
+            {selectedButton === "Positions" ? (
               <div className=" flex flex-col items-center justify-center h-full overflow-hidden md:pb-0">
                 <FaStream className="text-4xl text-grey mb-2" />
                 <p className="justify-center text-[0.95rem] text-grey  text-center overflow-hidden">
                   You don&apos;t have any opened positions yet.
                 </p>
               </div>
-            ) : selectedButton === 'History' ? (!isMobile ? (
-              <div
-                className="custom-scrollbar overflow-y-scroll rounded"
-                style={{ flexGrow: 1 }}
-              >
-                {" "}
-                {/* This div is your new scrolling area */}
-                <div className="px-2 custom-scrollbar w-full flex font-poppins flex-row  rounded text-grey-text text-sm">
-                  <div className="w-[20%] min-w-[140px] text-start   py-1 rounded-l">
-                    Position
+            ) : selectedButton === "History" ? (
+              !isMobile ? (
+                <div
+                  className="custom-scrollbar overflow-y-scroll rounded"
+                  style={{ flexGrow: 1 }}
+                >
+                  {" "}
+                  {/* This div is your new scrolling area */}
+                  <div className="px-2 custom-scrollbar w-full flex font-poppins flex-row  rounded text-grey-text text-sm">
+                    <div className="w-[20%] min-w-[140px] text-start   py-1 rounded-l">
+                      Position
+                    </div>
+                    <div className="w-[18%] min-w-[90px] text-end  py-1">
+                      Entry
+                    </div>
+                    <div className="w-[18%] min-w-[90px] text-end   py-1">
+                      Exit
+                    </div>
+                    <div className="w-[12%]  min-w-[90px] text-end   py-1 rounded-r">
+                      Collateral
+                    </div>
+                    <div className=" w-[15%] min-w-[90px] text-end   font-poppins py-1 rounded-r">
+                      Size
+                    </div>
+                    <div className=" w-[12%] min-w-[90px] text-end text-grey-text  font-poppins py-1 rounded-r">
+                      PnL
+                    </div>
+                    <div className="w-[15%] min-w-[140px] text-end text-grey-text  font-poppins py-1 rounded-r">
+                      Actions
+                    </div>
                   </div>
-                  <div className="w-[18%] min-w-[90px] text-end  py-1">
-                    Entry
-                  </div>
-                  <div className="w-[18%] min-w-[90px] text-end   py-1">
-                    Exit
-                  </div>
-                  <div className="w-[12%]  min-w-[90px] text-end   py-1 rounded-r">
-                    Collateral
-                  </div>
-                  <div className=" w-[15%] min-w-[90px] text-end   font-poppins py-1 rounded-r">
-                    Size
-                  </div>
-                  <div className=" w-[12%] min-w-[90px] text-end text-grey-text  font-poppins py-1 rounded-r">
-                    PnL
-                  </div>
-                  <div className="w-[15%] min-w-[140px] text-end text-grey-text  font-poppins py-1 rounded-r">
-                    Actions
+                  {renderHistoryPositions()}
+                  <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
+                    <button
+                      className=" bg-transparent mr-2"
+                      onClick={firstPage}
+                      disabled={currentPage === 1}
+                    >
+                      &lt;&lt;
+                    </button>
+                    <button
+                      className=" bg-transparent mr-2"
+                      onClick={prevPage}
+                      disabled={currentPage === 1}
+                    >
+                      &lt;
+                    </button>
+                    <span className="">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <button
+                      className=" bg-transparent px-2"
+                      onClick={nextPage}
+                      disabled={currentPage === totalPages}
+                    >
+                      &gt;
+                    </button>
+                    <button
+                      className=" bg-transparent mr-2"
+                      onClick={lastPage}
+                      disabled={currentPage === totalPages}
+                    >
+                      &gt;&gt;
+                    </button>
                   </div>
                 </div>
-                {renderHistoryPositions()}
-                
+              ) : (
+                <div
+                  className="custom-scrollbar overflow-y-scroll rounded"
+                  style={{ flexGrow: 1 }}
+                >
+                  {" "}
+                  {/* This div is your new scrolling area */}
+                  {renderHistoryPositions()}
                   <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
                     <button
                       className=" bg-transparent mr-2"
@@ -3860,53 +3898,9 @@ const MyPositions: FC<MyPositionsProps> = ({
                       &gt;&gt;
                     </button>
                   </div>
-               
-              </div>
-            ) : (
-              <div
-                className="custom-scrollbar overflow-y-scroll rounded"
-                style={{ flexGrow: 1 }}
-              >
-                {" "}
-                {/* This div is your new scrolling area */}
-                {renderHistoryPositions()}
-     
-                  <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
-                    <button
-                      className=" bg-transparent mr-2"
-                      onClick={firstPage}
-                      disabled={currentPage === 1}
-                    >
-                      &lt;&lt;
-                    </button>
-                    <button
-                      className=" bg-transparent mr-2"
-                      onClick={prevPage}
-                      disabled={currentPage === 1}
-                    >
-                      &lt;
-                    </button>
-                    <span className="">
-                      Page {currentPage} of {totalPages}
-                    </span>
-                    <button
-                      className=" bg-transparent px-2"
-                      onClick={nextPage}
-                      disabled={currentPage === totalPages}
-                    >
-                      &gt;
-                    </button>
-                    <button
-                      className=" bg-transparent mr-2"
-                      onClick={lastPage}
-                      disabled={currentPage === totalPages}
-                    >
-                      &gt;&gt;
-                    </button>
-                  </div>
-          
-              </div>
-            )) : selectedButton === 'Order' ?(
+                </div>
+              )
+            ) : selectedButton === "Order" ? (
               !isMobile ? (
                 // Non-Mobile View for History or Orders
                 <div
@@ -3915,22 +3909,22 @@ const MyPositions: FC<MyPositionsProps> = ({
                 >
                   {/* Your scrolling area and content for History or Orders in non-mobile view */}
                   <div className="px-2 custom-scrollbar w-full flex font-poppins flex-row  rounded text-grey-text text-sm">
-                  <div className="w-[20%] min-w-[140px] text-start   py-1 rounded-l">
-                    Position
+                    <div className="w-[20%] min-w-[140px] text-start   py-1 rounded-l">
+                      Position
+                    </div>
+                    <div className="w-[20%] min-w-[90px] text-end  py-1">
+                      Entry
+                    </div>
+                    <div className="w-[20%]  min-w-[90px] text-end   py-1 rounded-r">
+                      Collateral
+                    </div>
+                    <div className=" w-[20%] min-w-[90px] text-end   font-poppins py-1 rounded-r">
+                      Size
+                    </div>
+                    <div className="w-[20%] min-w-[140px] text-end text-grey-text  font-poppins py-1 rounded-r">
+                      Actions
+                    </div>
                   </div>
-                  <div className="w-[20%] min-w-[90px] text-end  py-1">
-                    Entry
-                  </div>
-                  <div className="w-[20%]  min-w-[90px] text-end   py-1 rounded-r">
-                    Collateral
-                  </div>
-                  <div className=" w-[20%] min-w-[90px] text-end   font-poppins py-1 rounded-r">
-                    Size
-                  </div>
-                  <div className="w-[20%] min-w-[140px] text-end text-grey-text  font-poppins py-1 rounded-r">
-                    Actions
-                  </div>
-                </div>
                   {renderOrders()}
                 </div>
               ) : (
@@ -3944,192 +3938,208 @@ const MyPositions: FC<MyPositionsProps> = ({
                 </div>
               )
             ) : null}
-            
-            
           </div>
         </div>
       </div>
     );
   } else {
+    return (
+      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 md:">
+        <div
+          style={{ display: "flex", flexDirection: "column", height: "100%" }}
+        >
+          <div className="mx-2 pt-3.5 md:py-0 border-b-[1px] border-solid border-layer-3 flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
+            <button
+              className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
+                selectedButton === "Positions"
+                  ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
+                  : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5 "
+              } ${selectedButton === "Positions" ? "" : "text-grey long-short-button"}`}
+              onClick={() => setSelectedButton("Positions")}
+            >
+              {!isMobile ? (
+                <span>My Positions</span>
+              ) : (
+                <span>My Positions</span>
+              )}
+            </button>
+            <button
+              className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
+                selectedButton === "History"
+                  ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
+                  : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
+              } ${selectedButton === "History" ? "" : "text-grey long-short-button"}`}
+              onClick={() => setSelectedButton("History")}
+            >
+              {!isMobile ? <span>My History</span> : <span>My History</span>}
+            </button>
+            <button
+              className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
+                selectedButton === "Order"
+                  ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
+                  : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
+              } ${selectedButton === "Order" ? "" : "text-grey long-short-button"}`}
+              onClick={() => setSelectedButton("Order")}
+            >
+              {!isMobile ? <span>My Orders</span> : <span>My Orders</span>}
+            </button>
+          </div>
+          {!isMobile ? (
+            <div
+              className="custom-scrollbar overflow-y-auto  rounded"
+              style={{ flexGrow: 1 }}
+            >
+              {" "}
+              {/* This div is your new scrolling area */}
+              {selectedButton !== "Order" ? (
+                <div className="px-2 font-poppins custom-scrollbar w-full flex flex-row  rounded text-grey-text text-sm">
+                  <div className="w-[20%] min-w-[140px] text-start   py-1 rounded-l">
+                    Position
+                  </div>
+                  <div className="w-[18%] min-w-[90px] text-end  py-1">
+                    Entry
+                  </div>
+                  <div className="w-[18%] min-w-[90px] text-end   py-1">
+                    {selectedButton === "Positions" ? "Mark" : "Exit"}
+                  </div>
+                  {selectedButton === "Positions" && (
+                    <div className="w-[18%] min-w-[90px] text-end py-1">
+                      Liquidation
+                    </div>
+                  )}
+                  <div className="w-[12%]  min-w-[90px] text-end   py-1 rounded-r">
+                    Collateral
+                  </div>
+                  <div className=" w-[15%] min-w-[90px] text-end   font-poppins py-1 rounded-r">
+                    Size
+                  </div>
 
-  return (
-    <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 md:">
-      <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-        <div className="mx-2 pt-3.5 md:py-0 border-b-[1px] border-solid border-layer-3 flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
-          <button
-            className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-              selectedButton === 'Positions'
-                ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
-                : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5 "
-            } ${selectedButton === 'Positions' ? "" : "text-grey long-short-button"}`}
-            onClick={() => setSelectedButton('Positions')}            >
-            
-            {!isMobile ? <span>My Positions</span> : <span>My Positions</span>}
-          </button>
-          <button
-            className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-              selectedButton === 'History'
-                ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
-                : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
-            } ${selectedButton === 'History' ? "" : "text-grey long-short-button"}`}
-            onClick={() => setSelectedButton('History')}            >
-            
-            {!isMobile ? <span>My History</span> : <span>My History</span>}
-          </button>
-          <button
-            className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-              selectedButton === 'Order'
-                ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
-                : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
-            } ${selectedButton === 'Order' ? "" : "text-grey long-short-button"}`}
-            onClick={() => setSelectedButton('Order')}            >
-          
-            {!isMobile ? <span>My Orders</span> : <span>My Orders</span>}
-          </button>
-        </div>
-        {!isMobile ? (
-          <div
-            className="custom-scrollbar overflow-y-auto  rounded"
-            style={{ flexGrow: 1 }}
-          >
-            {" "}
-            {/* This div is your new scrolling area */}
-            {selectedButton !== 'Order' ? (
-            <div className="px-2 font-poppins custom-scrollbar w-full flex flex-row  rounded text-grey-text text-sm">
+                  <div className=" w-[12%] min-w-[90px] text-end text-grey-text  font-poppins py-1 rounded-r">
+                    PnL
+                  </div>
 
-              <div className="w-[20%] min-w-[140px] text-start   py-1 rounded-l">
-                Position
-              </div>
-              <div className="w-[18%] min-w-[90px] text-end  py-1">Entry</div>
-              <div className="w-[18%] min-w-[90px] text-end   py-1">
-                {selectedButton === 'Positions' ? "Mark" : "Exit"}
-              </div>
-              {selectedButton === 'Positions' && (
-                <div className="w-[18%] min-w-[90px] text-end py-1">
-                  Liquidation
+                  <div className="md:pr-0 pr-2 w-[15%] min-w-[140px] text-end text-grey-text  font-poppins py-1 rounded-r">
+                    Actions
+                  </div>
+                </div>
+              ) : (
+                <div className="px-2 font-poppins custom-scrollbar w-full flex flex-row  rounded text-grey-text text-sm">
+                  <div className="w-[20%] min-w-[140px] text-start   py-1 rounded-l">
+                    Position
+                  </div>
+                  <div className="w-[20%] min-w-[90px] text-end  py-1">
+                    Entry
+                  </div>
+
+                  <div className="w-[20%]  min-w-[90px] text-end   py-1 rounded-r">
+                    Collateral
+                  </div>
+                  <div className=" w-[20%] min-w-[90px] text-end   font-poppins py-1 rounded-r">
+                    Size
+                  </div>
+                  <div className="md:pr-0 pr-2 w-[20%] min-w-[140px] text-end text-grey-text  font-poppins py-1 rounded-r">
+                    Actions
+                  </div>
                 </div>
               )}
-              <div className="w-[12%]  min-w-[90px] text-end   py-1 rounded-r">
-                Collateral
-              </div>
-              <div className=" w-[15%] min-w-[90px] text-end   font-poppins py-1 rounded-r">
-                Size
-              </div>
-  
-              <div className=" w-[12%] min-w-[90px] text-end text-grey-text  font-poppins py-1 rounded-r">
-                PnL
-              </div>
-            
-              <div className="md:pr-0 pr-2 w-[15%] min-w-[140px] text-end text-grey-text  font-poppins py-1 rounded-r">
-                Actions
-              </div>
-            </div>)
-            : ( <div className="px-2 font-poppins custom-scrollbar w-full flex flex-row  rounded text-grey-text text-sm">
-
-            <div className="w-[20%] min-w-[140px] text-start   py-1 rounded-l">
-              Position
+              {selectedButton === "Positions"
+                ? renderPositions(positions)
+                : selectedButton === "History"
+                  ? renderHistoryPositions()
+                  : selectedButton === "Order"
+                    ? renderOrders()
+                    : null}{" "}
+              {selectedButton !== "History" ? null : (
+                <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
+                  <button
+                    className=" bg-transparent mr-2"
+                    onClick={firstPage}
+                    disabled={currentPage === 1}
+                  >
+                    &lt;&lt;
+                  </button>
+                  <button
+                    className=" bg-transparent mr-2"
+                    onClick={prevPage}
+                    disabled={currentPage === 1}
+                  >
+                    &lt;
+                  </button>
+                  <span className="">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    className=" bg-transparent px-2"
+                    onClick={nextPage}
+                    disabled={currentPage === totalPages}
+                  >
+                    &gt;
+                  </button>
+                  <button
+                    className=" bg-transparent mr-2"
+                    onClick={lastPage}
+                    disabled={currentPage === totalPages}
+                  >
+                    &gt;&gt;
+                  </button>
+                </div>
+              )}
             </div>
-            <div className="w-[20%] min-w-[90px] text-end  py-1">Entry</div>
-
-            <div className="w-[20%]  min-w-[90px] text-end   py-1 rounded-r">
-              Collateral
+          ) : (
+            <div
+              className="custom-scrollbar overflow-y-auto  rounded"
+              style={{ flexGrow: 1 }}
+            >
+              {" "}
+              {/* This div is your new scrolling area */}
+              {selectedButton === "Positions"
+                ? renderPositions(positions)
+                : selectedButton === "History"
+                  ? renderHistoryPositions()
+                  : selectedButton === "Order"
+                    ? renderOrders()
+                    : null}{" "}
+              {selectedButton !== "History" ? null : (
+                <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
+                  <button
+                    className=" bg-transparent mr-2"
+                    onClick={firstPage}
+                    disabled={currentPage === 1}
+                  >
+                    &lt;&lt;
+                  </button>
+                  <button
+                    className=" bg-transparent mr-2"
+                    onClick={prevPage}
+                    disabled={currentPage === 1}
+                  >
+                    &lt;
+                  </button>
+                  <span className="">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    className=" bg-transparent px-2"
+                    onClick={nextPage}
+                    disabled={currentPage === totalPages}
+                  >
+                    &gt;
+                  </button>
+                  <button
+                    className=" bg-transparent mr-2"
+                    onClick={lastPage}
+                    disabled={currentPage === totalPages}
+                  >
+                    &gt;&gt;
+                  </button>
+                </div>
+              )}
             </div>
-            <div className=" w-[20%] min-w-[90px] text-end   font-poppins py-1 rounded-r">
-              Size
-            </div>
-            <div className="md:pr-0 pr-2 w-[20%] min-w-[140px] text-end text-grey-text  font-poppins py-1 rounded-r">
-              Actions
-            </div>
-          </div>
-
-            )}   
-            {selectedButton === 'Positions' ? renderPositions(positions) :
-     selectedButton === 'History' ? renderHistoryPositions() :
-     selectedButton === 'Order' ? renderOrders(): null}         {selectedButton !== 'History' ? null : (
-              <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
-                <button
-                  className=" bg-transparent mr-2"
-                  onClick={firstPage}
-                  disabled={currentPage === 1}
-                >
-                  &lt;&lt;
-                </button>
-                <button
-                  className=" bg-transparent mr-2"
-                  onClick={prevPage}
-                  disabled={currentPage === 1}
-                >
-                  &lt;
-                </button>
-                <span className="">
-                  Page {currentPage} of {totalPages}
-                </span>
-                <button
-                  className=" bg-transparent px-2"
-                  onClick={nextPage}
-                  disabled={currentPage === totalPages}
-                >
-                  &gt;
-                </button>
-                <button
-                  className=" bg-transparent mr-2"
-                  onClick={lastPage}
-                  disabled={currentPage === totalPages}
-                >
-                  &gt;&gt;
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div
-            className="custom-scrollbar overflow-y-auto  rounded"
-            style={{ flexGrow: 1 }}
-          >
-            {" "}
-            {/* This div is your new scrolling area */}
-  {selectedButton === 'Positions' ? renderPositions(positions) :
-     selectedButton === 'History' ? renderHistoryPositions() :
-     selectedButton === 'Order' ? renderOrders(): null}               {selectedButton !== 'History' ? null : (
-              <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
-                <button
-                  className=" bg-transparent mr-2"
-                  onClick={firstPage}
-                  disabled={currentPage === 1}
-                >
-                  &lt;&lt;
-                </button>
-                <button
-                  className=" bg-transparent mr-2"
-                  onClick={prevPage}
-                  disabled={currentPage === 1}
-                >
-                  &lt;
-                </button>
-                <span className="">
-                  Page {currentPage} of {totalPages}
-                </span>
-                <button
-                  className=" bg-transparent px-2"
-                  onClick={nextPage}
-                  disabled={currentPage === totalPages}
-                >
-                  &gt;
-                </button>
-                <button
-                  className=" bg-transparent mr-2"
-                  onClick={lastPage}
-                  disabled={currentPage === totalPages}
-                >
-                  &gt;&gt;
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
-  );}
+    );
+  }
 };
 
 export default MyPositions;

@@ -42,11 +42,15 @@ const HOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_HOUSE_WALLET);
 const SIGNERWALLET = new PublicKey(process.env.NEXT_PUBLIC_SIGNER_WALLET);
 const PDAHOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_PDA_HOUSEWALLET);
 const USDCMINT = new PublicKey(process.env.NEXT_PUBLIC_USDC_MINT);
-const ASSOCIATEDTOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM);
+const ASSOCIATEDTOKENPROGRAM = new PublicKey(
+  process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM
+);
 const TOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_PROGRAM);
 const PUSDCMINT = new PublicKey(process.env.NEXT_PUBLIC_PUSDC_MINT);
 const PSOLMINT = new PublicKey(process.env.NEXT_PUBLIC_PSOL_MINT);
-const USDCPDAHOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_USDCPDA_HOUSEWALLET);
+const USDCPDAHOUSEWALLET = new PublicKey(
+  process.env.NEXT_PUBLIC_USDCPDA_HOUSEWALLET
+);
 const LONGSHORTACC = new PublicKey(process.env.NEXT_PUBLIC_LONG_SHORT_ACC);
 const RATIOACC = new PublicKey(process.env.NEXT_PUBLIC_RATIO_ACC);
 
@@ -67,8 +71,8 @@ type TradeBarProps = {
   >;
   openingPrice: number; // Add openingPrice here
   setOpeningPrice: React.Dispatch<React.SetStateAction<number>>;
-  selectedCurrency: 'SOL' | 'USDC';
-  setSelectedCurrency: React.Dispatch<React.SetStateAction<'SOL' | 'USDC'>>;
+  selectedCurrency: "SOL" | "USDC";
+  setSelectedCurrency: React.Dispatch<React.SetStateAction<"SOL" | "USDC">>;
 };
 
 const WalletMultiButtonDynamic = dynamic(
@@ -76,7 +80,6 @@ const WalletMultiButtonDynamic = dynamic(
     (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
   { ssr: false }
 );
-
 
 async function checkLPdata(
   lpAcc: PublicKey,
@@ -138,14 +141,10 @@ async function checkLPdata(
 }
 
 async function usdcSplTokenAccountSync(walletAddress) {
-  let mintAddress = USDCMINT
+  let mintAddress = USDCMINT;
 
   const [splTokenAccount] = PublicKey.findProgramAddressSync(
-    [
-      walletAddress.toBuffer(),
-      TOKENPROGRAM.toBuffer(),
-      mintAddress.toBuffer(),
-    ],
+    [walletAddress.toBuffer(), TOKENPROGRAM.toBuffer(), mintAddress.toBuffer()],
     ASSOCIATEDTOKENPROGRAM
   );
 
@@ -270,10 +269,11 @@ const TradeBar: React.FC<
   const [payout, setPayout] = useState(0);
 
   const [modalIsOpen2, setModalIsOpen2] = useState(false);
-  const [selectedCurrency, setSelectedCurrency] = useState<'SOL' | 'USDC'>('SOL');
+  const [selectedCurrency, setSelectedCurrency] = useState<"SOL" | "USDC">(
+    "SOL"
+  );
   const [usedAffiliate, setUsedAffiliate] = useState<Uint8Array | null>(null);
-  const [data, setData] = useState({
-  });
+  const [data, setData] = useState({});
   const [isInit, setisInit] = useState<{
     isInitialized: boolean;
     usedAffiliate: Uint8Array;
@@ -283,7 +283,6 @@ const TradeBar: React.FC<
   const { fastTradeActivated, setFastTradeActivated } = useFastTrade();
   const { isPriorityFee, setPriorityFee } = usePriorityFee();
   const { isBackupOracle, setBackupOracle } = useBackupOracle();
-
 
   const fetchcheckuserdata = async () => {
     if (!publicKey) {
@@ -908,8 +907,10 @@ const TradeBar: React.FC<
         const now = Date.now();
         const timeNumber = (Math.floor(now / 1000) % 1000000) + 1;
 
-        const betAmount = selectedCurrency === 'USDC' ? (parseFloat(amountValue) * LAMPORTS_PER_SOL / 1000) : (parseFloat(amountValue) * LAMPORTS_PER_SOL);
-
+        const betAmount =
+          selectedCurrency === "USDC"
+            ? (parseFloat(amountValue) * LAMPORTS_PER_SOL) / 1000
+            : parseFloat(amountValue) * LAMPORTS_PER_SOL;
 
         let expiration = 0;
         if (activeButton === 1) {
@@ -944,12 +945,9 @@ const TradeBar: React.FC<
           PROGRAM_ID
         );
 
-
-
         const usedAffiliate = isInit.usedAffiliate;
-        const usdc = selectedCurrency === 'USDC' ? 1 : 0;
+        const usdc = selectedCurrency === "USDC" ? 1 : 0;
         const backOracle = isBackupOracle === true ? 0 : 1;
-
 
         const args: CreateBinOptArgs = {
           number: new BN(timeNumber),
@@ -960,7 +958,7 @@ const TradeBar: React.FC<
           symbol: symbolCode,
           slippagePrice: new BN(initialPrice * 100000000),
           slippage: new BN(slippageTolerance),
-          backOracle: (backOracle),
+          backOracle: backOracle,
           usdc: usdc,
         };
         console.log(
@@ -981,7 +979,6 @@ const TradeBar: React.FC<
 
         const usdcAcc = await usdcSplTokenAccountSync(publicKey);
 
-
         if (!isInit.isInitialized) {
           try {
             const accounts: InitializeUserAccAccounts = {
@@ -989,7 +986,9 @@ const TradeBar: React.FC<
               playerAcc: publicKey,
               affilAcc: AffilAcc,
               systemProgram: SystemProgram.programId,
-              clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
+              clock: new PublicKey(
+                "SysvarC1ock11111111111111111111111111111111"
+              ),
               usdcMint: USDCMINT,
               usdcPlayerAcc: usdcAcc,
               associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
@@ -1026,8 +1025,6 @@ const TradeBar: React.FC<
             });
           }
         } else {
-
-
           const accounts: CreateBinOptAccounts = {
             binOpt: new PublicKey(pda.toString()),
             playerAcc: publicKey,
@@ -1035,7 +1032,9 @@ const TradeBar: React.FC<
             ratioAcc: RATIOACC,
             houseAcc: HOUSEWALLET,
             oracleAccount: new PublicKey(oracleAddy),
-            solOracleAccount: new PublicKey("J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix"),
+            solOracleAccount: new PublicKey(
+              "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix"
+            ),
             pdaHouseAcc: PDAHOUSEWALLET,
             affilAcc: AffilAcc,
             lpAcc: new PublicKey(
@@ -1190,7 +1189,7 @@ const TradeBar: React.FC<
       const rect = buttonRef.current.getBoundingClientRect();
       setModalPosition({
         top: rect.bottom, // Position modal below the button
-        left: rect.left,  // Align modal with the left edge of the button
+        left: rect.left, // Align modal with the left edge of the button
       });
     }
     setModalIsOpen2(!modalIsOpen2);
@@ -1214,22 +1213,30 @@ const TradeBar: React.FC<
       }}
     >
       <div className="w-32 rounded-md bg-layer-2 text-grey-text">
-        <button 
-                        onClick={() => selectCurrencyAndCloseModal('SOL')}
-
-        className="w-full rounded-t-md flex flex-row gap-2 py-1 px-2 hover:bg-[#484c6d5b]">                       <img
-                className="relative w-6 h-6 overflow-hidden shrink-0"
-                alt=""
-                src="/coins/60x60/Sol.png"
-              /> SOL   </button>
-                      <button 
-                                      onClick={() => selectCurrencyAndCloseModal('USDC')}
-
-                      className="w-full rounded-b-md flex flex-row gap-2 py-1 px-2 hover:bg-[#484c6d5b]">                       <img
-                className="relative w-6 h-6 overflow-hidden shrink-0"
-                alt=""
-                src="/coins/60x60/Usdc.png"
-              /> USDC   </button>
+        <button
+          onClick={() => selectCurrencyAndCloseModal("SOL")}
+          className="w-full rounded-t-md flex flex-row gap-2 py-1 px-2 hover:bg-[#484c6d5b]"
+        >
+          {" "}
+          <img
+            className="relative w-6 h-6 overflow-hidden shrink-0"
+            alt=""
+            src="/coins/60x60/Sol.png"
+          />{" "}
+          SOL{" "}
+        </button>
+        <button
+          onClick={() => selectCurrencyAndCloseModal("USDC")}
+          className="w-full rounded-b-md flex flex-row gap-2 py-1 px-2 hover:bg-[#484c6d5b]"
+        >
+          {" "}
+          <img
+            className="relative w-6 h-6 overflow-hidden shrink-0"
+            alt=""
+            src="/coins/60x60/Usdc.png"
+          />{" "}
+          USDC{" "}
+        </button>
       </div>
     </Modal>
   );
@@ -1346,19 +1353,23 @@ const TradeBar: React.FC<
             <span className="rounded-12xs flex flex-row items-center justify-start py-[7px] px-0">
               {" "}
               <button
-              ref={buttonRef}
-              className=" relative leading-[20px] font-medium text-grey-text text-lg flex flex-row items-center"
-              onClick={toggleModal2}
-            >
-                            <img
-                className="relative w-6 h-6 overflow-hidden shrink-0"
-                alt={selectedCurrency}
-                src={selectedCurrency === "SOL" ? "/coins/60x60/Sol.png" : "/coins/60x60/Usdc.png"}
-              />
-                          <FaChevronUp
-              className={`w-[12px] h-[12px] ml-1 text-slate-300  ${modalIsOpen2 ? "" : "rotate-180"}`}
-            />
-            </button>
+                ref={buttonRef}
+                className=" relative leading-[20px] font-medium text-grey-text text-lg flex flex-row items-center"
+                onClick={toggleModal2}
+              >
+                <img
+                  className="relative w-6 h-6 overflow-hidden shrink-0"
+                  alt={selectedCurrency}
+                  src={
+                    selectedCurrency === "SOL"
+                      ? "/coins/60x60/Sol.png"
+                      : "/coins/60x60/Usdc.png"
+                  }
+                />
+                <FaChevronUp
+                  className={`w-[12px] h-[12px] ml-1 text-slate-300  ${modalIsOpen2 ? "" : "rotate-180"}`}
+                />
+              </button>
             </span>
           </div>
         </div>
@@ -1627,25 +1638,25 @@ const TradeBar: React.FC<
         <div className="self-stretch h-4 flex flex-row items-start justify-between">
           <div className="relative leading-[120%]">Position Size</div>
           <div className="relative leading-[14px] font-medium text-white">
-          {isNaN(parseFloat(amountValue))
-      ? `0 ${selectedCurrency}`
-      : `${parseFloat(amountValue)} ${selectedCurrency}`}
+            {isNaN(parseFloat(amountValue))
+              ? `0 ${selectedCurrency}`
+              : `${parseFloat(amountValue)} ${selectedCurrency}`}
           </div>
         </div>
         <div className="self-stretch h-4 flex flex-row items-start justify-between">
           <div className="relative leading-[14px]">Payout</div>
           <div className="relative leading-[14px] font-medium text-white">
-          {isNaN(parseFloat(amountValue) * 1.85)
-      ? `0 ${selectedCurrency}`
-      : `${(parseFloat(amountValue) * 1.85).toFixed(2)} ${selectedCurrency}`}
+            {isNaN(parseFloat(amountValue) * 1.85)
+              ? `0 ${selectedCurrency}`
+              : `${(parseFloat(amountValue) * 1.85).toFixed(2)} ${selectedCurrency}`}
           </div>
         </div>
         <div className="self-stretch h-4 flex flex-row items-start justify-between">
           <div className="relative leading-[14px]">Fees</div>
           <div className="relative leading-[14px] font-medium text-white">
-          {isNaN(parseFloat(amountValue) * 0.05)
-      ? `0 ${selectedCurrency}`
-      : `${(parseFloat(amountValue) * 0.05).toFixed(2)} ${selectedCurrency}`}
+            {isNaN(parseFloat(amountValue) * 0.05)
+              ? `0 ${selectedCurrency}`
+              : `${(parseFloat(amountValue) * 0.05).toFixed(2)} ${selectedCurrency}`}
           </div>
         </div>
 
