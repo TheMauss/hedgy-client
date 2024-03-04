@@ -53,13 +53,19 @@ const ASSOCIATEDTOKENPROGRAM = new PublicKey(
   process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM
 );
 const TOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_PROGRAM);
-const PUSDCMINT = new PublicKey(process.env.NEXT_PUBLIC_PUSDC_MINT);
-const PSOLMINT = new PublicKey(process.env.NEXT_PUBLIC_PSOL_MINT);
 const USDCPDAHOUSEWALLET = new PublicKey(
   process.env.NEXT_PUBLIC_USDCPDA_HOUSEWALLET
 );
-const LONGSHORTACC = new PublicKey(process.env.NEXT_PUBLIC_LONG_SHORT_ACC);
 const RATIOACC = new PublicKey(process.env.NEXT_PUBLIC_RATIO_ACC);
+
+const SOLORACLE = process.env.NEXT_PUBLIC_SOL;
+const BTCORACLE = process.env.NEXT_PUBLIC_BTC;
+const PYTHORACLE = process.env.NEXT_PUBLIC_PYTH;
+const BONKORACLE = process.env.NEXT_PUBLIC_BONK;
+const JUPORACLE = process.env.NEXT_PUBLIC_JUP;
+const ETHORACLE = process.env.NEXT_PUBLIC_ETH;
+const TIAORACLE = process.env.NEXT_PUBLIC_TIA;
+const SUIORACLE = process.env.NEXT_PUBLIC_SUI;
 
 interface Position {
   _id: string;
@@ -1011,21 +1017,21 @@ const MyPositions: FC<MyPositionsProps> = ({
     let oracleAccountAddress;
 
     if (position.symbol === 0) {
-      oracleAccountAddress = "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix";
+      oracleAccountAddress = SOLORACLE;
     } else if (position.symbol === 1) {
-      oracleAccountAddress = "HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J";
+      oracleAccountAddress = BTCORACLE;
     } else if (position.symbol === 2) {
-      oracleAccountAddress = "nrYkQQQur7z8rYTST3G9GqATviK5SxTDkrqd21MW6Ue";
+      oracleAccountAddress = PYTHORACLE;
     } else if (position.symbol === 3) {
-      oracleAccountAddress = "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN";
+      oracleAccountAddress = BONKORACLE;
     } else if (position.symbol === 4) {
-      oracleAccountAddress = "g6eRCbboSwK4tSWngn773RCMexr1APQr4uA9bGZBYfo";
+      oracleAccountAddress = JUPORACLE;
     } else if (position.symbol === 5) {
-      oracleAccountAddress = "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB";
+      oracleAccountAddress = ETHORACLE;
     } else if (position.symbol === 6) {
-      oracleAccountAddress = "funeUsHgi2QKkLdUPASRLuYkaK8JaazCEz3HikbkhVt";
+      oracleAccountAddress = TIAORACLE;
     } else if (position.symbol === 7) {
-      oracleAccountAddress = "3Qub3HaAJaa2xNY7SUqPKd3vVwTqDfDDkEUMPjXD2c1q";
+      oracleAccountAddress = SUIORACLE;
     } else {
       // Handle other cases or provide a default value if needed
     }
@@ -1114,21 +1120,21 @@ const MyPositions: FC<MyPositionsProps> = ({
     let oracleAccountAddress;
 
     if (position.symbol === 0) {
-      oracleAccountAddress = "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix";
+      oracleAccountAddress = SOLORACLE;
     } else if (position.symbol === 1) {
-      oracleAccountAddress = "HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J";
+      oracleAccountAddress = BTCORACLE;
     } else if (position.symbol === 2) {
-      oracleAccountAddress = "nrYkQQQur7z8rYTST3G9GqATviK5SxTDkrqd21MW6Ue";
+      oracleAccountAddress = PYTHORACLE;
     } else if (position.symbol === 3) {
-      oracleAccountAddress = "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN";
+      oracleAccountAddress = BONKORACLE;
     } else if (position.symbol === 4) {
-      oracleAccountAddress = "g6eRCbboSwK4tSWngn773RCMexr1APQr4uA9bGZBYfo";
+      oracleAccountAddress = JUPORACLE;
     } else if (position.symbol === 5) {
-      oracleAccountAddress = "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB";
+      oracleAccountAddress = ETHORACLE;
     } else if (position.symbol === 6) {
-      oracleAccountAddress = "funeUsHgi2QKkLdUPASRLuYkaK8JaazCEz3HikbkhVt";
+      oracleAccountAddress = TIAORACLE;
     } else if (position.symbol === 7) {
-      oracleAccountAddress = "3Qub3HaAJaa2xNY7SUqPKd3vVwTqDfDDkEUMPjXD2c1q";
+      oracleAccountAddress = SUIORACLE;
     } else {
       // Handle other cases or provide a default value if needed
     }
@@ -1210,21 +1216,21 @@ const MyPositions: FC<MyPositionsProps> = ({
     let oracleAccountAddress;
 
     if (position.symbol === 0) {
-      oracleAccountAddress = "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix";
+      oracleAccountAddress = SOLORACLE;
     } else if (position.symbol === 1) {
-      oracleAccountAddress = "HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J";
+      oracleAccountAddress = BTCORACLE;
     } else if (position.symbol === 2) {
-      oracleAccountAddress = "nrYkQQQur7z8rYTST3G9GqATviK5SxTDkrqd21MW6Ue";
+      oracleAccountAddress = PYTHORACLE;
     } else if (position.symbol === 3) {
-      oracleAccountAddress = "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN";
+      oracleAccountAddress = BONKORACLE;
     } else if (position.symbol === 4) {
-      oracleAccountAddress = "g6eRCbboSwK4tSWngn773RCMexr1APQr4uA9bGZBYfo";
+      oracleAccountAddress = JUPORACLE;
     } else if (position.symbol === 5) {
-      oracleAccountAddress = "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB";
+      oracleAccountAddress = ETHORACLE;
     } else if (position.symbol === 6) {
-      oracleAccountAddress = "funeUsHgi2QKkLdUPASRLuYkaK8JaazCEz3HikbkhVt";
+      oracleAccountAddress = TIAORACLE;
     } else if (position.symbol === 7) {
-      oracleAccountAddress = "3Qub3HaAJaa2xNY7SUqPKd3vVwTqDfDDkEUMPjXD2c1q";
+      oracleAccountAddress = SUIORACLE;
     } else {
       // Handle other cases or provide a default value if needed
     }

@@ -56,13 +56,20 @@ const ASSOCIATEDTOKENPROGRAM = new PublicKey(
   process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM
 );
 const TOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_PROGRAM);
-const PUSDCMINT = new PublicKey(process.env.NEXT_PUBLIC_PUSDC_MINT);
-const PSOLMINT = new PublicKey(process.env.NEXT_PUBLIC_PSOL_MINT);
 const USDCPDAHOUSEWALLET = new PublicKey(
   process.env.NEXT_PUBLIC_USDCPDA_HOUSEWALLET
 );
 const LONGSHORTACC = new PublicKey(process.env.NEXT_PUBLIC_LONG_SHORT_ACC);
 const RATIOACC = new PublicKey(process.env.NEXT_PUBLIC_RATIO_ACC);
+
+const SOLORACLE = process.env.NEXT_PUBLIC_SOL;
+const BTCORACLE = process.env.NEXT_PUBLIC_BTC;
+const PYTHORACLE = process.env.NEXT_PUBLIC_PYTH;
+const BONKORACLE = process.env.NEXT_PUBLIC_BONK;
+const JUPORACLE = process.env.NEXT_PUBLIC_JUP;
+const ETHORACLE = process.env.NEXT_PUBLIC_ETH;
+const TIAORACLE = process.env.NEXT_PUBLIC_TIA;
+const SUIORACLE = process.env.NEXT_PUBLIC_SUI;
 
 interface TradeBarFuturesProps {
   setParentDivHeight: (height: string) => void;
@@ -1353,35 +1360,35 @@ const TradeBar: React.FC<
     const cryptoSettings = {
       SOL: {
         symbolCode: 0,
-        oracleAddy: "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix",
+        oracleAddy: SOLORACLE,
       },
       BTC: {
         symbolCode: 1,
-        oracleAddy: "GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU",
+        oracleAddy: BTCORACLE,
       },
       PYTH: {
         symbolCode: 2,
-        oracleAddy: "nrYkQQQur7z8rYTST3G9GqATviK5SxTDkrqd21MW6Ue",
+        oracleAddy: PYTHORACLE,
       },
       BONK: {
         symbolCode: 3,
-        oracleAddy: "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN",
+        oracleAddy: BONKORACLE,
       },
       JUP: {
         symbolCode: 4,
-        oracleAddy: "g6eRCbboSwK4tSWngn773RCMexr1APQr4uA9bGZBYfo",
+        oracleAddy: JUPORACLE,
       },
       ETH: {
         symbolCode: 5,
-        oracleAddy: "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB",
+        oracleAddy: ETHORACLE,
       },
       TIA: {
         symbolCode: 6,
-        oracleAddy: "funeUsHgi2QKkLdUPASRLuYkaK8JaazCEz3HikbkhVt",
+        oracleAddy: TIAORACLE,
       },
       SUI: {
         symbolCode: 7,
-        oracleAddy: "3Qub3HaAJaa2xNY7SUqPKd3vVwTqDfDDkEUMPjXD2c1q",
+        oracleAddy: SUIORACLE,
       },
       // Add more cryptocurrencies here in the same pattern
     };
@@ -1707,35 +1714,35 @@ const TradeBar: React.FC<
     const cryptoSettings = {
       SOL: {
         symbolCode: 0,
-        oracleAddy: "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix",
+        oracleAddy: SOLORACLE,
       },
       BTC: {
         symbolCode: 1,
-        oracleAddy: "HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J",
+        oracleAddy: BTCORACLE,
       },
       PYTH: {
         symbolCode: 2,
-        oracleAddy: "nrYkQQQur7z8rYTST3G9GqATviK5SxTDkrqd21MW6Ue",
+        oracleAddy: PYTHORACLE,
       },
       BONK: {
         symbolCode: 3,
-        oracleAddy: "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN",
+        oracleAddy: BONKORACLE,
       },
       JUP: {
         symbolCode: 4,
-        oracleAddy: "g6eRCbboSwK4tSWngn773RCMexr1APQr4uA9bGZBYfo",
+        oracleAddy: JUPORACLE,
       },
       ETH: {
         symbolCode: 5,
-        oracleAddy: "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB",
+        oracleAddy: ETHORACLE,
       },
       TIA: {
         symbolCode: 6,
-        oracleAddy: "funeUsHgi2QKkLdUPASRLuYkaK8JaazCEz3HikbkhVt",
+        oracleAddy: TIAORACLE,
       },
       SUI: {
         symbolCode: 7,
-        oracleAddy: "3Qub3HaAJaa2xNY7SUqPKd3vVwTqDfDDkEUMPjXD2c1q",
+        oracleAddy: SUIORACLE,
       },
       // Add more cryptocurrencies here in the same pattern
     };

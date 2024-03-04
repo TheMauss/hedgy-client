@@ -46,8 +46,6 @@ const ASSOCIATEDTOKENPROGRAM = new PublicKey(
   process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM
 );
 const TOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_PROGRAM);
-const PUSDCMINT = new PublicKey(process.env.NEXT_PUBLIC_PUSDC_MINT);
-const PSOLMINT = new PublicKey(process.env.NEXT_PUBLIC_PSOL_MINT);
 const USDCPDAHOUSEWALLET = new PublicKey(
   process.env.NEXT_PUBLIC_USDCPDA_HOUSEWALLET
 );
