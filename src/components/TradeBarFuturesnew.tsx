@@ -1324,38 +1324,41 @@ const TradeBar: React.FC<
           5 /
           LAMPORTS_PER_SOL; // 0,3% maximálni pozice
 
-    const maxBet = Math.min(10, countmaxBet);
-    if (warning) {
-      console.error("Cannot create order due to warning:", warning);
-      // Optionally, show a warning notification
-      notify({
-        type: "info",
-        message: `Position Reverted`,
-        description: warning,
-      });
-      return; // Exit function early
-    }
-
-    // if (parseFloat(amountValue) > maxBet) {
-    //   notify({
-    //     type: "error",
-    //     message: `Position Reverted`,
-    //     description: `Maximum Collateral is ${maxBet.toFixed(2)} SOL`,
-    //   });
-    //   return;
-    // }
-
-    // if (
-    //   totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL >
-    //   2 * maxBet * LAMPORTS_PER_SOL
-    // ) {
-    //   notify({
-    //     type: "error",
-    //     message: `Position Reverted`,
-    //     description: `Collateral limit per user is ${(2 * maxBet).toFixed(2)}`,
-    //   });
-    //   return;
-    // }
+          const maxBet = Math.min(100000, countmaxBet);
+          const realbalance = selectedCurrency === "USDC" ? usdcbalance : balance; // 0,3% maximálni pozice
+          const token = selectedCurrency === "USDC" ? "$" : "◎"; // 0,3% maximálni pozice
+      
+          if (warning) {
+            console.error("Cannot open position due to warning:", warning);
+            // Optionally, show a warning notification
+            notify({
+              type: "info",
+              message: `Position Reverted`,
+              description: warning,
+            });
+            return; // Exit function early
+          }
+      
+          if (parseFloat(amountValue) > maxBet) {
+            notify({
+              type: "error",
+              message: `Position Reverted`,
+              description: `Maximum Collateral is ${maxBet.toFixed(2)} ${token}`,
+            });
+            return;
+          }
+      
+          if (
+            totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL >
+            2 * maxBet * LAMPORTS_PER_SOL
+          ) {
+            notify({
+              type: "error",
+              message: `Position Reverted`,
+              description: `Collateral limit per user is ${(2 * maxBet).toFixed(2)}`,
+            });
+            return;
+          }
 
     const cryptoSettings = {
       SOL: {
@@ -1424,36 +1427,35 @@ const TradeBar: React.FC<
       return;
     }
 
-    // if (parseFloat(amountValue) > balance) {
-    //   notify({
-    //     type: "info",
-    //     message: "Insufficient balance",
-    //     description: "Trade Amount is greater than the available balance",
-    //   });
-    //   return;
-    // }
+    if (parseFloat(amountValue) > realbalance) {
+      notify({
+        type: "info",
+        message: "Insufficient balance",
+        description: "Trade Amount is greater than the available balance",
+      });
+      return;
+    }
 
-    // if ((parseFloat(amountValue) - fee) * leverage > availableLiquidity) {
-    //   notify({
-    //     type: "error",
-    //     message: "Insufficient balance",
-    //     description: "Not enough available liquidity in the Vault",
-    //   });
-    //   return;
-    // }
+    if ((parseFloat(amountValue) - fee) * leverage > availableLiquidity) {
+      notify({
+        type: "error",
+        message: "Insufficient balance",
+        description: "Not enough available liquidity in the Vault",
+      });
+      return;
+    }
 
-    // if (
-    //   parseFloat(amountValue) >
-    //     (LPdata?.totalDeposits + LPdata?.pnl) / 200 / LAMPORTS_PER_SOL ||
-    //   parseFloat(amountValue) < 0.05
-    // ) {
-    //   notify({
-    //     type: "info",
-    //     message: "Invalid trade amount",
-    //     description: `Trade Amount should be between 0.05 and ${maxBet.toFixed(2)}`,
-    //   });
-    //   return;
-    // }
+    const minAmount = selectedCurrency === "SOL" ? 0.05 : 5;
+
+    if (parseFloat(amountValue) > maxBet || parseFloat(amountValue) < minAmount) {
+      notify({
+        type: "info",
+        message: "Invalid trade amount",
+        description: `Trade Amount should be between ${minAmount.toFixed(2)} and ${maxBet.toFixed(2)}`,
+      });
+      return;
+    }
+
 
     let signature: TransactionSignature = "";
     try {
@@ -1679,6 +1681,8 @@ const TradeBar: React.FC<
 
     const maxBet = Math.min(100000, countmaxBet);
     const realbalance = selectedCurrency === "USDC" ? usdcbalance : balance; // 0,3% maximálni pozice
+    const token = selectedCurrency === "USDC" ? "$" : "◎"; // 0,3% maximálni pozice
+
     if (warning) {
       console.error("Cannot open position due to warning:", warning);
       // Optionally, show a warning notification
@@ -1694,7 +1698,7 @@ const TradeBar: React.FC<
       notify({
         type: "error",
         message: `Position Reverted`,
-        description: `Maximum Collateral is ${maxBet.toFixed(2)} SOL`,
+        description: `Maximum Collateral is ${maxBet.toFixed(2)} ${token}`,
       });
       return;
     }
@@ -1796,11 +1800,13 @@ const TradeBar: React.FC<
       return;
     }
 
-    if (parseFloat(amountValue) > maxBet || parseFloat(amountValue) < 0.05) {
+    const minAmount = selectedCurrency === "SOL" ? 0.05 : 5;
+
+    if (parseFloat(amountValue) > maxBet || parseFloat(amountValue) < minAmount) {
       notify({
         type: "info",
         message: "Invalid trade amount",
-        description: `Trade Amount should be between 0.05 and ${maxBet.toFixed(2)}`,
+        description: `Trade Amount should be between ${minAmount.toFixed(2)} and ${maxBet.toFixed(2)}`,
       });
       return;
     }
