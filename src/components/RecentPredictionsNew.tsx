@@ -29,6 +29,7 @@ interface Position {
   finalPrice: number;
   elapsedTime: string;
   timestamp: number;
+  usdc: number;
 }
 
 interface PositionFutures {
@@ -49,6 +50,7 @@ interface PositionFutures {
   finalPrice: number;
   timestamp: number;
   pnl: number;
+  usdc: number;
   elapsedTime: string;
 }
 
@@ -278,7 +280,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
               Price
             </div>
             <div className="w-[24%] text-sm leading-[12px] text-grey-text py-2 text-end">
-              Size ◎
+              Size
             </div>
             <div className="w-[29%] text-sm leading-[12px] text-grey-text py-2 text-end">
               Time
@@ -479,7 +481,7 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                     >
                       {"binaryOption" in item
                         ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(1)}`
-                        : `${((item.leverage * item.betAmount) / LAMPORTS_PER_SOL).toFixed(1)}`}
+                        : `${((item.leverage * item.betAmount) / LAMPORTS_PER_SOL).toFixed(1)}`}{item.usdc === 0 ? ' ◎' : 'k $'}
                     </div>
                     <div
                       className={`w-[29%] leading-[12px] flex items-center justify-end text-grey-text`}
