@@ -2445,9 +2445,6 @@ const MyPositions: FC<MyPositionsProps> = ({
       (position) => position.resolved
     );
 
-    // Reverse the array to show positions from newest to oldest
-    resolvedPositionsToShow.reverse();
-
     const ModalDetails = (
       <Modal
         className="bg-layer-1  rounded-[2rem] border border-layer-3"

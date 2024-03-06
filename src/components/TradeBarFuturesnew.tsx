@@ -1451,7 +1451,7 @@ const TradeBar: React.FC<
       notify({
         type: "info",
         message: "Invalid trade amount",
-        description: `Trade Amount should be between ${minAmount.toFixed(2)} and ${maxBet.toFixed(2)}`,
+        description: `Trade Amount should be between ${minAmount.toFixed(2)}${token} and ${maxBet.toFixed(2)}${token}`,
       });
       return;
     }

@@ -1133,8 +1133,6 @@ const MyPositions: FC<MyPositionsProps> = ({
     const resolvedPositionsToShow = resolvedPositions.filter(
       (position) => position.resolved
     );
-    // Reverse the array to show positions from newest to oldest
-    resolvedPositionsToShow.reverse();
 
     // Get only the data for the current page
     const currentPageData = resolvedPositionsToShow;
