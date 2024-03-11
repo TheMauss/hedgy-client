@@ -1,26 +1,22 @@
-import {
-  TransactionInstruction,
-  PublicKey,
-  AccountMeta,
-} from "@solana/web3.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import BN from "bn.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as borsh from "@coral-xyz/borsh"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { PROGRAM_ID } from "../programId";
+import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
+import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
+import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
+import { PROGRAM_ID } from "../programId"
 
 export interface CloseLimitOrderAccounts {
-  futCont: PublicKey;
-  playerAcc: PublicKey;
-  userAcc: PublicKey;
-  ratioAcc: PublicKey;
-  houseAcc: PublicKey;
-  signerServer: PublicKey;
-  pdaHouseAcc: PublicKey;
-  systemProgram: PublicKey;
-  usdcMint: PublicKey;
-  usdcPlayerAcc: PublicKey;
-  usdcPdaHouseAcc: PublicKey;
-  tokenProgram: PublicKey;
-  associatedTokenProgram: PublicKey;
+  futCont: PublicKey
+  playerAcc: PublicKey
+  userAcc: PublicKey
+  ratioAcc: PublicKey
+  houseAcc: PublicKey
+  signerServer: PublicKey
+  pdaHouseAcc: PublicKey
+  systemProgram: PublicKey
+  usdcMint: PublicKey
+  usdcPlayerAcc: PublicKey
+  usdcPdaHouseAcc: PublicKey
+  tokenProgram: PublicKey
+  associatedTokenProgram: PublicKey
 }
 
 export function closeLimitOrder(
@@ -45,9 +41,9 @@ export function closeLimitOrder(
       isSigner: false,
       isWritable: false,
     },
-  ];
-  const identifier = Buffer.from([76, 124, 128, 15, 213, 87, 37, 250]);
-  const data = identifier;
-  const ix = new TransactionInstruction({ keys, programId, data });
-  return ix;
+  ]
+  const identifier = Buffer.from([76, 124, 128, 15, 213, 87, 37, 250])
+  const data = identifier
+  const ix = new TransactionInstruction({ keys, programId, data })
+  return ix
 }

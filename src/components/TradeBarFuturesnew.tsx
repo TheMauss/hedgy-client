@@ -61,6 +61,8 @@ const USDCPDAHOUSEWALLET = new PublicKey(
 );
 const LONGSHORTACC = new PublicKey(process.env.NEXT_PUBLIC_LONG_SHORT_ACC);
 const RATIOACC = new PublicKey(process.env.NEXT_PUBLIC_RATIO_ACC);
+const LPACC = new PublicKey(process.env.NEXT_PUBLIC_LP_ACC);
+
 
 const SOLORACLE = process.env.NEXT_PUBLIC_SOL;
 const BTCORACLE = process.env.NEXT_PUBLIC_BTC;
@@ -1589,7 +1591,7 @@ const TradeBar: React.FC<
           userAcc: userAcc,
           ratioAcc: RATIOACC,
           houseAcc: HOUSEWALLET,
-          lpAcc: new PublicKey("AUURRMKsMjBK1zaMUmWyy8nCABXZDVtoucwHZBUnh3bB"),
+          lpAcc: LPACC,
           signerServer: SIGNERWALLET,
           oracleAccount: new PublicKey(oracleAddy),
           pdaHouseAcc: PDAHOUSEWALLET,
@@ -1949,7 +1951,7 @@ const TradeBar: React.FC<
           ),
           pdaHouseAcc: PDAHOUSEWALLET,
           affilAcc: AffilAcc,
-          lpAcc: new PublicKey("AUURRMKsMjBK1zaMUmWyy8nCABXZDVtoucwHZBUnh3bB"),
+          lpAcc: LPACC,
           signerWalletAccount: SIGNERWALLET,
           systemProgram: SystemProgram.programId,
           usdcMint: USDCMINT,

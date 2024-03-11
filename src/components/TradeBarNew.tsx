@@ -51,6 +51,8 @@ const USDCPDAHOUSEWALLET = new PublicKey(
 );
 const LONGSHORTACC = new PublicKey(process.env.NEXT_PUBLIC_LONG_SHORT_ACC);
 const RATIOACC = new PublicKey(process.env.NEXT_PUBLIC_RATIO_ACC);
+const LPACC = new PublicKey(process.env.NEXT_PUBLIC_LP_ACC);
+
 
 type TradeBarProps = {
   setParentDivHeight: (height: string) => void;
@@ -1049,9 +1051,7 @@ const TradeBar: React.FC<
             ),
             pdaHouseAcc: PDAHOUSEWALLET,
             affilAcc: AffilAcc,
-            lpAcc: new PublicKey(
-              "AUURRMKsMjBK1zaMUmWyy8nCABXZDVtoucwHZBUnh3bB"
-            ),
+            lpAcc: LPACC,
             signerWalletAccount: SIGNERWALLET,
             systemProgram: SystemProgram.programId,
             usdcMint: USDCMINT,

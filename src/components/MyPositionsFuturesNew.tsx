@@ -57,6 +57,8 @@ const USDCPDAHOUSEWALLET = new PublicKey(
   process.env.NEXT_PUBLIC_USDCPDA_HOUSEWALLET
 );
 const RATIOACC = new PublicKey(process.env.NEXT_PUBLIC_RATIO_ACC);
+const LPACC = new PublicKey(process.env.NEXT_PUBLIC_LP_ACC);
+
 
 const SOLORACLE = process.env.NEXT_PUBLIC_SOL;
 const BTCORACLE = process.env.NEXT_PUBLIC_BTC;
@@ -1043,7 +1045,7 @@ const MyPositions: FC<MyPositionsProps> = ({
       playerAcc: new PublicKey(walletAddress),
       oracleAccount: new PublicKey(oracleAccountAddress),
       pdaHouseAcc: PDAHOUSEWALLET,
-      lpAcc: new PublicKey("AUURRMKsMjBK1zaMUmWyy8nCABXZDVtoucwHZBUnh3bB"),
+      lpAcc: LPACC,
       signerWalletAccount: SIGNERWALLET,
       systemProgram: SystemProgram.programId,
       houseAcc: HOUSEWALLET,

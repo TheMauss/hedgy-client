@@ -3,12 +3,12 @@ import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
-export interface WithdrawFromLiquidityPoolArgs {
+export interface WithdrawPolFromLpArgs {
   withdrawAmount: BN
   usdc: number
 }
 
-export interface WithdrawFromLiquidityPoolAccounts {
+export interface WithdrawPolFromLpAccounts {
   liqProvider: PublicKey
   providersWallet: PublicKey
   lpAcc: PublicKey
@@ -31,9 +31,9 @@ export const layout = borsh.struct([
   borsh.u8("usdc"),
 ])
 
-export function withdrawFromLiquidityPool(
-  args: WithdrawFromLiquidityPoolArgs,
-  accounts: WithdrawFromLiquidityPoolAccounts,
+export function withdrawPolFromLp(
+  args: WithdrawPolFromLpArgs,
+  accounts: WithdrawPolFromLpAccounts,
   programId: PublicKey = PROGRAM_ID
 ) {
   const keys: Array<AccountMeta> = [
@@ -65,7 +65,7 @@ export function withdrawFromLiquidityPool(
     },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
   ]
-  const identifier = Buffer.from([225, 90, 221, 102, 240, 250, 152, 150])
+  const identifier = Buffer.from([19, 73, 250, 229, 102, 24, 114, 188])
   const buffer = Buffer.alloc(1000)
   const len = layout.encode(
     {

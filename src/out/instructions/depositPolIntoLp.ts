@@ -3,12 +3,12 @@ import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
-export interface WithdrawFromLiquidityPoolArgs {
-  withdrawAmount: BN
+export interface DepositPolIntoLpArgs {
+  depositAmount: BN
   usdc: number
 }
 
-export interface WithdrawFromLiquidityPoolAccounts {
+export interface DepositPolIntoLpAccounts {
   liqProvider: PublicKey
   providersWallet: PublicKey
   lpAcc: PublicKey
@@ -20,20 +20,19 @@ export interface WithdrawFromLiquidityPoolAccounts {
   providersSplTokenAccount: PublicKey
   usdcProvidersWallet: PublicKey
   usdcPdaHouseAcc: PublicKey
-  tokenProgram: PublicKey
-  ratioAcc: PublicKey
   associatedTokenProgram: PublicKey
+  tokenProgram: PublicKey
   systemProgram: PublicKey
 }
 
 export const layout = borsh.struct([
-  borsh.u64("withdrawAmount"),
+  borsh.u64("depositAmount"),
   borsh.u8("usdc"),
 ])
 
-export function withdrawFromLiquidityPool(
-  args: WithdrawFromLiquidityPoolArgs,
-  accounts: WithdrawFromLiquidityPoolAccounts,
+export function depositPolIntoLp(
+  args: DepositPolIntoLpArgs,
+  accounts: DepositPolIntoLpAccounts,
   programId: PublicKey = PROGRAM_ID
 ) {
   const keys: Array<AccountMeta> = [
@@ -56,20 +55,19 @@ export function withdrawFromLiquidityPool(
     },
     { pubkey: accounts.usdcProvidersWallet, isSigner: false, isWritable: true },
     { pubkey: accounts.usdcPdaHouseAcc, isSigner: false, isWritable: true },
-    { pubkey: accounts.tokenProgram, isSigner: false, isWritable: false },
-    { pubkey: accounts.ratioAcc, isSigner: false, isWritable: true },
     {
       pubkey: accounts.associatedTokenProgram,
       isSigner: false,
       isWritable: false,
     },
+    { pubkey: accounts.tokenProgram, isSigner: false, isWritable: false },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
   ]
-  const identifier = Buffer.from([225, 90, 221, 102, 240, 250, 152, 150])
+  const identifier = Buffer.from([240, 95, 205, 134, 64, 91, 245, 126])
   const buffer = Buffer.alloc(1000)
   const len = layout.encode(
     {
-      withdrawAmount: args.withdrawAmount,
+      depositAmount: args.depositAmount,
       usdc: args.usdc,
     },
     buffer

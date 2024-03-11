@@ -1,43 +1,39 @@
-import {
-  TransactionInstruction,
-  PublicKey,
-  AccountMeta,
-} from "@solana/web3.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import BN from "bn.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as borsh from "@coral-xyz/borsh"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { PROGRAM_ID } from "../programId";
+import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
+import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
+import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
+import { PROGRAM_ID } from "../programId"
 
 export interface CreateBinOptArgs {
-  number: BN;
-  affiliateCode: Array<number>;
-  betAmount: BN;
-  expiration: BN;
-  priceDirection: number;
-  symbol: number;
-  slippagePrice: BN;
-  slippage: BN;
-  backOracle: number;
-  usdc: number;
+  number: BN
+  affiliateCode: Array<number>
+  betAmount: BN
+  expiration: BN
+  priceDirection: number
+  symbol: number
+  slippagePrice: BN
+  slippage: BN
+  backOracle: number
+  usdc: number
 }
 
 export interface CreateBinOptAccounts {
-  binOpt: PublicKey;
-  playerAcc: PublicKey;
-  userAcc: PublicKey;
-  ratioAcc: PublicKey;
-  houseAcc: PublicKey;
-  oracleAccount: PublicKey;
-  solOracleAccount: PublicKey;
-  pdaHouseAcc: PublicKey;
-  affilAcc: PublicKey;
-  lpAcc: PublicKey;
-  signerWalletAccount: PublicKey;
-  systemProgram: PublicKey;
-  usdcMint: PublicKey;
-  usdcPlayerAcc: PublicKey;
-  usdcPdaHouseAcc: PublicKey;
-  tokenProgram: PublicKey;
-  associatedTokenProgram: PublicKey;
+  binOpt: PublicKey
+  playerAcc: PublicKey
+  userAcc: PublicKey
+  ratioAcc: PublicKey
+  houseAcc: PublicKey
+  oracleAccount: PublicKey
+  solOracleAccount: PublicKey
+  pdaHouseAcc: PublicKey
+  affilAcc: PublicKey
+  lpAcc: PublicKey
+  signerWalletAccount: PublicKey
+  systemProgram: PublicKey
+  usdcMint: PublicKey
+  usdcPlayerAcc: PublicKey
+  usdcPdaHouseAcc: PublicKey
+  tokenProgram: PublicKey
+  associatedTokenProgram: PublicKey
 }
 
 export const layout = borsh.struct([
@@ -51,7 +47,7 @@ export const layout = borsh.struct([
   borsh.i64("slippage"),
   borsh.u8("backOracle"),
   borsh.u8("usdc"),
-]);
+])
 
 export function createBinOpt(
   args: CreateBinOptArgs,
@@ -84,9 +80,9 @@ export function createBinOpt(
       isSigner: false,
       isWritable: false,
     },
-  ];
-  const identifier = Buffer.from([187, 223, 82, 220, 39, 72, 145, 225]);
-  const buffer = Buffer.alloc(1000);
+  ]
+  const identifier = Buffer.from([187, 223, 82, 220, 39, 72, 145, 225])
+  const buffer = Buffer.alloc(1000)
   const len = layout.encode(
     {
       number: args.number,
@@ -101,8 +97,8 @@ export function createBinOpt(
       usdc: args.usdc,
     },
     buffer
-  );
-  const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len);
-  const ix = new TransactionInstruction({ keys, programId, data });
-  return ix;
+  )
+  const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
+  const ix = new TransactionInstruction({ keys, programId, data })
+  return ix
 }
