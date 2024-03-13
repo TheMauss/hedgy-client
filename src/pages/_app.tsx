@@ -31,6 +31,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
     const handleRouteChange = (url: string) => {
       window.gtag('config', 'G-N43CYRYXY9', {
         page_path: url,
+        page_title: document.title
       });
     };
 
