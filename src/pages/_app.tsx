@@ -35,7 +35,9 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
   
     // Add route change listener to track pageviews on navigation
     const handleRouteChange = (url) => {
-      ReactGA.pageview(url);
+      const page = url.pathname + url.search;
+      const title = document.title;
+      ReactGA.pageview(page, [page], title);
     };
   
     router.events.on('routeChangeComplete', handleRouteChange);
