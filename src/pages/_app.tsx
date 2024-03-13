@@ -27,26 +27,25 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
   const showAppBar = !hideAppBarFor.includes(router.pathname);
 
   useEffect(() => {
-    // Initialize Google Analytics
-    ReactGA.initialize("G-N43CYRYXY9");
-  
-    // Track the initial pageview
-    ReactGA.pageview(window.location.pathname + window.location.search);
-  
-    // Add route change listener to track pageviews on navigation
-    const handleRouteChange = (url) => {
-      const page = url.pathname + url.search;
-      const title = document.title;
-      ReactGA.pageview(page, [page], title);
+    // Function to track pageviews
+    const handleRouteChange = (url: string) => {
+      window.gtag('config', 'G-N43CYRYXY9', {
+        page_path: url,
+      });
     };
-  
+
+    // Track the initial pageview
+    handleRouteChange(window.location.pathname);
+
+    // Listen for route changes and track them
     router.events.on('routeChangeComplete', handleRouteChange);
-  
-    // Cleanup subscription on unmount
+
+    // Cleanup event listener on unmount
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange);
     };
   }, [router.events]);
+
   
 
   const [isContentContainerOpen, setIsContentContainerOpen] = useState(false);
@@ -68,6 +67,18 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
       <Head>
         <title>PopFi</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-N43CYRYXY9"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+
+              gtag('config', 'G-N43CYRYXY9');
+            `,
+          }}
+        />
       </Head>
       <ContextProvider>
         <PriorityFeeProvider>
