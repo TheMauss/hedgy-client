@@ -27,10 +27,25 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
   const showAppBar = !hideAppBarFor.includes(router.pathname);
 
   useEffect(() => {
-    // Initialize Google Analytics with your tracking ID
+    // Initialize Google Analytics
     ReactGA.initialize("G-N43CYRYXY9");
-    ReactGA.pageview(window.location.pathname);
-  }, []);
+  
+    // Track the initial pageview
+    ReactGA.pageview(window.location.pathname + window.location.search);
+  
+    // Add route change listener to track pageviews on navigation
+    const handleRouteChange = (url) => {
+      ReactGA.pageview(url);
+    };
+  
+    router.events.on('routeChangeComplete', handleRouteChange);
+  
+    // Cleanup subscription on unmount
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router.events]);
+  
 
   const [isContentContainerOpen, setIsContentContainerOpen] = useState(false);
 
