@@ -1,41 +1,45 @@
-import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
-import { PROGRAM_ID } from "../programId"
+import {
+  TransactionInstruction,
+  PublicKey,
+  AccountMeta,
+} from "@solana/web3.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import BN from "bn.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import * as borsh from "@coral-xyz/borsh"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { PROGRAM_ID } from "../programId";
 
 export interface CreateFutContArgs {
-  number: BN
-  affiliateCode: Array<number>
-  betAmount: BN
-  leverage: BN
-  priceDirection: number
-  symbol: number
-  slPrice: BN
-  tpPrice: BN
-  slippagePrice: BN
-  slippage: BN
-  backOracle: number
-  usdc: number
+  number: BN;
+  affiliateCode: Array<number>;
+  betAmount: BN;
+  leverage: BN;
+  priceDirection: number;
+  symbol: number;
+  slPrice: BN;
+  tpPrice: BN;
+  slippagePrice: BN;
+  slippage: BN;
+  backOracle: number;
+  usdc: number;
 }
 
 export interface CreateFutContAccounts {
-  futCont: PublicKey
-  playerAcc: PublicKey
-  userAcc: PublicKey
-  ratioAcc: PublicKey
-  houseAcc: PublicKey
-  oracleAccount: PublicKey
-  solOracleAccount: PublicKey
-  pdaHouseAcc: PublicKey
-  affilAcc: PublicKey
-  lpAcc: PublicKey
-  signerWalletAccount: PublicKey
-  systemProgram: PublicKey
-  usdcMint: PublicKey
-  usdcPlayerAcc: PublicKey
-  usdcPdaHouseAcc: PublicKey
-  tokenProgram: PublicKey
-  associatedTokenProgram: PublicKey
+  futCont: PublicKey;
+  playerAcc: PublicKey;
+  userAcc: PublicKey;
+  ratioAcc: PublicKey;
+  houseAcc: PublicKey;
+  oracleAccount: PublicKey;
+  solOracleAccount: PublicKey;
+  pdaHouseAcc: PublicKey;
+  affilAcc: PublicKey;
+  lpAcc: PublicKey;
+  signerWalletAccount: PublicKey;
+  systemProgram: PublicKey;
+  usdcMint: PublicKey;
+  usdcPlayerAcc: PublicKey;
+  usdcPdaHouseAcc: PublicKey;
+  tokenProgram: PublicKey;
+  associatedTokenProgram: PublicKey;
 }
 
 export const layout = borsh.struct([
@@ -51,7 +55,7 @@ export const layout = borsh.struct([
   borsh.i64("slippage"),
   borsh.u8("backOracle"),
   borsh.u8("usdc"),
-])
+]);
 
 export function createFutCont(
   args: CreateFutContArgs,
@@ -84,9 +88,9 @@ export function createFutCont(
       isSigner: false,
       isWritable: false,
     },
-  ]
-  const identifier = Buffer.from([155, 8, 138, 218, 226, 72, 216, 229])
-  const buffer = Buffer.alloc(1000)
+  ];
+  const identifier = Buffer.from([155, 8, 138, 218, 226, 72, 216, 229]);
+  const buffer = Buffer.alloc(1000);
   const len = layout.encode(
     {
       number: args.number,
@@ -103,8 +107,8 @@ export function createFutCont(
       usdc: args.usdc,
     },
     buffer
-  )
-  const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
-  const ix = new TransactionInstruction({ keys, programId, data })
-  return ix
+  );
+  const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len);
+  const ix = new TransactionInstruction({ keys, programId, data });
+  return ix;
 }

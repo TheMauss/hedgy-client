@@ -1,24 +1,28 @@
-import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
-import { PROGRAM_ID } from "../programId"
+import {
+  TransactionInstruction,
+  PublicKey,
+  AccountMeta,
+} from "@solana/web3.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import BN from "bn.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import * as borsh from "@coral-xyz/borsh"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { PROGRAM_ID } from "../programId";
 
 export interface ResolveFutContAccounts {
-  futCont: PublicKey
-  userAcc: PublicKey
-  ratioAcc: PublicKey
-  playerAcc: PublicKey
-  signerServer: PublicKey
-  oracleAccount: PublicKey
-  pdaHouseAcc: PublicKey
-  lpAcc: PublicKey
-  systemProgram: PublicKey
-  houseAcc: PublicKey
-  usdcMint: PublicKey
-  usdcPlayerAcc: PublicKey
-  usdcPdaHouseAcc: PublicKey
-  tokenProgram: PublicKey
-  associatedTokenProgram: PublicKey
+  futCont: PublicKey;
+  userAcc: PublicKey;
+  ratioAcc: PublicKey;
+  playerAcc: PublicKey;
+  signerServer: PublicKey;
+  oracleAccount: PublicKey;
+  pdaHouseAcc: PublicKey;
+  lpAcc: PublicKey;
+  systemProgram: PublicKey;
+  houseAcc: PublicKey;
+  usdcMint: PublicKey;
+  usdcPlayerAcc: PublicKey;
+  usdcPdaHouseAcc: PublicKey;
+  tokenProgram: PublicKey;
+  associatedTokenProgram: PublicKey;
 }
 
 export function resolveFutCont(
@@ -45,9 +49,9 @@ export function resolveFutCont(
       isSigner: false,
       isWritable: false,
     },
-  ]
-  const identifier = Buffer.from([186, 213, 121, 51, 18, 95, 36, 207])
-  const data = identifier
-  const ix = new TransactionInstruction({ keys, programId, data })
-  return ix
+  ];
+  const identifier = Buffer.from([186, 213, 121, 51, 18, 95, 36, 207]);
+  const data = identifier;
+  const ix = new TransactionInstruction({ keys, programId, data });
+  return ix;
 }

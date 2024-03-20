@@ -4,7 +4,16 @@ import { useState, useEffect, useRef, FC } from "react";
 import ResizeDetector from "react-resize-detector";
 import PopFiLandingPageColumnvector from "components/PopFiLandingPageColumnvector";
 import socketIOClient from "socket.io-client";
-import Rellax from "rellax";
+import { useRouter } from "next/router";
+import AppBar from "components/Firstbar";
+// At the top of your HomeView file
+import dynamic from "next/dynamic";
+
+// Dynamically import the StarfieldAnimationComponent with SSR disabled
+const StarfieldAnimationComponentWithNoSSR = dynamic(
+  () => import("components/StarfieldAnimationComponent"),
+  { ssr: false }
+);
 
 const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT1;
 const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
@@ -16,6 +25,38 @@ export const HomeView: FC = ({}) => {
   const refforthDiv = React.useRef(null);
   const [prices, setPrices] = useState({});
   const [openPrices, setopenPrices] = useState({});
+  const [isNavOpen, setIsNavOpen] = useState(false);
+
+  const [windowWidth, setWindowWidth] = useState(0);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setWindowWidth(window.innerWidth);
+      // Add any event listeners here
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const handleResize = () => {
+        setWindowWidth(window.innerWidth);
+      };
+
+      window.addEventListener("resize", handleResize);
+
+      // Cleanup
+      return () => window.removeEventListener("resize", handleResize);
+    }
+  }, []);
+
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    // This effect runs once on mount
+    if (typeof window !== "undefined") {
+      setIsClient(true); // Enable client-dependent features
+    }
+  }, []);
 
   const imgRef1 = useRef(null);
   const imgRef2 = useRef(null);
@@ -92,39 +133,19 @@ export const HomeView: FC = ({}) => {
     };
   }, []);
 
+  const router = useRouter();
+
   useEffect(() => {
-    // Logic that you want to run after the component has mounted goes here.
-
-    // Get screen width
-    const screenWidth = window.innerWidth;
-
-    // Set data-rellax-speed based on screen size
-    if (screenWidth <= 768) {
-      imgRef1.current.setAttribute("data-rellax-speed", "-3");
-      imgRef2.current.setAttribute("data-rellax-speed", "2");
-    } else {
-      imgRef1.current.setAttribute("data-rellax-speed", "-3");
-      imgRef2.current.setAttribute("data-rellax-speed", "2");
-    }
-
-    // Initialize Rellax
-    const rellaxInstance = new Rellax(".rellax", {
-      center: true,
-      wrapper: null,
-      round: true,
-      vertical: true,
-      horizontal: false,
-    });
-
-    rellaxInstance.refresh();
-
-    // Cleanup
-    return () => {
-      rellaxInstance.destroy();
+    const handleRouteChange = () => {
+      // Logic to reinitialize the StarfieldAnimation or update its state
     };
 
-    // The empty dependency array means this effect will only run once, similar to componentDidMount.
-  }, []);
+    router.events.on("routeChangeComplete", handleRouteChange);
+
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, [router.events]);
 
   useEffect(() => {
     const socket = socketIOClient(ENDPOINT);
@@ -279,18 +300,21 @@ export const HomeView: FC = ({}) => {
 
   return (
     <>
-      <div className="flex flex-col font-poppins items-start justify-start mx-auto w-auto sm:w-full md:w-full">
-        <div className="topg flex flex-col md:gap-10 gap-[79px] items-center justify-start w-full pb-14">
+      <>
+        {console.log("Rendering StarfieldAnimation")}
+        <StarfieldAnimationComponentWithNoSSR />
+      </>
+      <div className="flex topg flex-col font-poppins items-center justify-center mx-auto w-auto sm:w-full md:w-full z-1000">
+        <div className="flex justify-between items-between w-full z-2000">
+          <AppBar isNavOpen={isNavOpen} setIsNavOpen={setIsNavOpen} />
+        </div>
+
+        <div className="flex flex-col md:gap-10 gap-[79px] items-center justify-start w-full">
           <div className=" flex flex-col gap-[55px] inset-x-[0] items-center justify-center mx-auto  w-auto">
-            <div className="pt-16 bankGothic bg-clip-text bg-white  leading-[90.69%] max-w-full md:max-w-[900px] md:text-6xl text-5xl text-center bg-clip-text text-transparent bg-gradient-to-b from-[#FFFFFF] to-[#9697a7]">
-              Trade Binary Options and High Leverage Futures on-chain.
+            <div className="pt-16 bankGothic bg-clip-text bg-white  leading-[90.69%] max-w-full md:max-w-[900px] md:text-6xl text-5xl text-center bg-clip-text text-transparent bg-gradient-to-r from-[#FFFFFF] to-[#7b7c8a]">
+              Trade Perpetual Futures on-chain.
             </div>
             <div className="flex sm:flex-row flex-col  gap-4 items-center justify-center w-auto sm:w-full">
-              <Link href="/trade">
-                <button className="py-2.5 rounded border-2 border-[#34C796] gradient-bgggg cursor-pointer font-semibold leading-[normal] min-w-[189px] bg-clip-text text-lg text-[#34C796]">
-                  TRADE OPTIONS
-                </button>
-              </Link>
               <Link href="/futures">
                 <button className="py-3 rounded gradient-bggnew cursor-pointer font-semibold leading-[normal] min-w-[189px] text-center text-lg">
                   TRADE FUTURES
@@ -298,41 +322,28 @@ export const HomeView: FC = ({}) => {
               </Link>
             </div>
           </div>
-          <div className="font-bankgothicmdbt md:px-5 relative w-full pt-5 mb-16">
-            <div className="absolute  flex md:flex-row flex-col gap-3.5 h-max inset-[0] items-start justify-between m-auto w-full">
+          <div className=" font-bankgothicmdbt md:px-5 relative w-full pt-5">
+            <div className="">
               <img
-                ref={imgRef1}
-                className="rellax  absolute md:h-auto w-[22%]  inset-y-[0] my-auto object-cover left-[0] z-0  md:mb-2 mb-10 md:pt-[100px] pt-[60px] z-5"
-                src="images/img_grid4.png"
-                alt="gridFour"
+                className="relative z-10 bottom-[10%] h-[718px] h-auto  inset-x-[0] mx-auto object-cover rounded-[16px] w-[75%] max-w-[1400px] z-2 border-2 md:border-4  border-layer-3 flex justify-center items-center"
+                src="trading.png"
+                alt="imageFive_One"
               />
-              <img
-                ref={imgRef2}
-                className="rellax  absolute md:h-auto w-[22%] inset-y-[0] my-auto object-cover right-[0] z-0 md:mt-24 mt-24 md:pb-[300px] pb-[150px] z-5"
-                src="/img_abstract07.png"
-                alt="abstractSeven"
-              />
-              <div className="h-[159px] top-[29%] w-[67%]"></div>
             </div>
-
-            <img
-              className="relative z-10 bottom-[10%] h-[718px] h-auto  inset-x-[0] mx-auto object-cover rounded-[16px] w-[80%] z-2 border-2 md:border-4  border-layer-3 flex justify-center items-center"
-              src="trading.png"
-              alt="imageFive_One"
-            />
           </div>
         </div>
-        <div className="w-full h-full bg-[#0B111B] flex flex-col items-center justify-start px-14 pb-14 md:px-10 sm:px-5 w-full ">
-          <div className="bankGothic mt-0.5 text-[40px] sm:text-[46px] md:text-[50px] text-center text-white-A700 uppercase z-10">
-            TRADE CRYPTO PERPETUALS
+
+        <div className="topggg w-full h-full bg-[#000000] flex flex-col items-center justify-start px-14 pb-14 md:px-10 sm:px-5 w-full ">
+          <div className="pt-32 bankGothic mt-0.5 md:text-6xl text-5xl text-center text-white-A700 uppercase z-10 bg-clip-text text-transparent bg-gradient-to-r from-[#FFFFFF] to-[#7b7c8a]">
+            SOLANA PERP DEX
           </div>
           <div className="mt-[22px] sm:p-[] md:pb-[40px] sm:pb-[120px] pb-[160px] text-[#B4B5C7] text-center text-xl z-10">
             With low fees, deep liquidity, and up to 200x Leverage.
           </div>
           <div className="md:mt-8 flex md:flex-row flex-col flex justify-center items-center  md:w-[60%] w-[100%] relative z-1 md:gap-16 gap-32">
-            <div className="bg-[#0B111B] h-[370px] md:w-[50%] w-[100%] md:max-w-[450px] sm:max-w-[370px] min-w-[300px] relative  z-10">
+            <div className=" h-[370px] md:w-[50%] w-[100%] md:max-w-[450px] sm:max-w-[370px] min-w-[300px] relative  z-10">
               <Link href="/futures?crypto=btc">
-                <div className="inside_shadow bg-[#0B111B]  border border-[#434665] border-solid bottom-[0]  inset-x-[0] items-center justify-end mx-auto p-[42px] sm:px-5  rounded-[32px] w-full">
+                <div className="inside_shadow bg-gradient-to-t from-[#000000] to-[#111111]  inset-x-[0] items-center justify-end mx-auto p-[42px] sm:px-5  rounded-[32px] w-full">
                   <div className="bankGothic mt-[93px] text-[38px] md:text-[50px] text-center text-white-A700 uppercase">
                     BITCOIN
                   </div>
@@ -346,17 +357,16 @@ export const HomeView: FC = ({}) => {
                     </div>
                   </div>
                   <img
-                    ref={imageRefs}
-                    className="absolute top-[-75px] left-1/2 transform -translate-x-1/2 h-[229px] object-cover w-[229px]"
+                    className="absolute top-[-60px] left-1/2 transform -translate-x-1/2 h-[180px] object-cover w-[180px]"
                     src="images/img_bitcoin3d.png"
                     alt="bitcoin3d"
                   />
                 </div>
               </Link>
             </div>
-            <div className=" bg-[#0B111B] h-[370px] relative md:max-w-[450px] min-w-[300px] sm:max-w-[370px] md:w-[50%] w-[100%] z-10">
+            <div className=" h-[370px] relative md:max-w-[450px] min-w-[300px] sm:max-w-[370px] md:w-[50%] w-[100%] z-10">
               <Link href="/futures?crypto=sol">
-                <div className="inside_shadow bg-[#0B111B] border border-[#434665] border-solid bottom-[0] inset-x-[0] items-center justify-end mx-auto p-[42px] sm:px-5 rounded-[32px] w-full">
+                <div className="inside_shadow bg-gradient-to-t from-[#000000] to-[#111111] bottom-[0] inset-x-[0] items-center justify-end mx-auto p-[42px] sm:px-5 rounded-[32px] w-full">
                   <div className="bankGothic mt-[93px] text-[38px] md:text-[50px] text-center text-white-A700 uppercase">
                     SOLANA
                   </div>
@@ -368,8 +378,7 @@ export const HomeView: FC = ({}) => {
                       : (prices["Crypto.SOL/USD"] / 100000000).toFixed(3)}
                   </div>
                   <img
-                    ref={imageRefsd}
-                    className="absolute top-[-75px] left-1/2 transform -translate-x-1/2 h-[229px] object-cover w-[229px]"
+                    className="absolute top-[-60px] left-1/2 transform -translate-x-1/2 h-[180px] object-cover w-[180px]"
                     src="images/img_solana3d.png"
                     alt="solana3d"
                   />
@@ -378,7 +387,7 @@ export const HomeView: FC = ({}) => {
             </div>
           </div>
         </div>
-        <div className="bg-[#0B111B] flex flex-col font-bankgothicmdbt items-center justify-start pt-[84px] pb-14  sm:px-10 px-5 w-full">
+        <div className="bg-[#000000] flex flex-col font-bankgothicmdbt items-center justify-start pt-[84px] pb-14  sm:px-10 px-5 w-full">
           <div className="flex flex-col gap-[22px] items-start justify-start max-w-[1400px] mb-[7px] mx-auto w-full">
             <ResizeDetector handleHeight onResize={handleResize4}>
               <div className="w-full flex md:flex-row flex-col gap-[22px] items-start justify-start">
@@ -417,7 +426,7 @@ export const HomeView: FC = ({}) => {
                       <div className="bg-gradient-to-t from-[#0B7A55] to-[#34C796] rounded-[24px] w-full p-[1px]  ">
                         <div
                           ref={refthirdDiv}
-                          className="bg-[#0B111B] bg-opacity-90 flex flex-1 flex-row md:h-full items-center justify-between  md:p-[33px] p-[34px] sm:px-5 rounded-[24px] w-full"
+                          className="bg-[#000000] bg-opacity-90 flex flex-1 flex-row md:h-full items-center justify-between  md:p-[33px] p-[34px] sm:px-5 rounded-[24px] w-full"
                         >
                           <div className="bankGothic bg-clip-text bg-gradient-to-t from-[#34C796] to-[#0B7A55]  text-3xl sm:text-[26px] md:text-[28px] text-transparent uppercase">
                             Long
@@ -441,7 +450,7 @@ export const HomeView: FC = ({}) => {
                       <div className="bg-gradient-to-t from-[#7A3636] to-[#C44141] rounded-[24px] w-full p-[1px] ">
                         <div
                           ref={refforthDiv}
-                          className="bg-[#0B111B] bg-opacity-90 flex flex-1 flex-row md:h-full items-center justify-between  md:p-[33px] p-[34px] sm:px-5 rounded-[24px] w-full"
+                          className="bg-[#000000] bg-opacity-90 flex flex-1 flex-row md:h-full items-center justify-between  md:p-[33px] p-[34px] sm:px-5 rounded-[24px] w-full"
                         >
                           <div className="bankGothic bg-clip-text bg-gradient-to-t from-[#7A3636] to-[#C44141]  text-3xl sm:text-[26px] md:text-[28px] text-transparent uppercase">
                             SHORT
@@ -460,7 +469,7 @@ export const HomeView: FC = ({}) => {
                           </div>
                         </div>
                       </div>
-                      <div className="min-w-[190px] absolute bg-[#0B111B] border border-[#434665] border-solid flex flex-col font-bankgothicltbt h-[100px] inset-[0] items-center justify-center m-auto  px-[42px] rounded-[16px] w-1/2 md:w-2/">
+                      <div className="min-w-[190px] absolute bg-[#000000] border border-[#434665] border-solid flex flex-col font-bankgothicltbt h-[100px] inset-[0] items-center justify-center m-auto  px-[42px] rounded-[16px] w-1/2 md:w-2/">
                         <div className="flex flex-row gap-2 items-center justify-center w-auto ">
                           <button className="flex h-[39px] items-center justify-center rounded-[19px] w-[39px] bg-gradient-to-bl from-[#11EEAA] to-[#D229FB]">
                             <img src="images/img_volume.svg" alt="volume" />
@@ -488,7 +497,7 @@ export const HomeView: FC = ({}) => {
                   ref={reffirstDiv}
                   className="bg-gradient-to-t from-[#7A3636] to-[#C44141] w-full md:w-[38%] p-[1px] rounded-[32px] md:max-h-[400px] max-h-[300px]"
                 >
-                  <div className="w-full h-full bg-[#0B111B] bg-opacity-90  flex md:flex-1 flex-col items-center justify-start md:p-11 p-8 rounded-[32px] sm:top-[] w-full">
+                  <div className="w-full h-full bg-[#000000] bg-opacity-90  flex md:flex-1 flex-col items-center justify-start md:p-11 p-8 rounded-[32px] sm:top-[] w-full">
                     <div className="h-full flex flex-col gap-8 items-center justify-start w-auto">
                       <div className="bankGothic md:text-3xl sm:text-[28px] text-[32px] text-center text-[#B4B5C7] uppercase w-auto">
                         AUDITED BY
@@ -547,7 +556,7 @@ export const HomeView: FC = ({}) => {
                   ref={refSecondDiv}
                   className="md:order-2 order-1 md:max-h-[450px] max-h-[280px] bg-gradient-to-t from-[#0B7A55] to-[#34C796] w-full md:w-[38%] p-[1px] rounded-[32px] flex-shrink"
                 >
-                  <div className="bg-[#0B111B] h-full bg-opacity-90 rounded-[32px] w-full overflow-hidden md:max-h-[450px] max-h-[280px]">
+                  <div className="bg-[#000000] h-full bg-opacity-90 rounded-[32px] w-full overflow-hidden md:max-h-[450px] max-h-[280px]">
                     <img
                       className="w-full h-full object-cover scale-200 sm:scale-160  -translate-x-1/8 md:-translate-y-1/5 overflow-hidden md:max-h-[450px] max-h-[260px]"
                       src="images/img_grid3.svg"
@@ -559,7 +568,7 @@ export const HomeView: FC = ({}) => {
             </ResizeDetector>
           </div>
         </div>
-        <div className="bg-[#0B111B] flex flex-col font-bankgothicmdbt md:gap-10 gap-[79px] items-center justify-end p-5 w-full pb-[42px]">
+        <div className="bg-[#000000] flex flex-col font-bankgothicmdbt md:gap-10 gap-[79px] items-center justify-end p-5 w-full pb-[42px]">
           <div className="bankGothic mt-[52px] text-[40px] sm:text-[46px] md:text-[50px] text-center text-white-A700 uppercase">
             KEY FEATURES
           </div>
@@ -578,7 +587,7 @@ export const HomeView: FC = ({}) => {
             </div>
           </div>
         </div>
-        <div className="bg-[#0B111B] flex flex-col items-center justify-start md:m-[] md:mt-[] md:px-[58px] md:pt-[88px] sm:px-10 px-5 w-full ">
+        <div className="bg-[#000000] flex flex-col items-center justify-start md:m-[] md:mt-[] md:px-[58px] md:pt-[88px] sm:px-10 px-5 w-full ">
           <div className="bg-gradient-to-t from-[#0B7A55] to-[#34C796] max-w-[1232px] md:mb-[21px]  p-[1px]   rounded-[32px] z-10">
             <div className="bg-[#151722] flex flex-col md:flex-row items-center justify-start   w-full sm:px-[60px] px-[30px] md:py-[20px] py-[30px] rounded-[32px]">
               <div className="flex md:flex-row flex-col md:gap-10 items-center justify-between w-[95%] md:w-full overflow-hidden">
@@ -610,7 +619,7 @@ export const HomeView: FC = ({}) => {
               </div>
             </div>
           </div>
-          <div className="relative topgg bg-gradient7  flex flex-row  items-center justify-between  sm:w-[80%] w-[100%] pt-[21px] mt-[42px]">
+          <div className="relative bg-gradient7  flex flex-row  items-center justify-between  sm:w-[80%] w-[100%] pt-[21px] mt-[42px]">
             <Link href="/">
               <img
                 className="h-[45px] object-cover mb-1.5"

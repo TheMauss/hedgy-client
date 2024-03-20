@@ -74,6 +74,7 @@
     "react-slider": "^2.0.6",
     "react-spinners": "^0.13.8",
     "react-spring": "^9.7.2",
+    "react-starfield-animation": "git+https://github.com/nikitastetskiy/react-starfield-animation.git",
     "react-transition-group": "^4.4.5",
     "react-use": "^17.4.0",
     "recharts": "^2.10.4",

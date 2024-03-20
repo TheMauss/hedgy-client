@@ -1,37 +1,41 @@
-import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
-import { PROGRAM_ID } from "../programId"
+import {
+  TransactionInstruction,
+  PublicKey,
+  AccountMeta,
+} from "@solana/web3.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import BN from "bn.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import * as borsh from "@coral-xyz/borsh"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { PROGRAM_ID } from "../programId";
 
 export interface CreateLimitOrderArgs {
-  number: BN
-  betAmount: BN
-  leverage: BN
-  priceDirection: number
-  symbol: number
-  slPrice: BN
-  tpPrice: BN
-  initialPrice: BN
-  backOracle: number
-  usdc: number
+  number: BN;
+  betAmount: BN;
+  leverage: BN;
+  priceDirection: number;
+  symbol: number;
+  slPrice: BN;
+  tpPrice: BN;
+  initialPrice: BN;
+  backOracle: number;
+  usdc: number;
 }
 
 export interface CreateLimitOrderAccounts {
-  futCont: PublicKey
-  playerAcc: PublicKey
-  userAcc: PublicKey
-  ratioAcc: PublicKey
-  houseAcc: PublicKey
-  lpAcc: PublicKey
-  signerServer: PublicKey
-  oracleAccount: PublicKey
-  pdaHouseAcc: PublicKey
-  systemProgram: PublicKey
-  usdcMint: PublicKey
-  usdcPlayerAcc: PublicKey
-  usdcPdaHouseAcc: PublicKey
-  tokenProgram: PublicKey
-  associatedTokenProgram: PublicKey
+  futCont: PublicKey;
+  playerAcc: PublicKey;
+  userAcc: PublicKey;
+  ratioAcc: PublicKey;
+  houseAcc: PublicKey;
+  lpAcc: PublicKey;
+  signerServer: PublicKey;
+  oracleAccount: PublicKey;
+  pdaHouseAcc: PublicKey;
+  systemProgram: PublicKey;
+  usdcMint: PublicKey;
+  usdcPlayerAcc: PublicKey;
+  usdcPdaHouseAcc: PublicKey;
+  tokenProgram: PublicKey;
+  associatedTokenProgram: PublicKey;
 }
 
 export const layout = borsh.struct([
@@ -45,7 +49,7 @@ export const layout = borsh.struct([
   borsh.i64("initialPrice"),
   borsh.u8("backOracle"),
   borsh.u8("usdc"),
-])
+]);
 
 export function createLimitOrder(
   args: CreateLimitOrderArgs,
@@ -72,9 +76,9 @@ export function createLimitOrder(
       isSigner: false,
       isWritable: false,
     },
-  ]
-  const identifier = Buffer.from([76, 161, 70, 122, 82, 20, 142, 75])
-  const buffer = Buffer.alloc(1000)
+  ];
+  const identifier = Buffer.from([76, 161, 70, 122, 82, 20, 142, 75]);
+  const buffer = Buffer.alloc(1000);
   const len = layout.encode(
     {
       number: args.number,
@@ -89,8 +93,8 @@ export function createLimitOrder(
       usdc: args.usdc,
     },
     buffer
-  )
-  const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
-  const ix = new TransactionInstruction({ keys, programId, data })
-  return ix
+  );
+  const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len);
+  const ix = new TransactionInstruction({ keys, programId, data });
+  return ix;
 }

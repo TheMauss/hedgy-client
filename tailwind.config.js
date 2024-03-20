@@ -29,7 +29,7 @@ module.exports = {
         silver: "#b2b5be",
         darkslategray: "#434651",
         mediumseagreen: "#29b577",
-        base: "#0b111b",
+        base: "#000000",
         black: "#000",
         royalblue: "#3470f3",
         blueviolet: "#9747ff",

@@ -32,7 +32,7 @@ import {
   WithdrawFromStakingArgs,
   WithdrawFromStakingAccounts,
   ClaimPointsAccounts,
-  claimPoints
+  claimPoints,
 } from "../out/instructions/"; // Update with the correct path
 import { PROGRAM_ID } from "../out/programId";
 import { notify } from "utils/notifications";
@@ -219,8 +219,8 @@ async function checkLiquidiryProviderAcc(
       LiqProviderAcc.usdcWithdrawalRequestAmount.toNumber(),
     usdcWithdrawalRequestEpoch:
       LiqProviderAcc.usdcWithdrawalRequestEpoch.toNumber(),
-      psolStaked:  LiqProviderAcc.psolStaked.toNumber(),
-      pusdcStaked:  LiqProviderAcc.pusdcStaked.toNumber(),
+    psolStaked: LiqProviderAcc.psolStaked.toNumber(),
+    pusdcStaked: LiqProviderAcc.pusdcStaked.toNumber(),
   };
 }
 
@@ -347,9 +347,7 @@ const Earn: FC = () => {
     "SOL"
   );
 
-  const [selectedStake, setSelectedStake] = useState<"STAKE" | "MINT">(
-    "MINT"
-  );
+  const [selectedStake, setSelectedStake] = useState<"STAKE" | "MINT">("MINT");
   const [splTokenAccount, setSplTokenAccount] = useState<PublicKey | null>(
     null
   );
@@ -720,20 +718,20 @@ const Earn: FC = () => {
     if (selectedCurrency === "USDC") {
       mintAddress = PUSDCMINT;
       usdc = 1;
-      splPDA = PUSDCPDA
-      deposit = parseFloat(stakeValue) * LAMPORTS_PER_SOL/1000;
+      splPDA = PUSDCPDA;
+      deposit = (parseFloat(stakeValue) * LAMPORTS_PER_SOL) / 1000;
     } else if (selectedCurrency === "SOL") {
       mintAddress = PSOLMINT; // Use the mint address for wSOL or your custom SPL token for SOL
       usdc = 0;
-      splPDA = PSOLPDA
+      splPDA = PSOLPDA;
       deposit = parseFloat(stakeValue) * LAMPORTS_PER_SOL;
-
     }
     const [lpAcc] = await PublicKey.findProgramAddress(seedsLpAcc, PROGRAM_ID);
 
     if (LPdata?.locked) {
       notify({ type: "info", message: `Vault is locked.` });
-    } {
+    }
+    {
       try {
         const LPAccseeds = [
           Buffer.from(houseHarcodedkey.toBytes()),
@@ -746,8 +744,10 @@ const Earn: FC = () => {
         );
 
         const seedsUser = [Buffer.from(publicKey.toBytes())];
-        const [userAcc] = await PublicKey.findProgramAddress(seedsUser, PROGRAM_ID);
-    
+        const [userAcc] = await PublicKey.findProgramAddress(
+          seedsUser,
+          PROGRAM_ID
+        );
 
         const args: StakeForPointsArgs = {
           depositAmount: new BN(deposit),
@@ -849,20 +849,20 @@ const Earn: FC = () => {
     if (selectedCurrency === "USDC") {
       mintAddress = PUSDCMINT;
       usdc = 1;
-      splPDA = PUSDCPDA
-      deposit = parseFloat(unstakeValue) * LAMPORTS_PER_SOL/1000;
+      splPDA = PUSDCPDA;
+      deposit = (parseFloat(unstakeValue) * LAMPORTS_PER_SOL) / 1000;
     } else if (selectedCurrency === "SOL") {
       mintAddress = PSOLMINT; // Use the mint address for wSOL or your custom SPL token for SOL
       usdc = 0;
-      splPDA = PSOLPDA
+      splPDA = PSOLPDA;
       deposit = parseFloat(unstakeValue) * LAMPORTS_PER_SOL;
-
     }
     const [lpAcc] = await PublicKey.findProgramAddress(seedsLpAcc, PROGRAM_ID);
 
     if (LPdata?.locked) {
       notify({ type: "info", message: `Vault is locked.` });
-    } {
+    }
+    {
       try {
         const LPAccseeds = [
           Buffer.from(houseHarcodedkey.toBytes()),
@@ -875,8 +875,10 @@ const Earn: FC = () => {
         );
 
         const seedsUser = [Buffer.from(publicKey.toBytes())];
-        const [userAcc] = await PublicKey.findProgramAddress(seedsUser, PROGRAM_ID);
-    
+        const [userAcc] = await PublicKey.findProgramAddress(
+          seedsUser,
+          PROGRAM_ID
+        );
 
         const args: WithdrawFromStakingArgs = {
           withdrawAmount: new BN(deposit),
@@ -978,20 +980,20 @@ const Earn: FC = () => {
     if (selectedCurrency === "USDC") {
       mintAddress = PUSDCMINT;
       usdc = 1;
-      splPDA = PUSDCPDA
-      deposit = parseFloat(unstakeValue) * LAMPORTS_PER_SOL/1000;
+      splPDA = PUSDCPDA;
+      deposit = (parseFloat(unstakeValue) * LAMPORTS_PER_SOL) / 1000;
     } else if (selectedCurrency === "SOL") {
       mintAddress = PSOLMINT; // Use the mint address for wSOL or your custom SPL token for SOL
       usdc = 0;
-      splPDA = PSOLPDA
+      splPDA = PSOLPDA;
       deposit = parseFloat(unstakeValue) * LAMPORTS_PER_SOL;
-
     }
     const [lpAcc] = await PublicKey.findProgramAddress(seedsLpAcc, PROGRAM_ID);
 
     if (LPdata?.locked) {
       notify({ type: "info", message: `Vault is locked.` });
-    } {
+    }
+    {
       try {
         const LPAccseeds = [
           Buffer.from(houseHarcodedkey.toBytes()),
@@ -1004,8 +1006,10 @@ const Earn: FC = () => {
         );
 
         const seedsUser = [Buffer.from(publicKey.toBytes())];
-        const [userAcc] = await PublicKey.findProgramAddress(seedsUser, PROGRAM_ID);
-    
+        const [userAcc] = await PublicKey.findProgramAddress(
+          seedsUser,
+          PROGRAM_ID
+        );
 
         const accounts: ClaimPointsAccounts = {
           liqProvider: LProviderAcc,
@@ -1022,9 +1026,7 @@ const Earn: FC = () => {
           systemProgram: SystemProgram.programId,
         };
 
-        const initTransaction = new Transaction().add(
-          claimPoints(accounts)
-        );
+        const initTransaction = new Transaction().add(claimPoints(accounts));
         const initSignature = await sendTransaction(
           initTransaction,
           connection
@@ -1062,7 +1064,6 @@ const Earn: FC = () => {
     splTokenAccount,
     usdcSplTokenAccount,
   ]);
-
 
   const withdrawfromLP = useCallback(async () => {
     if (!publicKey) {
@@ -1192,7 +1193,6 @@ const Earn: FC = () => {
     splTokenAccount,
     usdcSplTokenAccount,
   ]);
-
 
   const [timeUntilNextEpoch, setTimeUntilNextEpoch] = useState("");
   const [timeUntilNextlockEpoch, setTimeUntillockNextEpoch] = useState("");
@@ -1349,9 +1349,10 @@ const Earn: FC = () => {
         ).toFixed(2)
       : "0 USDC";
 
-      const unstakedValue = selectedCurrency === "SOL"
+  const unstakedValue =
+    selectedCurrency === "SOL"
       ? (LProviderdata?.psolStaked || 0) / LAMPORTS_PER_SOL
-      : (LProviderdata?.pusdcStaked || 0) / LAMPORTS_PER_SOL * 1000;
+      : ((LProviderdata?.pusdcStaked || 0) / LAMPORTS_PER_SOL) * 1000;
 
   return (
     <div>
@@ -1794,7 +1795,8 @@ const Earn: FC = () => {
                   </div>
                   <div className="self-stretch relative text-base leading-[140%] font-light font-poppins text-grey-text">
                     <p className="m-0">
-                      Stake your LP tokens in the vault and earn Points for every trade on the platform.
+                      Stake your LP tokens in the vault and earn Points for
+                      every trade on the platform.
                     </p>
                   </div>
                 </div>
@@ -1813,26 +1815,26 @@ const Earn: FC = () => {
                       <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
                         {selectedCurrency === "SOL"
                           ? `${(
-                              (LProviderdata?.psolStaked ||
-                                0) / LAMPORTS_PER_SOL
+                              (LProviderdata?.psolStaked || 0) /
+                              LAMPORTS_PER_SOL
                             ).toFixed(2)} pSOL`
                           : `${(
-                              (LProviderdata?.pusdcStaked * 1000 ||
-                                0) / LAMPORTS_PER_SOL
+                              (LProviderdata?.pusdcStaked * 1000 || 0) /
+                              LAMPORTS_PER_SOL
                             ).toFixed(0)} pUSDC`}
                       </div>
                     </div>
                   </div>
                   <div className="w-1/2 flex flex-row items-center justify-start gap-[8px]">
                     <div className="flex flex-col items-start justify-center gap-[4px]">
-                    <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]  w-full h-10   box-border text-center text-lg">
-                      <button
-                        onClick={getPoints}
-                        className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
-                      >
-                        GET POINTS
-                      </button>
-                    </div>
+                      <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]  w-full h-10   box-border text-center text-lg">
+                        <button
+                          onClick={getPoints}
+                          className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
+                        >
+                          GET POINTS
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1843,27 +1845,27 @@ const Earn: FC = () => {
                     </div>
                   </div>
                   <div className="hover:bg-[#484c6d5b] self-stretch rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-grey border-[1px] border-solid border-layer-3">
-                  <input
-                          type="text"
-                          className="w-full h-full input3-capsule__input relative leading-[14px] "
-                          id="affiliateCode"
-                          placeholder="0.00"
-                          value={stakeValue}
-                          onChange={handleInputChange3}
-                          min={0.05}
-                          max="100"
-                        />
-                        <button
-                          onClick={() => {
-                            const balance = tokenBalance;
+                    <input
+                      type="text"
+                      className="w-full h-full input3-capsule__input relative leading-[14px] "
+                      id="affiliateCode"
+                      placeholder="0.00"
+                      value={stakeValue}
+                      onChange={handleInputChange3}
+                      min={0.05}
+                      max="100"
+                    />
+                    <button
+                      onClick={() => {
+                        const balance = tokenBalance;
 
-                            const maxValue = Number(balance).toString();
-                            setStakeValue(maxValue);
-                          }}
-                          className="relative leading-[14px] font-medium bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]"
-                        >
-                          MAX
-                        </button>
+                        const maxValue = Number(balance).toString();
+                        setStakeValue(maxValue);
+                      }}
+                      className="relative leading-[14px] font-medium bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]"
+                    >
+                      MAX
+                    </button>
                   </div>
                 </div>
                 <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]  w-full h-10   box-border text-center text-lg">
@@ -1883,7 +1885,7 @@ const Earn: FC = () => {
                     UNSTAKE
                   </div>
                   <div className="self-stretch relative text-base leading-[140%] font-light font-poppins text-grey-text">
-Unstake your LP tokens.
+                    Unstake your LP tokens.
                   </div>
                 </div>
                 <div className=" self-stretch relative box-border h-px " />
@@ -1901,61 +1903,60 @@ Unstake your LP tokens.
                       <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
                         {selectedCurrency === "SOL"
                           ? `${(
-                              (LProviderdata?.psolStaked ||
-                                0) / LAMPORTS_PER_SOL
+                              (LProviderdata?.psolStaked || 0) /
+                              LAMPORTS_PER_SOL
                             ).toFixed(2)} pSOL`
                           : `${(
-                              (LProviderdata?.pusdcStaked * 1000 ||
-                                0) / LAMPORTS_PER_SOL
+                              (LProviderdata?.pusdcStaked * 1000 || 0) /
+                              LAMPORTS_PER_SOL
                             ).toFixed(0)} pUSDC`}
                       </div>
                     </div>
                   </div>
                 </div>
-                  <div className="w-full pt-3">
-                    <div className="self-stretch h-[62px] flex flex-col items-start justify-start gap-[8px] font-poppins">
-                      <div className="self-stretch flex flex-col items-start justify-start">
-                        <div className="relative leading-[14px] inline-block max-w-[131px]">
-                          Enter Amount
-                        </div>
-                      </div>
-                      <div className=" hover:bg-[#484c6d5b] self-stretch rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-grey border-[1px] border-solid border-layer-3">
-                        <input
-                          type="text"
-                          className="w-full h-full input3-capsule__input relative leading-[14px] "
-                          id="affiliateCode"
-                          placeholder="0.00"
-                          value={unstakeValue}
-                          onChange={handleInputChange4}
-                          min={0.05}
-                          max="100"
-                        />
-                        <button
-                          onClick={() => {
-                            const balance = unstakedValue;
-
-                            const maxValue = Number(balance).toString();
-                            setUnstakeValue(maxValue);
-                          }}
-                          className="relative leading-[14px] font-medium bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]"
-                        >
-                          MAX
-                        </button>
+                <div className="w-full pt-3">
+                  <div className="self-stretch h-[62px] flex flex-col items-start justify-start gap-[8px] font-poppins">
+                    <div className="self-stretch flex flex-col items-start justify-start">
+                      <div className="relative leading-[14px] inline-block max-w-[131px]">
+                        Enter Amount
                       </div>
                     </div>
-                    <div className="mt-6 rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]  w-full h-10   box-border text-center text-lg">
+                    <div className=" hover:bg-[#484c6d5b] self-stretch rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-grey border-[1px] border-solid border-layer-3">
+                      <input
+                        type="text"
+                        className="w-full h-full input3-capsule__input relative leading-[14px] "
+                        id="affiliateCode"
+                        placeholder="0.00"
+                        value={unstakeValue}
+                        onChange={handleInputChange4}
+                        min={0.05}
+                        max="100"
+                      />
                       <button
-                        onClick={unstakeTokens}
-                        className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
+                        onClick={() => {
+                          const balance = unstakedValue;
+
+                          const maxValue = Number(balance).toString();
+                          setUnstakeValue(maxValue);
+                        }}
+                        className="relative leading-[14px] font-medium bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]"
                       >
-                        UNSTAKE
+                        MAX
                       </button>
                     </div>
                   </div>
+                  <div className="mt-6 rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]  w-full h-10   box-border text-center text-lg">
+                    <button
+                      onClick={unstakeTokens}
+                      className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
+                    >
+                      UNSTAKE
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
-
         </div>
       </div>
     </div>

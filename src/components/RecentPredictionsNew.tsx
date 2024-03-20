@@ -481,7 +481,8 @@ const RecentPredictions: FC<Recentprops> = ({ divHeight }) => {
                     >
                       {"binaryOption" in item
                         ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(1)}`
-                        : `${((item.leverage * item.betAmount) / LAMPORTS_PER_SOL).toFixed(1)}`}{item.usdc === 0 ? ' ◎' : 'k $'}
+                        : `${((item.leverage * item.betAmount) / LAMPORTS_PER_SOL).toFixed(1)}`}
+                      {item.usdc === 0 ? " ◎" : "k $"}
                     </div>
                     <div
                       className={`w-[29%] leading-[12px] flex items-center justify-end text-grey-text`}

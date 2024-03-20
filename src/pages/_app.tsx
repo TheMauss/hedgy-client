@@ -23,15 +23,15 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
   const router = useRouter();
   const hideFooterFor = ["/", "/futures", "/trade"]; // Add paths where you don't want to show the footer
   const showFooter = !hideFooterFor.includes(router.pathname);
-  const hideAppBarFor = []; // Add paths where you don't want to show the footer
+  const hideAppBarFor = ["/"]; // Add paths where you don't want to show the footer
   const showAppBar = !hideAppBarFor.includes(router.pathname);
 
   useEffect(() => {
     // Function to track pageviews
     const handleRouteChange = (url: string) => {
-      window.gtag('config', 'G-N43CYRYXY9', {
+      window.gtag("config", "G-N43CYRYXY9", {
         page_path: url,
-        page_title: document.title
+        page_title: document.title,
       });
     };
 
@@ -39,15 +39,13 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
     handleRouteChange(window.location.pathname);
 
     // Listen for route changes and track them
-    router.events.on('routeChangeComplete', handleRouteChange);
+    router.events.on("routeChangeComplete", handleRouteChange);
 
     // Cleanup event listener on unmount
     return () => {
-      router.events.off('routeChangeComplete', handleRouteChange);
+      router.events.off("routeChangeComplete", handleRouteChange);
     };
   }, [router.events]);
-
-  
 
   const [isContentContainerOpen, setIsContentContainerOpen] = useState(false);
 
@@ -68,7 +66,10 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
       <Head>
         <title>PopFi</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-N43CYRYXY9"></script>
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-N43CYRYXY9"
+        ></script>
         <script
           dangerouslySetInnerHTML={{
             __html: `

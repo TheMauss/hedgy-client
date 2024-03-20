@@ -1,34 +1,38 @@
-import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
-import { PROGRAM_ID } from "../programId"
+import {
+  TransactionInstruction,
+  PublicKey,
+  AccountMeta,
+} from "@solana/web3.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import BN from "bn.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import * as borsh from "@coral-xyz/borsh"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { PROGRAM_ID } from "../programId";
 
 export interface StakeAndMintTokensArgs {
-  depositAmount: BN
-  usdc: number
+  depositAmount: BN;
+  usdc: number;
 }
 
 export interface StakeAndMintTokensAccounts {
-  liqProvider: PublicKey
-  providersWallet: PublicKey
-  lpAcc: PublicKey
-  signerWalletAccount: PublicKey
-  houseAcc: PublicKey
-  pdaHouseAcc: PublicKey
-  mint: PublicKey
-  usdcMint: PublicKey
-  providersSplTokenAccount: PublicKey
-  usdcProvidersWallet: PublicKey
-  usdcPdaHouseAcc: PublicKey
-  associatedTokenProgram: PublicKey
-  tokenProgram: PublicKey
-  systemProgram: PublicKey
+  liqProvider: PublicKey;
+  providersWallet: PublicKey;
+  lpAcc: PublicKey;
+  signerWalletAccount: PublicKey;
+  houseAcc: PublicKey;
+  pdaHouseAcc: PublicKey;
+  mint: PublicKey;
+  usdcMint: PublicKey;
+  providersSplTokenAccount: PublicKey;
+  usdcProvidersWallet: PublicKey;
+  usdcPdaHouseAcc: PublicKey;
+  associatedTokenProgram: PublicKey;
+  tokenProgram: PublicKey;
+  systemProgram: PublicKey;
 }
 
 export const layout = borsh.struct([
   borsh.u64("depositAmount"),
   borsh.u8("usdc"),
-])
+]);
 
 export function stakeAndMintTokens(
   args: StakeAndMintTokensArgs,
@@ -62,17 +66,17 @@ export function stakeAndMintTokens(
     },
     { pubkey: accounts.tokenProgram, isSigner: false, isWritable: false },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
-  ]
-  const identifier = Buffer.from([145, 192, 53, 161, 190, 10, 19, 77])
-  const buffer = Buffer.alloc(1000)
+  ];
+  const identifier = Buffer.from([145, 192, 53, 161, 190, 10, 19, 77]);
+  const buffer = Buffer.alloc(1000);
   const len = layout.encode(
     {
       depositAmount: args.depositAmount,
       usdc: args.usdc,
     },
     buffer
-  )
-  const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
-  const ix = new TransactionInstruction({ keys, programId, data })
-  return ix
+  );
+  const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len);
+  const ix = new TransactionInstruction({ keys, programId, data });
+  return ix;
 }

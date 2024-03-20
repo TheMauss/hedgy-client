@@ -58,12 +58,12 @@ const NavElement = ({
       scroll={scroll}
       passHref
       className={cn(
-        "mt-1 bankGothicc group flex h-full flex-col items-center justify-between hover:bg-layer-2 px-2.5 py-0.5 rounded duration-300 ease-out text-[1rem]",
+        "mt-1 bankGothicc group flex h-full flex-col items-center justify-between hover:bg-layer-2 px-2.5 py-0.5 rounded duration-300 ease-out text-[1rem] z-1500",
         disabled && "pointer-events-none cursor-not-allowed opacity-50"
       )}
       onClick={navigationStarts ?? undefined}
     >
-      <div className="flex flex-row items-center gap-3">
+      <div className="flex flex-row items-center gap-3 z-1500">
         {icon}
         <Text variant="nav"> {label} </Text>
       </div>

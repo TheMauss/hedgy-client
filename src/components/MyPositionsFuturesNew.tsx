@@ -59,7 +59,6 @@ const USDCPDAHOUSEWALLET = new PublicKey(
 const RATIOACC = new PublicKey(process.env.NEXT_PUBLIC_RATIO_ACC);
 const LPACC = new PublicKey(process.env.NEXT_PUBLIC_LP_ACC);
 
-
 const SOLORACLE = process.env.NEXT_PUBLIC_SOL;
 const BTCORACLE = process.env.NEXT_PUBLIC_BTC;
 const PYTHORACLE = process.env.NEXT_PUBLIC_PYTH;

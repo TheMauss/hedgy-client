@@ -1,14 +1,18 @@
-import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
-import { PROGRAM_ID } from "../programId"
+import {
+  TransactionInstruction,
+  PublicKey,
+  AccountMeta,
+} from "@solana/web3.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import BN from "bn.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import * as borsh from "@coral-xyz/borsh"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { PROGRAM_ID } from "../programId";
 
 export interface InitializeLpAccAccounts {
-  lpAcc: PublicKey
-  houseAcc: PublicKey
-  signerWalletAccount: PublicKey
-  pdaHouseAcc: PublicKey
-  systemProgram: PublicKey
+  lpAcc: PublicKey;
+  houseAcc: PublicKey;
+  signerWalletAccount: PublicKey;
+  pdaHouseAcc: PublicKey;
+  systemProgram: PublicKey;
 }
 
 export function initializeLpAcc(
@@ -25,9 +29,9 @@ export function initializeLpAcc(
     },
     { pubkey: accounts.pdaHouseAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
-  ]
-  const identifier = Buffer.from([68, 80, 79, 25, 85, 201, 16, 63])
-  const data = identifier
-  const ix = new TransactionInstruction({ keys, programId, data })
-  return ix
+  ];
+  const identifier = Buffer.from([68, 80, 79, 25, 85, 201, 16, 63]);
+  const data = identifier;
+  const ix = new TransactionInstruction({ keys, programId, data });
+  return ix;
 }

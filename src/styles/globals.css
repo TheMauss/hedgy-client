@@ -18,7 +18,7 @@ body {
     Droid Sans,
     Helvetica Neue,
     sans-serif;
-  background-image: #0b111b;
+  background-image: #000000;
 }
 
 @keyframes slideIn {
@@ -1131,8 +1131,16 @@ html::-webkit-scrollbar-thumb:hover {
 .topg {
   background-image: radial-gradient(
     circle var(--gradient-size) at center top,
-    #434665,
-    #0b111b
+    #43e3ae34,
+    #000000 30%
+  );
+}
+
+.topggg {
+  background-image: radial-gradient(
+    circle var(--gradient-size) at center top,
+    #43e3ae34,
+    #000000 10%
   );
 }
 
@@ -1140,7 +1148,7 @@ html::-webkit-scrollbar-thumb:hover {
   background-image: radial-gradient(
     ellipse at bottom,
     #434665,
-    #0b111b 60%,
+    #000000 60%,
     transparent 100%
   );
 }
@@ -1154,12 +1162,19 @@ html::-webkit-scrollbar-thumb:hover {
   .topg {
     background-image: radial-gradient(
       circle 100vh at center top,
-      #434665,
-      #0b111b 70%
+      #43e3ae34,
+      #000000 40%
     );
   }
   .topgg {
-    background-image: radial-gradient(ellipse at bottom, #2f3046, #0b111b 60%);
+    background-image: radial-gradient(ellipse at bottom, #2f3046, #000000 60%);
+  }
+  .topggg {
+    background-image: radial-gradient(
+      circle 80vh at center top,
+      #43e3ae34,
+      #000000 20%
+    );
   }
 }
 
@@ -1168,12 +1183,15 @@ html::-webkit-scrollbar-thumb:hover {
   .topg {
     background-image: radial-gradient(
       circle 100vh at center top,
-      #434665,
-      #0b111b 70%
+      #43e3ae34,
+      #000000 80%
     );
   }
   .topgg {
-    background-image: radial-gradient(ellipse at bottom, #2f3046, #0b111b 70%);
+    background-image: radial-gradient(ellipse at bottom, #2f3046, #000000 30%);
+  }
+  .topggg {
+    background-image: radial-gradient(ellipse at top, #43e3ae34, #000000 30%);
   }
 }
 
@@ -1182,12 +1200,19 @@ html::-webkit-scrollbar-thumb:hover {
   .topg {
     background-image: radial-gradient(
       circle 100vh at center top,
-      #434665,
-      #0b111b 50%
+      #43e3ae34,
+      #000000 50%
     );
   }
   .topgg {
-    background-image: radial-gradient(ellipse at bottom, #2f3046, #0b111b 60%);
+    background-image: radial-gradient(ellipse at bottom, #2f3046, #000000 60%);
+  }
+  .topggg {
+    background-image: radial-gradient(
+      circle 70vh at center top,
+      #43e3ae34,
+      #000000 30%
+    );
   }
 }
 
