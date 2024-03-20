@@ -15,7 +15,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "incremental": true,
+    "incremental": true
   },
   "include": [
     "next-env.d.ts",
@@ -23,7 +23,7 @@
     "**/*.ts",
     "**/*.tsx",
     "../dapp2 - kopie/src/components/MyPositionsFutures copy.tsx",
-    "../dapp2 - kopie/src/components/MyPositions copy.tsx",
+    "../dapp2 - kopie/src/components/MyPositions copy.tsx"
   ],
   "exclude": [
     "public",
@@ -31,12 +31,12 @@
     "src/charting_library",
     "/src/charting_library",
     "node_modules",
-    ".next",
+    ".next"
   ],
   "ts-node": {
     "require": ["tsconfig-paths/register"],
     "compilerOptions": {
-      "module": "commonjs",
-    },
-  },
+      "module": "commonjs"
+    }
+  }
 }
