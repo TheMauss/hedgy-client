@@ -298,6 +298,38 @@ export const HomeView: FC = ({}) => {
     },
   ];
 
+  // Function to convert vh to pixels
+
+const [blurPx, setBlurPx] = useState(0);
+
+useEffect(() => {
+  // This function could be defined outside of useEffect if needed elsewhere
+  function vhToPixels(vh) {
+    return Math.round(window.innerHeight * (vh / 100));
+  }
+
+  function handleResize() {
+    // Choose the blur value based on the screen width
+    const mobileBreakpoint = 768; // Example breakpoint for mobile devices
+    const blurVh = window.innerWidth < mobileBreakpoint ? 5 : 14;
+    setBlurPx(vhToPixels(blurVh));
+  }
+
+  handleResize(); // Set initial value
+
+  window.addEventListener('resize', handleResize);
+
+  return () => {
+    window.removeEventListener('resize', handleResize);
+  };
+}, []);
+
+// Now you can use blurPx in your style...
+
+
+// Then you can use blurPx in your style
+
+
   return (
     <>
       <>
@@ -357,8 +389,9 @@ export const HomeView: FC = ({}) => {
                   top: "50%",
                   transform: "translate(-148%, 40%)",
                   right: "-5%",
+                  filter: `blur(${blurPx}px)`,
                 }}
-                className="rellax  absolute h-auto w-[16%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary md:[filter:blur(14vh)] [filter:blur(5vh)]  md:opacity-[0.7] opacity-[1] overflow-auto"
+                className="rellax  absolute h-auto w-[16%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary md:opacity-[0.7] opacity-[1] overflow-auto"
               />
             </div>
           </div>
