@@ -456,7 +456,7 @@ export const HomeView: FC = ({}) => {
             </div>
           </div>
         </div>
-        <div className="overflow-hidden bg-[#000000] flex flex-col font-bankgothicmdbt items-center justify-start pt-[84px] pb-14  sm:px-10 px-5 w-full">
+        <div className="overflow-hidden bg-[#000000] flex flex-col font-bankgothicmdbt items-center justify-start pt-[84px] pb-4  sm:px-10 px-5 w-full">
           <div className="flex flex-col gap-[22px] items-start justify-start max-w-[1400px] mb-[7px] mx-auto w-full">
             <ResizeDetector handleHeight onResize={handleResize4}>
               <div className="w-full flex md:flex-row flex-col gap-[22px] items-start justify-start">
