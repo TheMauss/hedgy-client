@@ -357,7 +357,7 @@ export const HomeView: FC = ({}) => {
                   transform: "translate(-150%, 40%)",
                   right: "-5%",
                 }}
-                className="rellax  absolute h-auto w-[15%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary md:[filter:blur(20vh)] [filter:blur(12vh)]  md:opacity-[0.85] opacity-[1] overflow-auto"
+                className="rellax  absolute h-auto w-[15%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary md:[filter:blur(20vh)] [filter:blur(8vh)]  md:opacity-[0.85] opacity-[1] overflow-auto"
               />
             </div>
           </div>
@@ -403,7 +403,7 @@ export const HomeView: FC = ({}) => {
               transform: "translate(-40%, 20%)",
               left: "-5%",
             }}
-            className="rellax  absolute h-auto w-[30%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary md:[filter:blur(20vh)] [filter:blur(12vh)]  md:opacity-[0.3] opacity-[1] overflow-auto"
+            className="rellax  absolute h-auto w-[30%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary md:[filter:blur(20vh)] [filter:blur(22vh)] md:top-[] md:opacity-[0.3] opacity-[1] overflow-auto"
           />
 
           <div className="mt-[22px] sm:p-[] md:pb-[40px] sm:pb-[120px] pb-[160px] text-[#B4B5C7] text-center text-xl z-10">
@@ -456,7 +456,7 @@ export const HomeView: FC = ({}) => {
             </div>
           </div>
         </div>
-        <div className="bg-[#000000] flex flex-col font-bankgothicmdbt items-center justify-start pt-[84px] pb-14  sm:px-10 px-5 w-full">
+        <div className="overflow-hidden bg-[#000000] flex flex-col font-bankgothicmdbt items-center justify-start pt-[84px] pb-14  sm:px-10 px-5 w-full">
           <div className="flex flex-col gap-[22px] items-start justify-start max-w-[1400px] mb-[7px] mx-auto w-full">
             <ResizeDetector handleHeight onResize={handleResize4}>
               <div className="w-full flex md:flex-row flex-col gap-[22px] items-start justify-start">
@@ -566,7 +566,7 @@ export const HomeView: FC = ({}) => {
                   ref={reffirstDiv}
                   className="bg-[url('/blockapexbg.png')] bg-cover w-full md:w-[38%] p-[1px] rounded-[32px] md:max-h-[400px] max-h-[300px]"
                 >
-                  <div className="bg-[#000000] bg-opacity-30 w-full h-full   flex md:flex-1 flex-col items-center justify-start md:p-11 p-8 rounded-[32px] sm:top-[] w-full">
+                  <div className="bg-[#000000] bg-opacity-35 w-full h-full   flex md:flex-1 flex-col items-center justify-start md:p-11 p-8 rounded-[32px] sm:top-[] w-full">
                     <div className="h-full flex flex-col gap-8 items-center justify-start w-auto">
                       <div className="bankGothic md:text-3xl sm:text-[28px] text-[32px] text-center bg-clip-text text-transparent bg-gradient-to-r from-[#FFFFFF] to-[#7b7c8a]">
                         AUDITED BY
@@ -586,7 +586,7 @@ export const HomeView: FC = ({}) => {
                     </div>
                   </div>
                 </div>
-                <div className=" bg-new-card-bg flex flex-row items-start justify-start md:p-11 p-8 rounded-[32px] w-full md:w-[62%] min-h-[305px]">
+                <div className=" bg-new-card-bg flex flex-row items-center justify-center md:p-8 p-8 rounded-[32px] w-full md:w-[62%] min-h-[305px]">
                   <div
                     style={{
                       zIndex: 5,
@@ -594,20 +594,25 @@ export const HomeView: FC = ({}) => {
                       transform: "translate(0%, 20%)",
                       right: "-5%",
                     }}
-                    className="rellax  absolute h-auto w-[30%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary md:[filter:blur(22vh)] [filter:blur(12vh)]  md:opacity-[1] opacity-[1] overflow-auto"
+                    className="rellax  absolute h-auto w-[30%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary md:[filter:blur(22vh)] [filter:blur(17vh)]  md:opacity-[1] opacity-[1] overflow-auto"
                   />
 
-                  <div className=" flex flex-col gap-[26px] items-start justify-start my-1 w-auto md:w-full">
-                    <div className="bankGothic leading-[90.69%] text-[32px] sm:text-[38px] md:text-[42px] bg-clip-text text-transparent bg-gradient-to-r from-[#FFFFFF] to-[#7b7c8a]">
+                  <div className="flex flex-col gap-[26px] items-start justify-start my-1 w-auto md:w-2/3">
+                    <div className="md:px-0 px-2 bankGothic leading-[90.69%] text-[32px] sm:text-[38px] md:text-[42px] bg-clip-text text-transparent bg-gradient-to-r from-[#FFFFFF] to-[#7b7c8a]">
                       <>
                         Trade straight from your wallet. <br />
                       </>
                     </div>
-                    <div className="text-[#B4B5C7] text-lg w-auto">
+                    <div className="md:block hidden  text-[#B4B5C7] text-lg w-auto">
                       Predict Crypto price and make it pop.
                     </div>
+                  </div>
+                  <div className="flex justify-center items-center">
                     <Link href="/trade">
-                      <button className="relative overflow-hidden py-3 rounded-lg bg-new-green hover:bg-new-green-dark cursor-pointer font-semibold leading-[normal] min-w-[189px] text-center text-lg text-black transition ease-in-out duration-300">
+                      <button className="block md:hidden relative overflow-hidden py-3 rounded-lg bg-new-green hover:bg-new-green-dark cursor-pointer font-semibold leading-[normal] min-w-[100px] text-center text-lg text-black transition ease-in-out duration-300">
+                        TRADE
+                      </button>
+                      <button className="md:block hidden relative overflow-hidden py-3 rounded-lg bg-new-green hover:bg-new-green-dark cursor-pointer font-semibold leading-[normal] min-w-[189px] text-center text-lg text-black transition ease-in-out duration-300">
                         TRADE NOW
                       </button>
                     </Link>
@@ -617,9 +622,9 @@ export const HomeView: FC = ({}) => {
             </ResizeDetector>
 
             <ResizeDetector handleHeight onResize={handleResize}>
-              <div className="flex md:flex-row md:grid-cols-2 flex md:flex-row flex-col gap-[22px] items-start justify-start w-full md:pt-[0px] pt-[22px] z-10">
-                <div className="md:order-1 order-2 md:max-h-[450px] min-h-[280px] bg-new-card-bg [backdrop-filter:blur(10px)] flex flex-col items-start justify-start md:p-11 p-8 rounded-[32px] w-full md:w-[62%] flex-shrink-0">
-                  <div className="flex flex-col gap-[22px] items-start justify-start  w-auto md:w-full ">
+              <div className="flex md:flex-row md:grid-cols-2 flex md:flex-row flex-col gap-[22px] items-center justify-center w-full md:pt-[0px] pt-[22px] z-10">
+                <div className="md:order-1 order-2 md:max-h-[450px] min-h-[280px] bg-new-card-bg [backdrop-filter:blur(10px)] flex flex-col items-center justify-center md:p-11 p-8 rounded-[32px] w-full md:w-[62%] flex-shrink-0">
+                  <div className="flex flex-col gap-[22px] items-center justify-center  w-auto md:w-full ">
                     <div className="bankGothic leading-[90.69%] max-w-[560px] md:max-w-full text-[32px] sm:text-[36px] md:text-[42px] bg-clip-text text-transparent bg-gradient-to-r from-[#FFFFFF] to-[#7b7c8a]">
                       Built on Solana, Powered by Pyth.
                     </div>
@@ -649,7 +654,7 @@ export const HomeView: FC = ({}) => {
                             className="text-secondary hover:text-white"
                           >
                             <button className="relative overflow-hidden py-3 rounded-lg bg-new-green hover:bg-new-green-dark cursor-pointer font-semibold leading-[normal] min-w-[189px] text-center text-lg text-black transition ease-in-out duration-300">
-                              JOIN DISCORD
+                              DISCORD
                             </button>
                           </Link>
                         </div>
@@ -660,7 +665,45 @@ export const HomeView: FC = ({}) => {
               </div>
             </ResizeDetector>
           </div>
+          <div className="relative bg-gradient7  flex flex-row  items-center justify-between  sm:w-[80%] w-[100%] pt-[21px] mt-[42px]">
+            <Link href="/">
+              <img
+                className="h-[45px] object-cover mb-1.5"
+                src="images/img_image5.png"
+                alt="imageFive_Two"
+              />
+            </Link>
+            <div className="flex flex-row gap-3 mb-1.5">
+              <Link
+                href="https://twitter.com/PopFi_io"
+                target="_blank"
+                rel="noopener noreferrer"
+                passHref
+                className="text-secondary hover:text-white"
+              >
+                <img
+                  className=" h-[22px] object-cover "
+                  src="images/x.png"
+                  alt="videocamera"
+                />
+              </Link>
+              <Link
+                href="https://discord.gg/jXCbWwD5s8"
+                target="_blank"
+                rel="noopener noreferrer"
+                passHref
+                className="text-secondary hover:text-white"
+              >
+                <img
+                  className=" h-[22px] object-cover "
+                  src="images/dc.png"
+                  alt="videocamera"
+                />
+              </Link>
+            </div>
+          </div>
         </div>
+
         {/* <div className="bg-[#000000] flex flex-col font-bankgothicmdbt md:gap-10 gap-[79px] items-center justify-end p-5 w-full pb-[42px]">
           <div className="bankGothic mt-[52px] text-[40px] sm:text-[46px] md:text-[50px] text-center text-white-A700 uppercase">
             KEY FEATURES
@@ -712,43 +755,6 @@ export const HomeView: FC = ({}) => {
               </div>
             </div>
           </div> */}
-          <div className="relative bg-gradient7  flex flex-row  items-center justify-between  sm:w-[80%] w-[100%] pt-[21px] mt-[42px]">
-            <Link href="/">
-              <img
-                className="h-[45px] object-cover mb-1.5"
-                src="images/img_image5.png"
-                alt="imageFive_Two"
-              />
-            </Link>
-            <div className="flex flex-row gap-3 mb-1.5">
-              <Link
-                href="https://twitter.com/PopFi_io"
-                target="_blank"
-                rel="noopener noreferrer"
-                passHref
-                className="text-secondary hover:text-white"
-              >
-                <img
-                  className=" h-[22px] object-cover "
-                  src="images/x.png"
-                  alt="videocamera"
-                />
-              </Link>
-              <Link
-                href="https://discord.gg/jXCbWwD5s8"
-                target="_blank"
-                rel="noopener noreferrer"
-                passHref
-                className="text-secondary hover:text-white"
-              >
-                <img
-                  className=" h-[22px] object-cover "
-                  src="images/dc.png"
-                  alt="videocamera"
-                />
-              </Link>
-            </div>
-          </div>
         </div>
       </div>
     </>
