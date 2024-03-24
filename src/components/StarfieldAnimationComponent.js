@@ -11,7 +11,7 @@ const StarfieldAnimationComponent = () => {
 
     ReactDOM.render(
       <StarfieldAnimation
-        numParticles={1600}
+        numParticles={800}
         style={{
           position: "absolute",
           top: 0,

@@ -304,41 +304,110 @@ export const HomeView: FC = ({}) => {
         {console.log("Rendering StarfieldAnimation")}
         <StarfieldAnimationComponentWithNoSSR />
       </>
-      <div className="flex topg flex-col font-poppins items-center justify-center mx-auto w-auto sm:w-full md:w-full z-1000">
+      {/* <div className="w-1/4 h-1/4 absolute !m-[0] top-[250%] left-[70%] rounded-[50%] bg-primary [filter:blur(400px)]  opacity-[1] z-[1] overflow-auto" /> */}
+
+      <div className="relative flex topg flex-col font-poppins items-center justify-center mx-auto w-auto sm:w-full md:w-full z-1000">
         <div className="flex justify-between items-between w-full z-2000">
           <AppBar isNavOpen={isNavOpen} setIsNavOpen={setIsNavOpen} />
         </div>
 
         <div className="flex flex-col md:gap-10 gap-[79px] items-center justify-start w-full">
           <div className=" flex flex-col gap-[55px] inset-x-[0] items-center justify-center mx-auto  w-auto">
-            <div className="pt-16 bankGothic bg-clip-text bg-white  leading-[90.69%] max-w-full md:max-w-[900px] md:text-6xl text-5xl text-center bg-clip-text text-transparent bg-gradient-to-r from-[#FFFFFF] to-[#7b7c8a]">
+            <div className="pt-16  bg-clip-text bg-white  leading-[90.69%] max-w-[95%] md:max-w-[900px] text-center md:text-7xl text-5xl !bg-clip-text [background:linear-gradient(91.75deg,_#fff,_rgba(255,_255,_255,_0.25))] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
               Trade Perpetual Futures on-chain.
             </div>
             <div className="flex sm:flex-row flex-col  gap-4 items-center justify-center w-auto sm:w-full">
               <Link href="/futures">
-                <button className="py-3 rounded gradient-bggnew cursor-pointer font-semibold leading-[normal] min-w-[189px] text-center text-lg">
+                <button className="relative overflow-hidden py-3 rounded-lg bg-new-green hover:bg-new-green-dark cursor-pointer font-semibold leading-[normal] min-w-[189px] text-center text-lg text-black transition ease-in-out duration-300">
                   TRADE FUTURES
                 </button>
               </Link>
             </div>
           </div>
-          <div className=" font-bankgothicmdbt md:px-5 relative w-full pt-5">
-            <div className="">
+          <div className="font-bankgothicmdbt md:px-5 relative w-full pt-5 mb-16">
+            <div className="absolute  flex md:flex-row flex-col gap-3.5 h-max inset-[0] items-start justify-between m-auto w-full">
+              <div className="h-[159px] top-[29%] w-[67%]"></div>
+            </div>
+            <div className="relative bottom-[10%] h-[718px] h-auto  inset-x-[0] mx-auto object-cover  md:w-[80%] w-[100%] max-w-[1600px] z-5  flex justify-center items-center">
               <img
-                className="relative z-10 bottom-[10%] h-[718px] h-auto  inset-x-[0] mx-auto object-cover rounded-[16px] w-[75%] max-w-[1400px] z-2 border-2 md:border-4  border-layer-3 flex justify-center items-center"
+                className="w-[80%] "
                 src="trading.png"
                 alt="imageFive_One"
+                style={{
+                  zIndex: 10,
+                  transform: "translate(10%)",
+                  right: "10%",
+                }}
+              />
+              <img
+                className="w-[20%]"
+                src="phoneph.png"
+                alt="abstractSeven"
+                style={{
+                  zIndex: 10,
+                  top: "50%",
+                  transform: "translate(-80%, 40%)",
+                  right: "10%",
+                }}
+              />
+              <div
+                style={{
+                  zIndex: 5,
+                  top: "50%",
+                  transform: "translate(-150%, 40%)",
+                  right: "-5%",
+                }}
+                className="rellax  absolute h-auto w-[15%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary md:[filter:blur(20vh)] [filter:blur(12vh)]  md:opacity-[0.85] opacity-[1] overflow-auto"
               />
             </div>
           </div>
-        </div>
 
-        <div className="topggg w-full h-full bg-[#000000] flex flex-col items-center justify-start px-14 pb-14 md:px-10 sm:px-5 w-full ">
+          <div className=" font-bankgothicmdbt md:px-5 relative w-full pt-5">
+            <div className=""></div>
+          </div>
+        </div>
+        <div className="lg:pt-32 md:pt-16 flex md:flex-row flex-col justify-center items-center md:w-2/3 md:min-w-[670px] max-w-[1400px] w-full">
+          <div className="md:w-1/3 w-full items-center justify-center text-center rounded-2xl py-4 px-6 box-border gap-[16px]">
+            <b className="text-5xl leading-[100%] text-transparent !bg-clip-text [background:linear-gradient(91.75deg,_#fff,_rgba(255,_255,_255,_0.25))] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+              $25M+
+            </b>
+            <div className=" text-center text-primary leading-[100%] pt-2">
+              Total Volume
+            </div>
+          </div>
+          <div className="md:w-1/3 w-full items-center justify-center text-center rounded-2xl py-4 px-6 box-border gap-[16px]">
+            <b className="text-5xl  leading-[100%] text-transparent !bg-clip-text [background:linear-gradient(91.75deg,_#fff,_rgba(255,_255,_255,_0.25))] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+              5,125
+            </b>
+            <div className=" text-center text-primary leading-[100%] pt-2">
+              Total Trades
+            </div>
+          </div>
+          <div className="md:w-1/3 w-full items-center justify-center text-center rounded-2xl py-4 px-6 box-border gap-[16px]">
+            <b className="text-5xl text-center  leading-[100%] text-transparent !bg-clip-text [background:linear-gradient(91.75deg,_#fff,_rgba(255,_255,_255,_0.25))] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+              325
+            </b>
+            <div className=" text-center text-primary leading-[100%] pt-2">
+              Users
+            </div>
+          </div>
+        </div>
+        <div className="relative w-full h-full bg-[#000000] flex flex-col items-center justify-center px-14 pb-14 md:px-10 sm:px-5 w-full ">
           <div className="pt-32 bankGothic mt-0.5 md:text-6xl text-5xl text-center text-white-A700 uppercase z-10 bg-clip-text text-transparent bg-gradient-to-r from-[#FFFFFF] to-[#7b7c8a]">
             SOLANA PERP DEX
           </div>
+          <div
+            style={{
+              zIndex: 5,
+              top: "50%",
+              transform: "translate(-40%, 20%)",
+              left: "-5%",
+            }}
+            className="rellax  absolute h-auto w-[30%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary md:[filter:blur(20vh)] [filter:blur(12vh)]  md:opacity-[0.3] opacity-[1] overflow-auto"
+          />
+
           <div className="mt-[22px] sm:p-[] md:pb-[40px] sm:pb-[120px] pb-[160px] text-[#B4B5C7] text-center text-xl z-10">
-            With low fees, deep liquidity, and up to 200x Leverage.
+            With low fees, deep liquidity, and up to 100x Leverage.
           </div>
           <div className="md:mt-8 flex md:flex-row flex-col flex justify-center items-center  md:w-[60%] w-[100%] relative z-1 md:gap-16 gap-32">
             <div className=" h-[370px] md:w-[50%] w-[100%] md:max-w-[450px] sm:max-w-[370px] min-w-[300px] relative  z-10">
@@ -391,9 +460,9 @@ export const HomeView: FC = ({}) => {
           <div className="flex flex-col gap-[22px] items-start justify-start max-w-[1400px] mb-[7px] mx-auto w-full">
             <ResizeDetector handleHeight onResize={handleResize4}>
               <div className="w-full flex md:flex-row flex-col gap-[22px] items-start justify-start">
-                <div className="bg-[#151722] border border-[#434665] border-solid flex flex-col items-start justify-start md:p-11 p-8 rounded-[32px] w-full h-full md:w-[64%] z-10">
+                <div className="bg-new-card-bg flex flex-col items-start justify-start md:p-11 p-8 rounded-[32px] w-full h-full md:w-[64%] z-10">
                   <div className="flex flex-col gap-[22px] items-start justify-start w-auto md:w-full">
-                    <div className="bankGothic sm:text-[32px] md:text-[38px] text-[42px] text-white-A700 uppercase w-auto">
+                    <div className="bankGothic sm:text-[32px] md:text-[38px] text-[42px] bg-clip-text text-transparent bg-gradient-to-r from-[#FFFFFF] to-[#7b7c8a]">
                       WHY POPFI?
                     </div>
                     <div className="leading-[140.00%] text-blue_gray-200 text-lg">
@@ -492,14 +561,14 @@ export const HomeView: FC = ({}) => {
             </ResizeDetector>
 
             <ResizeDetector handleHeight onResize={handleResize1}>
-              <div className="flex md:flex-row md:grid-cols-2 flex md:flex-row flex-col gap-[22px] items-start justify-start w-full md:pt-[0px] pt-[22px] z-10">
+              <div className="relative flex md:flex-row md:grid-cols-2 flex md:flex-row flex-col gap-[22px] items-start justify-start w-full md:pt-[0px] pt-[22px] z-10">
                 <div
                   ref={reffirstDiv}
-                  className="bg-gradient-to-t from-[#7A3636] to-[#C44141] w-full md:w-[38%] p-[1px] rounded-[32px] md:max-h-[400px] max-h-[300px]"
+                  className="bg-[url('/blockapexbg.png')] bg-cover w-full md:w-[38%] p-[1px] rounded-[32px] md:max-h-[400px] max-h-[300px]"
                 >
-                  <div className="w-full h-full bg-[#000000] bg-opacity-90  flex md:flex-1 flex-col items-center justify-start md:p-11 p-8 rounded-[32px] sm:top-[] w-full">
+                  <div className="bg-[#000000] bg-opacity-30 w-full h-full   flex md:flex-1 flex-col items-center justify-start md:p-11 p-8 rounded-[32px] sm:top-[] w-full">
                     <div className="h-full flex flex-col gap-8 items-center justify-start w-auto">
-                      <div className="bankGothic md:text-3xl sm:text-[28px] text-[32px] text-center text-[#B4B5C7] uppercase w-auto">
+                      <div className="bankGothic md:text-3xl sm:text-[28px] text-[32px] text-center bg-clip-text text-transparent bg-gradient-to-r from-[#FFFFFF] to-[#7b7c8a]">
                         AUDITED BY
                       </div>
                       <div className="flex flex-col items-center justify-start w-auto">
@@ -517,20 +586,29 @@ export const HomeView: FC = ({}) => {
                     </div>
                   </div>
                 </div>
-                <div className="bg-[#151722] border border-[#434665] border-solid flex flex-row items-start justify-start md:p-11 p-8 rounded-[32px] w-full md:w-[62%] min-h-[305px]">
+                <div className=" bg-new-card-bg flex flex-row items-start justify-start md:p-11 p-8 rounded-[32px] w-full md:w-[62%] min-h-[305px]">
+                  <div
+                    style={{
+                      zIndex: 5,
+                      top: "50%",
+                      transform: "translate(0%, 20%)",
+                      right: "-5%",
+                    }}
+                    className="rellax  absolute h-auto w-[30%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary md:[filter:blur(22vh)] [filter:blur(12vh)]  md:opacity-[1] opacity-[1] overflow-auto"
+                  />
+
                   <div className=" flex flex-col gap-[26px] items-start justify-start my-1 w-auto md:w-full">
-                    <div className="bankGothic leading-[90.69%] text-[32px] sm:text-[38px] md:text-[42px] text-white-A700 uppercase">
+                    <div className="bankGothic leading-[90.69%] text-[32px] sm:text-[38px] md:text-[42px] bg-clip-text text-transparent bg-gradient-to-r from-[#FFFFFF] to-[#7b7c8a]">
                       <>
-                        Try <br />
-                        Binary Options.
+                        Trade straight from your wallet. <br />
                       </>
                     </div>
                     <div className="text-[#B4B5C7] text-lg w-auto">
-                      Predict Crypto price in a short timeframe and make it pop.
+                      Predict Crypto price and make it pop.
                     </div>
                     <Link href="/trade">
-                      <button className="py-3 rounded gradient-bggnew cursor-pointer font-semibold leading-[normal] min-w-[189px] text-center text-lg">
-                        TRADE OPTIONS
+                      <button className="relative overflow-hidden py-3 rounded-lg bg-new-green hover:bg-new-green-dark cursor-pointer font-semibold leading-[normal] min-w-[189px] text-center text-lg text-black transition ease-in-out duration-300">
+                        TRADE NOW
                       </button>
                     </Link>
                   </div>
@@ -539,10 +617,10 @@ export const HomeView: FC = ({}) => {
             </ResizeDetector>
 
             <ResizeDetector handleHeight onResize={handleResize}>
-              <div className="flex md:flex-row flex-col gap-[22px] justify-start w-full md:pt-[0px] pt-[22px] z-10">
-                <div className="md:order-1 order-2 md:max-h-[500px] min-h-[280px] bg-[#151722] border border-[#434665] border-solid flex flex-col items-start justify-start md:p-11 p-8 rounded-[32px] w-full md:w-[62%] flex-shrink-0">
+              <div className="flex md:flex-row md:grid-cols-2 flex md:flex-row flex-col gap-[22px] items-start justify-start w-full md:pt-[0px] pt-[22px] z-10">
+                <div className="md:order-1 order-2 md:max-h-[450px] min-h-[280px] bg-new-card-bg [backdrop-filter:blur(10px)] flex flex-col items-start justify-start md:p-11 p-8 rounded-[32px] w-full md:w-[62%] flex-shrink-0">
                   <div className="flex flex-col gap-[22px] items-start justify-start  w-auto md:w-full ">
-                    <div className="bankGothic leading-[90.69%] max-w-[560px] md:max-w-full text-[32px] sm:text-[36px] md:text-[42px] text-white-A700 uppercase">
+                    <div className="bankGothic leading-[90.69%] max-w-[560px] md:max-w-full text-[32px] sm:text-[36px] md:text-[42px] bg-clip-text text-transparent bg-gradient-to-r from-[#FFFFFF] to-[#7b7c8a]">
                       Built on Solana, Powered by Pyth.
                     </div>
                     <div className="leading-[140.00%] max-w-[622px] md:max-w-full text-[#B4B5C7] text-lg">
@@ -554,21 +632,36 @@ export const HomeView: FC = ({}) => {
 
                 <div
                   ref={refSecondDiv}
-                  className="md:order-2 order-1 md:max-h-[450px] max-h-[280px] bg-gradient-to-t from-[#0B7A55] to-[#34C796] w-full md:w-[38%] p-[1px] rounded-[32px] flex-shrink"
+                  className="md:order-2 order-1 md:max-h-[450px] max-h-[280px]  w-full md:w-[38%] p-[1px] rounded-[32px] flex-shrink"
                 >
-                  <div className="bg-[#000000] h-full bg-opacity-90 rounded-[32px] w-full overflow-hidden md:max-h-[450px] max-h-[280px]">
-                    <img
-                      className="w-full h-full object-cover scale-200 sm:scale-160  -translate-x-1/8 md:-translate-y-1/5 overflow-hidden md:max-h-[450px] max-h-[260px]"
-                      src="images/img_grid3.svg"
-                      alt="gridThree"
-                    />
+                  <div className="bg-[url('/communitybg.png')] bg-cover   h-full bg-opacity-90 rounded-[32px] w-full overflow-hidden md:max-h-[450px] max-h-[280px]">
+                    <div className="bg-[#000000] bg-opacity-10 w-full h-full   flex md:flex-1 flex-col items-center justify-center md:p-11 p-8 rounded-[32px] sm:top-[] w-full">
+                      <div className="h-full flex flex-col gap-2 items-center justify-center w-auto">
+                        <div className="bankGothic text-center text-[32px] sm:text-[36px] md:text-[42px] bg-clip-text text-transparent bg-gradient-to-r from-[#FFFFFF] to-[#7b7c8a]">
+                          Join our Community
+                        </div>
+                        <div className="rounded-lg bg-new-green flex flex-row items-center justify-center text-left text-lg">
+                          <Link
+                            href="https://discord.gg/jXCbWwD5s8"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            passHref
+                            className="text-secondary hover:text-white"
+                          >
+                            <button className="relative overflow-hidden py-3 rounded-lg bg-new-green hover:bg-new-green-dark cursor-pointer font-semibold leading-[normal] min-w-[189px] text-center text-lg text-black transition ease-in-out duration-300">
+                              JOIN DISCORD
+                            </button>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </ResizeDetector>
           </div>
         </div>
-        <div className="bg-[#000000] flex flex-col font-bankgothicmdbt md:gap-10 gap-[79px] items-center justify-end p-5 w-full pb-[42px]">
+        {/* <div className="bg-[#000000] flex flex-col font-bankgothicmdbt md:gap-10 gap-[79px] items-center justify-end p-5 w-full pb-[42px]">
           <div className="bankGothic mt-[52px] text-[40px] sm:text-[46px] md:text-[50px] text-center text-white-A700 uppercase">
             KEY FEATURES
           </div>
@@ -586,9 +679,9 @@ export const HomeView: FC = ({}) => {
               </div>
             </div>
           </div>
-        </div>
-        <div className="bg-[#000000] flex flex-col items-center justify-start md:m-[] md:mt-[] md:px-[58px] md:pt-[88px] sm:px-10 px-5 w-full ">
-          <div className="bg-gradient-to-t from-[#0B7A55] to-[#34C796] max-w-[1232px] md:mb-[21px]  p-[1px]   rounded-[32px] z-10">
+        </div> */}
+        <div className="bg-[#000000] flex flex-col items-center justify-start md:m-[] md:mt-[] md:px-[58px] sm:px-10 px-5 w-full ">
+          {/* <div className="bg-gradient-to-t from-[#0B7A55] to-[#34C796] max-w-[1232px] md:mb-[21px]  p-[1px]   rounded-[32px] z-10">
             <div className="bg-[#151722] flex flex-col md:flex-row items-center justify-start   w-full sm:px-[60px] px-[30px] md:py-[20px] py-[30px] rounded-[32px]">
               <div className="flex md:flex-row flex-col md:gap-10 items-center justify-between w-[95%] md:w-full overflow-hidden">
                 <div className="flex flex-col items-start justify-start">
@@ -606,7 +699,7 @@ export const HomeView: FC = ({}) => {
                     className="text-secondary hover:text-white"
                   >
                     <button className="py-3 rounded gradient-bggnew cursor-pointer font-semibold leading-[normal] min-w-[219px] mt-[31px] text-center text-white text-lg">
-                      JOIN OUR DISCORD
+                      JOIN DISCORD
                     </button>
                   </Link>
                 </div>
@@ -618,7 +711,7 @@ export const HomeView: FC = ({}) => {
                 />
               </div>
             </div>
-          </div>
+          </div> */}
           <div className="relative bg-gradient7  flex flex-row  items-center justify-between  sm:w-[80%] w-[100%] pt-[21px] mt-[42px]">
             <Link href="/">
               <img

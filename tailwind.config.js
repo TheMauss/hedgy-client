@@ -15,6 +15,7 @@ module.exports = {
         "grey-text": "#a9aab7",
         short: "#ff4c4c",
         primary: "#23eaa4",
+        primarys: "#23eaa460",
         deepskyblue: "#58b9ff",
         tomato: {
           100: "#ff4d4d",
@@ -35,6 +36,9 @@ module.exports = {
         blueviolet: "#9747ff",
         mediumspringgreen: "rgba(35, 234, 164, 0.05)",
         lightsteelblue: "#b4b5c7",
+        "new-card-bg": "#14141465",
+        "new-green": "#43e3ae",
+        "new-green-dark": "#2b9974",
       },
       fontSize: {
         "between-md-lg": "1.15rem",
