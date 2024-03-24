@@ -271,31 +271,6 @@ export const HomeView: FC = ({}) => {
     }
   };
 
-useEffect(() => {
-  const updateWindowDimensions = () => {
-    setWindowWidth(window.innerWidth);
-  };
-
-  window.addEventListener('resize', updateWindowDimensions);
-  updateWindowDimensions(); // Initial update
-
-  return () => window.removeEventListener('resize', updateWindowDimensions);
-}, []);
-
-const mobileStyle = {
-  WebkitFilter: 'blur(5vh)', // Specific filter for mobile
-  filter: 'blur(5vh)',
-};
-
-const desktopStyle = {
-  WebkitFilter: 'blur(14vh)', // Specific filter for desktop
-  filter: 'blur(14vh)',
-};
-
-// Choose style based on whether the device is mobile
-const style = isMobile ? mobileStyle : desktopStyle;
-
-
   const popFiLandingPageColumnvectorPropList = [
     { userimage: "images/img_vector.png" },
     {
@@ -376,17 +351,15 @@ const style = isMobile ? mobileStyle : desktopStyle;
                   right: "10%",
                 }}
               />
-<div
-  style={{
-    ...style, // Spread the chosen style (mobile or desktop)
-    zIndex: 5,
-    top: '50%',
-    transform: 'translate(-148%, 40%)',
-    right: '-5%',
-    opacity: isMobile ? '1' : '0.7', // Example of changing opacity based on device
-  }}
-  className="rellax absolute h-auto w-[16%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary overflow-auto"
-/>
+              <div
+                style={{
+                  zIndex: 5,
+                  top: "50%",
+                  transform: "translate(-148%, 40%)",
+                  right: "-5%",
+                }}
+                className="rellax  absolute h-auto w-[16%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary md:[filter:blur(14vh)] [filter:blur(5vh)]  md:opacity-[0.7] opacity-[1] overflow-auto"
+              />
             </div>
           </div>
 
