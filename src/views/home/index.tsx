@@ -300,35 +300,40 @@ export const HomeView: FC = ({}) => {
 
   // Function to convert vh to pixels
 
-const [blurPx, setBlurPx] = useState(0);
+  const [blurPx, setBlurPx] = useState(0);
+  const [blurPx1, setBlurPx1] = useState(0);
+  const [blurPx2, setBlurPx2] = useState(0);
 
-useEffect(() => {
-  // This function could be defined outside of useEffect if needed elsewhere
-  function vhToPixels(vh) {
-    return Math.round(window.innerHeight * (vh / 100));
-  }
+  useEffect(() => {
+    // This function could be defined outside of useEffect if needed elsewhere
+    function vhToPixels(vh) {
+      return Math.round(window.innerHeight * (vh / 100));
+    }
 
-  function handleResize() {
-    // Choose the blur value based on the screen width
-    const mobileBreakpoint = 768; // Example breakpoint for mobile devices
-    const blurVh = window.innerWidth < mobileBreakpoint ? 5 : 14;
-    setBlurPx(vhToPixels(blurVh));
-  }
+    function handleResize() {
+      // Choose the blur value based on the screen width
+      const mobileBreakpoint = 768; // Example breakpoint for mobile devices
+      const blurVh = window.innerWidth < mobileBreakpoint ? 5 : 14;
+      const blurVh1 = window.innerWidth < mobileBreakpoint ? 20 : 22;
+      const blurVh2 = window.innerWidth < mobileBreakpoint ? 22 : 17;
 
-  handleResize(); // Set initial value
+      setBlurPx(vhToPixels(blurVh));
+      setBlurPx1(vhToPixels(blurVh1));
+      setBlurPx2(vhToPixels(blurVh2));
+    }
 
-  window.addEventListener('resize', handleResize);
+    handleResize(); // Set initial value
 
-  return () => {
-    window.removeEventListener('resize', handleResize);
-  };
-}, []);
+    window.addEventListener("resize", handleResize);
 
-// Now you can use blurPx in your style...
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
+  // Now you can use blurPx in your style...
 
-// Then you can use blurPx in your style
-
+  // Then you can use blurPx in your style
 
   return (
     <>
@@ -436,8 +441,9 @@ useEffect(() => {
               top: "50%",
               transform: "translate(-40%, 20%)",
               left: "-5%",
+              filter: `blur(${blurPx1}px)`,
             }}
-            className="rellax  absolute h-auto w-[30%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary md:[filter:blur(20vh)] [filter:blur(22vh)] md:top-[] md:opacity-[0.3] opacity-[1] overflow-auto"
+            className="rellax  absolute h-auto w-[30%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary md:top-[] md:opacity-[0.3] opacity-[1] overflow-auto"
           />
 
           <div className="mt-[22px] sm:p-[] md:pb-[40px] sm:pb-[120px] pb-[160px] text-[#B4B5C7] text-center text-xl z-10">
@@ -627,8 +633,9 @@ useEffect(() => {
                       top: "50%",
                       transform: "translate(0%, 20%)",
                       right: "-5%",
+                      filter: `blur(${blurPx2}px)`,
                     }}
-                    className="rellax  absolute h-auto w-[30%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary md:[filter:blur(22vh)] [filter:blur(17vh)]  md:opacity-[1] opacity-[1] overflow-auto"
+                    className="rellax  absolute h-auto w-[30%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary   md:opacity-[1] opacity-[1] overflow-auto"
                   />
 
                   <div className="flex flex-col gap-[26px] items-start justify-start my-1 w-auto md:w-2/3">
