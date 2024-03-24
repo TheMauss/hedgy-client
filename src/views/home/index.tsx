@@ -312,9 +312,10 @@ export const HomeView: FC = ({}) => {
         </div>
 
         <div className="flex flex-col md:gap-10 gap-[79px] items-center justify-start w-full">
-          <div className=" flex flex-col gap-[55px] inset-x-[0] items-center justify-center mx-auto  w-auto">
-            <div className="pt-16  bg-clip-text bg-white  leading-[90.69%] max-w-[95%] md:max-w-[900px] text-center md:text-7xl text-5xl !bg-clip-text [background:linear-gradient(91.75deg,_#fff,_rgba(255,_255,_255,_0.25))] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
-              Trade Perpetual Futures on-chain.
+          <div className=" flex flex-col gap-[45px] inset-x-[0] items-center justify-center mx-auto  w-auto">
+            <div className="pt-16  bg-clip-text bg-white  leading-[90.69%] max-w-[100%] md:max-w-[900px] text-center md:text-7xl text-6xl !bg-clip-text [background:linear-gradient(91.75deg,_#fff,_rgba(255,_255,_255,_0.25))] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+              Trade Perpetual Futures{" "}
+              <div className="pt-2 md:text-7xl text-3xl">on-chain.</div>
             </div>
             <div className="flex sm:flex-row flex-col  gap-4 items-center justify-center w-auto sm:w-full">
               <Link href="/futures">
@@ -354,10 +355,10 @@ export const HomeView: FC = ({}) => {
                 style={{
                   zIndex: 5,
                   top: "50%",
-                  transform: "translate(-150%, 40%)",
+                  transform: "translate(-148%, 40%)",
                   right: "-5%",
                 }}
-                className="rellax  absolute h-auto w-[15%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary md:[filter:blur(20vh)] [filter:blur(8vh)]  md:opacity-[0.85] opacity-[1] overflow-auto"
+                className="rellax  absolute h-auto w-[16%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary md:[filter:blur(14vh)] [filter:blur(5vh)]  md:opacity-[0.7] opacity-[1] overflow-auto"
               />
             </div>
           </div>

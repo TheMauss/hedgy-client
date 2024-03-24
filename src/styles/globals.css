@@ -1164,8 +1164,8 @@ html::-webkit-scrollbar-thumb:hover {
   .topg {
     background-image: radial-gradient(
       circle 100vh at center top,
-      #43e3ae34,
-      #000000 40%
+      #43e3ae42,
+      #000000 75%
     );
   }
   .topgg {
@@ -1185,7 +1185,7 @@ html::-webkit-scrollbar-thumb:hover {
   .topg {
     background-image: radial-gradient(
       circle 100vh at center top,
-      #43e3ae34,
+      #43e3ae45,
       #000000 80%
     );
   }
