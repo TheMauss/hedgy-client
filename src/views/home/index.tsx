@@ -302,25 +302,25 @@ export const HomeView: FC = ({}) => {
       name: "Bitcoin",
       price: "$68,321",
       ticker: "BTC-PERP",
-      img: "coins/120x120/btc.png",
+      img: "coins/120x120/Btc.png",
     },
     {
       name: "Ethereum",
       price: "$4,321",
       ticker: "ETH-PERP",
-      img: "coins/120x120/eth.png",
+      img: "coins/120x120/Eth.png",
     },
     {
       name: "Solana",
       price: "$132.11",
       ticker: "SOL-PERP",
-      img: "coins/120x120/sol.png",
+      img: "coins/120x120/Sol.png",
     },
     {
       name: "Bonk",
       price: "$1.32",
       ticker: "BONK-PERP",
-      img: "coins/120x120/bonk.png",
+      img: "coins/120x120/Bonk.png",
     },
     // Add more pairs as needed
   ];
@@ -330,25 +330,25 @@ export const HomeView: FC = ({}) => {
       name: "Pyth",
       price: "$68,321",
       ticker: "PYTH-PERP",
-      img: "coins/120x120/pyth.png",
+      img: "coins/120x120/Pyth.png",
     },
     {
       name: "Jup",
       price: "$4,321",
       ticker: "JUP-PERP",
-      img: "coins/120x120/jup.png",
+      img: "coins/120x120/Jup.png",
     },
     {
       name: "Sui",
       price: "$132.11",
       ticker: "SUI-PERP",
-      img: "coins/120x120/sui.png",
+      img: "coins/120x120/Sui.png",
     },
     {
       name: "Tia",
       price: "$1.32",
       ticker: "TIA-PERP",
-      img: "coins/120x120/tia.png",
+      img: "coins/120x120/Tia.png",
     },
     // Add more pairs as needed
   ];
