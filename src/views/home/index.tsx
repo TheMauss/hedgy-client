@@ -302,7 +302,9 @@ export const HomeView: FC = ({}) => {
     <>
       <>
         {console.log("Rendering StarfieldAnimation")}
+        <div className="z-100">
         <StarfieldAnimationComponentWithNoSSR />
+        </div>
       </>
       {/* <div className="w-1/4 h-1/4 absolute !m-[0] top-[250%] left-[70%] rounded-[50%] bg-primary [filter:blur(400px)]  opacity-[1] z-[1] overflow-auto" /> */}
 
@@ -351,23 +353,25 @@ export const HomeView: FC = ({}) => {
                   right: "10%",
                 }}
               />
-              <div
-                style={{
-                  zIndex: 5,
-                  top: "50%",
-                  transform: "translate(-148%, 40%)",
-                  right: "-5%",
-                }}
-                className="rellax  absolute h-auto w-[16%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary md:[filter:blur(14vh)] [filter:blur(5vh)]  md:opacity-[0.7] opacity-[1] overflow-auto"
-              />
+
+<div
+  className="rellax absolute w-[53%] h-full inset-y-0 rounded-full overflow-x-hidden"
+  style={{
+    zIndex: 5,
+    top: "50%",
+    transform: "translate(0%, 0%)",
+    right: "0%",
+  }}
+><div className="custom-blur-circle w-full h-full"></div></div>
             </div>
+
           </div>
 
           <div className=" font-bankgothicmdbt md:px-5 relative w-full pt-5">
             <div className=""></div>
           </div>
         </div>
-        <div className="lg:pt-32 md:pt-16 flex md:flex-row flex-col justify-center items-center md:w-2/3 md:min-w-[670px] max-w-[1400px] w-full">
+        <div className="lg:pt-32 md:pt-16 flex md:flex-row flex-col justify-center items-center md:w-2/3 md:min-w-[670px] max-w-[1400px] w-full z-10">
           <div className="md:w-1/3 w-full items-center justify-center text-center rounded-2xl py-4 px-6 box-border gap-[16px]">
             <b className="text-5xl leading-[100%] text-transparent !bg-clip-text [background:linear-gradient(91.75deg,_#fff,_rgba(255,_255,_255,_0.25))] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
               $25M+
@@ -393,19 +397,24 @@ export const HomeView: FC = ({}) => {
             </div>
           </div>
         </div>
+        <div className="relative w-full overflow-hidden">
+        <div
+                className="rellax absolute md:w-1/2 w-full md:h-full h-1/3 inset-y-0 rounded-full overflow-x-hidden"
+             style={{
+                zIndex: 5,
+                  top: "10%",
+                  transform: "translate(-15%, -25%)",
+                 left: "0%",
+                 }}
+            ><div className="custom-blur-circle2 w-full h-full"></div></div>
+                                      <div
+                className="rellaxx"
+            ><div className="custom-blur-circle3 w-full h-full"></div></div>
         <div className="relative w-full h-full bg-[#000000] flex flex-col items-center justify-center px-14 pb-14 md:px-10 sm:px-5 w-full ">
           <div className="pt-32 bankGothic mt-0.5 md:text-6xl text-5xl text-center text-white-A700 uppercase z-10 bg-clip-text text-transparent bg-gradient-to-r from-[#FFFFFF] to-[#7b7c8a]">
             SOLANA PERP DEX
           </div>
-          <div
-            style={{
-              zIndex: 5,
-              top: "50%",
-              transform: "translate(-40%, 20%)",
-              left: "-5%",
-            }}
-            className="rellax  absolute h-auto w-[30%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary md:[filter:blur(20vh)] [filter:blur(22vh)] md:top-[] md:opacity-[0.3] opacity-[1] overflow-auto"
-          />
+
 
           <div className="mt-[22px] sm:p-[] md:pb-[40px] sm:pb-[120px] pb-[160px] text-[#B4B5C7] text-center text-xl z-10">
             With low fees, deep liquidity, and up to 100x Leverage.
@@ -434,9 +443,9 @@ export const HomeView: FC = ({}) => {
                 </div>
               </Link>
             </div>
-            <div className=" h-[370px] relative md:max-w-[450px] min-w-[300px] sm:max-w-[370px] md:w-[50%] w-[100%] z-10">
+            <div className=" h-[370px] relative md:max-w-[450px] min-w-[300px] sm:max-w-[370px] md:w-[50%] w-[100%] z-20">
               <Link href="/futures?crypto=sol">
-                <div className="inside_shadow bg-gradient-to-t from-[#000000] to-[#111111] bottom-[0] inset-x-[0] items-center justify-end mx-auto p-[42px] sm:px-5 rounded-[32px] w-full">
+                <div className="inside_shadow bg-gradient-to-t from-[#000000] to-[#111111] bottom-[0] inset-x-[0] items-center justify-end mx-auto p-[42px] sm:px-5 rounded-[32px] w-full z-20">
                   <div className="bankGothic mt-[93px] text-[38px] md:text-[50px] text-center text-white-A700 uppercase">
                     SOLANA
                   </div>
@@ -457,7 +466,7 @@ export const HomeView: FC = ({}) => {
             </div>
           </div>
         </div>
-        <div className="overflow-hidden bg-[#000000] flex flex-col font-bankgothicmdbt items-center justify-start pt-[84px] pb-4  sm:px-10 px-5 w-full">
+        <div className="overflow-hidden flex flex-col font-bankgothicmdbt items-center justify-start pt-[84px] pb-4  sm:px-10 px-5 w-full">
           <div className="flex flex-col gap-[22px] items-start justify-start max-w-[1400px] mb-[7px] mx-auto w-full">
             <ResizeDetector handleHeight onResize={handleResize4}>
               <div className="w-full flex md:flex-row flex-col gap-[22px] items-start justify-start">
@@ -588,15 +597,8 @@ export const HomeView: FC = ({}) => {
                   </div>
                 </div>
                 <div className=" bg-new-card-bg flex flex-row items-center justify-center md:p-8 p-8 rounded-[32px] w-full md:w-[62%] min-h-[305px]">
-                  <div
-                    style={{
-                      zIndex: 5,
-                      top: "50%",
-                      transform: "translate(0%, 20%)",
-                      right: "-5%",
-                    }}
-                    className="rellax  absolute h-auto w-[30%] inset-y-[0] my-auto object-cover rounded-[50%] bg-primary md:[filter:blur(22vh)] [filter:blur(17vh)]  md:opacity-[1] opacity-[1] overflow-auto"
-                  />
+
+
 
                   <div className="flex flex-col gap-[26px] items-start justify-start my-1 w-auto md:w-2/3">
                     <div className="md:px-0 px-2 bankGothic leading-[90.69%] text-[32px] sm:text-[38px] md:text-[42px] bg-clip-text text-transparent bg-gradient-to-r from-[#FFFFFF] to-[#7b7c8a]">
@@ -604,6 +606,7 @@ export const HomeView: FC = ({}) => {
                         Trade straight from your wallet. <br />
                       </>
                     </div>
+                    
                     <div className="md:block hidden  text-[#B4B5C7] text-lg w-auto">
                       Predict Crypto price and make it pop.
                     </div>
@@ -703,6 +706,7 @@ export const HomeView: FC = ({}) => {
               </Link>
             </div>
           </div>
+        </div>
         </div>
 
         {/* <div className="bg-[#000000] flex flex-col font-bankgothicmdbt md:gap-10 gap-[79px] items-center justify-end p-5 w-full pb-[42px]">
