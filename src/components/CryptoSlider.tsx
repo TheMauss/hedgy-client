@@ -205,16 +205,16 @@ const CryptoSlider: React.FC<CryptoSliderProps> = ({
             <div className="flex items-center justify-center h-full  ">
               <div className="w-[330px] rounded-3xl bg-new-card-bg [backdrop-filter:blur(10px)] flex flex-col items-start justify-start p-6 box-border gap-[24px]">
                 <div className="self-stretch flex flex-row items-start justify-between">
-                  <div className="flex flex-col items-start justify-start gap-[8px]">
-                    <div className="relative leading-[100%] font-medium">
+                  <div className="flex flex-col items-start justify-start gap-[12px]">
+                    <div className="relative leading-[100%] text-[20px] text-[#FFFFF]">
                       {pair.name}
                     </div>
-                    <div className="relative text-base leading-[80.69%] text-gray-200">
+                    <div className="relative text-[#B4B5C770] leading-[80.69%]">
                       {pair.ticker}
                     </div>
                   </div>
                   <img
-                    className="w-[60px] relative h-[60px] object-cover"
+                    className="w-[50px] relative h-[55px] object-cover"
                     alt={pair.name}
                     src={pair.img}
                   />
