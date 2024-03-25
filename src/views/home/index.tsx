@@ -427,7 +427,7 @@ export const HomeView: FC = ({}) => {
             <div className=""></div>
           </div>
         </div>
-        <div className="lg:pt-48 pb-16 md:pt-16 flex md:flex-row flex-col justify-center items-center md:w-2/3 md:min-w-[670px] max-w-[1400px] w-full z-10">
+        <div className="bg-[#00000000] lg:pt-48 pb-16 md:pt-16 flex md:flex-row flex-col justify-center items-center md:w-2/3 md:min-w-[670px] max-w-[1400px] w-full z-10">
           <div className="md:w-1/3 w-full items-center justify-center text-center rounded-2xl py-4 px-6 box-border gap-[16px]">
             <b className="text-5xl leading-[100%] text-transparent !bg-clip-text [background:linear-gradient(91.75deg,_#fff,_rgba(255,_255,_255,_0.25))] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
               $25M+
@@ -468,7 +468,7 @@ export const HomeView: FC = ({}) => {
           <div className="rellaxx">
             <div className="custom-blur-circle3 w-full 2xl:w-5/6 h-full"></div>
           </div>
-          <div className="relative w-full h-full bg-[#000000] flex flex-col items-center justify-center px-14 md:px-10 sm:px-5 w-full ">
+          <div className="relative w-full h-full bg-[#00000000] flex flex-col items-center justify-center px-14 md:px-10 sm:px-5 w-full ">
             <div className="pt-32 bankGothic mt-0.5 md:text-6xl text-5xl text-center text-white-A700 uppercase z-10 bg-clip-text text-transparent bg-gradient-to-r from-[#FFFFFF] to-[#7b7c8a]">
               SOLANA PERP DEX
             </div>
