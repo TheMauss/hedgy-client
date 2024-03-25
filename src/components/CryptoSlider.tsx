@@ -178,7 +178,7 @@ const CryptoSlider: React.FC<CryptoSliderProps> = ({
   // Resume animation from where it stopped on mouse leave
   const handleMouseLeave = () => {
     controls.start({
-      x: movementDirection,
+      x: direction === "right" ? "-1200%" : "1200%",
       transition: {
         ease: "linear",
         duration: 600, // Keep or adjust duration to resume correctly
