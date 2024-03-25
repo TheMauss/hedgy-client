@@ -1160,20 +1160,34 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 .custom-blur-circle {
-  background: radial-gradient(circle, rgba(67, 227, 166, 0.278), #000000 70%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(67, 227, 166, 0.278),
+    #000000 70%,
+    transparent 70%
+  );
   /* Adjust your primary color and transparency in the radial-gradient */
 }
 
 .custom-blur-circle2 {
-  background: radial-gradient(circle at left, rgba(67, 227, 166, 0.15), #000000 43%, transparent 70%);
+  background: radial-gradient(
+    circle at left,
+    rgba(67, 227, 166, 0.15),
+    #000000 43%,
+    transparent 70%
+  );
   /* Adjust your primary color and transparency in the radial-gradient */
 }
 
 .custom-blur-circle3 {
-  background: radial-gradient(circle, rgba(67, 227, 166, 0.15), #000000 43%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(67, 227, 166, 0.15),
+    #000000 43%,
+    transparent 70%
+  );
   /* Adjust your primary color and transparency in the radial-gradient */
 }
-
 
 /* Adjust gradient for smaller devices */
 @media only screen and (max-width: 776px) {
@@ -1196,12 +1210,22 @@ html::-webkit-scrollbar-thumb:hover {
   }
 
   .custom-blur-circle2 {
-    background: radial-gradient(circle at left, rgba(67, 227, 166, 0.167), #000000 60%, transparent 70%);
+    background: radial-gradient(
+      circle at left,
+      rgba(67, 227, 166, 0.167),
+      #000000 60%,
+      transparent 70%
+    );
     /* Adjust your primary color and transparency in the radial-gradient */
   }
 
   .custom-blur-circle3 {
-    background: radial-gradient(circle at right, rgba(67, 227, 166, 0.492), #000000 43%, transparent 70%);
+    background: radial-gradient(
+      circle at right,
+      rgba(67, 227, 166, 0.492),
+      #000000 43%,
+      transparent 70%
+    );
     /* Adjust your primary color and transparency in the radial-gradient */
   }
 }
@@ -1218,13 +1242,16 @@ html::-webkit-scrollbar-thumb:hover {
   transform: translate(35%, 180%); /* Default value for mobile */
 }
 
-@media (min-width: 768px) { /* Adjust this breakpoint if needed */
+@media (min-width: 768px) {
+  /* Adjust this breakpoint if needed */
   .rellaxx {
     height: 75%; /* Adjust for larger screens if necessary */
-    transform: translate(35%, 47%); /* Adjusted value for screens wider than 768px */
+    transform: translate(
+      35%,
+      47%
+    ); /* Adjusted value for screens wider than 768px */
   }
 }
-
 
 /* Adjust gradient for larger devices */
 @media only screen and (min-width: 777px) {
