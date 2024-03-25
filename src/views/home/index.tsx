@@ -563,7 +563,7 @@ export const HomeView: FC = ({}) => {
                             </div>
                           </div>
                         </div>
-                        <div className="min-w-[190px] absolute bg-[#000000] border border-[#434665] border-solid flex flex-col font-bankgothicltbt h-[100px] inset-[0] items-center justify-center m-auto  px-[42px] rounded-[16px] w-1/2 md:w-2/">
+                        <div className="min-w-[190px] absolute bg-[#080404]  border-solid flex flex-col font-bankgothicltbt h-[100px] inset-[0] items-center justify-center m-auto  px-[42px] rounded-[16px] w-1/2 md:w-2/">
                           <div className="flex flex-row gap-2 items-center justify-center w-auto ">
                             <button className="flex h-[39px] items-center justify-center rounded-[19px] w-[39px] bg-gradient-to-bl from-[#11EEAA] to-[#D229FB]">
                               <img src="images/img_volume.svg" alt="volume" />
