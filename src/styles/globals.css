@@ -1230,6 +1230,25 @@ html::-webkit-scrollbar-thumb:hover {
   }
 }
 
+/* CryptoSlider.css */
+.crypto-slider-container {
+  width: 100vw;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.crypto-slider-content {
+  display: flex;
+  white-space: nowrap;
+  will-change: transform; /* Optimizes for animations */
+}
+
+.crypto-pair {
+  min-width: 160px; /* or whatever width your items are */
+  margin-right: 20px; /* Adjust as needed */
+  /* Add more styles for your crypto pairs here */
+}
+
 .rellaxx {
   position: absolute;
   width: 100%;

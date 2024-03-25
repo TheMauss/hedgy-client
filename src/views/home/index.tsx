@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { useState, useEffect, useRef, FC } from "react";
 import ResizeDetector from "react-resize-detector";
-import PopFiLandingPageColumnvector from "components/PopFiLandingPageColumnvector";
+import CryptoSlider from "components/CryptoSlider";
 import socketIOClient from "socket.io-client";
 import { useRouter } from "next/router";
 import AppBar from "components/Firstbar";
@@ -297,6 +297,61 @@ export const HomeView: FC = ({}) => {
       userimage: "images/shield-tick.png",
     },
   ];
+  const cryptoPairs1 = [
+    {
+      name: "Bitcoin",
+      price: "$68,321",
+      ticker: "BTC-PERP",
+      img: "coins/120x120/btc.png",
+    },
+    {
+      name: "Ethereum",
+      price: "$4,321",
+      ticker: "ETH-PERP",
+      img: "coins/120x120/eth.png",
+    },
+    {
+      name: "Solana",
+      price: "$132.11",
+      ticker: "SOL-PERP",
+      img: "coins/120x120/sol.png",
+    },
+    {
+      name: "Bonk",
+      price: "$1.32",
+      ticker: "BONK-PERP",
+      img: "coins/120x120/bonk.png",
+    },
+    // Add more pairs as needed
+  ];
+
+  const cryptoPairs2 = [
+    {
+      name: "Pyth",
+      price: "$68,321",
+      ticker: "PYTH-PERP",
+      img: "coins/120x120/pyth.png",
+    },
+    {
+      name: "Jup",
+      price: "$4,321",
+      ticker: "JUP-PERP",
+      img: "coins/120x120/jup.png",
+    },
+    {
+      name: "Sui",
+      price: "$132.11",
+      ticker: "SUI-PERP",
+      img: "coins/120x120/sui.png",
+    },
+    {
+      name: "Tia",
+      price: "$1.32",
+      ticker: "TIA-PERP",
+      img: "coins/120x120/tia.png",
+    },
+    // Add more pairs as needed
+  ];
 
   return (
     <>
@@ -372,7 +427,7 @@ export const HomeView: FC = ({}) => {
             <div className=""></div>
           </div>
         </div>
-        <div className="lg:pt-32 md:pt-16 flex md:flex-row flex-col justify-center items-center md:w-2/3 md:min-w-[670px] max-w-[1400px] w-full z-10">
+        <div className="lg:pt-48 pb-16 md:pt-16 flex md:flex-row flex-col justify-center items-center md:w-2/3 md:min-w-[670px] max-w-[1400px] w-full z-10">
           <div className="md:w-1/3 w-full items-center justify-center text-center rounded-2xl py-4 px-6 box-border gap-[16px]">
             <b className="text-5xl leading-[100%] text-transparent !bg-clip-text [background:linear-gradient(91.75deg,_#fff,_rgba(255,_255,_255,_0.25))] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
               $25M+
@@ -413,7 +468,7 @@ export const HomeView: FC = ({}) => {
           <div className="rellaxx">
             <div className="custom-blur-circle3 w-full h-full"></div>
           </div>
-          <div className="relative w-full h-full bg-[#000000] flex flex-col items-center justify-center px-14 pb-14 md:px-10 sm:px-5 w-full ">
+          <div className="relative w-full h-full bg-[#000000] flex flex-col items-center justify-center px-14 md:px-10 sm:px-5 w-full ">
             <div className="pt-32 bankGothic mt-0.5 md:text-6xl text-5xl text-center text-white-A700 uppercase z-10 bg-clip-text text-transparent bg-gradient-to-r from-[#FFFFFF] to-[#7b7c8a]">
               SOLANA PERP DEX
             </div>
@@ -421,52 +476,10 @@ export const HomeView: FC = ({}) => {
             <div className="mt-[22px] sm:p-[] md:pb-[40px] sm:pb-[120px] pb-[160px] text-[#B4B5C7] text-center text-xl z-10">
               With low fees, deep liquidity, and up to 100x Leverage.
             </div>
-            <div className="md:mt-8 flex md:flex-row flex-col flex justify-center items-center  md:w-[60%] w-[100%] relative z-1 md:gap-16 gap-32">
-              <div className=" h-[370px] md:w-[50%] w-[100%] md:max-w-[450px] sm:max-w-[370px] min-w-[300px] relative  z-10">
-                <Link href="/futures?crypto=btc">
-                  <div className="inside_shadow bg-gradient-to-t from-[#000000] to-[#111111]  inset-x-[0] items-center justify-end mx-auto p-[42px] sm:px-5  rounded-[32px] w-full">
-                    <div className="bankGothic mt-[93px] text-[38px] md:text-[50px] text-center text-white-A700 uppercase">
-                      BITCOIN
-                    </div>
-                    <div>
-                      <div className={color}>{displayChange}%</div>
-                      <div className="bankGothic text-[34px] sm:text-[40px] text-[#B4B5C7] text-center tracking-[-2.40px] uppercase">
-                        $
-                        {isNaN(prices["Crypto.BTC/USD"] / 100000000)
-                          ? "35432.2"
-                          : (prices["Crypto.BTC/USD"] / 100000000).toFixed(1)}
-                      </div>
-                    </div>
-                    <img
-                      className="absolute top-[-60px] left-1/2 transform -translate-x-1/2 h-[180px] object-cover w-[180px]"
-                      src="images/img_bitcoin3d.png"
-                      alt="bitcoin3d"
-                    />
-                  </div>
-                </Link>
-              </div>
-              <div className=" h-[370px] relative md:max-w-[450px] min-w-[300px] sm:max-w-[370px] md:w-[50%] w-[100%] z-20">
-                <Link href="/futures?crypto=sol">
-                  <div className="inside_shadow bg-gradient-to-t from-[#000000] to-[#111111] bottom-[0] inset-x-[0] items-center justify-end mx-auto p-[42px] sm:px-5 rounded-[32px] w-full z-20">
-                    <div className="bankGothic mt-[93px] text-[38px] md:text-[50px] text-center text-white-A700 uppercase">
-                      SOLANA
-                    </div>
-                    <div className={colorsol}>{displayChangesol}%</div>
-                    <div className="bankGothic text-[34px] sm:text-[40px] text-[#B4B5C7] text-center tracking-[-2.40px] uppercase">
-                      $
-                      {isNaN(prices["Crypto.SOL/USD"] / 100000000)
-                        ? "34.35"
-                        : (prices["Crypto.SOL/USD"] / 100000000).toFixed(3)}
-                    </div>
-                    <img
-                      className="absolute top-[-60px] left-1/2 transform -translate-x-1/2 h-[180px] object-cover w-[180px]"
-                      src="images/img_solana3d.png"
-                      alt="solana3d"
-                    />
-                  </div>
-                </Link>
-              </div>
-            </div>
+          </div>
+          <div className="pb-5 z-30 w-full flex flex-col justify-center items-center">
+            <CryptoSlider cryptoPairs={cryptoPairs1} direction="left" />
+            <CryptoSlider cryptoPairs={cryptoPairs2} direction="right" />{" "}
           </div>
           <div className="overflow-hidden flex flex-col font-bankgothicmdbt items-center justify-start pt-[84px] pb-4  sm:px-10 px-5 w-full">
             <div className="flex flex-col gap-[22px] items-start justify-start max-w-[1400px] mb-[7px] mx-auto w-full">
