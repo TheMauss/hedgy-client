@@ -1163,17 +1163,30 @@ html::-webkit-scrollbar-thumb:hover {
   background: radial-gradient(
     circle,
     rgba(67, 227, 166, 0.278),
-    #000000 70%,
+    #00000000 70%,
     transparent 70%
   );
   /* Adjust your primary color and transparency in the radial-gradient */
+}
+
+/* Adjust gradient for larger devices */
+@media only screen and (min-width: 1920px) {
+  .custom-blur-circle {
+    background: radial-gradient(
+      circle,
+      rgba(67, 227, 166, 0.17),
+      #00000000 62%,
+      transparent 70%
+    );
+    /* Adjust your primary color and transparency in the radial-gradient */
+  }
 }
 
 .custom-blur-circle2 {
   background: radial-gradient(
     circle at left,
     rgba(67, 227, 166, 0.15),
-    #000000 43%,
+    #00000000 43%,
     transparent 70%
   );
   /* Adjust your primary color and transparency in the radial-gradient */
@@ -1183,7 +1196,7 @@ html::-webkit-scrollbar-thumb:hover {
   background: radial-gradient(
     circle,
     rgba(67, 227, 166, 0.15),
-    #000000 43%,
+    #00000000 43%,
     transparent 70%
   );
   /* Adjust your primary color and transparency in the radial-gradient */
@@ -1199,13 +1212,17 @@ html::-webkit-scrollbar-thumb:hover {
     );
   }
   .topgg {
-    background-image: radial-gradient(ellipse at bottom, #2f3046, #000000 60%);
+    background-image: radial-gradient(
+      ellipse at bottom,
+      #2f3046,
+      #00000000 60%
+    );
   }
   .topggg {
     background-image: radial-gradient(
       circle 80vh at center top,
       #43e3ae34,
-      #000000 20%
+      #00000000 20%
     );
   }
 
@@ -1213,7 +1230,7 @@ html::-webkit-scrollbar-thumb:hover {
     background: radial-gradient(
       circle at left,
       rgba(67, 227, 166, 0.167),
-      #000000 60%,
+      #00000000 60%,
       transparent 70%
     );
     /* Adjust your primary color and transparency in the radial-gradient */
@@ -1223,10 +1240,31 @@ html::-webkit-scrollbar-thumb:hover {
     background: radial-gradient(
       circle at right,
       rgba(67, 227, 166, 0.492),
-      #000000 43%,
+      #00000000 43%,
       transparent 70%
     );
     /* Adjust your primary color and transparency in the radial-gradient */
+  }
+}
+
+/* Adjust gradient for larger devices */
+@media only screen and (min-width: 777px) {
+  .topg {
+    background-image: radial-gradient(
+      circle 100vh at center top,
+      #43e3ae45,
+      #000000 80%
+    );
+  }
+  .topgg {
+    background-image: radial-gradient(
+      ellipse at bottom,
+      #2f3046,
+      #00000000 30%
+    );
+  }
+  .topggg {
+    background-image: radial-gradient(ellipse at top, #43e3ae34, #00000000 30%);
   }
 }
 
@@ -1269,23 +1307,6 @@ html::-webkit-scrollbar-thumb:hover {
       35%,
       47%
     ); /* Adjusted value for screens wider than 768px */
-  }
-}
-
-/* Adjust gradient for larger devices */
-@media only screen and (min-width: 777px) {
-  .topg {
-    background-image: radial-gradient(
-      circle 100vh at center top,
-      #43e3ae45,
-      #000000 80%
-    );
-  }
-  .topgg {
-    background-image: radial-gradient(ellipse at bottom, #2f3046, #000000 30%);
-  }
-  .topggg {
-    background-image: radial-gradient(ellipse at top, #43e3ae34, #000000 30%);
   }
 }
 

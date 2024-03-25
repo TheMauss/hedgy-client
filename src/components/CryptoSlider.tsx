@@ -1,5 +1,5 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useState, useRef } from "react";
+import { motion, useAnimation } from "framer-motion";
 
 interface CryptoSliderProps {
   cryptoPairs: {
@@ -16,36 +16,122 @@ const CryptoSlider: React.FC<CryptoSliderProps> = ({
   direction,
 }) => {
   // Ensure pairs are duplicated for infinite scroll effect
-  const duplicatedCryptoPairs = [...cryptoPairs, ...cryptoPairs];
+  const duplicatedCryptoPairs = [
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+    ...cryptoPairs,
+  ];
 
-  // Calculate movement direction based on props
-  const movementDirection =
-    direction === "right" ? ["0%", "-100%"] : ["-100%", "0%"];
+  const controls = useAnimation();
+
+  const [movementDirection, setMovementDirection] = useState(["0%", "-1200%"]); // Default to PC
+
+  // Adjust movementDirection based on window width
+  const adjustMovementForDevice = () => {
+    const width = window.innerWidth;
+    if (width < 480) {
+      // Mobile
+      setMovementDirection(
+        direction === "right" ? ["0%", "-4800%"] : ["-4800%", "0%"]
+      );
+    } else if (width >= 480 && width < 1024) {
+      // Tablet
+      setMovementDirection(
+        direction === "right" ? ["0%", "-2400%"] : ["-2400%", "0%"]
+      );
+    } else {
+      // PC and others
+      setMovementDirection(
+        direction === "right" ? ["0%", "-1200%"] : ["-1200%", "0%"]
+      );
+    }
+  };
+
+  useEffect(() => {
+    adjustMovementForDevice();
+    // Re-adjust when window resizes
+    window.addEventListener("resize", adjustMovementForDevice);
+    return () => window.removeEventListener("resize", adjustMovementForDevice);
+  }, [direction]);
+
+  useEffect(() => {
+    controls.start({
+      x: movementDirection,
+      transition: {
+        ease: "linear",
+        duration: 600, // Adjust duration as needed
+        repeat: Infinity,
+      },
+    });
+  }, [controls, movementDirection]);
+
+  // Stop animation on hover
+  const handleMouseEnter = () => {
+    controls.stop();
+  };
+
+  // Resume animation from where it stopped on mouse leave
+  const handleMouseLeave = () => {
+    controls.start({
+      x: direction === "right" ? "-1200%" : "1200%",
+      transition: {
+        ease: "linear",
+        duration: 600, // Keep or adjust duration to resume correctly
+        repeat: Infinity,
+      },
+    });
+  };
 
   return (
-    <div className="z-10 relative h-full w-full overflow-hidden py-5 bg-backgroundColorTertiary">
-      <motion.div
-        className="flex"
-        initial={{ x: movementDirection[0] }}
-        animate={{
-          x: movementDirection,
-          transition: {
-            ease: "linear",
-            duration: 30, // Adjust the duration to control the speed
-            repeat: Infinity,
-          },
-        }}
-      >
+    <div
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className="z-10 relative h-full w-full overflow-hidden py-4 bg-backgroundColorTertiary"
+    >
+      <motion.div className="flex" animate={controls}>
         {duplicatedCryptoPairs.map((pair, index) => (
           <div
             key={index}
-            className="z-10 flex-shrink-0"
-            style={{ width: `${100 / cryptoPairs.length}%` }}
+            className="z-10 flex-shrink-0 w-[340px]  px-4"
+            style={{ width: `340px` }}
           >
             {" "}
             {/* Adjust min-width as needed */}
-            <div className="flex items-center justify-center h-full py-4 ">
-              <div className="w-[353px] rounded-3xl bg-new-card-bg [backdrop-filter:blur(10px)] flex flex-col items-start justify-start p-6 box-border gap-[24px]">
+            <div className="flex items-center justify-center h-full  ">
+              <div className="w-[330px] rounded-3xl bg-new-card-bg [backdrop-filter:blur(10px)] flex flex-col items-start justify-start p-6 box-border gap-[24px]">
                 <div className="self-stretch flex flex-row items-start justify-between">
                   <div className="flex flex-col items-start justify-start gap-[8px]">
                     <div className="relative leading-[100%] font-medium">

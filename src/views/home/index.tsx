@@ -463,10 +463,10 @@ export const HomeView: FC = ({}) => {
               left: "0%",
             }}
           >
-            <div className="custom-blur-circle2 w-full h-full"></div>
+            <div className="custom-blur-circle2 w-full 2xl:w-5/6 h-full"></div>
           </div>
           <div className="rellaxx">
-            <div className="custom-blur-circle3 w-full h-full"></div>
+            <div className="custom-blur-circle3 w-full 2xl:w-5/6 h-full"></div>
           </div>
           <div className="relative w-full h-full bg-[#000000] flex flex-col items-center justify-center px-14 md:px-10 sm:px-5 w-full ">
             <div className="pt-32 bankGothic mt-0.5 md:text-6xl text-5xl text-center text-white-A700 uppercase z-10 bg-clip-text text-transparent bg-gradient-to-r from-[#FFFFFF] to-[#7b7c8a]">
