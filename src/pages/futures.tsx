@@ -330,10 +330,10 @@ const Futures: FC = () => {
   return (
     <div className="relative max-h-100vh overflow-hidden">
       <div
-        className="overflow-hidden absolute futures-circles w-3/4 h-3/4"
+        className="overflow-hidden absolute futures-circles1 w-full h-full"
         style={{
-          zIndex: 1,
-          transform: "translate(-70%, 100%)",
+          zIndex: 0,
+          transform: "translate(-38%, 55%)",
           right: "0%",
         }}
       >
@@ -342,7 +342,7 @@ const Futures: FC = () => {
       <div
         className="overflow-hidden absolute futures-circles w-full h-full"
         style={{
-          zIndex: 0,
+          zIndex: 10000,
           transform: "translate(65%, 35%)",
           right: "0%",
         }}
@@ -364,7 +364,7 @@ const Futures: FC = () => {
         <meta name="description" content="PopFi" />
       </Head>
       <div className="relative w-full flex justify-center flex-col">
-        <div className="bg-base relative lg:block hidden mt-1">
+        <div className="relative lg:block hidden mt-1">
           {" "}
           {/* Ensure the parent has relative positioning */}
           <button
