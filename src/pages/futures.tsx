@@ -411,7 +411,7 @@ const Futures: FC = () => {
                         <div
                           className={`w-full md:block flex-col hidden md:order-2 order-1 mt-2 md:h-[629px] ${
                             showBottomPanel
-                              ? "lg:h-[calc((100vh-2px)-(38vh))]"
+                              ? "lg:h-[calc((100vh-2px)-(42vh))]"
                               : "lg:h-[calc(100vh-108px-33px)] "
                           }`}
                         >
@@ -423,7 +423,7 @@ const Futures: FC = () => {
                         </div>
 
                         <div
-                          className={`w-full bg-[#ffffff08] lg:flex lg:flex-col hidden order-3   lg:h-[calc((100vh-233px)-(62vh-79px))] mt-2 ${showBottomPanel ? "" : "lg:hidden"}`}
+                          className={`w-full bg-[#ffffff08] lg:flex lg:flex-col hidden order-3   lg:h-[calc((100vh-233px)-(58vh-79px))] mt-2 ${showBottomPanel ? "" : "lg:hidden"}`}
                         >
                           <MyPositionsFutures
                             latestOpenedPosition={latestOpenedPosition}
@@ -437,7 +437,7 @@ const Futures: FC = () => {
                         </div>
                       </div>
                       <div
-                        className={`pt-2 z-100 md:w-[375px] bg-[#ffffff08] h-1/2 w-full md:order-1 order-2  rounded-lg  ${ActiveButton === 1 ? "" : "hidden"}`}
+                        className={`mt-2 z-100 md:w-[375px] bg-[#ffffff08] h-1/2 w-full md:order-1 order-2  rounded-lg  ${ActiveButton === 1 ? "" : "hidden"}`}
                       >
                         <TradeBarFutures
                           setOpeningPrice={setOpeningPrice}
@@ -469,7 +469,7 @@ const Futures: FC = () => {
                 </div>
               </div>
 
-              <div
+              {/* <div
                 className={`h-[calc(100vh-192px)] md:h-[330px] w-full md:flex lg:flex-col lg:hidden  ${
                   ActiveButton === 2 ? "" : "hidden"
                 }`}
@@ -481,7 +481,7 @@ const Futures: FC = () => {
                   prices={prices}
                   handleNewNotification={handleNewNotification}
                 />
-              </div>
+              </div> */}
               {/* <div className="flex flex-row md:py-2 md:gap-2">
                 <div
                   className={`h-[calc(100vh-192px)] md:h-[330px] w-full md:block lg:flex-col lg:hidden flex-row gap-2 ${
