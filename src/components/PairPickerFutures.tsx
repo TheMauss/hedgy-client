@@ -68,7 +68,7 @@ const options = [
 const formatOptionLabel = ({ value, label, icon }) => (
   <div className="flex items-center">
     <img src={icon} alt="Logo" width="30" height="30" />
-    <span className="bankGothic px-2 text-[1.2rem] text-[#A9AAB7]">
+    <span className="bankGothic px-2 text-[1.2rem] text-[#ffffff]">
       {label}
     </span>
   </div>
@@ -268,7 +268,7 @@ export const PairPicker: React.FC<PairPickerProps> = ({
               transition: "transform 0.3s",
               transform: `rotate(${props.selectProps.menuIsOpen ? "0deg" : "180deg"})`,
             }}
-            className="text-[#A9AAB7]"
+            className="text-[#ffffff60]"
           >
             <FaAngleUp />
           </div>

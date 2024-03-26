@@ -519,7 +519,7 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 .input-capsule__input::placeholder {
-  color: #434665; /* Replace with the color you want */
+  color: #ffffff50; /* Replace with the color you want */
   opacity: 1; /* Firefox lowers the opacity by default, so set it to 1 if needed */
 }
 
@@ -579,7 +579,7 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 .input3-capsule__input::placeholder {
-  color: #434665; /* Replace with the color you want */
+  color: #ffffff60; /* Replace with the color you want */
   opacity: 1; /* Firefox lowers the opacity by default, so set it to 1 if needed */
 }
 
@@ -1172,7 +1172,7 @@ html::-webkit-scrollbar-thumb:hover {
 .futures-circles {
   background: radial-gradient(
     circle,
-    rgba(67, 227, 166, 0.204),
+    rgba(67, 227, 166, 0.241),
     #00000000 62%,
     transparent 70%
   );

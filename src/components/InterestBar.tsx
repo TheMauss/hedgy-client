@@ -94,7 +94,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
     ((initialPrice - openingPrice) / openingPrice) *
     100
   ).toFixed(2);
-  const color = Number(percentage) < 0 ? "text-red-500" : "text-primary";
+  const color = Number(percentage) < 0 ? "text-short" : "text-primary";
   const displayedPercentage = isNaN(Number(percentage))
     ? "-"
     : Number(percentage) < 0
@@ -240,7 +240,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
         </div>
         <div className="min-w-[110px] box-border h-8 flex flex-col items-center justify-center  md:border-l-[1px] border-solid border-layer-3">
           <div className="self-stretch flex flex-col md:pl-4 items-start justify-center gap-[4px]">
-            <div className="relative leading-[12px] text-grey-text">
+            <div className="relative leading-[12px] text-[#ffffff60]">
               Open (L)
             </div>
             <div className="relative text-sm leading-[16px] font-dm-sans text-white">
@@ -250,7 +250,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
         </div>
         <div className="min-w-[110px] box-border h-8 flex flex-col items-center justify-center  border-l-[1px] border-solid border-layer-3">
           <div className="self-stretch flex flex-col pl-4 items-start justify-center gap-[4px]">
-            <div className="relative leading-[12px] text-grey-text">
+            <div className="relative leading-[12px] text-[#ffffff60]">
               Open (S)
             </div>
             <div className="relative text-sm leading-[16px] font-dm-sans text-white">
@@ -260,7 +260,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
         </div>
         <div className="min-w-[120px] box-border h-8 flex flex-col items-center justify-center  border-l-[1px] border-solid border-layer-3">
           <div className="self-stretch flex flex-col pl-4 items-start justify-center gap-[4px]">
-            <div className="relative leading-[12px] text-grey-text">
+            <div className="relative leading-[12px] text-[#ffffff60]">
               Borrowing (L)
             </div>
             <div className="relative text-sm leading-[16px] font-dm-sans text-short">
@@ -272,7 +272,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
         </div>
         <div className="min-w-[120px] box-border h-8 flex flex-col items-center justify-center  border-l-[1px] border-solid border-layer-3">
           <div className="self-stretch flex flex-col pl-4 items-start justify-center gap-[4px]">
-            <div className="relative leading-[12px] text-grey-text">
+            <div className="relative leading-[12px] text-[#ffffff60]">
               Borrowing (S)
             </div>
             <div className="relative text-sm leading-[16px] font-dm-sans text-short">

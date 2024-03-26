@@ -41,12 +41,7 @@ import {
 import { PROGRAM_ID } from "../out/programId";
 import useUserSOLBalanceStore from "../stores/useUserSOLBalanceStore";
 import { notify } from "../utils/notifications";
-
-const WalletMultiButtonDynamic = dynamic(
-  async () =>
-    (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
-  { ssr: false }
-);
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 const HOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_HOUSE_WALLET);
 const SIGNERWALLET = new PublicKey(process.env.NEXT_PUBLIC_SIGNER_WALLET);
@@ -2419,7 +2414,7 @@ const TradeBar: React.FC<
     >
       <div className="relative rounded tradingcard ">
         <div className="">
-          <div className="font-poppins w-[100%] h-[100%] bg-layer-2 text-grey-text font-poppins px-5 pt-3 pb rounded text-[1rem]">
+          <div className="font-poppins w-[100%] h-[100%] bg-layer-2 text-[#ffffff60]  font-poppins px-5 pt-3 pb rounded text-[1rem]">
             <div className="bankGothic text-center font-semibold text-[1.5rem] text-[#F7931A]">
               DISCLAIMER{" "}
             </div>
@@ -2521,7 +2516,7 @@ const TradeBar: React.FC<
         },
       }}
     >
-      <div className="w-32 rounded-md bg-layer-2 text-grey-text">
+      <div className="w-32 rounded-md bg-layer-2 text-[#ffffff60] ">
         <button
           onClick={() => selectCurrencyAndCloseModal("SOL")}
           className="w-full rounded-t-md flex flex-row gap-2 py-1 px-2 hover:bg-[#484c6d5b]"
@@ -2551,7 +2546,7 @@ const TradeBar: React.FC<
   );
 
   return (
-    <div className="custom-scrollbar overflow-x-hidden md:w-[375px] w-full rounded-lg  flex flex-col items-start justify-start p-4 gap-[16px] text-left text-sm text-grey-text font-poppins">
+    <div className="custom-scrollbar overflow-hidden md:w-[375px] w-full rounded-lg  flex flex-col items-start justify-start p-4 gap-[16px] text-left text-sm text-[#ffffff60]  font-poppins">
       {ModalDetails1}
       {ModalDetails}
       {ModalDetails2}
@@ -2561,7 +2556,7 @@ const TradeBar: React.FC<
           className={`flex-1   h-10 flex flex-row items-center justify-center py-3 px-6 transition-all duration-200 ease-in-out  ${
             toggleState === "LONG"
               ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-b-[2px] border-solid border-primary"
-              : "text-grey long-short-button"
+              : "text-[#ffffff60]  long-short-button"
           }`}
         >
           <div
@@ -2583,7 +2578,7 @@ const TradeBar: React.FC<
           className={`flex-1   h-10 flex flex-row items-center justify-center py-3 px-6 transition-all duration-200 ease-in-out  ${
             toggleState === "SHORT"
               ? "flex-1 [background:linear-gradient(180deg,_rgba(255,_76,_76,_0),_rgba(255,_76,_76,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 text-short border-b-[2px] border-solid border-short"
-              : "text-grey long-short-button"
+              : "text-[#ffffff60]  long-short-button"
           }`}
         >
           <div
@@ -2623,13 +2618,13 @@ const TradeBar: React.FC<
             <div className="w-full h-4 flex flex-row items-start justify-between">
               <div className="relative leading-[14px]">Collateral Size</div>
               <button
-                className="hidden relative leading-[20px] font-medium text-grey-text text-lg"
+                className="hidden relative leading-[20px] font-medium text-[#ffffff60]  text-lg"
                 onClick={toggleModal}
               >
                 <MdOutlineSettings></MdOutlineSettings>
               </button>
             </div>
-            <div className="w-full mt-[12px] rounded-lg bg-[#ffffff12]  box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-grey hover:bg-[#484c6d5b]">
+            <div className="w-full mt-[12px] rounded-lg bg-[#ffffff12]  box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-[#ffffff60]  hover:bg-[#484c6d5b]">
               <input
                 type="text"
                 className="input-capsule__input w-full"
@@ -2643,7 +2638,7 @@ const TradeBar: React.FC<
                 {" "}
                 <button
                   ref={buttonRef}
-                  className=" relative leading-[20px] font-medium text-grey-text text-lg flex flex-row items-center"
+                  className=" relative leading-[20px] font-medium text-[#ffffff60]  text-lg flex flex-row items-center"
                   onClick={toggleModal2}
                 >
                   <img
@@ -2667,13 +2662,13 @@ const TradeBar: React.FC<
               <div className="w-full h-4 flex flex-row items-start justify-between">
                 <div className="relative leading-[14px]">Limit Price</div>
                 <button
-                  className="hidden relative leading-[20px] font-medium text-grey-text text-lg"
+                  className="hidden relative leading-[20px] font-medium text-[#ffffff60]  text-lg"
                   onClick={toggleModal}
                 >
                   <MdOutlineSettings></MdOutlineSettings>
                 </button>
               </div>
-              <div className="w-full mt-[12px] rounded-lg bg-[#ffffff12] box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-grey hover:bg-[#484c6d5b]">
+              <div className="w-full mt-[12px] rounded-lg bg-[#ffffff12] box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-[#ffffff60]  hover:bg-[#484c6d5b]">
                 <input
                   type="text"
                   className="input-capsule__input"
@@ -2819,15 +2814,15 @@ const TradeBar: React.FC<
           </div>
         </div>
       </div>
-      <div className="self-stretch flex flex-col items-start justify-start gap-[8px] text-grey">
-        <div className="self-stretch flex flex-row items-start justify-between text-grey-text">
+      <div className="self-stretch flex flex-col items-start justify-start gap-[8px] text-[#ffffff60] ">
+        <div className="self-stretch flex flex-row items-start justify-between text-[#ffffff60] ">
           <button
             className="duration-300 flex items-center"
             onClick={toggleAdditionalDiv}
           >
             <span className="mr-1">Risk management</span>
             <FaChevronUp
-              className={`ml-2 text-slate-300  ${showAdditionalDiv ? "" : "rotate-180"}`}
+              className={`ml-2 text-[#ffffff60]  ${showAdditionalDiv ? "" : "rotate-180"}`}
             />
           </button>
         </div>
@@ -3021,32 +3016,33 @@ const TradeBar: React.FC<
       {wallet.connected ? (
         <button
           onClick={selectedOrder === "MARKET" ? onClick : FutOrder}
-          className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  ${
+          className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  text-black transition ease-in-out duration-300 ${
             toggleState === "LONG"
-              ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-[2px] border-solid border-primary"
-              : "[flex-1 [background:linear-gradient(180deg,_rgba(255,_76,_76,_0),_rgba(255,_76,_76,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 text-short border-[2px] border-solid border-short"
+              ? "bg-primary hover:bg-new-green-dark"
+              : "bg-short hover:bg-new-red-dark"
           }`}
         >
-          <div
-            className={`bankGothic bg-clip-text text-transparent uppercase text-lg ${
-              toggleState === "LONG" ? "bg-primary text-black" : "bg-short"
-            }`}
-          >
+          <div className="text-black text-lg transition ease-in-out duration-300">
             {selectedOrder === "MARKET" ? "OPEN POSITION" : "CREATE ORDER"}{" "}
           </div>
         </button>
       ) : (
-        <WalletMultiButtonDynamic className="w-full bg-[#00000000]">
-          <div
-            className={`w-full py-3 rounded-lg bg-primar  cursor-pointer font-semibold leading-[normal] min-w-[189px] text-center text-lg text-black transition ease-in-out duration-300 ${
-              toggleState === "LONG"
-                ? "bg-primary hover:bg-new-green-dark"
-                : "bg-short hover:bg-new-red-dark"
-            }`}
-          >
-            CONNECT WALLET
-          </div>
-        </WalletMultiButtonDynamic>
+        <div
+          className={`flex justify-center items-center w-full h-[50px] rounded-lg bg-primar  cursor-pointer font-semibold   text-center text-lg text-black transition ease-in-out duration-300 ${
+            toggleState === "LONG"
+              ? "bg-primary hover:bg-new-green-dark"
+              : "bg-short hover:bg-new-red-dark"
+          }`}
+        >
+          <WalletMultiButton
+            style={{
+              width: "100%",
+              backgroundColor: "transparent",
+              color: "black",
+            }}
+            className="w-[100%]"
+          ></WalletMultiButton>
+        </div>
       )}
     </div>
   );
