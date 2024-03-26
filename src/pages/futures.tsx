@@ -340,9 +340,9 @@ const Futures: FC = () => {
         {" "}
       </div>
       <div
-        className="overflow-hidden absolute futures-circles w-full h-full"
+        className="overflow-hidden absolute futures-circles2 w-full h-full"
         style={{
-          zIndex: 10000,
+          zIndex: 0,
           transform: "translate(65%, 35%)",
           right: "0%",
         }}

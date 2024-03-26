@@ -200,12 +200,12 @@ const useChartComponent = (
           fullscreen: false,
           autosize: true,
           loading_screen: {
-            backgroundColor: "#000000",
+            backgroundColor: "#040404",
             foregroundColor: "#34C796",
           },
           theme: "dark",
 
-          toolbar_bg: "#000000",
+          toolbar_bg: "#040404",
           enabled_features: ["hide_left_toolbar_by_default"],
           overrides: {
             "mainSeriesProperties.candleStyle.upColor": "#43e3ae",
@@ -215,11 +215,11 @@ const useChartComponent = (
             "mainSeriesProperties.candleStyle.wickUpColor": "#34C796",
             "mainSeriesProperties.candleStyle.wickDownColor": "#C44141",
 
-            "paneProperties.background": "#000000",
+            "paneProperties.background": "#040404",
             "paneProperties.backgroundType": "solid",
             "paneProperties.vertGridProperties.color": "#ffffff12",
             "paneProperties.horzGridProperties.color": "#ffffff12",
-            "paneProperties.separatorColor": "#000000",
+            "paneProperties.separatorColor": "#040404",
             "paneProperties.legendProperties.backgroundTransparency": 100,
             // Axis and scales
             "scalesProperties.textColor": "#CCC",
@@ -271,11 +271,11 @@ const useChartComponent = (
             "mainSeriesProperties.candleStyle.wickUpColor": "#34C796",
             "mainSeriesProperties.candleStyle.wickDownColor": "#C44141",
 
-            "paneProperties.background": "#000000",
+            "paneProperties.background": "#040404",
             "paneProperties.backgroundType": "solid",
             "paneProperties.vertGridProperties.color": "#ffffff12",
             "paneProperties.horzGridProperties.color": "#ffffff12",
-            "paneProperties.separatorColor": "#000000",
+            "paneProperties.separatorColor": "#040404",
             "paneProperties.legendProperties.backgroundTransparency": 100,
             // Axis and scales
             "scalesProperties.textColor": "#CCC",

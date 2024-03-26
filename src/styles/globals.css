@@ -71,7 +71,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #434665;
+  background-color: #ffffff12;
   border-radius: 6.67px; /* 5px * 1.33 (adjust the border-radius) */
   transition: 0.4s;
 }
@@ -89,7 +89,7 @@ body {
 }
 
 input:checked + .slider-bigger {
-  background-color: #32bf90;
+  background-color: #23eaa4;
 }
 
 input:checked + .slider-bigger:before {
@@ -572,10 +572,42 @@ html::-webkit-scrollbar-thumb:hover {
   width: 47%;
   border: none;
   padding: 0rem;
-  color: #a9aab7;
+  color: #ffffff;
   background-color: transparent;
   text-align: left;
   outline: none; /* Add this line to remove the default input border */
+}
+
+.input7-capsule {
+  width: 47%;
+  height: 1.75rem;
+  display: flex;
+  align-items: center;
+  border-radius: 0.25rem;
+  background-color: #ffffff60;
+  transition: transform 0.3s ease-in-out;
+  overflow: hidden; /* Add this line to hide any overflowing content */
+}
+
+.input7-capsule__input {
+  flex-grow: 1;
+  width: 100%;
+  border: none;
+  padding: 0rem;
+  color: #000000;
+  background-color: transparent;
+  text-align: center;
+  outline: none; /* Add this line to remove the default input border */
+}
+
+.input7-capsule__input::placeholder {
+  color: #ffffff60; /* Replace with the color you want */
+  opacity: 1; /* Firefox lowers the opacity by default, so set it to 1 if needed */
+}
+
+.input4-capsule__input::placeholder {
+  color: #ffffff60; /* Replace with the color you want */
+  opacity: 1; /* Firefox lowers the opacity by default, so set it to 1 if needed */
 }
 
 .input3-capsule__input::placeholder {
@@ -1164,7 +1196,7 @@ html::-webkit-scrollbar-thumb:hover {
     circle,
     rgba(67, 227, 166, 0.278),
     #00000000 70%,
-    transparent 70%
+    transparent 100%
   );
   /* Adjust your primary color and transparency in the radial-gradient */
 }
@@ -1189,13 +1221,33 @@ html::-webkit-scrollbar-thumb:hover {
   /* Adjust your primary color and transparency in the radial-gradient */
 }
 
+.futures-circles2 {
+  background: radial-gradient(
+    circle,
+    rgba(67, 227, 166, 0.241),
+    #00000000 62%,
+    transparent 70%
+  );
+  /* Adjust your primary color and transparency in the radial-gradient */
+}
+
 /* Adjust gradient for larger devices */
-@media only screen and (min-width: 1920px) {
+@media only screen and (min-width: 2300px) {
   .custom-blur-circle {
     background: radial-gradient(
       circle,
       rgba(67, 227, 166, 0.17),
       #00000000 62%,
+      transparent 70%
+    );
+    /* Adjust your primary color and transparency in the radial-gradient */
+  }
+
+  .futures-circles2 {
+    background: radial-gradient(
+      circle,
+      rgba(67, 227, 166, 0.241),
+      #00000000 50%,
       transparent 70%
     );
     /* Adjust your primary color and transparency in the radial-gradient */

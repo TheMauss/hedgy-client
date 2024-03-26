@@ -78,7 +78,7 @@ const customStyles = {
   menu: (provided, state) => ({
     ...provided,
     zIndex: 9999,
-    backgroundColor: "#1A1A25", // Change color to match your theme
+    backgroundColor: "#000000", // Change color to match your theme
   }),
 
   indicatorSeparator: () => ({
@@ -90,9 +90,9 @@ const customStyles = {
     top: "100%",
     borderRadius: "0.5rem",
     boxShadow: "none",
-    borderColor: "#434665",
+    borderColor: "#fff",
     className: "custom-scrollbar",
-    backgroundColor: "#1d202f", // Change color to match your theme
+    backgroundColor: "#000000", // Change color to match your theme
     "::-webkit-scrollbar": {
       width: "0px",
       height: "3px",
@@ -129,7 +129,7 @@ const customStyles = {
       color: "#fff",
       fontWeight: "600",
       ":hover": {
-        backgroundColor: "#1d202f",
+        backgroundColor: "#ffffff12",
         borderColor: isMdOrAbove ? "transparent" : "transparent",
       },
       ":focus": {
@@ -143,11 +143,11 @@ const customStyles = {
     ...provided,
     color: state.isSelected ? "#A9AAB7" : "#A9AAB7",
     fontWeight: "600",
-    borderRadius: "0.5rem",
-    borderColor: state.isFocused ? "#434665" : "#434665",
-    backgroundColor: "#1d202f",
+    borderRadius: "0rem",
+    borderColor: state.isFocused ? "#ffffff24" : "#ffffff24",
+    backgroundColor: "#ffffff12",
     ":hover": {
-      backgroundColor: "#434665",
+      backgroundColor: "#ffffff24",
     },
   }),
 

@@ -1436,13 +1436,13 @@ const MyPositions: FC<MyPositionsProps> = ({
                   <div className="mb-3 leading-[80.69%] bankGothic uppercase text-xl text-white ">
                     Update Position
                   </div>
-                  <div className="flex flex-row self-stretch justify-between text-grey-text text-sm">
+                  <div className="flex flex-row self-stretch justify-between text-[#ffffff60] text-sm">
                     <div>Actual Take Profit</div>
                     <div className="text-white">
                       {(currentItem.takeProfitPrice / 100000000).toFixed(2)} USD
                     </div>
                   </div>
-                  <div className="flex flex-row self-stretch justify-between text-grey-text text-sm">
+                  <div className="flex flex-row self-stretch justify-between text-[#ffffff60] text-sm">
                     <div>Actual Stop Loss</div>
                     <div className="text-white">
                       {(currentItem.stopLossPrice / 100000000).toFixed(2)} USD
@@ -1450,7 +1450,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                   </div>
                   <div className="flex justify-center flex justify-center items-center gap-2">
                     <div className="py-2 w-[50%]">
-                      <div className="mb-2 flex-1 rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 border-[1px] border-solid border-layer-3 hover:bg-[#484c6d5b] border border-layer-3">
+                      <div className="mb-2 flex-1 rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 border-[1px] border-solid border-layer-3 hover:bg-[#ffffff24] transition-all duration-200 ease-in-out border border-layer-3">
                         <input
                           type="text"
                           placeholder="Take Profit"
@@ -1472,7 +1472,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                           </div>
                         </span>
                       </div>
-                      <div className="flex-1 rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 border-[1px] border-solid border-layer-3 hover:bg-[#484c6d5b]">
+                      <div className="flex-1 rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 border-[1px] border-solid border-layer-3 hover:bg-[#ffffff24] transition-all duration-200 ease-in-out">
                         <input
                           type="text"
                           placeholder="Stop Loss"
@@ -1496,7 +1496,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                       </div>
                     </div>
                     <div className="py-2 w-[50%]">
-                      <div className="mb-2 hover:bg-[#484c6d5b] flex-1 rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 border-[1px] border-solid border-layer-3">
+                      <div className="mb-2 hover:bg-[#ffffff24] transition-all duration-200 ease-in-out flex-1 rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 border-[1px] border-solid border-layer-3">
                         <input
                           type="text"
                           placeholder="Profit"
@@ -1516,7 +1516,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                         </span>
                       </div>
 
-                      <div className="hover:bg-[#484c6d5b] flex-1 rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 border-[1px] border-solid border-layer-3">
+                      <div className="hover:bg-[#ffffff24] transition-all duration-200 ease-in-out flex-1 rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 border-[1px] border-solid border-layer-3">
                         <input
                           type="text"
                           placeholder="Loss"
@@ -1543,10 +1543,10 @@ const MyPositions: FC<MyPositionsProps> = ({
                         {warning}
                       </div>
                     )}
-                    <div className="flex flex-row self-stretch justify-between text-grey-text text-sm">
+                    <div className="flex flex-row self-stretch justify-between text-[#ffffff60] text-sm">
                       <div>Remove TP/SL</div>
                       <button
-                        className="flex justify-center items-center h-[26px] md:w-[45%] w-[95%] min:w-[100px] bg-[#1D202F] hover:bg-[#484c6d5b] text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
+                        className="flex justify-center items-center h-[26px] md:w-[45%] w-[95%] min:w-[100px] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
                         onClick={() => both0(item)}
                       >
                         Remove
@@ -1746,7 +1746,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                             </div>
                           </div>
                         </div>
-                        <div className="flex flex-col items-center justify-center gap-[64px] text-base text-grey-text">
+                        <div className="flex flex-col items-center justify-center gap-[64px] text-base text-[#ffffff60]">
                           <div className="flex flex-col items-start justify-center gap-[32px] text-5xl">
                             <div className="relative leading-[48px] ">
                               Entry Price
@@ -1836,7 +1836,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                         </div>
                       </div>
                     </div>
-                    <div className="self-stretch bg-layer-2 flex flex-row items-center justify-between px-24 py-14 z-[2] text-right text-base text-grey-text font-poppins">
+                    <div className="self-stretch bg-layer-2 flex flex-row items-center justify-between px-24 py-14 z-[2] text-right text-base text-[#ffffff60] font-poppins">
                       <div className="flex-1 flex flex-row items-center justify-between">
                         <div className="flex flex-row items-center justify-start gap-[32px]">
                           <img
@@ -1864,7 +1864,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               key={item._id}
               className="px-2 w-full  rounded-lg font-poppins custom scrollbar flex  flex-row text-start rounded"
             >
-              <div className=" w-[20%] flex items-center min-w-[140px] text-start text-sm text-grey-text  ">
+              <div className=" w-[20%] flex items-center min-w-[140px] text-start text-sm text-[#ffffff60]  ">
                 <a
                   href={`https://solscan.io/account/${item.futuresContract}`}
                   target="_blank"
@@ -2052,17 +2052,17 @@ const MyPositions: FC<MyPositionsProps> = ({
                                 : null}
               </div>
 
-              <div className="flex justify-end items-center w-[12%] min-w-[90px] text-[0.9rem] text-grey-text   font-poppins ">
+              <div className="flex justify-end items-center w-[12%] min-w-[90px] text-[0.9rem] text-[#ffffff60]   font-poppins ">
                 {item.usdc === 0
                   ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
                   : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}{" "}
               </div>
-              <div className="flex justify-end items-center w-[15%] min-w-[90px] text-[0.9rem] text-grey-text   font-poppins ">
+              <div className="flex justify-end items-center w-[15%] min-w-[90px] text-[0.9rem] text-[#ffffff60]   font-poppins ">
                 {item.usdc === 0
                   ? `${((item.betAmount * item.leverage) / LAMPORTS_PER_SOL).toFixed(2)}◎`
                   : `${(((item.betAmount * item.leverage) / LAMPORTS_PER_SOL) * 1000).toFixed(0)}$`}
               </div>
-              <div className="flex justify-end items-center w-[12%]  min-w-[90px] text-[0.9rem] text-grey-text  font-poppins ">
+              <div className="flex justify-end items-center w-[12%]  min-w-[90px] text-[0.9rem] text-[#ffffff60]  font-poppins ">
                 <p
                   className={
                     item.pnl >= 0 ? "text-[#34c796] " : "text-red-500 "
@@ -2075,13 +2075,13 @@ const MyPositions: FC<MyPositionsProps> = ({
                   </div>
                 </p>
               </div>
-              <div className="flex justify-end items-center w-[15%] min-w-[140px] text-[0.9rem] text-grey-text   font-poppins py-1.5 rounded-r">
+              <div className="flex justify-end items-center w-[15%] min-w-[140px] text-[0.9rem] text-[#ffffff60]   font-poppins py-1.5 rounded-r">
                 <div className="items-center flex md:flex-row flex-col w-[100%]">
                   <div className="flex flex-row items-center justify-end w-[100%] min:w-[140px] gap-1.5">
                     <div className="flex flex-row md:w-[45%] w-[100%] gap-1.5">
                       <div className=" w-[100%]">
                         <button
-                          className="flex justify-center items-center w-1/2 h-[26px] w-[100%] bg-[#1D202F] hover:bg-[#484c6d5b] text-[0.9rem]  py-1 px-1 rounded border-r border-[#1A1A25]"
+                          className="flex justify-center items-center w-1/2 h-[26px] w-[100%] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.9rem]  py-1 px-1 rounded border-r border-[#1A1A25]"
                           onClick={() => {
                             setCurrentItem(item);
                             setModalIsOpen(true);
@@ -2092,7 +2092,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                       </div>
                       <div className="justify-center w-[100%] h-[100%]">
                         <button
-                          className="w-1/2 h-[26px] flex items-center justify-center w-[100%] bg-[#1D202F] hover:bg-[#484c6d5b] text-[0.9rem]  py-1 px-1 rounded"
+                          className="w-1/2 h-[26px] flex items-center justify-center w-[100%] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.9rem]  py-1 px-1 rounded"
                           onClick={() => {
                             setCurrentItem(item);
                             setModalIsOpen1(true);
@@ -2103,7 +2103,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                       </div>
                     </div>
                     <button
-                      className="flex justify-center items-center h-[26px] md:w-[45%] w-[95%] min:w-[100px] bg-[#1D202F] hover:bg-[#484c6d5b] text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
+                      className="flex justify-center items-center h-[26px] md:w-[45%] w-[95%] min:w-[100px] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
                       onClick={() => resolveFutCont(item)}
                     >
                       Close
@@ -2122,7 +2122,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               <div className="self-stretch  flex flex-col items-start justify-start p-4 gap-[8px]">
                 <div className="self-stretch flex flex-row items-start justify-between">
                   <div className="flex flex-col items-start justify-center gap-[4px]">
-                    <div className="text-grey-text relative leading-[9.98px] flex items-center w-[50px]">
+                    <div className="text-[#ffffff60] relative leading-[9.98px] flex items-center w-[50px]">
                       Position
                     </div>
                     <div className="relative leading-[12px]">
@@ -2239,7 +2239,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                   </div>
                   <div className="flex flex-col items-end justify-center gap-[6px] text-right">
                     <div className="flex flex-col items-end justify-center gap-[4px]">
-                      <div className="relative leading-[9.98px] text-grey-text">
+                      <div className="relative leading-[9.98px] text-[#ffffff60]">
                         PnL (Collateral)
                       </div>
                       <p
@@ -2253,7 +2253,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                             ? `${item.pnl.toFixed(2)}◎`
                             : `${(item.pnl * 1000).toFixed(2)}$`}{" "}
                         </div>
-                        <div className="text-grey-text">
+                        <div className="text-[#ffffff60]">
                           {item.usdc === 0
                             ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
                             : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}
@@ -2264,7 +2264,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                 </div>
                 <div className="self-stretch flex flex-row items-start justify-between text-right">
                   <div className="flex flex-col items-start justify-center gap-[6px]">
-                    <div className="text-grey-text relative leading-[12px]">
+                    <div className="text-[#ffffff60] relative leading-[12px]">
                       Leverage
                     </div>
                     <div className="flex flex-col items-start justify-center gap-[4px] text-left text-sm text-short">
@@ -2299,14 +2299,14 @@ const MyPositions: FC<MyPositionsProps> = ({
                             </div>
                           </>
                         )}
-                        <div className="pl-1 text-grey-text">
+                        <div className="pl-1 text-[#ffffff60]">
                           {item.leverage}X
                         </div>
                       </div>{" "}
                     </div>
                   </div>
                   <div className="w-[63px] flex flex-col items-end justify-center gap-[6px]">
-                    <div className="relative leading-[12px] text-grey-text">
+                    <div className="relative leading-[12px] text-[#ffffff60]">
                       Entry
                     </div>
                     <div className="flex flex-col items-end justify-center text-sm text-white">
@@ -2336,7 +2336,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                     </div>
                   </div>
                   <div className="flex flex-col items-end justify-center gap-[6px]">
-                    <div className="relative leading-[12px] text-grey-text">
+                    <div className="relative leading-[12px] text-[#ffffff60]">
                       Mark (Liquidation)
                     </div>
                     <div className="flex flex-col items-end justify-center gap-[4px] text-sm text-white">
@@ -2364,7 +2364,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                                           ).toFixed(3)
                                         : null}
                       </div>
-                      <div className="relative leading-[12px] text-grey-text">
+                      <div className="relative leading-[12px] text-[#ffffff60]">
                         {item.symbol === 1
                           ? (item.liquidationPrice / 100000000).toFixed(1)
                           : item.symbol === 0
@@ -2394,13 +2394,13 @@ const MyPositions: FC<MyPositionsProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="items-center w-full text-[0.9rem] text-grey-text   font-poppins">
+                <div className="items-center w-full text-[0.9rem] text-[#ffffff60]   font-poppins">
                   <div className="items-center flex md:flex-row flex-col w-[100%]">
                     <div className="flex flex-row items-center justify-center w-[100%]">
                       <div className="flex flex-row w-[30%]">
                         <div className=" w-[100%] gap-2">
                           <button
-                            className="flex justify-center items-center mr-1 w-1/2 h-[26px] w-[100%] bg-[#1D202F] hover:bg-[#484c6d5b] text-[0.9rem]  py-1 px-1 rounded border-r border-[#1A1A25]"
+                            className="flex justify-center items-center mr-1 w-1/2 h-[26px] w-[100%] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.9rem]  py-1 px-1 rounded border-r border-[#1A1A25]"
                             onClick={() => {
                               setCurrentItem(item);
                               setModalIsOpen(true);
@@ -2411,7 +2411,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                         </div>
                         <div className="justify-center w-[100%] h-[100%]">
                           <button
-                            className="w-1/2 h-[26px] flex items-center ml-1 justify-center w-[100%] bg-[#1D202F] hover:bg-[#484c6d5b] text-[0.9rem]  py-1 px-1 rounded"
+                            className="w-1/2 h-[26px] flex items-center ml-1 justify-center w-[100%] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.9rem]  py-1 px-1 rounded"
                             onClick={() => {
                               setCurrentItem(item);
                               setModalIsOpen1(true);
@@ -2423,7 +2423,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                       </div>
                       <div className="px-1"></div>
                       <button
-                        className="h-[26px] md:w-[45%] w-[95%]  bg-[#1D202F] hover:bg-[#484c6d5b] text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
+                        className="h-[26px] md:w-[45%] w-[95%]  bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
                         onClick={() => resolveFutCont(item)}
                       >
                         Close
@@ -2619,7 +2619,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col items-center justify-center gap-[64px] text-base text-grey-text">
+                  <div className="flex flex-col items-center justify-center gap-[64px] text-base text-[#ffffff60]">
                     <div className="flex flex-col items-start justify-center gap-[32px] text-5xl">
                       <div className="relative leading-[48px] ">
                         Entry Price
@@ -2691,7 +2691,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                   </div>
                 </div>
               </div>
-              <div className="self-stretch bg-layer-2 flex flex-row items-center justify-between px-24 py-14 z-[2] text-right text-base text-grey-text font-poppins">
+              <div className="self-stretch bg-layer-2 flex flex-row items-center justify-between px-24 py-14 z-[2] text-right text-base text-[#ffffff60] font-poppins">
                 <div className="flex-1 flex flex-row items-center justify-between">
                   <div className="flex flex-row items-center justify-start gap-[32px]">
                     <img
@@ -2726,7 +2726,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
           return !isMobile ? (
             <div className="px-2 w-full  rounded-lg font-poppins custom scrollbar flex  flex-row text-start rounded">
-              <div className=" w-[20%] flex items-center min-w-[140px] text-start text-sm text-grey-text  ">
+              <div className=" w-[20%] flex items-center min-w-[140px] text-start text-sm text-[#ffffff60]  ">
                 <a
                   href={`https://solscan.io/account/${item.futuresContract}`}
                   target="_blank"
@@ -2895,34 +2895,33 @@ const MyPositions: FC<MyPositionsProps> = ({
                 </div>
               </div>
 
-              <div className="flex justify-end items-center w-[12%] min-w-[90px] text-[0.9rem] text-grey-text   font-poppins ">
+              <div className="flex justify-end items-center w-[12%] min-w-[90px] text-[0.9rem] text-[#ffffff60]   font-poppins ">
                 {item.usdc === 0
                   ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
                   : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}
               </div>
-              <div className="flex justify-end items-center w-[15%] min-w-[90px] text-[0.9rem] text-grey-text   font-poppins ">
+              <div className="flex justify-end items-center w-[15%] min-w-[90px] text-[0.9rem] text-[#ffffff60]   font-poppins ">
                 {item.usdc === 0
                   ? `${((item.betAmount * item.leverage) / LAMPORTS_PER_SOL).toFixed(2)}◎`
                   : `${(((item.betAmount * item.leverage) / LAMPORTS_PER_SOL) * 1000).toFixed(0)}$`}
               </div>
-              <div className="flex justify-end items-center w-[12%]  min-w-[90px] text-[0.9rem] text-grey-text  font-poppins ">
+              <div className="flex justify-end items-center w-[12%]  min-w-[90px] text-[0.9rem] text-[#ffffff60]  font-poppins ">
                 <p
                   className={
                     item.pnl >= 0 ? "text-[#34c796] " : "text-red-500 "
                   }
                 >
                   <div>
-                    {" "}
                     {item.usdc === 0
                       ? `${(item.pnl / LAMPORTS_PER_SOL).toFixed(2)}◎`
                       : `${((item.pnl * 1000) / LAMPORTS_PER_SOL).toFixed(2)}$`}{" "}
                   </div>
                 </p>
               </div>
-              <div className=" flex justify-end items-center w-[15%] min-w-[140px] text-[0.9rem] text-grey-text   font-poppins py-1.5 rounded-r">
+              <div className=" flex justify-end items-center w-[15%] min-w-[140px] text-[0.9rem] text-[#ffffff60]   font-poppins py-1.5 rounded-r">
                 <div className="flex justify-end  w-[70%] min-w-[140px]">
                   <button
-                    className="min-w-[80px] h-[26px] bg-[#1D202F] text-grey-text hover:bg-[#484c6d5b] text-[0.9rem]  py-0.5 px-4 rounded flex items-center justify-center"
+                    className="min-w-[80px] h-[26px] bg-[#ffffff12] text-[#ffffff60] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.9rem]  py-0.5 px-4 rounded flex items-center justify-center"
                     onClick={() => {
                       setCurrentItem(item);
                       setModalIsOpen(true);
@@ -2941,7 +2940,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               <div className="self-stretch  flex flex-col items-start justify-start p-4 gap-[8px]">
                 <div className="self-stretch flex flex-row items-start justify-between">
                   <div className="flex flex-col items-start justify-center gap-[4px]">
-                    <div className="text-grey-text relative leading-[9.98px] flex items-center w-[50px]">
+                    <div className="text-[#ffffff60] relative leading-[9.98px] flex items-center w-[50px]">
                       Position
                     </div>
                     <div className="relative leading-[12px]">
@@ -3058,7 +3057,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                   </div>
                   <div className="flex flex-col items-end justify-center gap-[6px] text-right">
                     <div className="flex flex-col items-end justify-center gap-[4px]">
-                      <div className="relative leading-[9.98px] text-grey-text">
+                      <div className="relative leading-[9.98px] text-[#ffffff60]">
                         PnL (Collateral)
                       </div>
                       <p
@@ -3071,7 +3070,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                             ? `${(item.pnl / LAMPORTS_PER_SOL).toFixed(2)}◎`
                             : `${((item.pnl * 1000) / LAMPORTS_PER_SOL).toFixed(2)}$`}
                         </div>
-                        <div className="text-grey-text">
+                        <div className="text-[#ffffff60]">
                           {item.usdc === 0
                             ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
                             : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}
@@ -3082,7 +3081,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                 </div>
                 <div className="self-stretch flex flex-row items-start justify-between text-right">
                   <div className="flex flex-col items-start justify-center gap-[6px]">
-                    <div className="text-grey-text relative leading-[12px]">
+                    <div className="text-[#ffffff60] relative leading-[12px]">
                       Leverage
                     </div>
                     <div className="flex flex-col items-start justify-center gap-[4px] text-left text-sm text-short">
@@ -3117,14 +3116,14 @@ const MyPositions: FC<MyPositionsProps> = ({
                             </div>
                           </>
                         )}
-                        <div className="pl-1 text-grey-text">
+                        <div className="pl-1 text-[#ffffff60]">
                           {item.leverage}X
                         </div>
                       </div>{" "}
                     </div>
                   </div>
                   <div className="w-[63px] flex flex-col items-end justify-center gap-[6px]">
-                    <div className="relative leading-[12px] text-grey-text">
+                    <div className="relative leading-[12px] text-[#ffffff60]">
                       Entry
                     </div>
                     <div className="flex flex-col items-end justify-center text-sm text-white">
@@ -3154,7 +3153,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                     </div>
                   </div>
                   <div className="w-[90px] flex flex-col items-end justify-center gap-[6px]">
-                    <div className="relative leading-[12px] text-grey-text">
+                    <div className="relative leading-[12px] text-[#ffffff60]">
                       Exit
                     </div>
                     <div className="flex flex-col items-end justify-center gap-[4px] text-sm text-white">
@@ -3182,11 +3181,11 @@ const MyPositions: FC<MyPositionsProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className=" flex justify-end items-center w-[100%] min-w-[140px] text-[0.9rem] text-grey-text   font-poppins py-1.5 rounded-r">
+                <div className=" flex justify-end items-center w-[100%] min-w-[140px] text-[0.9rem] text-[#ffffff60]   font-poppins py-1.5 rounded-r">
                   <div className="items-center flex md:flex-row flex-col w-[100%]">
                     <div className=" w-[100%] gap-2">
                       <button
-                        className="flex justify-center items-center mr-1 w-1/2 h-[26px] w-[100%] bg-[#1D202F] hover:bg-[#484c6d5b] text-[0.9rem]  py-1 px-1 rounded border-r border-[#1A1A25]"
+                        className="flex justify-center items-center mr-1 w-1/2 h-[26px] w-[100%] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.9rem]  py-1 px-1 rounded border-r border-[#1A1A25]"
                         onClick={() => {
                           setCurrentItem(item);
                           setModalIsOpen(true);
@@ -3231,7 +3230,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
           return !isMobile ? (
             <div className="px-2 w-full  rounded-lg font-poppins custom scrollbar flex  flex-row text-start rounded">
-              <div className=" w-[20%] flex items-center min-w-[140px] text-start text-sm text-grey-text  ">
+              <div className=" w-[20%] flex items-center min-w-[140px] text-start text-sm text-[#ffffff60]  ">
                 <a
                   href={`https://solscan.io/account/${item.futuresContract}`}
                   target="_blank"
@@ -3379,20 +3378,20 @@ const MyPositions: FC<MyPositionsProps> = ({
                 </p>
               </div>
 
-              <div className="flex justify-end items-center w-[20%] min-w-[90px] text-[0.9rem] text-grey-text   font-poppins ">
+              <div className="flex justify-end items-center w-[20%] min-w-[90px] text-[0.9rem] text-[#ffffff60]   font-poppins ">
                 {item.usdc === 0
                   ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
                   : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}
               </div>
-              <div className="flex justify-end items-center w-[20%] min-w-[90px] text-[0.9rem] text-grey-text   font-poppins ">
+              <div className="flex justify-end items-center w-[20%] min-w-[90px] text-[0.9rem] text-[#ffffff60]   font-poppins ">
                 {item.usdc === 0
                   ? `${((item.betAmount * item.leverage) / LAMPORTS_PER_SOL).toFixed(2)}◎`
                   : `${(((item.betAmount * item.leverage) / LAMPORTS_PER_SOL) * 1000).toFixed(0)}$`}
               </div>
-              <div className=" flex justify-end items-center w-[20%] min-w-[140px] text-[0.9rem] text-grey-text   font-poppins py-1.5 rounded-r">
+              <div className=" flex justify-end items-center w-[20%] min-w-[140px] text-[0.9rem] text-[#ffffff60]   font-poppins py-1.5 rounded-r">
                 <div className="flex justify-end  w-full min-w-[140px]">
                   <button
-                    className="h-[26px] md:w-[45%] w-[95%]  bg-[#1D202F] hover:bg-[#484c6d5b] text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
+                    className="h-[26px] md:w-[45%] w-[95%]  bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
                     onClick={() => closeOrder(item)}
                   >
                     Close
@@ -3408,7 +3407,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               <div className="self-stretch  flex flex-col items-start justify-start p-4 gap-[8px]">
                 <div className="self-stretch flex flex-row items-start justify-between">
                   <div className="flex flex-col items-start justify-center gap-[4px]">
-                    <div className="text-grey-text relative leading-[9.98px] flex items-center w-[50px]">
+                    <div className="text-[#ffffff60] relative leading-[9.98px] flex items-center w-[50px]">
                       Position
                     </div>
                     <div className="relative leading-[12px]">
@@ -3525,10 +3524,10 @@ const MyPositions: FC<MyPositionsProps> = ({
                   </div>
                   <div className="flex flex-col items-end justify-center gap-[6px] text-right">
                     <div className="flex flex-col items-end justify-center gap-[4px]">
-                      <div className="relative leading-[9.98px] text-grey-text">
+                      <div className="relative leading-[9.98px] text-[#ffffff60]">
                         Collateral
                       </div>
-                      <div className="text-grey-text">
+                      <div className="text-[#ffffff60]">
                         {item.usdc === 0
                           ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
                           : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}
@@ -3538,7 +3537,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                 </div>
                 <div className="self-stretch flex flex-row items-start justify-between text-right">
                   <div className="flex flex-col items-start justify-center gap-[6px]">
-                    <div className="text-grey-text relative leading-[12px]">
+                    <div className="text-[#ffffff60] relative leading-[12px]">
                       Leverage
                     </div>
                     <div className="flex flex-col items-start justify-center gap-[4px] text-left text-sm text-short">
@@ -3573,14 +3572,14 @@ const MyPositions: FC<MyPositionsProps> = ({
                             </div>
                           </>
                         )}
-                        <div className="pl-1 text-grey-text">
+                        <div className="pl-1 text-[#ffffff60]">
                           {item.leverage}X
                         </div>
                       </div>{" "}
                     </div>
                   </div>
                   <div className="w-[63px] flex flex-col items-end justify-center gap-[6px]">
-                    <div className="relative leading-[12px] text-grey-text">
+                    <div className="relative leading-[12px] text-[#ffffff60]">
                       Limit Price
                     </div>
                     <div className="flex flex-col items-end justify-center text-sm text-white">
@@ -3610,11 +3609,11 @@ const MyPositions: FC<MyPositionsProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className=" flex justify-end items-center w-[100%] min-w-[140px] text-[0.9rem] text-grey-text   font-poppins py-1.5 rounded-r">
+                <div className=" flex justify-end items-center w-[100%] min-w-[140px] text-[0.9rem] text-[#ffffff60]   font-poppins py-1.5 rounded-r">
                   <div className="items-center flex md:flex-row flex-col w-[100%]">
                     <div className=" w-[100%] gap-2">
                       <button
-                        className="flex justify-center items-center h-[26px] w-full min:w-[100px] bg-[#1D202F] hover:bg-[#484c6d5b] text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
+                        className="flex justify-center items-center h-[26px] w-full min:w-[100px] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
                         onClick={() => closeOrder(item)}
                       >
                         Close
@@ -3633,7 +3632,7 @@ const MyPositions: FC<MyPositionsProps> = ({
   if (!connected) {
     return (
       <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg   md:py-3 md:">
-        <div className="mx-2 pt-3.5 md:py-0 border-b-[1px] border-solid border-layer-3 flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
+        <div className="mx-2 pt-3.5 md:py-0 border-b-[2px] border-solid border-[#ffffff12] flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
               selectedButton === "Positions"
@@ -3642,7 +3641,7 @@ const MyPositions: FC<MyPositionsProps> = ({
             } ${
               selectedButton === "Positions"
                 ? ""
-                : "text-grey long-short-button"
+                : "text-[#ffffff60] long-short-button"
             }`}
             onClick={() => setSelectedButton("Positions")}
           >
@@ -3653,7 +3652,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               selectedButton === "History"
                 ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                 : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
-            } ${selectedButton === "History" ? "" : "text-grey long-short-button"}`}
+            } ${selectedButton === "History" ? "" : "text-[#ffffff60] long-short-button"}`}
             onClick={() => setSelectedButton("History")}
           >
             {!isMobile ? <span>My History</span> : <span>My History</span>}
@@ -3663,7 +3662,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               selectedButton === "Order"
                 ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                 : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
-            } ${selectedButton === "Order" ? "" : "text-grey long-short-button"}`}
+            } ${selectedButton === "Order" ? "" : "text-[#ffffff60] long-short-button"}`}
             onClick={() => setSelectedButton("Order")}
           >
             {!isMobile ? <span>My Orders</span> : <span>My Orders</span>}
@@ -3671,8 +3670,8 @@ const MyPositions: FC<MyPositionsProps> = ({
         </div>
 
         <div className="flex flex-col items-center justify-center h-full overflow-hidden md:pb-10">
-          <FaWallet className="flex justify-center items-center text-4xl text-grey" />
-          <div className="flex justify-center items-center text-[0.95rem] text-grey  text-center overflow-hidden">
+          <FaWallet className="flex justify-center items-center text-4xl text-[#ffffff60]" />
+          <div className="flex justify-center items-center text-[0.95rem] text-[#ffffff60]  text-center overflow-hidden">
             Connect your wallet to see your positions.
           </div>
         </div>
@@ -3685,13 +3684,13 @@ const MyPositions: FC<MyPositionsProps> = ({
   ) {
     return (
       <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg   md:py-3 md:">
-        <div className="mx-2 pt-3.5 md:py-0 border-b-[1px] border-solid border-layer-3 flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
+        <div className="mx-2 pt-3.5 md:py-0 border-b-[2px] border-solid border-[#ffffff12] flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
               selectedButton === "Positions"
                 ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                 : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5 "
-            } ${selectedButton === "Positions" ? "" : "text-grey long-short-button"}`}
+            } ${selectedButton === "Positions" ? "" : "text-[#ffffff60] long-short-button"}`}
             onClick={() => setSelectedButton("Positions")}
           >
             {!isMobile ? <span>My Positions</span> : <span>My Positions</span>}
@@ -3701,7 +3700,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               selectedButton === "History"
                 ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                 : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
-            } ${selectedButton === "History" ? "" : "text-grey long-short-button"}`}
+            } ${selectedButton === "History" ? "" : "text-[#ffffff60] long-short-button"}`}
             onClick={() => setSelectedButton("History")}
           >
             {!isMobile ? <span>My History</span> : <span>My History</span>}
@@ -3711,7 +3710,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               selectedButton === "Order"
                 ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                 : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
-            } ${selectedButton === "Order" ? "" : "text-grey long-short-button"}`}
+            } ${selectedButton === "Order" ? "" : "text-[#ffffff60] long-short-button"}`}
             onClick={() => setSelectedButton("Order")}
           >
             {!isMobile ? <span>My Orders</span> : <span>My Orders</span>}
@@ -3719,8 +3718,8 @@ const MyPositions: FC<MyPositionsProps> = ({
         </div>
 
         <div className=" flex flex-col items-center justify-center h-full overflow-hidden md:pb-10">
-          <FaStream className="text-4xl text-grey mb-2" />
-          <p className="text-[0.95rem] text-grey  text-center overflow-hidden">
+          <FaStream className="text-4xl text-[#ffffff60] mb-2" />
+          <p className="text-[0.95rem] text-[#ffffff60]  text-center overflow-hidden">
             You don&apos;t have any opened positions yet.
           </p>
         </div>
@@ -3737,7 +3736,7 @@ const MyPositions: FC<MyPositionsProps> = ({
         <div
           style={{ display: "flex", flexDirection: "column", height: "100%" }}
         >
-          <div className="mx-2 pt-3.5 md:py-0 border-b-[1px] border-solid border-layer-3 flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
+          <div className="mx-2 pt-3.5 md:py-0 border-b-[2px] border-solid border-[#ffffff12] flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
             <button
               className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
                 selectedButton === "Positions"
@@ -3746,7 +3745,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               } ${
                 selectedButton === "Positions"
                   ? ""
-                  : "text-grey long-short-button"
+                  : "text-[#ffffff60] long-short-button"
               }`}
               onClick={() => setSelectedButton("Positions")}
             >
@@ -3764,7 +3763,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               } ${
                 selectedButton === "History"
                   ? ""
-                  : "text-grey long-short-button"
+                  : "text-[#ffffff60] long-short-button"
               }`}
               onClick={() => setSelectedButton("History")}
             >
@@ -3775,7 +3774,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                 selectedButton === "Order"
                   ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                   : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
-              } ${selectedButton === "Order" ? "" : "text-grey long-short-button"}`}
+              } ${selectedButton === "Order" ? "" : "text-[#ffffff60] long-short-button"}`}
               onClick={() => setSelectedButton("Order")}
             >
               {!isMobile ? <span>My Orders</span> : <span>My Orders</span>}
@@ -3790,8 +3789,8 @@ const MyPositions: FC<MyPositionsProps> = ({
             {/* This div is your new scrolling area */}
             {selectedButton === "Positions" ? (
               <div className=" flex flex-col items-center justify-center h-full overflow-hidden md:pb-0">
-                <FaStream className="text-4xl text-grey mb-2" />
-                <p className="justify-center text-[0.95rem] text-grey  text-center overflow-hidden">
+                <FaStream className="text-4xl text-[#ffffff60] mb-2" />
+                <p className="justify-center text-[0.95rem] text-[#ffffff60]  text-center overflow-hidden">
                   You don&apos;t have any opened positions yet.
                 </p>
               </div>
@@ -3803,7 +3802,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                 >
                   {" "}
                   {/* This div is your new scrolling area */}
-                  <div className="px-2 custom-scrollbar w-full flex font-poppins flex-row  rounded text-grey-text text-sm">
+                  <div className="px-2 custom-scrollbar w-full flex font-poppins flex-row  rounded text-[#ffffff60] text-sm">
                     <div className="w-[20%] min-w-[140px] text-start   py-1 rounded-l">
                       Position
                     </div>
@@ -3819,15 +3818,15 @@ const MyPositions: FC<MyPositionsProps> = ({
                     <div className=" w-[15%] min-w-[90px] text-end   font-poppins py-1 rounded-r">
                       Size
                     </div>
-                    <div className=" w-[12%] min-w-[90px] text-end text-grey-text  font-poppins py-1 rounded-r">
+                    <div className=" w-[12%] min-w-[90px] text-end text-[#ffffff60]  font-poppins py-1 rounded-r">
                       PnL
                     </div>
-                    <div className="w-[15%] min-w-[140px] text-end text-grey-text  font-poppins py-1 rounded-r">
+                    <div className="w-[15%] min-w-[140px] text-end text-[#ffffff60]  font-poppins py-1 rounded-r">
                       Actions
                     </div>
                   </div>
                   {renderHistoryPositions()}
-                  <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
+                  <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-[#ffffff60]">
                     <button
                       className=" bg-transparent mr-2"
                       onClick={firstPage}
@@ -3869,7 +3868,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                   {" "}
                   {/* This div is your new scrolling area */}
                   {renderHistoryPositions()}
-                  <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
+                  <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-[#ffffff60]">
                     <button
                       className=" bg-transparent mr-2"
                       onClick={firstPage}
@@ -3912,7 +3911,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                   style={{ flexGrow: 1 }}
                 >
                   {/* Your scrolling area and content for History or Orders in non-mobile view */}
-                  <div className="px-2 custom-scrollbar w-full flex font-poppins flex-row  rounded text-grey-text text-sm">
+                  <div className="px-2 custom-scrollbar w-full flex font-poppins flex-row  rounded text-[#ffffff60] text-sm">
                     <div className="w-[20%] min-w-[140px] text-start   py-1 rounded-l">
                       Position
                     </div>
@@ -3925,7 +3924,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                     <div className=" w-[20%] min-w-[90px] text-end   font-poppins py-1 rounded-r">
                       Size
                     </div>
-                    <div className="w-[20%] min-w-[140px] text-end text-grey-text  font-poppins py-1 rounded-r">
+                    <div className="w-[20%] min-w-[140px] text-end text-[#ffffff60]  font-poppins py-1 rounded-r">
                       Actions
                     </div>
                   </div>
@@ -3952,13 +3951,13 @@ const MyPositions: FC<MyPositionsProps> = ({
         <div
           style={{ display: "flex", flexDirection: "column", height: "100%" }}
         >
-          <div className="mx-2 pt-3.5 md:py-0 border-b-[1px] border-solid border-layer-3 flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
+          <div className="mx-2 pt-3.5 md:py-0 border-b-[2px] border-solid border-[#ffffff12] flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
             <button
               className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
                 selectedButton === "Positions"
                   ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                   : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5 "
-              } ${selectedButton === "Positions" ? "" : "text-grey long-short-button"}`}
+              } ${selectedButton === "Positions" ? "" : "text-[#ffffff60] long-short-button"}`}
               onClick={() => setSelectedButton("Positions")}
             >
               {!isMobile ? (
@@ -3972,7 +3971,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                 selectedButton === "History"
                   ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                   : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
-              } ${selectedButton === "History" ? "" : "text-grey long-short-button"}`}
+              } ${selectedButton === "History" ? "" : "text-[#ffffff60] long-short-button"}`}
               onClick={() => setSelectedButton("History")}
             >
               {!isMobile ? <span>My History</span> : <span>My History</span>}
@@ -3982,7 +3981,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                 selectedButton === "Order"
                   ? "[background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.25))] flex flex-row items-start justify-start pt-0 px-4 pb-1.5 border-b-[2px] border-solid border-primary"
                   : "flex flex-row items-start justify-start pt-0 px-4 pb-1.5"
-              } ${selectedButton === "Order" ? "" : "text-grey long-short-button"}`}
+              } ${selectedButton === "Order" ? "" : "text-[#ffffff60] long-short-button"}`}
               onClick={() => setSelectedButton("Order")}
             >
               {!isMobile ? <span>My Orders</span> : <span>My Orders</span>}
@@ -3996,7 +3995,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               {" "}
               {/* This div is your new scrolling area */}
               {selectedButton !== "Order" ? (
-                <div className="px-2 font-poppins custom-scrollbar w-full flex flex-row  rounded text-grey-text text-sm">
+                <div className="px-2 font-poppins custom-scrollbar w-full flex flex-row  rounded text-[#ffffff60] text-sm">
                   <div className="w-[20%] min-w-[140px] text-start   py-1 rounded-l">
                     Position
                   </div>
@@ -4018,16 +4017,16 @@ const MyPositions: FC<MyPositionsProps> = ({
                     Size
                   </div>
 
-                  <div className=" w-[12%] min-w-[90px] text-end text-grey-text  font-poppins py-1 rounded-r">
+                  <div className=" w-[12%] min-w-[90px] text-end text-[#ffffff60]  font-poppins py-1 rounded-r">
                     PnL
                   </div>
 
-                  <div className="md:pr-0 pr-2 w-[15%] min-w-[140px] text-end text-grey-text  font-poppins py-1 rounded-r">
+                  <div className="md:pr-0 pr-2 w-[15%] min-w-[140px] text-end text-[#ffffff60]  font-poppins py-1 rounded-r">
                     Actions
                   </div>
                 </div>
               ) : (
-                <div className="px-2 font-poppins custom-scrollbar w-full flex flex-row  rounded text-grey-text text-sm">
+                <div className="px-2 font-poppins custom-scrollbar w-full flex flex-row  rounded text-[#ffffff60] text-sm">
                   <div className="w-[20%] min-w-[140px] text-start   py-1 rounded-l">
                     Position
                   </div>
@@ -4041,7 +4040,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                   <div className=" w-[20%] min-w-[90px] text-end   font-poppins py-1 rounded-r">
                     Size
                   </div>
-                  <div className="md:pr-0 pr-2 w-[20%] min-w-[140px] text-end text-grey-text  font-poppins py-1 rounded-r">
+                  <div className="md:pr-0 pr-2 w-[20%] min-w-[140px] text-end text-[#ffffff60]  font-poppins py-1 rounded-r">
                     Actions
                   </div>
                 </div>
@@ -4054,7 +4053,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                     ? renderOrders()
                     : null}{" "}
               {selectedButton !== "History" ? null : (
-                <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
+                <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-[#ffffff60]">
                   <button
                     className=" bg-transparent mr-2"
                     onClick={firstPage}
@@ -4104,7 +4103,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                     ? renderOrders()
                     : null}{" "}
               {selectedButton !== "History" ? null : (
-                <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-grey-text">
+                <div className="flex justify-end mt-1 text-[0.95rem] rounded font-poppins text-[#ffffff60]">
                   <button
                     className=" bg-transparent mr-2"
                     onClick={firstPage}

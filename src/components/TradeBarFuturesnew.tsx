@@ -2593,20 +2593,20 @@ const TradeBar: React.FC<
       <div className="w-full flex flex-row font-poppins rounded-md">
         <button
           onClick={() => setSelectedOrder("MARKET")}
-          className={`w-1/2  self-stretch rounded-l-md  box-border h-[38px] flex flex-row items-center justify-center py-0 px-2   ${
+          className={`w-1/2  self-stretch rounded-l-md  box-border h-[38px] flex flex-row items-center justify-center py-0 px-2 transition-all duration-200 ease-in-out   ${
             selectedOrder === "MARKET"
               ? "bg-[#ffffff08] text-white"
-              : "bg-[#ffffff12]"
+              : "bg-[#ffffff12] hover:bg-[#ffffff24]"
           }`}
         >
           Market
         </button>
         <button
           onClick={() => setSelectedOrder("LIMIT")}
-          className={`w-1/2  self-stretch rounded-r-md  box-border h-[38px] flex flex-row items-center justify-center py-0 px-2   ${
+          className={`w-1/2  self-stretch rounded-r-md  box-border h-[38px] flex flex-row items-center justify-center py-0 px-2 transition-all duration-200 ease-in-out   ${
             selectedOrder === "LIMIT"
-              ? "bg-[#ffffff08] text-white"
-              : "bg-[#ffffff12]"
+              ? "bg-[#ffffff08] text-white "
+              : "bg-[#ffffff12] hover:bg-[#ffffff24]"
           }`}
         >
           Limit
@@ -2724,40 +2724,40 @@ const TradeBar: React.FC<
           <div className="self-stretch flex flex-row items-start justify-start gap-[8px]">
             <button
               onClick={() => handleLeverageClick(25)}
-              className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
+              className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border transition-all duration-200 ease-in-out ${
                 activeLeverageButton === 25
                   ? "bg-primary text-black"
-                  : "bg-[#ffffff12]"
+                  : "bg-[#ffffff12] hover:bg-[#ffffff24]"
               }`}
             >
               25X
             </button>
             <button
               onClick={() => handleLeverageClick(50)}
-              className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
+              className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border transition-all duration-200 ease-in-out ${
                 activeLeverageButton === 50
                   ? "bg-primary text-black"
-                  : "bg-[#ffffff12]"
+                  : "bg-[#ffffff12] hover:bg-[#ffffff24]"
               }`}
             >
               50X
             </button>
             <button
               onClick={() => handleLeverageClick(75)}
-              className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
+              className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border transition-all duration-200 ease-in-out ${
                 activeLeverageButton === 75
                   ? "bg-primary text-black"
-                  : "bg-[#ffffff12]"
+                  : "bg-[#ffffff12] hover:bg-[#ffffff24]"
               }`}
             >
               75X
             </button>
             <button
               onClick={() => handleLeverageClick(100)}
-              className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
+              className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border transition-all duration-200 ease-in-out ${
                 activeLeverageButton === 100
                   ? "bg-primary text-black"
-                  : "bg-[#ffffff12]"
+                  : "bg-[#ffffff12] hover:bg-[#ffffff24]"
               }`}
             >
               100X
@@ -2775,38 +2775,50 @@ const TradeBar: React.FC<
           <div className="self-stretch flex flex-row items-start justify-start gap-[8px]">
             <button
               onClick={() => handleButtonClick(1)}
-              className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
-                activeButton === 1 ? "bg-primary text-black" : "bg-[#ffffff12]"
+              className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border transition-all duration-200 ease-in-out ${
+                activeButton === 1
+                  ? "bg-primary text-black"
+                  : "bg-[#ffffff12] hover:bg-[#ffffff24]"
               }`}
             >
               0.1%
             </button>
             <button
               onClick={() => handleButtonClick(2)}
-              className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
-                activeButton === 2 ? "bg-primary text-black" : "bg-[#ffffff12]"
+              className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border transition-all duration-200 ease-in-out ${
+                activeButton === 2
+                  ? "bg-primary text-black"
+                  : "bg-[#ffffff12] hover:bg-[#ffffff24]"
               }`}
             >
               0.3%
             </button>
             <button
               onClick={() => handleButtonClick(3)}
-              className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
-                activeButton === 3 ? "bg-primary text-black" : "bg-[#ffffff12]"
+              className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border transition-all duration-200 ease-in-out ${
+                activeButton === 3
+                  ? "bg-primary text-black"
+                  : "bg-[#ffffff12] hover:bg-[#ffffff24]"
               }`}
             >
               0.5%
             </button>
             <div
               onClick={() => handleButtonClick(4)}
-              className={`flex hover:bg-[#484c6d5b] rounded  w-[115px] h-7 ${
-                activeButton === 4 ? "bg-new-green" : "bg-[#ffffff12]"
+              className={`flex rounded  w-[115px] h-7 transition-all duration-200 ease-in-out items-center justify-center ${
+                activeButton === 4
+                  ? "bg-primary text-black"
+                  : "bg-[#ffffff12] hover:bg-[#ffffff24]"
               }`}
             >
               <input
                 type="text"
-                placeholder="    Custom %"
-                className="flex justify-center items-center input3-capsule__input relative leading-[14px]"
+                placeholder="Custom %"
+                className={`h-full w-full rounded flex justify-center items-center input7-capsule__input  relative leading-[14px] text-center transition-all duration-200 ease-in-out ${
+                  activeButton === 4
+                    ? "bg-primary text-black "
+                    : "bg-[#ffffff12] hover:bg-[#ffffff24]"
+                }`}
                 value={customSlippage}
                 onChange={handleCustomSlippageChange}
               />
@@ -2829,7 +2841,7 @@ const TradeBar: React.FC<
         <div
           className={`w-full flex flex-row items-start justify-start gap-[8px] ${showAdditionalDiv ? "" : "hidden"}`}
         >
-          <div className="flex-1 rounded bg-[#ffffff12]  h-10 flex flex-row items-center justify-between py-0 px-2   hover:bg-[#484c6d5b]">
+          <div className="flex-1 rounded bg-[#ffffff12]  h-10 flex flex-row items-center justify-between py-0 px-2   hover:bg-[#484c6d5b] transition-all duration-200 ease-in-out">
             <input
               type="text"
               placeholder="Take Profit"
@@ -2852,7 +2864,7 @@ const TradeBar: React.FC<
             </span>
           </div>
 
-          <div className="hover:bg-[#484c6d5b] flex-1 rounded bg-[#ffffff12]  h-10 flex flex-row items-center justify-between py-0 px-2 ">
+          <div className="hover:bg-[#484c6d5b] flex-1 rounded bg-[#ffffff12]  h-10 flex flex-row items-center justify-between py-0 px-2 transition-all duration-200 ease-in-out ">
             <input
               type="text"
               placeholder="Profit"
@@ -2875,7 +2887,7 @@ const TradeBar: React.FC<
         <div
           className={`w-full flex flex-row items-start justify-start gap-[8px] ${showAdditionalDiv ? "" : "hidden"}`}
         >
-          <div className="flex-1 rounded bg-[#ffffff12] box-border h-10 flex flex-row items-center justify-between py-0 px-2   hover:bg-[#484c6d5b]">
+          <div className="flex-1 rounded bg-[#ffffff12] box-border h-10 flex flex-row items-center justify-between py-0 px-2   hover:bg-[#484c6d5b] transition-all duration-200 ease-in-out">
             <input
               type="text"
               placeholder="Stop Loss"
@@ -2897,7 +2909,7 @@ const TradeBar: React.FC<
               </div>
             </span>
           </div>
-          <div className="hover:bg-[#484c6d5b] flex-1 rounded bg-[#ffffff12] box-border h-10 flex flex-row items-center justify-between py-0 px-2">
+          <div className="hover:bg-[#484c6d5b] flex-1 rounded bg-[#ffffff12] box-border h-10 flex flex-row items-center justify-between py-0 px-2 transition-all duration-200 ease-in-out">
             <input
               type="text"
               placeholder="Loss"
