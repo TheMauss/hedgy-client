@@ -2442,7 +2442,7 @@ const TradeBar: React.FC<
                       className={`flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${
                         activeButton === 2
                           ? "bg-[#0B111B] bg-opacity-80"
-                          : "bg-opacity-0 hover:bg-[#484c6d5b]"
+                          : "bg-opacity-0 hover:bg-[#ffffff24]"
                       }`}
                     >
                       0.3%
@@ -2460,7 +2460,7 @@ const TradeBar: React.FC<
                       className={`flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${
                         activeButton === 3
                           ? "bg-[#0B111B] bg-opacity-80"
-                          : "bg-opacity-0 hover:bg-[#484c6d5b]"
+                          : "bg-opacity-0 hover:bg-[#ffffff24]"
                       }`}
                     >
                       0.5%
@@ -2468,10 +2468,10 @@ const TradeBar: React.FC<
                   </button>
                   <div
                     onClick={() => handleButtonClick(4)}
-                    className={`flex hover:bg-[#484c6d5b] rounded  w-[115px] h-7 ${activeButton === 4 ? "bg-primary text-black" : "bg-layer-2"}`}
+                    className={`flex hover:bg-[#ffffff24] rounded  w-[115px] h-7 ${activeButton === 4 ? "bg-primary text-black" : "bg-layer-2"}`}
                   >
                     <div
-                      className={`rounded flex flex-row w-full h-full px-2 ${activeButton === 4 ? "bg-[#0B111B] bg-opacity-80" : "bg-opacity-0 hover:bg-[#484c6d5b]"}`}
+                      className={`rounded flex flex-row w-full h-full px-2 ${activeButton === 4 ? "bg-[#0B111B] bg-opacity-80" : "bg-opacity-0 hover:bg-[#ffffff24]"}`}
                     >
                       <input
                         type="text"
@@ -2519,7 +2519,7 @@ const TradeBar: React.FC<
       <div className="w-32 rounded-md bg-layer-2 text-[#ffffff60] ">
         <button
           onClick={() => selectCurrencyAndCloseModal("SOL")}
-          className="w-full rounded-t-md flex flex-row gap-2 py-1 px-2 hover:bg-[#484c6d5b]"
+          className="w-full rounded-t-md flex flex-row gap-2 py-1 px-2 hover:bg-[#ffffff24]"
         >
           {" "}
           <img
@@ -2531,7 +2531,7 @@ const TradeBar: React.FC<
         </button>
         <button
           onClick={() => selectCurrencyAndCloseModal("USDC")}
-          className="w-full rounded-b-md flex flex-row gap-2 py-1 px-2 hover:bg-[#484c6d5b]"
+          className="w-full rounded-b-md flex flex-row gap-2 py-1 px-2 hover:bg-[#ffffff24]"
         >
           {" "}
           <img
@@ -2624,7 +2624,7 @@ const TradeBar: React.FC<
                 <MdOutlineSettings></MdOutlineSettings>
               </button>
             </div>
-            <div className="w-full mt-[12px] rounded-lg bg-[#ffffff12]  box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-[#ffffff60]  hover:bg-[#484c6d5b]">
+            <div className="w-full mt-[12px] rounded-lg bg-[#ffffff12]  box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-[#ffffff60]  hover:bg-[#ffffff24] transition-all duration-200 ease-in-out  ">
               <input
                 type="text"
                 className="input-capsule__input w-full"
@@ -2668,7 +2668,7 @@ const TradeBar: React.FC<
                   <MdOutlineSettings></MdOutlineSettings>
                 </button>
               </div>
-              <div className="w-full mt-[12px] rounded-lg bg-[#ffffff12] box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-[#ffffff60]  hover:bg-[#484c6d5b]">
+              <div className="w-full mt-[12px] rounded-lg bg-[#ffffff12] box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-[#ffffff60]  hover:bg-[#ffffff24]">
                 <input
                   type="text"
                   className="input-capsule__input"
@@ -2841,7 +2841,7 @@ const TradeBar: React.FC<
         <div
           className={`w-full flex flex-row items-start justify-start gap-[8px] ${showAdditionalDiv ? "" : "hidden"}`}
         >
-          <div className="flex-1 rounded bg-[#ffffff12]  h-10 flex flex-row items-center justify-between py-0 px-2   hover:bg-[#484c6d5b] transition-all duration-200 ease-in-out">
+          <div className="flex-1 rounded bg-[#ffffff12]  h-10 flex flex-row items-center justify-between py-0 px-2   hover:bg-[#ffffff24] transition-all duration-200 ease-in-out">
             <input
               type="text"
               placeholder="Take Profit"
@@ -2864,7 +2864,7 @@ const TradeBar: React.FC<
             </span>
           </div>
 
-          <div className="hover:bg-[#484c6d5b] flex-1 rounded bg-[#ffffff12]  h-10 flex flex-row items-center justify-between py-0 px-2 transition-all duration-200 ease-in-out ">
+          <div className="hover:bg-[#ffffff24] flex-1 rounded bg-[#ffffff12]  h-10 flex flex-row items-center justify-between py-0 px-2 transition-all duration-200 ease-in-out ">
             <input
               type="text"
               placeholder="Profit"
@@ -2887,7 +2887,7 @@ const TradeBar: React.FC<
         <div
           className={`w-full flex flex-row items-start justify-start gap-[8px] ${showAdditionalDiv ? "" : "hidden"}`}
         >
-          <div className="flex-1 rounded bg-[#ffffff12] box-border h-10 flex flex-row items-center justify-between py-0 px-2   hover:bg-[#484c6d5b] transition-all duration-200 ease-in-out">
+          <div className="flex-1 rounded bg-[#ffffff12] box-border h-10 flex flex-row items-center justify-between py-0 px-2   hover:bg-[#ffffff24] transition-all duration-200 ease-in-out">
             <input
               type="text"
               placeholder="Stop Loss"
@@ -2909,7 +2909,7 @@ const TradeBar: React.FC<
               </div>
             </span>
           </div>
-          <div className="hover:bg-[#484c6d5b] flex-1 rounded bg-[#ffffff12] box-border h-10 flex flex-row items-center justify-between py-0 px-2 transition-all duration-200 ease-in-out">
+          <div className="hover:bg-[#ffffff24] flex-1 rounded bg-[#ffffff12] box-border h-10 flex flex-row items-center justify-between py-0 px-2 transition-all duration-200 ease-in-out">
             <input
               type="text"
               placeholder="Loss"

@@ -380,7 +380,7 @@ const Futures: FC = () => {
             />
           </button>
         </div>
-        <div className="w-full md:px-2 h-full lg:h-[calc(100vh-85px)] overflow-hidden ">
+        <div className="w-full md:px-3 h-full lg:h-[calc(100vh-85px)] overflow-hidden ">
           <div className="w-full">
             {/* right content */}
             <div className="w-full">
@@ -388,7 +388,7 @@ const Futures: FC = () => {
               <div className="w-full flex md:flex-row flex-col ">
                 <div className="w-full flex flex-col">
                   <div className="w-full md:flex-row flex-col gap-2">
-                    <div className="w-full flex md:flex-row flex-col gap-2">
+                    <div className="w-full flex md:flex-row flex-col gap-3">
                       <div className="w-full md:block hidden lg:h-[calc(100vh-87px)] overflow-auto">
                         <div className="flex flex-row">
                           <PairPicker
@@ -411,8 +411,8 @@ const Futures: FC = () => {
                         <div
                           className={`w-full md:block flex-col hidden md:order-2 order-1 mt-2 md:h-[629px] ${
                             showBottomPanel
-                              ? "lg:h-[calc((100vh-2px)-(42vh))]"
-                              : "lg:h-[calc(100vh-108px-33px)] "
+                              ? "lg:h-[calc((100vh-6px)-(42vh))]"
+                              : "lg:h-[calc(100vh-108px-44px)] "
                           }`}
                         >
                           <Graph
@@ -423,7 +423,7 @@ const Futures: FC = () => {
                         </div>
 
                         <div
-                          className={`w-full bg-[#ffffff08] lg:flex lg:flex-col hidden order-3   lg:h-[calc((100vh-233px)-(58vh-79px))] mt-2 ${showBottomPanel ? "" : "lg:hidden"}`}
+                          className={`rounded-lg w-full bg-[#ffffff08] lg:flex lg:flex-col hidden order-3   lg:h-[calc((100vh-233px)-(58vh-79px))] mt-3 ${showBottomPanel ? "" : "lg:hidden"}`}
                         >
                           <MyPositionsFutures
                             latestOpenedPosition={latestOpenedPosition}
@@ -437,7 +437,7 @@ const Futures: FC = () => {
                         </div>
                       </div>
                       <div
-                        className={`mt-2 z-100 md:w-[375px] bg-[#ffffff08] h-1/2 w-full md:order-1 order-2  rounded-lg  ${ActiveButton === 1 ? "" : "hidden"}`}
+                        className={`mt-2.5 z-100 md:w-[375px] bg-[#ffffff08] h-1/2 w-full md:order-1 order-2  rounded-lg  ${ActiveButton === 1 ? "" : "hidden"}`}
                       >
                         <TradeBarFutures
                           setOpeningPrice={setOpeningPrice}
