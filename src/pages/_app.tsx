@@ -86,6 +86,16 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
         <PriorityFeeProvider>
           <BackupOracleProvider>
             <div className="flex flex-col min-h-screen overflow-hidden">
+              <div
+                className="overflow-hidden absolute futures-circles w-full h-full"
+                style={{
+                  zIndex: 0,
+                  transform: "translate(0%, -75%)",
+                  right: "0%",
+                }}
+              >
+                {" "}
+              </div>
               <Notifications />
               <Analytics />
               {showAppBar && (

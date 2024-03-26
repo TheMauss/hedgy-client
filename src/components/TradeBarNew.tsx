@@ -56,10 +56,8 @@ const LPACC = new PublicKey(process.env.NEXT_PUBLIC_LP_ACC);
 type TradeBarProps = {
   setParentDivHeight: (height: string) => void;
   totalBetAmount: number; // Add this line
-  isBitcoinSelected: boolean;
   EMAprice: number;
   setEMAPrice: (EMAprice: number) => void; // assuming it's a function that accepts a number
-  isSoliditySelected: boolean;
   selectedCryptos: { [key: string]: boolean };
 
   prices: { [key: string]: { price: number; timestamp: string } };
@@ -238,12 +236,10 @@ const TradeBar: React.FC<
   setOpeningPrice,
   openingPrice,
   totalBetAmount,
-  isBitcoinSelected,
   prices,
   setPrices,
   setEMAPrice,
   EMAprice,
-  isSoliditySelected,
 }) => {
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();

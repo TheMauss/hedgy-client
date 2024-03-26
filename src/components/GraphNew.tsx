@@ -53,10 +53,10 @@ export const Graph: FC<GraphProps> = ({
   prices,
 }) => {
   return (
-    <div className="overflow-hidden w-full h-full order-1 rounded-lg flex bg-layer-1">
+    <div className="overflow-hidden w-full h-full order-1 rounded-lg flex ">
       <div className="min-h-[330px] h-full w-full flex flex-col overflow-y-auto ">
         <div className="flex-1 h-full relative flex flex-col w-full">
-          <div className="absolute inset-0 flex bg-layer-1 rounded ">
+          <div className="absolute inset-0 flex  rounded ">
             <Chart
               key={symbol}
               symbol={symbol}

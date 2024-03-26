@@ -6,6 +6,7 @@ module.exports = {
     extend: {
       colors: {
         customGreen: "#22c55e",
+        base: "#000000",
         "layer-1": "#151722",
         "layer-3": "#434665",
         "layer-2": "#1d202f",
@@ -13,8 +14,8 @@ module.exports = {
         grey: "#434665",
         white: "#fff",
         "grey-text": "#a9aab7",
-        short: "#ff4c4c",
-        primary: "#23eaa4",
+        short: "#FF3E3E",
+        primary: "#23EAA4",
         primarys: "#23eaa460",
         deepskyblue: "#58b9ff",
         tomato: {
@@ -39,6 +40,7 @@ module.exports = {
         "new-card-bg": "#14141465",
         "new-green": "#43e3ae",
         "new-green-dark": "#2b9974",
+        "new-red-dark": "#ff4bdb",
       },
       fontSize: {
         "between-md-lg": "1.15rem",

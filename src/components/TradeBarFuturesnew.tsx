@@ -83,8 +83,6 @@ interface TradeBarFuturesProps {
     }>
   >;
   setEMAPrice: (EMAprice: number) => void; // assuming it's a function that accepts a number
-  isBitcoinSelected: boolean;
-  isSoliditySelected: boolean;
   openingPrice: number; // Add openingPrice here
   setOpeningPrice: React.Dispatch<React.SetStateAction<number>>;
   selectedCryptos: { [key: string]: boolean };
@@ -309,10 +307,8 @@ const TradeBar: React.FC<
   setPrices,
   setEMAPrice,
   prices,
-  isBitcoinSelected,
   setOpeningPrice,
   openingPrice,
-  isSoliditySelected,
   setSelectedCurrency,
   selectedCurrency,
 }) => {
@@ -660,14 +656,7 @@ const TradeBar: React.FC<
     ) {
       setMaxLeverage(defaultLeverage);
     }
-  }, [
-    data,
-    isSoliditySelected,
-    isBitcoinSelected,
-    toggleState,
-    leverage,
-    selectedCryptos,
-  ]);
+  }, [data, toggleState, leverage, selectedCryptos]);
 
   useEffect(() => {
     if (publicKey) {
@@ -2450,7 +2439,7 @@ const TradeBar: React.FC<
                     onClick={() => handleButtonClick(2)}
                     className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
                       activeButton === 2
-                        ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
+                        ? "bg-primary text-black"
                         : "bg-layer-2"
                     }`}
                   >
@@ -2468,7 +2457,7 @@ const TradeBar: React.FC<
                     onClick={() => handleButtonClick(3)}
                     className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
                       activeButton === 3
-                        ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
+                        ? "bg-primary text-black"
                         : "bg-layer-2"
                     }`}
                   >
@@ -2484,7 +2473,7 @@ const TradeBar: React.FC<
                   </button>
                   <div
                     onClick={() => handleButtonClick(4)}
-                    className={`flex hover:bg-[#484c6d5b] rounded  w-[115px] h-7 ${activeButton === 4 ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]" : "bg-layer-2"}`}
+                    className={`flex hover:bg-[#484c6d5b] rounded  w-[115px] h-7 ${activeButton === 4 ? "bg-primary text-black" : "bg-layer-2"}`}
                   >
                     <div
                       className={`rounded flex flex-row w-full h-full px-2 ${activeButton === 4 ? "bg-[#0B111B] bg-opacity-80" : "bg-opacity-0 hover:bg-[#484c6d5b]"}`}
@@ -2562,11 +2551,11 @@ const TradeBar: React.FC<
   );
 
   return (
-    <div className="custom-scrollbar overflow-x-hidden md:h-[628px] lg:h-[calc(100vh-141px)] md:w-[330px] w-full rounded-lg  flex flex-col items-start justify-start p-4 gap-[16px] text-left text-sm text-grey-text font-poppins">
+    <div className="custom-scrollbar overflow-x-hidden md:w-[375px] w-full rounded-lg  flex flex-col items-start justify-start p-4 gap-[16px] text-left text-sm text-grey-text font-poppins">
       {ModalDetails1}
       {ModalDetails}
       {ModalDetails2}
-      <div className="self-stretch flex flex-row items-start justify-start text-lg text-primary font-bankgothic-md-bt border-b-[1px] border-solid border-layer-3">
+      <div className="self-stretch flex flex-row items-start justify-start text-lg text-primary font-bankgothic-md-bt border-b-[2px] border-solid border-[#ffffff12]">
         <button
           onClick={setToggleChangeLong}
           className={`flex-1   h-10 flex flex-row items-center justify-center py-3 px-6 transition-all duration-200 ease-in-out  ${
@@ -2606,13 +2595,13 @@ const TradeBar: React.FC<
           </div>
         </button>
       </div>
-      <div className="w-full flex flex-row font-poppins border-[1px] border-solid border-layer-3 rounded-md">
+      <div className="w-full flex flex-row font-poppins rounded-md">
         <button
           onClick={() => setSelectedOrder("MARKET")}
           className={`w-1/2  self-stretch rounded-l-md  box-border h-[38px] flex flex-row items-center justify-center py-0 px-2   ${
             selectedOrder === "MARKET"
-              ? "bg-layer-2 text-white"
-              : "bg-layer-1 hover:bg-[#484c6d5b]"
+              ? "bg-[#ffffff08] text-white"
+              : "bg-[#ffffff12]"
           }`}
         >
           Market
@@ -2621,8 +2610,8 @@ const TradeBar: React.FC<
           onClick={() => setSelectedOrder("LIMIT")}
           className={`w-1/2  self-stretch rounded-r-md  box-border h-[38px] flex flex-row items-center justify-center py-0 px-2   ${
             selectedOrder === "LIMIT"
-              ? "bg-layer-2 text-white"
-              : "bg-layer-1 hover:bg-[#484c6d5b]"
+              ? "bg-[#ffffff08] text-white"
+              : "bg-[#ffffff12]"
           }`}
         >
           Limit
@@ -2640,7 +2629,7 @@ const TradeBar: React.FC<
                 <MdOutlineSettings></MdOutlineSettings>
               </button>
             </div>
-            <div className="w-full mt-[12px] rounded-lg bg-layer-2 box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-grey hover:bg-[#484c6d5b]">
+            <div className="w-full mt-[12px] rounded-lg bg-[#ffffff12]  box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-grey hover:bg-[#484c6d5b]">
               <input
                 type="text"
                 className="input-capsule__input w-full"
@@ -2684,7 +2673,7 @@ const TradeBar: React.FC<
                   <MdOutlineSettings></MdOutlineSettings>
                 </button>
               </div>
-              <div className="w-full mt-[12px] rounded-lg bg-layer-2 box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-grey hover:bg-[#484c6d5b]">
+              <div className="w-full mt-[12px] rounded-lg bg-[#ffffff12] box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-grey hover:bg-[#484c6d5b]">
                 <input
                   type="text"
                   className="input-capsule__input"
@@ -2704,7 +2693,7 @@ const TradeBar: React.FC<
           <div className="relative leading-[14px] inline-block max-w-[131px]">
             Leverage
           </div>
-          <div className="rounded bg-layer-2 box-border w-[60.3px] h-7 flex flex-col items-center justify-center py-0 px-2 text-base border-[1px] border-solid border-layer-3">
+          <div className="rounded bg-[#ffffff12] box-border w-[60.3px] h-7 flex flex-col items-center justify-center py-0 px-2 text-base">
             <div className="relative leading-[14px] font-medium text-[#a9aab7]">
               {leverage}X
             </div>
@@ -2719,14 +2708,14 @@ const TradeBar: React.FC<
             onChange={handleSliderChange}
             className="w-full"
             railStyle={{
-              backgroundColor: "#1f2435",
+              backgroundColor: "#ffffff12",
               paddingTop: "0.2rem",
               minHeight: "1.2rem",
               borderRadius: "100px",
             }}
             trackStyle={{
               minHeight: "0.7rem",
-              backgroundColor: "#30c296",
+              backgroundColor: "#43e3ae",
               borderRadius: "100px",
               top: "9px",
               left: "5px",
@@ -2742,73 +2731,41 @@ const TradeBar: React.FC<
               onClick={() => handleLeverageClick(25)}
               className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
                 activeLeverageButton === 25
-                  ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
-                  : "bg-layer-2"
+                  ? "bg-primary text-black"
+                  : "bg-[#ffffff12]"
               }`}
             >
-              <div
-                className={` flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${
-                  activeLeverageButton === 25
-                    ? "bg-[#0B111B] bg-opacity-80"
-                    : " bg-opacity-0 hover:bg-[#484c6d5b]"
-                }`}
-              >
-                25X
-              </div>{" "}
+              25X
             </button>
             <button
               onClick={() => handleLeverageClick(50)}
               className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
                 activeLeverageButton === 50
-                  ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
-                  : "bg-layer-2"
+                  ? "bg-primary text-black"
+                  : "bg-[#ffffff12]"
               }`}
             >
-              <div
-                className={`flex justify-center items-center  w-full h-full rounded relative leading-[14px] font-medium ${
-                  activeLeverageButton === 50
-                    ? "bg-[#0B111B] bg-opacity-80"
-                    : "bg-opacity-0 hover:bg-[#484c6d5b]"
-                }`}
-              >
-                50X
-              </div>{" "}
+              50X
             </button>
             <button
               onClick={() => handleLeverageClick(75)}
               className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
                 activeLeverageButton === 75
-                  ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
-                  : "bg-layer-2"
+                  ? "bg-primary text-black"
+                  : "bg-[#ffffff12]"
               }`}
             >
-              <div
-                className={`flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${
-                  activeLeverageButton === 75
-                    ? "bg-[#0B111B] bg-opacity-80"
-                    : " bg-opacity-0 hover:bg-[#484c6d5b]"
-                }`}
-              >
-                75X
-              </div>{" "}
+              75X
             </button>
             <button
               onClick={() => handleLeverageClick(100)}
               className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
                 activeLeverageButton === 100
-                  ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
-                  : "bg-layer-2"
+                  ? "bg-primary text-black"
+                  : "bg-[#ffffff12]"
               }`}
             >
-              <div
-                className={`flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${
-                  activeLeverageButton === 100
-                    ? "bg-[#0B111B] bg-opacity-80"
-                    : " bg-opacity-0 hover:bg-[#484c6d5b]"
-                }`}
-              >
-                100X
-              </div>{" "}
+              100X
             </button>
           </div>
         </div>
@@ -2824,75 +2781,40 @@ const TradeBar: React.FC<
             <button
               onClick={() => handleButtonClick(1)}
               className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
-                activeButton === 1
-                  ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
-                  : "bg-layer-2"
+                activeButton === 1 ? "bg-primary text-black" : "bg-[#ffffff12]"
               }`}
             >
-              <div
-                className={`flex justify-center items-center bg-[#0B111B] w-full h-full rounded relative leading-[14px] font-medium ${
-                  activeButton === 1
-                    ? "bg-[#0B111B] bg-opacity-80"
-                    : " bg-opacity-0 hover:bg-[#484c6d5b]"
-                }`}
-              >
-                0.1%
-              </div>
+              0.1%
             </button>
             <button
               onClick={() => handleButtonClick(2)}
               className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
-                activeButton === 2
-                  ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
-                  : "bg-layer-2"
+                activeButton === 2 ? "bg-primary text-black" : "bg-[#ffffff12]"
               }`}
             >
-              <div
-                className={`flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${
-                  activeButton === 2
-                    ? "bg-[#0B111B] bg-opacity-80"
-                    : " bg-opacity-0 hover:bg-[#484c6d5b]"
-                }`}
-              >
-                0.3%
-              </div>
+              0.3%
             </button>
             <button
               onClick={() => handleButtonClick(3)}
               className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border ${
-                activeButton === 3
-                  ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
-                  : "bg-layer-2"
+                activeButton === 3 ? "bg-primary text-black" : "bg-[#ffffff12]"
               }`}
             >
-              <div
-                className={`flex justify-center items-center bg-[#0B111B]  w-full h-full rounded relative leading-[14px] font-medium ${
-                  activeButton === 3
-                    ? "bg-[#0B111B] bg-opacity-80"
-                    : " bg-opacity-0 hover:bg-[#484c6d5b]"
-                }`}
-              >
-                0.5%
-              </div>
+              0.5%
             </button>
             <div
               onClick={() => handleButtonClick(4)}
-              className={`flex hover:bg-[#484c6d5b] rounded  w-[115px] h-7 ${activeButton === 4 ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]" : "bg-layer-2"}`}
+              className={`flex hover:bg-[#484c6d5b] rounded  w-[115px] h-7 ${
+                activeButton === 4 ? "bg-new-green" : "bg-[#ffffff12]"
+              }`}
             >
-              <div
-                className={`rounded flex flex-row w-full h-full px-2 ${activeButton === 4 ? "bg-[#0B111B] bg-opacity-80" : " bg-opacity-0 hover:bg-[#484c6d5b]"}`}
-              >
-                <input
-                  type="text"
-                  placeholder="Custom"
-                  className="flex justify-center items-center input3-capsule__input relative leading-[14px]"
-                  value={customSlippage}
-                  onChange={handleCustomSlippageChange}
-                />
-                <span className="flex justify-center items-center relative w-4 h-8 overflow-hidden shrink-0">
-                  %
-                </span>
-              </div>
+              <input
+                type="text"
+                placeholder="    Custom %"
+                className="flex justify-center items-center input3-capsule__input relative leading-[14px]"
+                value={customSlippage}
+                onChange={handleCustomSlippageChange}
+              />
             </div>
           </div>
         </div>
@@ -2912,7 +2834,7 @@ const TradeBar: React.FC<
         <div
           className={`w-full flex flex-row items-start justify-start gap-[8px] ${showAdditionalDiv ? "" : "hidden"}`}
         >
-          <div className="flex-1 rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 border-[1px] border-solid border-layer-3 hover:bg-[#484c6d5b]">
+          <div className="flex-1 rounded bg-[#ffffff12]  h-10 flex flex-row items-center justify-between py-0 px-2   hover:bg-[#484c6d5b]">
             <input
               type="text"
               placeholder="Take Profit"
@@ -2935,7 +2857,7 @@ const TradeBar: React.FC<
             </span>
           </div>
 
-          <div className="hover:bg-[#484c6d5b] flex-1 rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 border-[1px] border-solid border-layer-3">
+          <div className="hover:bg-[#484c6d5b] flex-1 rounded bg-[#ffffff12]  h-10 flex flex-row items-center justify-between py-0 px-2 ">
             <input
               type="text"
               placeholder="Profit"
@@ -2958,7 +2880,7 @@ const TradeBar: React.FC<
         <div
           className={`w-full flex flex-row items-start justify-start gap-[8px] ${showAdditionalDiv ? "" : "hidden"}`}
         >
-          <div className="flex-1 rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 border-[1px] border-solid border-layer-3 hover:bg-[#484c6d5b]">
+          <div className="flex-1 rounded bg-[#ffffff12] box-border h-10 flex flex-row items-center justify-between py-0 px-2   hover:bg-[#484c6d5b]">
             <input
               type="text"
               placeholder="Stop Loss"
@@ -2980,7 +2902,7 @@ const TradeBar: React.FC<
               </div>
             </span>
           </div>
-          <div className="hover:bg-[#484c6d5b] flex-1 rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 border-[1px] border-solid border-layer-3">
+          <div className="hover:bg-[#484c6d5b] flex-1 rounded bg-[#ffffff12] box-border h-10 flex flex-row items-center justify-between py-0 px-2">
             <input
               type="text"
               placeholder="Loss"
@@ -3107,23 +3029,19 @@ const TradeBar: React.FC<
         >
           <div
             className={`bankGothic bg-clip-text text-transparent uppercase text-lg ${
-              toggleState === "LONG" ? "bg-primary" : "bg-short"
+              toggleState === "LONG" ? "bg-primary text-black" : "bg-short"
             }`}
           >
             {selectedOrder === "MARKET" ? "OPEN POSITION" : "CREATE ORDER"}{" "}
           </div>
         </button>
       ) : (
-        <WalletMultiButtonDynamic
-          className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  ${
-            toggleState === "LONG"
-              ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-[2px] border-solid border-primary"
-              : "[flex-1 [background:linear-gradient(180deg,_rgba(255,_76,_76,_0),_rgba(255,_76,_76,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 text-short border-[2px] border-solid border-short"
-          }`}
-        >
+        <WalletMultiButtonDynamic className="w-full bg-[#00000000]">
           <div
-            className={`bankGothic bg-clip-text text-transparent uppercase text-lg ${
-              toggleState === "LONG" ? "bg-primary" : "bg-short"
+            className={`w-full py-3 rounded-lg bg-primar  cursor-pointer font-semibold leading-[normal] min-w-[189px] text-center text-lg text-black transition ease-in-out duration-300 ${
+              toggleState === "LONG"
+                ? "bg-primary hover:bg-new-green-dark"
+                : "bg-short hover:bg-new-red-dark"
             }`}
           >
             CONNECT WALLET

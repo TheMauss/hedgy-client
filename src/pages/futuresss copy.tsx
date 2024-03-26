@@ -1,14 +1,14 @@
 import Head from "next/head";
-import TradeBar from "../components/TradeBarNew";
+import TradeBarFutures from "../components/TradeBarFuturesnew";
 import RecentPredictions from "../components/RecentPredictionsNew";
-import MyPositions from "../components/MyPositionsNew";
+import MyPositionsFutures from "../components/MyPositionsFuturesNew";
 import { FC, useState, useEffect, useRef } from "react";
-import Chat from "components/Chatnew";
 import { useRouter } from "next/router";
 import React from "react";
-import PairPicker from "components/PairPicker";
+import Chat from "../components/Chatnew";
+import PairPicker from "components/PairPickerFutures";
+import InterestBar from "components/InterestBar";
 import Footer from "components/Footernew";
-import InterestBar from "components/InterestBarOp";
 import { priceDataState } from "components/globalStatse";
 import { FaChevronLeft, FaChevronUp } from "react-icons/fa";
 import { Graph } from "components/GraphNew";
@@ -16,48 +16,76 @@ import { notify } from "../utils/notifications";
 
 interface Position {
   _id: string;
-  binaryOption: string;
+  futuresContract: string;
   playerAcc: string;
   initialPrice: number;
   betAmount: number;
   priceDirection: number;
+  leverage: number;
+  stopLossPrice: number;
+  takeProfitPrice: number;
+  liquidationPrice: number;
   symbol: number;
   resolved: boolean;
-  payout: number;
   winner: string | null;
-  expiration: number;
-  expirationTime: number;
-  remainingTime: string;
-  timestamp: number;
   finalPrice: number;
   currentPrice: number;
+  pnl: number;
   usdc: number;
+  order: boolean;
 }
 
-const Transaction: FC = () => {
+const Futures: FC = () => {
   const [symbol, setSymbol] = useState("Crypto.SOL/USD"); // default value
-  const [divHeight, setDivHeight] = useState("60vh");
-  const [totalBetAmount, setTotalBetAmount] = useState(0);
   const [latestOpenedPosition, setLatestOpenedPosition] = useState<
     Record<string, Position | null>
   >({});
+  const [totalBetAmount, setTotalBetAmount] = useState(0);
+  const [divHeight, setDivHeight] = useState("60vh");
+  const [data, setData] = useState({
+    btcLong: "0",
+    btcShort: "0",
+    solLong: "0",
+    solShort: "0",
+    longCollateral: "0",
+    shortCollateral: "0",
+    pythLong: "0",
+    pythShort: "0",
+    bonkLong: "0",
+    bonkShort: "0",
+    jupLong: "0",
+    jupShort: "0",
+    ethLong: "0",
+    ethShort: "0",
+    tiaLong: "0",
+    tiaShort: "0",
+    suiLong: "0",
+    suiShort: "0",
+  });
+  const [prices, setPrices] = useState({});
+  const [EMAprice, setEMAprice] = useState(null);
   const [selectedCryptos, setSelectedCryptos] = useState({
     BTC: false,
     SOL: true,
     PYTH: false,
     BONK: false,
+    JUP: false,
+    ETH: false,
+    TIA: false,
+    SUI: false,
     // Add other cryptocurrencies as needed
   });
-  const [prices, setPrices] = useState({});
-  const [EMAprice, setEMAprice] = useState(null);
-  const [openingPrice, setOpeningPrice] = useState(0);
   const [isBitcoinSelected, setIsBitcoinSelected] = useState(false);
   const [isSoliditySelected, setIsSoliditySelected] = useState(true);
+  const [openingPrice, setOpeningPrice] = useState(0);
   const [initialPrice, setInitialPrice] = useState(0);
   const [selectedPair, setSelectedPair] = useState("");
   const [selectedCurrency, setSelectedCurrency] = useState<"SOL" | "USDC">(
     "SOL"
   );
+
+  const router = useRouter();
+  const { crypto } = router.query; // could be 'btc' or 'sol'
 
   const [isSticky, setIsSticky] = useState(false);
   const ref = useRef(null); // Ref for the element that will become sticky
@@ -72,6 +100,7 @@ const Transaction: FC = () => {
   const debounceDelay = 75;
   let lastNotificationTime = 0;
 
+  // Example adjustment for immediate deduplication
   const handleNewNotification = (newNotification) => {
     const currentTime = Date.now();
     const isNewNotificationSameAsLast =
@@ -132,15 +161,9 @@ const Transaction: FC = () => {
   }, []);
 
   useEffect(() => {
-    Object.keys(prices).forEach((symbol) => {
-      priceDataState.updatePriceData(symbol, prices[symbol]);
-    });
-  }, [prices]);
-
-  useEffect(() => {
     const handleScroll = () => {
       const stickyThreshold = 64; // for example, 200px from the top of the page
-      const bottomStickyThreshold = -62;
+      const bottomStickyThreshold = -1;
       if (ref.current) {
         setIsSticky(window.scrollY > stickyThreshold);
       }
@@ -154,7 +177,6 @@ const Transaction: FC = () => {
           window.scrollY + viewportHeight >=
           document.documentElement.offsetHeight - bottomStickyThreshold;
         setIsStickyBottom(!isNearBottom);
-        console.log(!isNearBottom);
       }
     };
 
@@ -168,64 +190,52 @@ const Transaction: FC = () => {
   }, []);
 
   useEffect(() => {
-    // Provide a default empty object if selectedCryptos is undefined or null
-    const selectedCryptosSafe = selectedCryptos || {};
-
-    const selectedCrypto = Object.keys(selectedCryptosSafe).find(
-      (key) => selectedCryptosSafe[key]
-    );
-
-    if (selectedCrypto) {
-      setSelectedPair(selectedCrypto);
+    // Only proceed if the router is ready and the crypto parameter is present
+    if (!router.isReady || !crypto) {
+      console.log("Router or crypto query not ready.");
+      return;
     }
 
-    const decimalPlacesMapping = {
-      BTC: 1, // Example: Bitcoin to 2 decimal places
-      SOL: 3,
-      PYTH: 3,
-      BONK: 8,
-      // Add more mappings as needed
-    };
-    // Get the number of decimal places for the selected crypto, defaulting to a standard value if not found
-    const decimalPlaces =
-      decimalPlacesMapping[selectedCrypto?.toUpperCase()] || 2;
+    const cryptoKey = crypto.toString().toUpperCase();
 
-    const newInitialPrice =
-      prices?.[`Crypto.${selectedCrypto?.toUpperCase()}/USD`]?.price /
-        100000000 || 0;
-    setInitialPrice(parseFloat(newInitialPrice.toFixed(decimalPlaces)));
-  }, [selectedCryptos, prices]);
+    // Update selectedCryptos state
+    const newSelectedCryptos = { ...selectedCryptos, [cryptoKey]: true };
 
-  const router = useRouter();
-  const { crypto } = router.query; // could be 'btc' or 'sol'
-
-  useEffect(() => {
-    const cryptoKey = Array.isArray(crypto) ? crypto[0] : crypto; // Or handle arrays differently
-
-    const newSelectedCryptos = { ...selectedCryptos };
-    Object.keys(newSelectedCryptos).forEach((key) => {
-      newSelectedCryptos[key] = key === cryptoKey;
-    });
+    // Check if the cryptoKey is valid
+    if (!Object.keys(newSelectedCryptos).includes(cryptoKey)) {
+      console.log(`Crypto key ${cryptoKey} is not recognized.`);
+      return;
+    }
 
     setSelectedCryptos(newSelectedCryptos);
 
     const symbolMap = {
-      btc: "Crypto.BTC/USD",
-      sol: "Crypto.SOL/USD",
+      BTC: "Crypto.BTC/USD",
+      SOL: "Crypto.SOL/USD",
+      PYTH: "Crypto.PYTH/USD",
+      BONK: "Crypto.BONK/USD",
+      JUP: "Crypto.JUP/USD",
+      ETH: "Crypto.ETH/USD",
+      TIA: "Crypto.TIA/USD",
+      SUI: "Crypto.SUI/USD",
+
       // Add other mappings as necessary
     };
 
+    // Set the symbol for the selected crypto
     if (symbolMap[cryptoKey]) {
       setSymbol(symbolMap[cryptoKey]);
-      console.log(`is${cryptoKey.toUpperCase()}Selected is set to true`);
-      Object.keys(symbolMap).forEach((key) => {
-        if (key !== cryptoKey) {
-          console.log(`is${key.toUpperCase()}Selected is set to false`);
-        }
-      });
       console.log(`Symbol is set to ${symbolMap[cryptoKey]}`);
+    } else {
+      console.log(`No symbol found for ${cryptoKey}.`);
     }
-  }, [crypto]);
+  }, [crypto, router.isReady]);
+
+  useEffect(() => {
+    Object.keys(prices).forEach((symbol) => {
+      priceDataState.updatePriceData(symbol, prices[symbol]);
+    });
+  }, [prices]);
 
   const handleTotalBetAmountChange = (totalBetAmount) => {
     setTotalBetAmount(totalBetAmount);
@@ -284,12 +294,44 @@ const Transaction: FC = () => {
     setshowBottomPanel((prevshowBottomPanel) => !prevshowBottomPanel);
   };
 
+  useEffect(() => {
+    // Provide a default empty object if selectedCryptos is undefined or null
+    const selectedCryptosSafe = selectedCryptos || {};
+
+    const selectedCrypto = Object.keys(selectedCryptosSafe).find(
+      (key) => selectedCryptosSafe[key]
+    );
+    if (selectedCrypto) {
+      setSelectedPair(selectedCrypto);
+    }
+    const decimalPlacesMapping = {
+      BTC: 1, // Example: Bitcoin to 2 decimal places
+      SOL: 3,
+      PYTH: 4,
+      BONK: 8,
+      ETH: 1,
+      SUI: 4,
+      TIA: 3,
+      JUP: 4,
+
+      // Add more mappings as needed
+    };
+    // Get the number of decimal places for the selected crypto, defaulting to a standard value if not found
+    const decimalPlaces =
+      decimalPlacesMapping[selectedCrypto?.toUpperCase()] || 2;
+
+    const newInitialPrice =
+      prices?.[`Crypto.${selectedCrypto?.toUpperCase()}/USD`]?.price /
+        100000000 || 0;
+    setInitialPrice(parseFloat(newInitialPrice.toFixed(decimalPlaces)));
+  }, [selectedCryptos, prices]);
+
   return (
     <div>
       <Head>
         <title>
           {" "}
-          {selectedPair} ${initialPrice} | PopFi Options
+          {selectedPair} ${initialPrice} | PopFi Futures
         </title>
         <meta name="description" content="PopFi" />
       </Head>
@@ -319,7 +361,7 @@ const Transaction: FC = () => {
             {/* right content */}
             <div className="w-full">
               {/* top */}
-              <div className="w-full flex md:flex-row flex-col  ">
+              <div className="w-full flex md:flex-row flex-col ">
                 <div className="w-full flex flex-col">
                   <div className="w-full md:flex-row flex-col gap-2">
                     <div className="w-full flex md:flex-row flex-col gap-2">
@@ -344,10 +386,12 @@ const Transaction: FC = () => {
                         >
                           <InterestBar
                             openingPrice={openingPrice}
-                            selectedCryptos={selectedCryptos}
                             symbol={symbol}
+                            data={data}
                             prices={prices}
                             EMAprice={EMAprice}
+                            selectedCryptos={selectedCryptos}
+                            selectedCurrency={selectedCurrency}
                           />
                           <div className="w-full flex flex-col md:order-1 order-2 md:mt-2 mt-2">
                             <Graph
@@ -360,11 +404,13 @@ const Transaction: FC = () => {
                         <div
                           className={`md:w-[330px] w-full md:order-1 order-2  overflow-y-auto mb-2 rounded-lg bg-layer-1  overhlow-y-auto overflow-x-hidden mt-2 ${ActiveButton === 1 ? "" : "hidden"}`}
                         >
-                          <TradeBar
+                          <TradeBarFutures
                             setOpeningPrice={setOpeningPrice}
                             openingPrice={openingPrice}
                             setParentDivHeight={handleDivHeightChange}
                             totalBetAmount={totalBetAmount}
+                            data={data}
+                            setData={setData}
                             setPrices={setPrices}
                             setEMAPrice={setEMAprice}
                             prices={prices}
@@ -379,10 +425,12 @@ const Transaction: FC = () => {
                       <div className="w-full md:block hidden lg:h-[calc(100vh-80px)] overflow-auto">
                         <InterestBar
                           openingPrice={openingPrice}
-                          selectedCryptos={selectedCryptos}
                           symbol={symbol}
+                          data={data}
                           prices={prices}
                           EMAprice={EMAprice}
+                          selectedCryptos={selectedCryptos}
+                          selectedCurrency={selectedCurrency}
                         />
                         <div
                           className={`w-full md:block flex-col hidden md:order-2 order-1 mt-2 md:h-[629px] ${
@@ -396,11 +444,12 @@ const Transaction: FC = () => {
                             latestOpenedPosition={latestOpenedPosition}
                             prices={prices}
                           />
-                        </div>{" "}
+                        </div>
+
                         <div
                           className={`w-full lg:flex lg:flex-col hidden order-3   lg:h-[calc((100vh-226px)-(62vh-79px))] mt-2 ${showBottomPanel ? "" : "lg:hidden"}`}
                         >
-                          <MyPositions
+                          <MyPositionsFutures
                             latestOpenedPosition={latestOpenedPosition}
                             setLatestOpenedPosition={setLatestOpenedPosition}
                             handleTotalBetAmountChange={
@@ -422,6 +471,7 @@ const Transaction: FC = () => {
                           <Chat />
                         </div>
                       </div>
+                      {/* left sidebar */}
                     </div>
                   </div>
                 </div>
@@ -432,7 +482,7 @@ const Transaction: FC = () => {
                   ActiveButton === 2 ? "" : "hidden"
                 }`}
               >
-                <MyPositions
+                <MyPositionsFutures
                   latestOpenedPosition={latestOpenedPosition}
                   setLatestOpenedPosition={setLatestOpenedPosition}
                   handleTotalBetAmountChange={handleTotalBetAmountChange}
@@ -449,7 +499,7 @@ const Transaction: FC = () => {
                   <RecentPredictions divHeight={divHeight} />
                 </div>
                 <div
-                  className={`h-[calc(100vh-192px)] md:h-[330px] w-full md:block lg:flex-col lg:hidden flex-row gap-2  ${
+                  className={`h-[calc(100vh-192px)] md:h-[330px] w-full md:block lg:flex-col lg:hidden flex-row gap-2 ${
                     ActiveButton === 4 ? "" : "hidden"
                   }`}
                 >
@@ -555,4 +605,4 @@ const Transaction: FC = () => {
   );
 };
 
-export default Transaction;
+export default Futures;

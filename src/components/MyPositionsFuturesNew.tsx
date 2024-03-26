@@ -1415,7 +1415,7 @@ const MyPositions: FC<MyPositionsProps> = ({
             <Modal
               isOpen={modalIsOpen1}
               onRequestClose={() => setModalIsOpen1(false)}
-              className="bg-layer-1  rounded-lg px-4 py-6 border border-layer-3"
+              className="  rounded-lg px-4 py-6 border border-layer-3"
               style={{
                 overlay: {
                   backgroundColor: "transparent",
@@ -1569,7 +1569,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
           const ModalDetails2 = (
             <Modal
-              className="bg-layer-1  rounded-[2rem] border border-layer-3"
+              className="  rounded-[2rem] border border-layer-3"
               isOpen={modalIsOpen}
               onRequestClose={() => setModalIsOpen(false)}
               style={{
@@ -1592,7 +1592,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                   id="my-modal"
                   style={{}}
                 >
-                  <div className="font-poppins relative w-full overflow-hidden flex flex-col items-center justify-center text-left text-84xl text-white rounded-[2rem]  bg-layer-1 border border-layer-3">
+                  <div className="font-poppins relative w-full overflow-hidden flex flex-col items-center justify-center text-left text-84xl text-white rounded-[2rem]   border border-layer-3">
                     <div className="relative w-[1280px] h-[800px] z-1000">
                       <img
                         className="absolute top-[105.2px] left-[243.2px] w-[760.8px] h-[760.8px]"
@@ -2119,7 +2119,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               key={item._id}
               className="text-poppins self-stretch flex flex-col items-center justify-start text-left text-xs"
             >
-              <div className="self-stretch bg-layer-1 flex flex-col items-start justify-start p-4 gap-[8px]">
+              <div className="self-stretch  flex flex-col items-start justify-start p-4 gap-[8px]">
                 <div className="self-stretch flex flex-row items-start justify-between">
                   <div className="flex flex-col items-start justify-center gap-[4px]">
                     <div className="text-grey-text relative leading-[9.98px] flex items-center w-[50px]">
@@ -2448,7 +2448,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
     const ModalDetails = (
       <Modal
-        className="bg-layer-1  rounded-[2rem] border border-layer-3"
+        className="  rounded-[2rem] border border-layer-3"
         isOpen={modalIsOpen}
         onRequestClose={() => setModalIsOpen(false)}
         style={{
@@ -2471,7 +2471,7 @@ const MyPositions: FC<MyPositionsProps> = ({
             id="my-modal"
             style={{}}
           >
-            <div className="font-poppins relative w-full overflow-hidden flex flex-col items-center justify-center text-left text-84xl text-white rounded-[2rem]  bg-layer-1 border border-layer-3">
+            <div className="font-poppins relative w-full overflow-hidden flex flex-col items-center justify-center text-left text-84xl text-white rounded-[2rem]   border border-layer-3">
               <div className="relative w-[1280px] h-[800px] z-1000">
                 <img
                   className="absolute top-[105.2px] left-[243.2px] w-[760.8px] h-[760.8px]"
@@ -2938,7 +2938,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               key={item._id}
               className="text-poppins self-stretch flex flex-col items-center justify-start text-left text-xs"
             >
-              <div className="self-stretch bg-layer-1 flex flex-col items-start justify-start p-4 gap-[8px]">
+              <div className="self-stretch  flex flex-col items-start justify-start p-4 gap-[8px]">
                 <div className="self-stretch flex flex-row items-start justify-between">
                   <div className="flex flex-col items-start justify-center gap-[4px]">
                     <div className="text-grey-text relative leading-[9.98px] flex items-center w-[50px]">
@@ -3405,7 +3405,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               key={item._id}
               className="text-poppins self-stretch flex flex-col items-center justify-start text-left text-xs"
             >
-              <div className="self-stretch bg-layer-1 flex flex-col items-start justify-start p-4 gap-[8px]">
+              <div className="self-stretch  flex flex-col items-start justify-start p-4 gap-[8px]">
                 <div className="self-stretch flex flex-row items-start justify-between">
                   <div className="flex flex-col items-start justify-center gap-[4px]">
                     <div className="text-grey-text relative leading-[9.98px] flex items-center w-[50px]">
@@ -3632,7 +3632,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
   if (!connected) {
     return (
-      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 md:">
+      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg   md:py-3 md:">
         <div className="mx-2 pt-3.5 md:py-0 border-b-[1px] border-solid border-layer-3 flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
@@ -3684,7 +3684,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     orders.length === 0
   ) {
     return (
-      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 md:">
+      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg   md:py-3 md:">
         <div className="mx-2 pt-3.5 md:py-0 border-b-[1px] border-solid border-layer-3 flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
@@ -3733,7 +3733,7 @@ const MyPositions: FC<MyPositionsProps> = ({
       (resolvedPositions.length !== 0 && orders.length !== 0))
   ) {
     return (
-      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 md:">
+      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg   md:py-3 md:">
         <div
           style={{ display: "flex", flexDirection: "column", height: "100%" }}
         >
@@ -3948,7 +3948,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     );
   } else {
     return (
-      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg bg-layer-1  md:py-3 md:">
+      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg   md:py-3 md:">
         <div
           style={{ display: "flex", flexDirection: "column", height: "100%" }}
         >

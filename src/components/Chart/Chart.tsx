@@ -200,32 +200,32 @@ const useChartComponent = (
           fullscreen: false,
           autosize: true,
           loading_screen: {
-            backgroundColor: "#151722",
+            backgroundColor: "#000000",
             foregroundColor: "#34C796",
           },
           theme: "dark",
 
-          toolbar_bg: "#151722",
+          toolbar_bg: "#000000",
           enabled_features: ["hide_left_toolbar_by_default"],
           overrides: {
-            "mainSeriesProperties.candleStyle.upColor": "#0B7A55",
-            "mainSeriesProperties.candleStyle.downColor": "#7A3636",
+            "mainSeriesProperties.candleStyle.upColor": "#43e3ae",
+            "mainSeriesProperties.candleStyle.downColor": "#FF3E3E",
             "mainSeriesProperties.candleStyle.borderUpColor": "#34C796",
             "mainSeriesProperties.candleStyle.borderDownColor": "#C44141",
             "mainSeriesProperties.candleStyle.wickUpColor": "#34C796",
             "mainSeriesProperties.candleStyle.wickDownColor": "#C44141",
 
-            "paneProperties.background": "#151722",
+            "paneProperties.background": "#000000",
             "paneProperties.backgroundType": "solid",
-            "paneProperties.vertGridProperties.color": "#1d202f",
-            "paneProperties.horzGridProperties.color": "#1d202f",
-            "paneProperties.separatorColor": "#151722",
+            "paneProperties.vertGridProperties.color": "#ffffff12",
+            "paneProperties.horzGridProperties.color": "#ffffff12",
+            "paneProperties.separatorColor": "#000000",
             "paneProperties.legendProperties.backgroundTransparency": 100,
             // Axis and scales
             "scalesProperties.textColor": "#CCC",
             "scalesProperties.lineColor": "#555555",
             "scalesProperties.axisLineToolLabelBackgroundColorActive":
-              "#555555",
+              "#ffffff12",
 
             "mainSeriesProperties.barStyle.downColor": "",
             "mainSeriesProperties.barStyle.upColor": "#20b482",
@@ -264,24 +264,24 @@ const useChartComponent = (
               .applyStudyTemplate(JSON.parse(graphPreferences));
           }
           widget.applyOverrides({
-            "mainSeriesProperties.candleStyle.upColor": "#0B7A55",
-            "mainSeriesProperties.candleStyle.downColor": "#7A3636",
+            "mainSeriesProperties.candleStyle.upColor": "#43e3ae",
+            "mainSeriesProperties.candleStyle.downColor": "#FF3E3E",
             "mainSeriesProperties.candleStyle.borderUpColor": "#34C796",
             "mainSeriesProperties.candleStyle.borderDownColor": "#C44141",
             "mainSeriesProperties.candleStyle.wickUpColor": "#34C796",
             "mainSeriesProperties.candleStyle.wickDownColor": "#C44141",
 
-            "paneProperties.background": "#151722",
+            "paneProperties.background": "#000000",
             "paneProperties.backgroundType": "solid",
-            "paneProperties.vertGridProperties.color": "#1d202f",
-            "paneProperties.horzGridProperties.color": "#1d202f",
-            "paneProperties.separatorColor": "#151722",
+            "paneProperties.vertGridProperties.color": "#ffffff12",
+            "paneProperties.horzGridProperties.color": "#ffffff12",
+            "paneProperties.separatorColor": "#000000",
             "paneProperties.legendProperties.backgroundTransparency": 100,
             // Axis and scales
             "scalesProperties.textColor": "#CCC",
             "scalesProperties.lineColor": "#555555",
             "scalesProperties.axisLineToolLabelBackgroundColorActive":
-              "#555555",
+              "#ffffff12",
 
             "mainSeriesProperties.barStyle.downColor": "",
             "mainSeriesProperties.barStyle.upColor": "#20b482",

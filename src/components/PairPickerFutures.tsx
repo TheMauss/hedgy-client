@@ -115,8 +115,8 @@ const customStyles = {
       height: isMdOrAbove ? "53px" : "55px",
       backgroundColor: isMdOrAbove
         ? state.isFocused
-          ? "#151722"
-          : "#151722"
+          ? "transparent"
+          : "transparent"
         : "transparent",
       borderRadius: isMdOrAbove ? "0.5rem" : "0rem",
       borderColor: isMdOrAbove
@@ -317,7 +317,7 @@ export const PairPicker: React.FC<PairPickerProps> = ({
   };
 
   return (
-    <div className="md:w-[330px] w-full sticky-tops md:bg-layer-1 bg-base rounded-lg ">
+    <div className="z-30 md:w-[330px] w-full sticky-tops rounded-lg ">
       <Select
         components={{
           DropdownIndicator: (props) => (

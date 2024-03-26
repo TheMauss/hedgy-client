@@ -2,10 +2,11 @@ import Head from "next/head";
 import TradeBarFutures from "../components/TradeBarFuturesnew";
 import RecentPredictions from "../components/RecentPredictionsNew";
 import MyPositionsFutures from "../components/MyPositionsFuturesNew";
+import AppBar from "../components/AppBar";
+
 import { FC, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import React from "react";
-import Chat from "../components/Chatnew";
 import PairPicker from "components/PairPickerFutures";
 import InterestBar from "components/InterestBar";
 import Footer from "components/Footernew";
@@ -327,7 +328,34 @@ const Futures: FC = () => {
   }, [selectedCryptos, prices]);
 
   return (
-    <div>
+    <div className="relative max-h-100vh overflow-hidden">
+      <div
+        className="overflow-hidden absolute futures-circles w-3/4 h-3/4"
+        style={{
+          zIndex: 1,
+          transform: "translate(-70%, 100%)",
+          right: "0%",
+        }}
+      >
+        {" "}
+      </div>
+      <div
+        className="overflow-hidden absolute futures-circles w-full h-full"
+        style={{
+          zIndex: 0,
+          transform: "translate(65%, 35%)",
+          right: "0%",
+        }}
+      >
+        {" "}
+      </div>
+      {/* <div className="overflow-hidden absolute futures-circles w-full h-full"
+                              style={{
+                                zIndex: 10,
+                                transform: "translate(0%, -50%)",
+                                right: "0%",
+                              }}> </div> */}
+
       <Head>
         <title>
           {" "}
@@ -335,18 +363,14 @@ const Futures: FC = () => {
         </title>
         <meta name="description" content="PopFi" />
       </Head>
-      <div className="bg-base w-full flex justify-center flex-col">
-        <div className="relative lg:block hidden mt-1">
+      <div className="relative w-full flex justify-center flex-col">
+        <div className="bg-base relative lg:block hidden mt-1">
           {" "}
           {/* Ensure the parent has relative positioning */}
           <button
             onClick={toggleSidePanel}
             className="z-50 fixed right-0 top-1/2 transform -translate-y-1/2 text-sm text-white  rounded lg:block hidden"
-          >
-            <FaChevronLeft
-              className={`ml-2 transition-transform duration-300 text-layer-3 ${showSidePanel ? "rotate-180" : ""}`}
-            />
-          </button>
+          ></button>
           <button
             onClick={toggleBottomPanel}
             className="z-50 fixed right-1/2 bottom-0 transform -translate-y-1/2 text-sm text-white  rounded lg:block hidden"
@@ -356,7 +380,7 @@ const Futures: FC = () => {
             />
           </button>
         </div>
-        <div className="w-full md:px-2 h-full lg:h-[calc(100vh-78px)] bg-base overflow-hidden ">
+        <div className="w-full md:px-2 h-full lg:h-[calc(100vh-85px)] overflow-hidden ">
           <div className="w-full">
             {/* right content */}
             <div className="w-full">
@@ -365,11 +389,8 @@ const Futures: FC = () => {
                 <div className="w-full flex flex-col">
                   <div className="w-full md:flex-row flex-col gap-2">
                     <div className="w-full flex md:flex-row flex-col gap-2">
-                      <div className="md:w-[330px] w-full">
-                        <div
-                          ref={ref}
-                          className={`${isSticky && ActiveButton === 1 ? "sticky-top" : ""}`}
-                        >
+                      <div className="w-full md:block hidden lg:h-[calc(100vh-87px)] overflow-auto">
+                        <div className="flex flex-row">
                           <PairPicker
                             onSymbolChange={handleSymbolChange}
                             selectedCryptos={selectedCryptos}
@@ -377,13 +398,6 @@ const Futures: FC = () => {
                             openingPrice={openingPrice}
                             prices={prices}
                           />
-                        </div>
-                        <div
-                          className={`${isSticky && ActiveButton === 1 ? "spacer-active pt-[64px] md:pt-0" : ""}`}
-                        ></div>
-                        <div
-                          className={`overflow-auto w-full md:hidden md:order-1 order-2 ${ActiveButton === 1 ? "" : "hidden"}`}
-                        >
                           <InterestBar
                             openingPrice={openingPrice}
                             symbol={symbol}
@@ -393,47 +407,7 @@ const Futures: FC = () => {
                             selectedCryptos={selectedCryptos}
                             selectedCurrency={selectedCurrency}
                           />
-                          <div className="w-full flex flex-col md:order-1 order-2 md:mt-2 mt-2">
-                            <Graph
-                              symbol={symbol}
-                              latestOpenedPosition={latestOpenedPosition}
-                              prices={prices}
-                            />
-                          </div>
                         </div>
-                        <div
-                          className={`md:w-[330px] w-full md:order-1 order-2  overflow-y-auto mb-2 rounded-lg bg-layer-1  overhlow-y-auto overflow-x-hidden mt-2 ${ActiveButton === 1 ? "" : "hidden"}`}
-                        >
-                          <TradeBarFutures
-                            setOpeningPrice={setOpeningPrice}
-                            openingPrice={openingPrice}
-                            setParentDivHeight={handleDivHeightChange}
-                            totalBetAmount={totalBetAmount}
-                            data={data}
-                            setData={setData}
-                            setPrices={setPrices}
-                            setEMAPrice={setEMAprice}
-                            prices={prices}
-                            EMAprice={EMAprice}
-                            isBitcoinSelected={isBitcoinSelected}
-                            isSoliditySelected={isSoliditySelected}
-                            selectedCryptos={selectedCryptos}
-                            selectedCurrency={selectedCurrency}
-                            setSelectedCurrency={setSelectedCurrency}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="w-full md:block hidden lg:h-[calc(100vh-80px)] overflow-auto">
-                        <InterestBar
-                          openingPrice={openingPrice}
-                          symbol={symbol}
-                          data={data}
-                          prices={prices}
-                          EMAprice={EMAprice}
-                          selectedCryptos={selectedCryptos}
-                          selectedCurrency={selectedCurrency}
-                        />
                         <div
                           className={`w-full md:block flex-col hidden md:order-2 order-1 mt-2 md:h-[629px] ${
                             showBottomPanel
@@ -449,7 +423,7 @@ const Futures: FC = () => {
                         </div>
 
                         <div
-                          className={`w-full lg:flex lg:flex-col hidden order-3   lg:h-[calc((100vh-226px)-(62vh-79px))] mt-2 ${showBottomPanel ? "" : "lg:hidden"}`}
+                          className={`w-full bg-[#ffffff08] lg:flex lg:flex-col hidden order-3   lg:h-[calc((100vh-233px)-(62vh-79px))] mt-2 ${showBottomPanel ? "" : "lg:hidden"}`}
                         >
                           <MyPositionsFutures
                             latestOpenedPosition={latestOpenedPosition}
@@ -462,18 +436,34 @@ const Futures: FC = () => {
                           />
                         </div>
                       </div>
-
                       <div
+                        className={`pt-2 z-100 md:w-[375px] bg-[#ffffff08] h-1/2 w-full md:order-1 order-2  rounded-lg  ${ActiveButton === 1 ? "" : "hidden"}`}
+                      >
+                        <TradeBarFutures
+                          setOpeningPrice={setOpeningPrice}
+                          openingPrice={openingPrice}
+                          setParentDivHeight={handleDivHeightChange}
+                          totalBetAmount={totalBetAmount}
+                          data={data}
+                          setData={setData}
+                          setPrices={setPrices}
+                          setEMAPrice={setEMAprice}
+                          prices={prices}
+                          EMAprice={EMAprice}
+                          selectedCryptos={selectedCryptos}
+                          selectedCurrency={selectedCurrency}
+                          setSelectedCurrency={setSelectedCurrency}
+                        />
+                      </div>
+                      {/* <div
                         className={`lg:block hidden md:w-[315px] flex flex-col lg:h-[calc(100vh-88px)] ${showSidePanel ? "" : "lg:hidden"}`}
                       >
                         <div className="w-full flex flex-col h-[59%]">
                           <RecentPredictions divHeight={divHeight} />
                         </div>
                         <div className="h-[41%] mt-2">
-                          <Chat />
                         </div>
-                      </div>
-                      {/* left sidebar */}
+                      </div> */}
                     </div>
                   </div>
                 </div>
@@ -492,7 +482,7 @@ const Futures: FC = () => {
                   handleNewNotification={handleNewNotification}
                 />
               </div>
-              <div className="flex flex-row md:py-2 md:gap-2">
+              {/* <div className="flex flex-row md:py-2 md:gap-2">
                 <div
                   className={`h-[calc(100vh-192px)] md:h-[330px] w-full md:block lg:flex-col lg:hidden flex-row gap-2 ${
                     ActiveButton === 3 ? "" : "hidden"
@@ -505,9 +495,8 @@ const Futures: FC = () => {
                     ActiveButton === 4 ? "" : "hidden"
                   }`}
                 >
-                  <Chat />
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="md:hidden">
