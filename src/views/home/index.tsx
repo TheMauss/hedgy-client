@@ -626,7 +626,7 @@ export const HomeView: FC = ({}) => {
                       </div>
                     </div>
                     <div className="flex justify-center items-center">
-                      <Link href="/trade">
+                      <Link href="/futures">
                         <button className="block md:hidden relative overflow-hidden py-3 rounded-lg bg-new-green hover:bg-new-green-dark cursor-pointer font-semibold leading-[normal] min-w-[100px] text-center text-lg text-black transition ease-in-out duration-300">
                           TRADE
                         </button>

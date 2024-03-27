@@ -12,6 +12,7 @@ module.exports = {
         "layer-2": "#1d202f",
         "gray-500": "#9E9E9E",
         grey: "#434665",
+        basic: "#ffffff60",
         white: "#fff",
         "grey-text": "#a9aab7",
         short: "#FF3E3E",

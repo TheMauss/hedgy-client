@@ -180,7 +180,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
         onMouseEnter={handleMouseEnterModal}
         onMouseLeave={handleMouseLeave}
       >
-        <div className="w-[160px] h-[90px] bg-[#080808] text-slate-300 p-2 gap-y-2 rounded">
+        <div className="w-[160px] h-[90px] bg-layer-2 text-slate-300 p-2 gap-y-2 rounded">
           <div className="h-[50%] w-full flex flex-row justify-start items-left">
             <div className="h-[100%] w-[100%]">
               <NavElement
@@ -194,7 +194,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
           <div className="h-[50%] w-full flex flex-row justify-start items-left text-start">
             <div className="h-[100%] w-[100%]">
               <NavElement
-                icon={<FaVault size="1.3rem" className="" />}
+                icon={<FaVault size="1.3rem" className="mt-1 mr-0.5" />}
                 label="Vault"
                 href="/vault"
                 navigationStarts={() => setIsNavOpen(false)}
@@ -209,7 +209,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
   return (
     <div
       ref={navRef}
-      className="flex items-center justify-center h-[55px] flex-row bg-[#ffffff08] text-[#E0E5EA] mb:pt-1"
+      className="flex items-center justify-center h-[48px] flex-row shadow-lg md:bg-base bg-layer-1 text-[#E0E5EA] mb:pt-1 "
     >
       <div className="flex items-center justify-between w-[90%]">
         <div className="flex items-center">
@@ -252,25 +252,25 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
               {!isMediumScreen && (
                 // Code for Large Screens
                 <>
-                  <span className=" mx-0.5 z-10"></span>
-                  {/* <NavElement
+                  <span className=" mx-0.5"></span>
+                  <NavElement
                     label="Options"
                     href="/trade"
                     navigationStarts={() => setIsNavOpen(false)}
-                  /> */}
-                  <span className="mx-0.5 z-10"></span>
+                  />
+                  <span className="mx-0.5"></span>
                   <NavElement
                     label="Futures"
                     href="/futures"
                     navigationStarts={() => setIsNavOpen(false)}
                   />
-                  <span className="mx-0.5 z-10"></span>
+                  <span className="mx-0.5"></span>
                   <NavElement
                     label="Stats"
                     href="/stats"
                     navigationStarts={() => setIsNavOpen(false)}
                   />
-                  <span className="mx-0.5 z-10"></span>
+                  <span className="mx-0.5"></span>
 
                   <div className="parentDiv z-10">
                     <div
@@ -280,7 +280,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
                     >
                       <button
                         className={cn(
-                          "mt-1 font-medium group flex h-full flex-col items-center justify-between hover:bg-[#ffffff08] px-2.5 py-0.5 rounded duration-300 ease-out text-[1rem]"
+                          "mt-1 font-medium group flex h-full flex-col items-center justify-between hover:bg-[#1a1a25] px-2.5 py-0.5 rounded duration-300 ease-out text-[1rem]"
                         )}
                       >
                         <div className="flex flex-row items-center gap-3 bankGothicc">
@@ -298,25 +298,25 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
                 // Code for Regular Screens (not Medium)
                 <div className="flex items-center ">
                   <>
-                    <span className=" mx-0.5 z-10"></span>
-                    {/* <NavElement
+                    <span className=" mx-0.5"></span>
+                    <NavElement
                       label="Options"
                       href="/trade"
                       navigationStarts={() => setIsNavOpen(false)}
-                    /> */}
-                    <span className="mx-0.5 z-10"></span>
+                    />
+                    <span className="mx-0.5"></span>
                     <NavElement
                       label="Futures"
                       href="/futures"
                       navigationStarts={() => setIsNavOpen(false)}
                     />
-                    <span className="mx-0.5 z-10"></span>
+                    <span className="mx-0.5"></span>
                     <NavElement
                       label="Stats"
                       href="/stats"
                       navigationStarts={() => setIsNavOpen(false)}
                     />
-                    <span className="mx-0.5 z-10"></span>
+                    <span className="mx-0.5"></span>
 
                     <div className="parentDiv z-10">
                       <div
@@ -349,7 +349,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
           {!isMobile && !isMediumScreen && (
             <div className="hidden md:inline-flex align-items-center justify-items relative items-center text-lg">
               <Link href="/profile">
-                <FaUser className="mr-2 text-[#ffffff24] hover:text-[#23EAA4] text-xl transition-all duration-200 ease-in-out" />
+                <FaUser className="mr-2 text-layer-3 hover:text-[#34c796] text-xl" />
               </Link>
               <div className="flex items-center">
                 <WalletMultiButtonDynamic className="[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-8 flex flex-row items-center justify-center  border-[1px] border-solid border-primary">
@@ -391,7 +391,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
           {isMediumScreen && (
             <div className=" flex items-center ml-auto">
               <Link href="/profile">
-                <FaUser className="mr-2 text-[#ffffff24] hover:text-[#23EAA4] text-xl transition-all duration-200 ease-in-out" />
+                <FaUser className="mr-2 text-layer-3 hover:text-[#34c796] text-xl" />
               </Link>
               <WalletMultiButtonDynamic className="[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-8 flex flex-row items-center justify-center  border-[1px] border-solid border-primary">
                 {connected ? (

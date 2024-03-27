@@ -3,9 +3,23 @@ import Link from "next/link";
 import SolanaTPS from "./SolanaTPS"; // import your SolanaTPS component
 import React, { useState, useEffect } from "react";
 import { IoIosDocument } from "react-icons/io";
+import { useBackupOracle } from "../contexts/BackupOracle";
+import { usePriorityFee } from "../contexts/PriorityFee";
 
 export const Footer: FC = () => {
   const [slogan, setSlogan] = useState("");
+  const { isPriorityFee, setPriorityFee } = usePriorityFee();
+  const { isBackupOracle, setBackupOracle } = useBackupOracle();
+
+  const handleToggle = () => {
+    // Update the isPriorityFee state when the toggle button is clicked
+    setPriorityFee(!isPriorityFee);
+  };
+
+  const handleToggleOracle = () => {
+    // Update the isPriorityFee state when the toggle button is clicked
+    setBackupOracle(!isBackupOracle);
+  };
 
   useEffect(() => {
     const slogans = [
@@ -20,27 +34,15 @@ export const Footer: FC = () => {
   }, []);
 
   return (
-    <div className="md:bg-base bg-base h-[26px] flex flex-row  text-[#E0E5EA]  ">
+    <div className="text-sm h-[26px] flex flex-row  text-[#ffffff60]  ">
       <div className="flex items-center flex-row gap-y-5 justify-between w-full md:px-10">
-        <div className="justify-start w-full lg:w-auto flex items-center md:px-7 pl-10">
-          <Link
-            href="https://solana.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            passHref
-            className="text-secondary hover:text-white"
-          >
-            <img src="/solana.png" alt="Logo" width="14" height="6" />
-          </Link>
-          <SolanaTPS />
-        </div>
-        <div className="justify-end flex w-full lg:w-auto items-center space-x-5 md:px-7 pr-10">
+        <div className="justify-start flex w-full lg:w-auto items-center space-x-5 md:px-7 pl-10">
           <Link
             href="https://discord.gg/popfiio"
             target="_blank"
             rel="noopener noreferrer"
             passHref
-            className="text-secondary hover:text-white"
+            className="text-[#ffffff60] hover:text-white"
           >
             <img src="/discord.png" alt="Logo" width="16" height="6" />
           </Link>
@@ -49,7 +51,7 @@ export const Footer: FC = () => {
             target="_blank"
             rel="noopener noreferrer"
             passHref
-            className="text-secondary hover:text-white"
+            className="text-[#ffffff60] hover:text-white"
           >
             <img
               src="/twitter.png"
@@ -64,7 +66,7 @@ export const Footer: FC = () => {
             target="_blank"
             rel="noopener noreferrer"
             passHref
-            className="text-secondary "
+            className="text-[#ffffff60] "
           >
             <IoIosDocument width="16" height="8" className="text-[#dde1e7]" />
           </Link>
@@ -73,10 +75,45 @@ export const Footer: FC = () => {
             target="_blank"
             rel="noopener noreferrer"
             passHref
-            className="text-secondary hover:text-white"
+            className="text-[#ffffff60] hover:text-white"
           >
             <img src="/pythsvg.svg" alt="Logo" width="16" height="6" />
           </Link>
+        </div>
+        <div className="justify-end w-full lg:w-auto flex items-center md:px-7 pr-10">
+          <SolanaTPS />
+          <div className="md:flex flex-row hidden font-poppins pl-2 text-[#ffffff60] self-stretch  items-center justify-center gap-2">
+            <div className="relative leading-[14px]">Priority Fees</div>
+            <div className="relative leading-[14px] font-medium text-white">
+              <label className="toggle-switch-bigger">
+                <input
+                  type="checkbox"
+                  checked={isPriorityFee}
+                  // onChange={handleToggle}
+                  className=""
+                />
+                <div
+                  className={`slider-bigger ${isPriorityFee ? "active" : ""}`}
+                ></div>
+              </label>
+            </div>
+          </div>
+          <div className="md:flex flex-row hidden font-poppins pl-2 text-[#ffffff60] self-stretch  items-center justify-center gap-2">
+            <div className="relative leading-[14px]">Backup Oracle</div>
+            <div className="relative leading-[14px] font-medium text-white">
+              <label className="toggle-switch-bigger">
+                <input
+                  type="checkbox"
+                  checked={isBackupOracle}
+                  onChange={handleToggleOracle}
+                  className=""
+                />
+                <div
+                  className={`slider-bigger ${isBackupOracle ? "active" : ""}`}
+                ></div>
+              </label>
+            </div>
+          </div>
         </div>
       </div>
     </div>

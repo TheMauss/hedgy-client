@@ -22,6 +22,8 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
 
   const router = useRouter();
   const hideFooterFor = ["/", "/futures", "/trade"]; // Add paths where you don't want to show the footer
+  const hideCss = ["/"]; // Add paths where you don't want to show the footer
+  const showCss = !hideCss.includes(router.pathname);
   const showFooter = !hideFooterFor.includes(router.pathname);
   const hideAppBarFor = ["/"]; // Add paths where you don't want to show the footer
   const showAppBar = !hideAppBarFor.includes(router.pathname);
@@ -86,16 +88,18 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
         <PriorityFeeProvider>
           <BackupOracleProvider>
             <div className="flex flex-col min-h-screen overflow-hidden">
-              <div
-                className="overflow-hidden absolute futures-circles w-full h-full"
-                style={{
-                  zIndex: 0,
-                  transform: "translate(0%, -75%)",
-                  right: "0%",
-                }}
-              >
-                {" "}
-              </div>
+              {showCss && (
+                <div
+                  className="overflow-hidden absolute futures-circles w-full h-full"
+                  style={{
+                    zIndex: -1,
+                    transform: "translate(0%, -75%)",
+                    right: "0%",
+                  }}
+                >
+                  {" "}
+                </div>
+              )}
               <Notifications />
               <Analytics />
               {showAppBar && (

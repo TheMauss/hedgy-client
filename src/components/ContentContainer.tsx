@@ -67,7 +67,7 @@ export const ContentContainer: React.FC<Props> = ({
       <div className="drawer-side ]">
         <label htmlFor="my-drawer" className="drawer-overlay gap-6"></label>
 
-        <ul className="p-2 menu w-48 bg-layer-2 sm:flex items-start">
+        <ul className="p-2 menu w-48 bg-[#080808] sm:flex items-start">
           <li>
             <div className="flex w-16 pt-2 mb-1">
               <Link href="/">
@@ -82,14 +82,12 @@ export const ContentContainer: React.FC<Props> = ({
             </div>
           </li>
           <li>
-            <NavElement label="Options" href="/trade" />
+            <NavElement label="Profile" href="/profile" />
           </li>
           <li>
             <NavElement label="Futures" href="/futures" />
           </li>
-          <li>
-            <NavElement label="Profile" href="/profile" />
-          </li>
+
           <li>
             <NavElement label="Stats" href="/stats" />
           </li>

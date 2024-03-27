@@ -26,7 +26,7 @@ function SolanaTPS() {
   const tpsColor = tps > 2000 ? "text-primary" : "text-short";
 
   return (
-    <div className="flex justify-center items-center font-poppins text-slate-300 ml-2 text-xs">
+    <div className="leading-[14px] flex justify-center items-center font-poppins text-basic ml-2 text-sm">
       <span className={`${tpsColor} mr-1`}>&#9679;</span>
       TPS: {tps ? tps.toFixed(0) : "-"}
     </div>

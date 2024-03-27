@@ -321,6 +321,7 @@ const TradeBar: React.FC<
 
   const [leverage, setLeverage] = useState(50);
   const [showAdditionalDiv, setShowAdditionalDiv] = useState(false);
+  const [showAdditionalDiv1, setShowAdditionalDiv1] = useState(false);
 
   const [ProfitValue, setProfitValue] = useState("");
   const [LossValue, setLossValue] = useState("");
@@ -1231,6 +1232,10 @@ const TradeBar: React.FC<
 
   const toggleAdditionalDiv = () => {
     setShowAdditionalDiv(!showAdditionalDiv);
+  };
+
+  const toggleAdditionalDiv1 = () => {
+    setShowAdditionalDiv1(!showAdditionalDiv1);
   };
 
   const toggleModal = () => {
@@ -2364,7 +2369,7 @@ const TradeBar: React.FC<
     >
       <div className="relative rounded tradingcard">
         <div className="">
-          <div className="font-poppins w-[100%] h-[100%] bg-layer-2 text-white px-5 pt-3 pb rounded text-[1rem]">
+          <div className="font-poppins w-[100%] h-[100%] bg-[#080808] text-white px-5 pt-3 pb rounded text-[1rem]">
             <div className="bankGothic text-center font-semibold text-[1.5rem] text-[#F7931A]">
               DISCLAIMER{" "}
             </div>
@@ -2379,11 +2384,12 @@ const TradeBar: React.FC<
               jurisdictions.
             </div>
             <button
-              className="custom-futures mt-6 mb-8 duration-300"
+              className="mt-4 p-2 bg-primary hover:bg-new-green-dark w-full rounded-lg flex flex-row items-center justify-center box-border  text-black transition ease-in-out duration-300"
               onClick={onClick1}
             >
               OPEN ACCOUNT
             </button>
+            <div className="pt-6"></div>
           </div>
         </div>
       </div>
@@ -2651,7 +2657,7 @@ const TradeBar: React.FC<
                     }
                   />
                   <FaChevronUp
-                    className={`w-[18px] h-[18px] ml-1 text-slate-300  ${modalIsOpen2 ? "" : "rotate-180"}`}
+                    className={`w-[18px] h-[18px] ml-1 text-[#ffffff80] transition-all duration-300 ease-in-out   ${modalIsOpen2 ? "" : "rotate-180"}`}
                   />
                 </button>
               </span>
@@ -2668,7 +2674,7 @@ const TradeBar: React.FC<
                   <MdOutlineSettings></MdOutlineSettings>
                 </button>
               </div>
-              <div className="w-full mt-[12px] rounded-lg bg-[#ffffff12] box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-[#ffffff60]  hover:bg-[#ffffff24]">
+              <div className="w-full mt-[12px] rounded-lg bg-[#ffffff12] box-border h-[38px] flex flex-row items-center justify-between py-0 px-2 text-base text-[#ffffff60] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out ">
                 <input
                   type="text"
                   className="input-capsule__input"
@@ -2689,7 +2695,7 @@ const TradeBar: React.FC<
             Leverage
           </div>
           <div className="rounded bg-[#ffffff12] box-border w-[60.3px] h-7 flex flex-col items-center justify-center py-0 px-2 text-base">
-            <div className="relative leading-[14px] font-medium text-[#a9aab7]">
+            <div className="relative leading-[14px] font-medium text-white">
               {leverage}X
             </div>
           </div>
@@ -2766,13 +2772,21 @@ const TradeBar: React.FC<
         </div>
       </div>
       <div className="self-stretch flex flex-col items-start justify-start gap-[12px]">
-        <div className="self-stretch flex flex-row items-center justify-start">
-          <div className="relative leading-[14px] inline-block max-w-[250px]">
-            Slippage Tolerance
+        <div className="self-stretch flex flex-col items-start justify-start gap-[8px]">
+          <div className="self-stretch flex flex-row items-start justify-between text-[#ffffff60] ">
+            <button
+              className="duration-300 flex items-center"
+              onClick={toggleAdditionalDiv1}
+            >
+              <span className="mr-1">Slippage Tolerance</span>
+              <FaChevronUp
+                className={`ml-2 text-[#ffffff60] transition-all duration-300 ease-in-out  ${showAdditionalDiv1 ? "" : "rotate-180"}`}
+              />
+            </button>
           </div>
-        </div>
-        <div className="self-stretch flex flex-col items-start justify-start">
-          <div className="self-stretch flex flex-row items-start justify-start gap-[8px]">
+          <div
+            className={`w-full flex flex-row items-start justify-start gap-[8px] ${showAdditionalDiv1 ? "" : "hidden"}`}
+          >
             <button
               onClick={() => handleButtonClick(1)}
               className={`w-1/4 rounded h-7 flex flex-col items-center justify-center  box-border transition-all duration-200 ease-in-out ${
@@ -2817,7 +2831,7 @@ const TradeBar: React.FC<
                 className={`h-full w-full rounded flex justify-center items-center input7-capsule__input  relative leading-[14px] text-center transition-all duration-200 ease-in-out ${
                   activeButton === 4
                     ? "bg-primary text-black "
-                    : "bg-[#ffffff12] hover:bg-[#ffffff24]"
+                    : "bg-[#ffffff12] "
                 }`}
                 value={customSlippage}
                 onChange={handleCustomSlippageChange}
@@ -2834,12 +2848,12 @@ const TradeBar: React.FC<
           >
             <span className="mr-1">Risk management</span>
             <FaChevronUp
-              className={`ml-2 text-[#ffffff60]  ${showAdditionalDiv ? "" : "rotate-180"}`}
+              className={`ml-2 text-[#ffffff60] transition-all duration-300 ease-in-out ${showAdditionalDiv ? "" : "rotate-180"}`}
             />
           </button>
         </div>
         <div
-          className={`w-full flex flex-row items-start justify-start gap-[8px] ${showAdditionalDiv ? "" : "hidden"}`}
+          className={`w-full flex flex-row items-start justify-start gap-[8px]  ${showAdditionalDiv ? "" : "hidden"}`}
         >
           <div className="flex-1 rounded bg-[#ffffff12]  h-10 flex flex-row items-center justify-between py-0 px-2   hover:bg-[#ffffff24] transition-all duration-200 ease-in-out">
             <input
@@ -2931,7 +2945,7 @@ const TradeBar: React.FC<
         </div>{" "}
       </div>
       <div className="self-stretch rounded-md flex flex-col items-start justify-start gap-[8px]">
-        <div className="self-stretch h-4 flex flex-row items-start justify-between">
+        <div className="md:hidden  self-stretch h-4 flex flex-row items-start justify-between">
           <div className="relative leading-[14px]">Priority Fees</div>
           <div className="relative leading-[14px] font-medium text-white">
             <label className="toggle-switch-bigger">
@@ -2947,7 +2961,7 @@ const TradeBar: React.FC<
             </label>
           </div>
         </div>
-        <div className="self-stretch h-4 flex flex-row items-start justify-between">
+        <div className="md:hidden self-stretch h-4 flex flex-row items-start justify-between">
           <div className="relative leading-[14px]">Backup Oracle</div>
           <div className="relative leading-[14px] font-medium text-white">
             <label className="toggle-switch-bigger">

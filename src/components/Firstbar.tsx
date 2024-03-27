@@ -5,19 +5,13 @@ import { useAutoConnect } from "../contexts/AutoConnectProvider";
 import NetworkSwitcher from "./NetworkSwitcher";
 import { useFastTrade } from "../contexts/FastTradeContext";
 import NavElement from "./nav-element";
-import useUserSOLBalanceStore from "../stores/useUserSOLBalanceStore";
+import useUserSOLBalanceStore from "../../src/stores/useUserSOLBalanceStore";
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import Modal from "react-modal";
 import { cn } from "../utils";
 import { useRouter } from "next/router";
 import { FaPaste, FaCoins, FaUsers, FaUser } from "react-icons/fa";
 import { FaVault } from "react-icons/fa6";
-
-const WalletMultiButtonDynamic = dynamic(
-  async () =>
-    (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
-  { ssr: false }
-);
 
 interface Props {
   isNavOpen: boolean;
@@ -180,7 +174,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
         onMouseEnter={handleMouseEnterModal}
         onMouseLeave={handleMouseLeave}
       >
-        <div className="w-[160px] h-[90px] bg-layer-2 text-slate-300 p-2 gap-y-2 rounded">
+        <div className="w-[160px] h-[90px] bg-[#080808] text-slate-300 p-2 gap-y-2 rounded">
           <div className="h-[50%] w-full flex flex-row justify-start items-left">
             <div className="h-[100%] w-[100%]">
               <NavElement
@@ -194,7 +188,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
           <div className="h-[50%] w-full flex flex-row justify-start items-left text-start">
             <div className="h-[100%] w-[100%]">
               <NavElement
-                icon={<FaVault size="1.3rem" className="mt-1 mr-0.5" />}
+                icon={<FaVault size="1.3rem" className="" />}
                 label="Vault"
                 href="/vault"
                 navigationStarts={() => setIsNavOpen(false)}
@@ -209,7 +203,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
   return (
     <div
       ref={navRef}
-      className="flex items-center justify-center h-[48px] flex-row text-[#E0E5EA] z-1000 w-full"
+      className="w-full flex items-center justify-center h-[55px] flex-row  text-[#E0E5EA] mb:pt-1"
     >
       <div className="flex items-center justify-between w-[90%]">
         <div className="flex items-center">
@@ -229,115 +223,70 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
           {isMobile ? (
             // Code for Mobile
 
-            <WalletMultiButtonDynamic className="[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-8 flex flex-row items-center justify-center  border-[1px] border-solid border-primary">
-              {connected ? (
-                <div className="text-primary w-full flex flex-col h-full items-start justify-center text-[15px]">
-                  <div className="h-1/2 text-[10px]">
-                    {wallet.publicKey.toBase58().slice(0, 3)}...
-                    {wallet.publicKey.toBase58().slice(-3)}
-                  </div>
-                  <div className=" text-[13px]">
-                    {(balance || 0).toLocaleString("en-US", {
-                      useGrouping: false,
-                    })}{" "}
-                    SOL
-                  </div>
-                </div>
-              ) : (
-                <div className="text-primary">CONNECT</div>
-              )}
-            </WalletMultiButtonDynamic>
+            <Link href="/futures">
+              <button className="relative overflow-hidden py-1.5 rounded-lg bg-new-green hover:bg-new-green-dark cursor-pointer font-semibold leading-[normal] min-w-[160px] text-center text-lg text-black transition ease-in-out duration-300">
+                OPEN APP
+              </button>
+            </Link>
           ) : (
             <>
               {!isMediumScreen && (
                 // Code for Large Screens
                 <>
-                  <span className="z-1000 mx-0.5"></span>
-                  <NavElement
+                  <span className=" mx-0.5 z-10"></span>
+                  {/* <NavElement
                     label="Options"
                     href="/trade"
                     navigationStarts={() => setIsNavOpen(false)}
-                  />
-                  <span className="z-1000 mx-0.5"></span>
+                  /> */}
+                  <span className="mx-0.5 z-10"></span>
                   <NavElement
                     label="Futures"
                     href="/futures"
                     navigationStarts={() => setIsNavOpen(false)}
                   />
-                  <span className="z-1000 mx-0.5"></span>
+                  <span className="mx-0.5 z-10"></span>
                   <NavElement
                     label="Stats"
                     href="/stats"
                     navigationStarts={() => setIsNavOpen(false)}
                   />
-                  <span className="mx-0.5"></span>
-
-                  <div className="parentDiv z-10">
-                    <div
-                      ref={buttonRef}
-                      onMouseEnter={handleMouseEnterButton}
-                      onMouseLeave={handleMouseLeave}
-                    >
-                      <button
-                        className={cn(
-                          "mt-1 font-medium group flex h-full flex-col items-center justify-between hover:bg-[#1a1a25] px-2.5 py-0.5 rounded duration-300 ease-out text-[1rem]"
-                        )}
-                      >
-                        <div className="flex flex-row items-center gap-3 bankGothicc">
-                          Earn
-                        </div>
-                        <div ref={divRef} />
-                      </button>
-                    </div>
-
-                    {ModalDetails1}
-                  </div>
+                  <span className="mx-0.5 z-10"></span>
+                  <NavElement
+                    label="Vault"
+                    href="/vault"
+                    navigationStarts={() => setIsNavOpen(false)}
+                  />
                 </>
               )}
               {isMediumScreen && (
                 // Code for Regular Screens (not Medium)
                 <div className="flex items-center ">
                   <>
-                    <span className=" mx-0.5"></span>
-                    <NavElement
+                    <span className=" mx-0.5 z-10"></span>
+                    {/* <NavElement
                       label="Options"
                       href="/trade"
                       navigationStarts={() => setIsNavOpen(false)}
-                    />
-                    <span className="mx-0.5"></span>
+                    /> */}
+                    <span className="mx-0.5 z-10"></span>
                     <NavElement
                       label="Futures"
                       href="/futures"
                       navigationStarts={() => setIsNavOpen(false)}
                     />
-                    <span className="mx-0.5"></span>
+                    <span className="mx-0.5 z-10"></span>
                     <NavElement
                       label="Stats"
                       href="/stats"
                       navigationStarts={() => setIsNavOpen(false)}
                     />
-                    <span className="mx-0.5"></span>
-
-                    <div className="parentDiv z-10">
-                      <div
-                        ref={buttonRef}
-                        onMouseEnter={handleMouseEnterButton}
-                        onMouseLeave={handleMouseLeave}
-                      >
-                        <button
-                          className={cn(
-                            "mt-1 font-medium group flex h-full flex-col items-center justify-between hover:bg-[#1a1a25] px-2.5 py-0.5 rounded duration-300 ease-out text-[1rem]"
-                          )}
-                        >
-                          <div className="flex flex-row items-center gap-3 bankGothicc">
-                            Earn
-                          </div>
-                          <div ref={divRef} />
-                        </button>
-                      </div>
-
-                      {ModalDetails1}
-                    </div>
+                    <span className="mx-0.5 z-10"></span>
+                    <NavElement
+                      label="Vault"
+                      href="/vault"
+                      navigationStarts={() => setIsNavOpen(false)}
+                    />
                   </>
                 </div>
               )}
@@ -348,28 +297,12 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
         <div className=" -end flex items-center">
           {!isMobile && !isMediumScreen && (
             <div className="hidden md:inline-flex align-items-center justify-items relative items-center text-lg">
-              <Link href="/profile">
-                <FaUser className="mr-2 text-layer-3 hover:text-[#34c796] text-xl" />
-              </Link>
               <div className="flex items-center">
-                <WalletMultiButtonDynamic className="[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-8 flex flex-row items-center justify-center  border-[1px] border-solid border-primary">
-                  {connected ? (
-                    <div className="text-primary w-full flex flex-col h-full items-start justify-center text-[15px]">
-                      <div className="h-1/2 text-[10px]">
-                        {wallet.publicKey.toBase58().slice(0, 3)}...
-                        {wallet.publicKey.toBase58().slice(-3)}
-                      </div>
-                      <div className=" text-[13px]">
-                        {(balance || 0).toLocaleString("en-US", {
-                          useGrouping: false,
-                        })}{" "}
-                        SOL
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-primary">CONNECT</div>
-                  )}
-                </WalletMultiButtonDynamic>{" "}
+                <Link href="/futures">
+                  <button className="relative overflow-hidden py-1.5 rounded-lg bg-new-green hover:bg-new-green-dark cursor-pointer font-semibold leading-[normal] min-w-[160px] text-center text-lg text-black transition ease-in-out duration-300">
+                    OPEN APP
+                  </button>
+                </Link>
               </div>
             </div>
           )}
@@ -390,27 +323,11 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
           )}
           {isMediumScreen && (
             <div className=" flex items-center ml-auto">
-              <Link href="/profile">
-                <FaUser className="mr-2 text-layer-3 hover:text-[#34c796] text-xl" />
+              <Link href="/futures">
+                <button className="relative overflow-hidden py-1.5 rounded-lg bg-new-green hover:bg-new-green-dark cursor-pointer font-semibold leading-[normal] min-w-[160px] text-center text-lg text-black transition ease-in-out duration-300">
+                  OPEN APP
+                </button>
               </Link>
-              <WalletMultiButtonDynamic className="[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-8 flex flex-row items-center justify-center  border-[1px] border-solid border-primary">
-                {connected ? (
-                  <div className="text-primary w-full flex flex-col h-full items-start justify-center text-[15px]">
-                    <div className="h-1/2 text-[10px]">
-                      {wallet.publicKey.toBase58().slice(0, 3)}...
-                      {wallet.publicKey.toBase58().slice(-3)}
-                    </div>
-                    <div className=" text-[13px]">
-                      {(balance || 0).toLocaleString("en-US", {
-                        useGrouping: false,
-                      })}{" "}
-                      SOL
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-primary">CONNECT</div>
-                )}
-              </WalletMultiButtonDynamic>{" "}
             </div>
           )}
         </div>

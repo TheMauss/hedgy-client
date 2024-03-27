@@ -277,31 +277,30 @@ export const PairPicker: React.FC<PairPickerProps> = ({
     );
   };
 
-  const [selectedCrypto, setSelectedCrypto] = useState(options[0]);
-  const { push } = useRouter();
+  const router = useRouter();
+  const cryptoQuery = router.query.crypto; // Assume this is always a string for simplicity.
 
+  // Find the initial crypto option based on the URL query or default to the first option.
+  const findInitialCrypto = () => {
+    if (!cryptoQuery || Array.isArray(cryptoQuery)) return options[0];
+    const cryptoKey = cryptoQuery.toString().toUpperCase();
+    const matchingOption = options.find((option) =>
+      option.value.includes(`${cryptoKey}/USD`)
+    );
+    return matchingOption || options[0];
+  };
+
+  // State to track the selected crypto option.
+  const [selectedCrypto, setSelectedCrypto] = useState(() =>
+    findInitialCrypto()
+  );
+
+  // Effect to update state based on URL query changes.
   useEffect(() => {
-    const selectedCrypto = Object.keys(selectedCryptos).find(
-      (key) => selectedCryptos[key]
-    );
-    push(`/futures?crypto=${selectedCrypto}`, undefined, { shallow: true });
-  }, [selectedCrypto]);
-
-  useEffect(() => {
-    const selectedCrypto = Object.keys(selectedCryptos).find(
-      (key) => selectedCryptos[key]
-    );
-    // Assuming selectedCrypto is a string like 'Crypto.SOL/USD'
-    const newSelectedOption = options.find(
-      (option) => option.value === selectedCrypto
-    );
-
-    if (newSelectedOption) {
-      // Assuming setSelectedCrypto should update the state with the option object
-      // If setSelectedCrypto should only store the string, use newSelectedOption.value
-      setSelectedCrypto(newSelectedOption);
+    if (router.isReady) {
+      setSelectedCrypto(findInitialCrypto());
     }
-  }, [selectedCrypto, options]);
+  }, [router.isReady, cryptoQuery]);
 
   const handleCryptoChange = (option) => {
     // Update the selectedCryptos state
@@ -314,6 +313,9 @@ export const PairPicker: React.FC<PairPickerProps> = ({
     setSelectedCrypto(option);
 
     onSymbolChange(option.value);
+    router.push(`/futures?crypto=${cryptoIdentifier}`, undefined, {
+      shallow: true,
+    });
   };
 
   return (
