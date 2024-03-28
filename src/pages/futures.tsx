@@ -393,7 +393,7 @@ const Futures: FC = () => {
             {" "}
             <div
               onClick={closeModalHandler}
-              className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/4 h-1.5 bg-[#ffffff60] rounded-full"
+              className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/4 h-2.5 bg-[#ffffff60] rounded-full"
             ></div>
             <TradeBarFutures
               setToggleState={setToggleState}
