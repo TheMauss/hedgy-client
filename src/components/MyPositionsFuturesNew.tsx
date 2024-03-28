@@ -2233,6 +2233,47 @@ const MyPositions: FC<MyPositionsProps> = ({
                               </div>
                             ) : null}
                           </div>{" "}
+                          <div className="text-[#ffffff60] pl-2">
+                            {item.usdc === 0
+                              ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
+                              : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}
+                          </div>
+                          <div
+                            className={
+                              item.priceDirection === 0
+                                ? "text-[#34c796] "
+                                : "text-red-500"
+                            }
+                          >
+                            {item.priceDirection === 0 ? (
+                              <>
+                                <div className="flex flex-row items-center pl-1">
+                                  {" "}
+                                  <img
+                                    className="relative w-5 h-5 pb-0.5"
+                                    alt=""
+                                    src="/new/component-82.svg"
+                                  />
+                                  <div className="text-[#34c796]">
+                                    {item.leverage}X
+                                  </div>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className="flex flex-row items-center pl-1">
+                                  <img
+                                    className="relative w-5 h-5 pb-0.5"
+                                    alt=""
+                                    src="/new/component-81.svg"
+                                  />
+                                  <div className="text-red-500">
+                                    {item.leverage}X
+                                  </div>
+                                </div>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </a>
                     </div>
@@ -2240,11 +2281,13 @@ const MyPositions: FC<MyPositionsProps> = ({
                   <div className="flex flex-col items-end justify-center gap-[6px] text-right">
                     <div className="flex flex-col items-end justify-center gap-[4px]">
                       <div className="relative leading-[9.98px] text-[#ffffff60]">
-                        PnL (Collateral)
+                        PnL
                       </div>
                       <p
                         className={
-                          item.pnl >= 0 ? "text-[#34c796] " : "text-red-500 "
+                          item.pnl >= 0
+                            ? "text-[#34c796] text-[1.05rem] mt-1"
+                            : "text-red-500  text-[1.05rem] mt-1"
                         }
                       >
                         <div>
@@ -2253,11 +2296,6 @@ const MyPositions: FC<MyPositionsProps> = ({
                             ? `${item.pnl.toFixed(2)}◎`
                             : `${(item.pnl * 1000).toFixed(2)}$`}{" "}
                         </div>
-                        <div className="text-[#ffffff60]">
-                          {item.usdc === 0
-                            ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
-                            : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}
-                        </div>
                       </p>
                     </div>
                   </div>
@@ -2265,7 +2303,28 @@ const MyPositions: FC<MyPositionsProps> = ({
                 <div className="self-stretch flex flex-row items-start justify-between text-right">
                   <div className="flex flex-col items-start justify-center gap-[6px]">
                     <div className="text-[#ffffff60] relative leading-[12px]">
-                      Leverage
+                      Entry
+                    </div>
+                    <div className="relative leading-[12px]">
+                      {item.symbol === 1
+                        ? (item.initialPrice / 100000000).toFixed(1)
+                        : item.symbol === 0
+                          ? (item.initialPrice / 100000000).toFixed(3)
+                          : item.symbol === 2
+                            ? (item.initialPrice / 100000000).toFixed(4)
+                            : item.symbol === 3
+                              ? (item.initialPrice / 100000000).toFixed(7)
+                              : item.symbol === 4
+                                ? (item.initialPrice / 100000000).toFixed(3)
+                                : item.symbol === 5
+                                  ? (item.initialPrice / 100000000).toFixed(1)
+                                  : item.symbol === 6
+                                    ? (item.initialPrice / 100000000).toFixed(3)
+                                    : item.symbol === 7
+                                      ? (item.initialPrice / 100000000).toFixed(
+                                          3
+                                        )
+                                      : null}
                     </div>
                     <div className="flex flex-col items-start justify-center gap-[4px] text-left text-sm text-short">
                       <div
@@ -2274,97 +2333,42 @@ const MyPositions: FC<MyPositionsProps> = ({
                             ? "text-[#34c796] "
                             : "text-red-500"
                         }
-                      >
-                        {item.priceDirection === 0 ? (
-                          <>
-                            <div className="flex flex-row items-center">
-                              {" "}
-                              <img
-                                className="relative w-5 h-5 pb-0.5"
-                                alt=""
-                                src="/new/component-82.svg"
-                              />
-                              <span className="ml-1">LONG</span>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            <div className="flex flex-row items-center ">
-                              <img
-                                className="relative w-5 h-5 pb-0.5"
-                                alt=""
-                                src="/new/component-81.svg"
-                              />
-                              <span className="ml-1">SHORT</span>
-                            </div>
-                          </>
-                        )}
-                        <div className="pl-1 text-[#ffffff60]">
-                          {item.leverage}X
-                        </div>
-                      </div>{" "}
+                      ></div>
                     </div>
                   </div>
                   <div className="w-[63px] flex flex-col items-end justify-center gap-[6px]">
                     <div className="relative leading-[12px] text-[#ffffff60]">
-                      Entry
+                      Mark
                     </div>
-                    <div className="flex flex-col items-end justify-center text-sm text-white">
-                      <div className="relative leading-[12px]">
-                        {item.symbol === 1
-                          ? (item.initialPrice / 100000000).toFixed(1)
-                          : item.symbol === 0
-                            ? (item.initialPrice / 100000000).toFixed(3)
-                            : item.symbol === 2
-                              ? (item.initialPrice / 100000000).toFixed(4)
-                              : item.symbol === 3
-                                ? (item.initialPrice / 100000000).toFixed(7)
-                                : item.symbol === 4
-                                  ? (item.initialPrice / 100000000).toFixed(3)
-                                  : item.symbol === 5
-                                    ? (item.initialPrice / 100000000).toFixed(1)
-                                    : item.symbol === 6
-                                      ? (item.initialPrice / 100000000).toFixed(
+                    <div className="relative leading-[12px]">
+                      {" "}
+                      {item.symbol === 1
+                        ? (item.currentPrice / 100000000).toFixed(1)
+                        : item.symbol === 0
+                          ? (item.currentPrice / 100000000).toFixed(3)
+                          : item.symbol === 2
+                            ? (item.currentPrice / 100000000).toFixed(4)
+                            : item.symbol === 3
+                              ? (item.currentPrice / 100000000).toFixed(7)
+                              : item.symbol === 4
+                                ? (item.currentPrice / 100000000).toFixed(3)
+                                : item.symbol === 5
+                                  ? (item.currentPrice / 100000000).toFixed(1)
+                                  : item.symbol === 6
+                                    ? (item.currentPrice / 100000000).toFixed(3)
+                                    : item.symbol === 7
+                                      ? (item.currentPrice / 100000000).toFixed(
                                           3
                                         )
-                                      : item.symbol === 7
-                                        ? (
-                                            item.initialPrice / 100000000
-                                          ).toFixed(3)
-                                        : null}
-                      </div>
+                                      : null}
                     </div>
                   </div>
                   <div className="flex flex-col items-end justify-center gap-[6px]">
                     <div className="relative leading-[12px] text-[#ffffff60]">
-                      Mark (Liquidation)
+                      Liquidation
                     </div>
                     <div className="flex flex-col items-end justify-center gap-[4px] text-sm text-white">
-                      <div className="relative leading-[12px]">
-                        {" "}
-                        {item.symbol === 1
-                          ? (item.currentPrice / 100000000).toFixed(1)
-                          : item.symbol === 0
-                            ? (item.currentPrice / 100000000).toFixed(3)
-                            : item.symbol === 2
-                              ? (item.currentPrice / 100000000).toFixed(4)
-                              : item.symbol === 3
-                                ? (item.currentPrice / 100000000).toFixed(7)
-                                : item.symbol === 4
-                                  ? (item.currentPrice / 100000000).toFixed(3)
-                                  : item.symbol === 5
-                                    ? (item.currentPrice / 100000000).toFixed(1)
-                                    : item.symbol === 6
-                                      ? (item.currentPrice / 100000000).toFixed(
-                                          3
-                                        )
-                                      : item.symbol === 7
-                                        ? (
-                                            item.currentPrice / 100000000
-                                          ).toFixed(3)
-                                        : null}
-                      </div>
-                      <div className="relative leading-[12px] text-[#ffffff60]">
+                      <div className="relative leading-[12px] text-white">
                         {item.symbol === 1
                           ? (item.liquidationPrice / 100000000).toFixed(1)
                           : item.symbol === 0
@@ -3051,6 +3055,43 @@ const MyPositions: FC<MyPositionsProps> = ({
                               </div>
                             ) : null}
                           </div>{" "}
+                          <div className="text-[#ffffff60] pl-2">
+                            {item.usdc === 0
+                              ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
+                              : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}
+                          </div>
+                          <div
+                            className={
+                              item.priceDirection === 0
+                                ? "text-[#34c796] "
+                                : "text-red-500"
+                            }
+                          >
+                            {item.priceDirection === 0 ? (
+                              <>
+                                <div className="pl-1 flex flex-row items-center">
+                                  {" "}
+                                  <img
+                                    className="relative w-5 h-5 pb-0.5"
+                                    alt=""
+                                    src="/new/component-82.svg"
+                                  />{" "}
+                                  {item.leverage}X
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className="flex flex-row items-center ">
+                                  <img
+                                    className="relative w-5 h-5 pb-0.5"
+                                    alt=""
+                                    src="/new/component-81.svg"
+                                  />{" "}
+                                  {item.leverage}X
+                                </div>
+                              </>
+                            )}
+                          </div>{" "}
                         </div>
                       </a>
                     </div>
@@ -3058,11 +3099,13 @@ const MyPositions: FC<MyPositionsProps> = ({
                   <div className="flex flex-col items-end justify-center gap-[6px] text-right">
                     <div className="flex flex-col items-end justify-center gap-[4px]">
                       <div className="relative leading-[9.98px] text-[#ffffff60]">
-                        PnL (Collateral)
+                        PnL
                       </div>
                       <p
                         className={
-                          item.pnl >= 0 ? "text-[#34c796] " : "text-red-500 "
+                          item.pnl >= 0
+                            ? "text-[#34c796] text-[1.05rem] mt-1"
+                            : "text-red-500  text-[1.05rem] mt-1"
                         }
                       >
                         <div>
@@ -3070,63 +3113,16 @@ const MyPositions: FC<MyPositionsProps> = ({
                             ? `${(item.pnl / LAMPORTS_PER_SOL).toFixed(2)}◎`
                             : `${((item.pnl * 1000) / LAMPORTS_PER_SOL).toFixed(2)}$`}
                         </div>
-                        <div className="text-[#ffffff60]">
-                          {item.usdc === 0
-                            ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
-                            : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}
-                        </div>
                       </p>
                     </div>
                   </div>
                 </div>
                 <div className="self-stretch flex flex-row items-start justify-between text-right">
-                  <div className="flex flex-col items-start justify-center gap-[6px]">
-                    <div className="text-[#ffffff60] relative leading-[12px]">
-                      Leverage
-                    </div>
-                    <div className="flex flex-col items-start justify-center gap-[4px] text-left text-sm text-short">
-                      <div
-                        className={
-                          item.priceDirection === 0
-                            ? "text-[#34c796] "
-                            : "text-red-500"
-                        }
-                      >
-                        {item.priceDirection === 0 ? (
-                          <>
-                            <div className="flex flex-row items-center">
-                              {" "}
-                              <img
-                                className="relative w-5 h-5 pb-0.5"
-                                alt=""
-                                src="/new/component-82.svg"
-                              />
-                              <span className="ml-1">LONG</span>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            <div className="flex flex-row items-center ">
-                              <img
-                                className="relative w-5 h-5 pb-0.5"
-                                alt=""
-                                src="/new/component-81.svg"
-                              />
-                              <span className="ml-1">SHORT</span>
-                            </div>
-                          </>
-                        )}
-                        <div className="pl-1 text-[#ffffff60]">
-                          {item.leverage}X
-                        </div>
-                      </div>{" "}
-                    </div>
-                  </div>
-                  <div className="w-[63px] flex flex-col items-end justify-center gap-[6px]">
+                  <div className="w-[63px] flex flex-col items-start justify-center  gap-[6px]">
                     <div className="relative leading-[12px] text-[#ffffff60]">
                       Entry
                     </div>
-                    <div className="flex flex-col items-end justify-center text-sm text-white">
+                    <div className="flex flex-col items-start justify-center  text-white">
                       <div className="relative leading-[12px]">
                         {item.symbol === 1
                           ? (item.initialPrice / 100000000).toFixed(1)
@@ -3156,7 +3152,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                     <div className="relative leading-[12px] text-[#ffffff60]">
                       Exit
                     </div>
-                    <div className="flex flex-col items-end justify-center gap-[4px] text-sm text-white">
+                    <div className="flex flex-col items-end justify-center gap-[4px] text-white">
                       <div className="relative leading-[12px]">
                         {item.symbol === 1
                           ? (item.finalPrice / 100000000).toFixed(1)
