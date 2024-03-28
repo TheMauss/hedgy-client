@@ -293,7 +293,7 @@ const Futures: FC = () => {
 
   const ModalDetails = (
     <Modal
-      className="custom-scrollbar bg-[#00000080] "
+      className="custom-scrollbar bg-[#00000090] "
       isOpen={modalIsOpen}
       onRequestClose={closeModalHandler}
       style={{
@@ -480,7 +480,7 @@ const Futures: FC = () => {
               </div>
 
               <div
-                className={`rounded-xl md:px-0 md:mt-3 mt-1.5 bg-[#ffffff08] md:h-[calc((100vh-233px)-(58vh-81px))] h-[calc((100vh-168px)-(42vh))] w-full flex lg:hidden  `}
+                className={`rounded-xl md:px-0 md:mt-3 mt-1.5 bg-[#ffffff08] md:h-[calc((100vh-233px)-(58vh-81px))] mb-1 h-[calc((100vh-172px)-(42vh))] w-full flex lg:hidden  `}
               >
                 <MyPositionsFutures
                   latestOpenedPosition={latestOpenedPosition}
@@ -513,7 +513,7 @@ const Futures: FC = () => {
 
           <div
             ref={bottomRef}
-            className={`bankGothic px-3 md:hidden h-[50px]  self-stretch bg-[#00000070] flex flex-row items-center justify-center py-0 text-center text-grey font-bankgothic-md-bt ${isStickyBottom ? "fixed-bottom" : ""}`}
+            className={`bankGothic px-3 md:hidden h-[50px]  self-stretch bg-[#00000040] flex flex-row items-center justify-center py-0 text-center text-grey font-bankgothic-md-bt`}
           >
             <button
               onClick={toggleModal}
