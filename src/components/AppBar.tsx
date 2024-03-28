@@ -209,7 +209,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
   return (
     <div
       ref={navRef}
-      className="flex items-center justify-center h-[55px] flex-row bg-[#ffffff08] text-[#E0E5EA] mb:pt-1"
+      className="flex items-center justify-center h-[55px] flex-row bg-[#ffffff08] text-[#E0E5EA]"
     >
       <div className="flex items-center justify-between w-[90%]">
         <div className="flex items-center">

@@ -3632,7 +3632,7 @@ const MyPositions: FC<MyPositionsProps> = ({
   if (!connected) {
     return (
       <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg   md:py-3 md:">
-        <div className="mx-2 pt-3.5 md:py-0 border-b-[2px] border-solid border-[#ffffff12] flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
+        <div className="mx-2 pt-2 md:py-0 border-b-[2px] border-solid border-[#ffffff12] flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
               selectedButton === "Positions"
@@ -3645,7 +3645,11 @@ const MyPositions: FC<MyPositionsProps> = ({
             }`}
             onClick={() => setSelectedButton("Positions")}
           >
-            {!isMobile ? <span>My Positions</span> : <span>My Positions</span>}
+            {!isMobile ? (
+              <span>My Positions</span>
+            ) : (
+              <span className="text-sm">Positions</span>
+            )}
           </button>
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
@@ -3655,7 +3659,11 @@ const MyPositions: FC<MyPositionsProps> = ({
             } ${selectedButton === "History" ? "" : "text-[#ffffff60] long-short-button"}`}
             onClick={() => setSelectedButton("History")}
           >
-            {!isMobile ? <span>My History</span> : <span>My History</span>}
+            {!isMobile ? (
+              <span>My History</span>
+            ) : (
+              <span className="text-sm">History</span>
+            )}
           </button>
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
@@ -3665,7 +3673,11 @@ const MyPositions: FC<MyPositionsProps> = ({
             } ${selectedButton === "Order" ? "" : "text-[#ffffff60] long-short-button"}`}
             onClick={() => setSelectedButton("Order")}
           >
-            {!isMobile ? <span>My Orders</span> : <span>My Orders</span>}
+            {!isMobile ? (
+              <span>My Orders</span>
+            ) : (
+              <span className="text-sm">Orders</span>
+            )}
           </button>
         </div>
 
@@ -3684,7 +3696,7 @@ const MyPositions: FC<MyPositionsProps> = ({
   ) {
     return (
       <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg   md:py-3 md:">
-        <div className="mx-2 pt-3.5 md:py-0 border-b-[2px] border-solid border-[#ffffff12] flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
+        <div className="mx-2 pt-2 md:py-0 border-b-[2px] border-solid border-[#ffffff12] flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
               selectedButton === "Positions"
@@ -3693,7 +3705,11 @@ const MyPositions: FC<MyPositionsProps> = ({
             } ${selectedButton === "Positions" ? "" : "text-[#ffffff60] long-short-button"}`}
             onClick={() => setSelectedButton("Positions")}
           >
-            {!isMobile ? <span>My Positions</span> : <span>My Positions</span>}
+            {!isMobile ? (
+              <span>My Positions</span>
+            ) : (
+              <span className="text-sm">Positions</span>
+            )}
           </button>
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
@@ -3703,7 +3719,11 @@ const MyPositions: FC<MyPositionsProps> = ({
             } ${selectedButton === "History" ? "" : "text-[#ffffff60] long-short-button"}`}
             onClick={() => setSelectedButton("History")}
           >
-            {!isMobile ? <span>My History</span> : <span>My History</span>}
+            {!isMobile ? (
+              <span>My History</span>
+            ) : (
+              <span className="text-sm">History</span>
+            )}
           </button>
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
@@ -3713,7 +3733,11 @@ const MyPositions: FC<MyPositionsProps> = ({
             } ${selectedButton === "Order" ? "" : "text-[#ffffff60] long-short-button"}`}
             onClick={() => setSelectedButton("Order")}
           >
-            {!isMobile ? <span>My Orders</span> : <span>My Orders</span>}
+            {!isMobile ? (
+              <span>My Orders</span>
+            ) : (
+              <span className="text-sm">Orders</span>
+            )}
           </button>
         </div>
 
@@ -3736,7 +3760,7 @@ const MyPositions: FC<MyPositionsProps> = ({
         <div
           style={{ display: "flex", flexDirection: "column", height: "100%" }}
         >
-          <div className="mx-2 pt-3.5 md:py-0 border-b-[2px] border-solid border-[#ffffff12] flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
+          <div className="mx-2 pt-2 md:py-0 border-b-[2px] border-solid border-[#ffffff12] flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
             <button
               className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
                 selectedButton === "Positions"
@@ -3752,7 +3776,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               {!isMobile ? (
                 <span>My Positions</span>
               ) : (
-                <span>My Positions</span>
+                <span className="text-sm">Positions</span>
               )}
             </button>
             <button
@@ -3767,7 +3791,11 @@ const MyPositions: FC<MyPositionsProps> = ({
               }`}
               onClick={() => setSelectedButton("History")}
             >
-              {!isMobile ? <span>My History</span> : <span>My History</span>}
+              {!isMobile ? (
+                <span>My History</span>
+              ) : (
+                <span className="text-sm">History</span>
+              )}
             </button>
             <button
               className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
@@ -3777,7 +3805,11 @@ const MyPositions: FC<MyPositionsProps> = ({
               } ${selectedButton === "Order" ? "" : "text-[#ffffff60] long-short-button"}`}
               onClick={() => setSelectedButton("Order")}
             >
-              {!isMobile ? <span>My Orders</span> : <span>My Orders</span>}
+              {!isMobile ? (
+                <span>My Orders</span>
+              ) : (
+                <span className="text-sm">Orders</span>
+              )}
             </button>
           </div>
 
@@ -3951,7 +3983,7 @@ const MyPositions: FC<MyPositionsProps> = ({
         <div
           style={{ display: "flex", flexDirection: "column", height: "100%" }}
         >
-          <div className="mx-2 pt-3.5 md:py-0 border-b-[2px] border-solid border-[#ffffff12] flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
+          <div className="mx-2 pt-2 md:py-0 border-b-[2px] border-solid border-[#ffffff12] flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
             <button
               className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
                 selectedButton === "Positions"
@@ -3963,7 +3995,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               {!isMobile ? (
                 <span>My Positions</span>
               ) : (
-                <span>My Positions</span>
+                <span className="text-sm">Positions</span>
               )}
             </button>
             <button
@@ -3974,7 +4006,11 @@ const MyPositions: FC<MyPositionsProps> = ({
               } ${selectedButton === "History" ? "" : "text-[#ffffff60] long-short-button"}`}
               onClick={() => setSelectedButton("History")}
             >
-              {!isMobile ? <span>My History</span> : <span>My History</span>}
+              {!isMobile ? (
+                <span>My History</span>
+              ) : (
+                <span className="text-sm">History</span>
+              )}
             </button>
             <button
               className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
@@ -3984,7 +4020,11 @@ const MyPositions: FC<MyPositionsProps> = ({
               } ${selectedButton === "Order" ? "" : "text-[#ffffff60] long-short-button"}`}
               onClick={() => setSelectedButton("Order")}
             >
-              {!isMobile ? <span>My Orders</span> : <span>My Orders</span>}
+              {!isMobile ? (
+                <span>My Orders</span>
+              ) : (
+                <span className="text-sm">Orders</span>
+              )}
             </button>
           </div>
           {!isMobile ? (

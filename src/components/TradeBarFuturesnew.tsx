@@ -2507,11 +2507,12 @@ const TradeBar: React.FC<
 
   const ModalDetails2 = (
     <Modal
-      className="custom-scrollbar bg-layer-2 rounded-md border-[1px] border-solid border-layer-3"
+      className="z-10000 custom-scrollbar bg-layer-2 rounded-md border-[1px] border-solid border-layer-3"
       isOpen={modalIsOpen2}
       onRequestClose={() => setModalIsOpen2(false)}
       style={{
         overlay: {
+          zIndex: "10000",
           backgroundColor: "transparent",
         },
         content: {
@@ -2552,7 +2553,7 @@ const TradeBar: React.FC<
   );
 
   return (
-    <div className="custom-scrollbar overflow-hidden md:w-[375px] w-full rounded-lg  flex flex-col items-start justify-start p-4 gap-[16px] text-left text-sm text-[#ffffff60]  font-poppins">
+    <div className=" custom-scrollbar overflow-hidden md:w-[375px] w-full rounded-lg  flex flex-col items-start justify-start p-4 gap-[16px] text-left text-sm text-[#ffffff60]  font-poppins">
       {ModalDetails1}
       {ModalDetails}
       {ModalDetails2}
@@ -2978,7 +2979,7 @@ const TradeBar: React.FC<
           </div>
         </div>
 
-        <div className="self-stretch h-4 flex flex-row items-start justify-between">
+        <div className="md:flex hidden self-stretch h-4 flex flex-row items-start justify-between">
           <div className="relative leading-[14px]">Fees</div>
           <div className="relative leading-[14px] font-medium text-white">
             {isNaN(parseFloat(amountValue) * 0.0008 * leverage) ? (
@@ -3003,7 +3004,7 @@ const TradeBar: React.FC<
             )}
           </div>
         </div>
-        <div className="self-stretch h-4 flex flex-row items-start justify-between">
+        <div className="md:flex hidden self-stretch h-4 flex flex-row items-start justify-between">
           <div className="relative leading-[120%]">Collateral Size</div>
           <div className="relative leading-[14px] font-medium text-white">
             {isNaN(parseFloat(amountValue))
@@ -3031,7 +3032,7 @@ const TradeBar: React.FC<
             {spreadPrice} USD
           </div>
         </div>
-        <div className="self-stretch h-4 flex flex-row items-start justify-between">
+        <div className="md:flex hidden self-stretch h-4 flex flex-row items-start justify-between">
           <div className="relative leading-[14px]">Liquidation Price</div>
           <div className="relative leading-[14px] font-medium text-white">
             {liquidationPrice} USD

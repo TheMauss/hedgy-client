@@ -14,6 +14,7 @@ import { priceDataState } from "components/globalStatse";
 import { FaChevronLeft, FaChevronUp } from "react-icons/fa";
 import { Graph } from "components/GraphNew";
 import { notify } from "../utils/notifications";
+import Modal from "react-modal";
 
 interface Position {
   _id: string;
@@ -76,8 +77,7 @@ const Futures: FC = () => {
     SUI: false,
     // Add other cryptocurrencies as needed
   });
-  const [isBitcoinSelected, setIsBitcoinSelected] = useState(false);
-  const [isSoliditySelected, setIsSoliditySelected] = useState(true);
+
   const [openingPrice, setOpeningPrice] = useState(0);
   const [initialPrice, setInitialPrice] = useState(0);
   const [selectedPair, setSelectedPair] = useState("");
@@ -88,10 +88,7 @@ const Futures: FC = () => {
   const router = useRouter();
   const { crypto } = router.query; // could be 'btc' or 'sol'
 
-  const [isSticky, setIsSticky] = useState(false);
   const ref = useRef(null); // Ref for the element that will become sticky
-
-  const [ActiveButton, setActiveButton] = useState(1);
 
   const bottomRef = useRef(null);
   const [isStickyBottom, setIsStickyBottom] = useState(true);
@@ -121,74 +118,6 @@ const Futures: FC = () => {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => notify(newNotification), debounceDelay);
   };
-
-  const handleButtonClick = (buttonIndex: number) => {
-    setActiveButton(buttonIndex);
-
-    switch (buttonIndex) {
-      case 1:
-        setActiveButton(1); // 0.1%
-        break;
-      case 2:
-        setActiveButton(2); // 0.3%
-        break;
-      case 3:
-        setActiveButton(3); // 0.5%
-        break;
-      case 4:
-        setActiveButton(4); // 0.5%
-        break;
-    }
-  };
-
-  // Function to update the state based on the window width
-  const checkSize = () => {
-    // Tailwind's 'sm' breakpoint is 768px by default. Adjust the value if you've customized the breakpoints.
-    if (window.innerWidth >= 768) {
-      setActiveButton(1);
-    }
-  };
-
-  // Effect hook to add event listener on mount and cleanup on unmount
-  useEffect(() => {
-    // Check on initial mount
-    checkSize();
-
-    // Add event listener for resize
-    window.addEventListener("resize", checkSize);
-
-    // Cleanup event listener
-    return () => window.removeEventListener("resize", checkSize);
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const stickyThreshold = 64; // for example, 200px from the top of the page
-      const bottomStickyThreshold = -1;
-      if (ref.current) {
-        setIsSticky(window.scrollY > stickyThreshold);
-      }
-
-      // Handle sticky bottom element
-      // Handle sticky bottom element
-      if (bottomRef.current) {
-        const viewportHeight = window.innerHeight;
-        // Check if the bottom of the element is within the viewport
-        const isNearBottom =
-          window.scrollY + viewportHeight >=
-          document.documentElement.offsetHeight - bottomStickyThreshold;
-        setIsStickyBottom(!isNearBottom);
-      }
-    };
-
-    // Trigger the scroll event listener on scroll
-    window.addEventListener("scroll", handleScroll);
-
-    // Clean up the event listener when the component unmounts
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
 
   useEffect(() => {
     // Only proceed if the router is ready and the crypto parameter is present
@@ -327,8 +256,58 @@ const Futures: FC = () => {
     setInitialPrice(parseFloat(newInitialPrice.toFixed(decimalPlaces)));
   }, [selectedCryptos, prices]);
 
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const toggleModal = () => {
+    setModalIsOpen(!modalIsOpen);
+  };
+
+  const closeModalHandler = () => {
+    setModalIsOpen(false);
+  };
+
+  const ModalDetails = (
+    <Modal
+      className="custom-scrollbar bg-[#00000080] "
+      isOpen={modalIsOpen}
+      onRequestClose={closeModalHandler}
+      style={{
+        overlay: {
+          zIndex: "10",
+          backgroundColor: "transparent",
+          backdropFilter: "blur(7px)",
+        },
+        content: {
+          backgroundSize: "cover",
+          position: "fixed",
+          width: "100%", // Sets the width to span the full viewport width
+          bottom: "0",
+        },
+      }}
+    >
+      <div className={`overflow-auto z-100 bg-[#00000099] h-[90%] w-full `}>
+        <TradeBarFutures
+          setOpeningPrice={setOpeningPrice}
+          openingPrice={openingPrice}
+          setParentDivHeight={handleDivHeightChange}
+          totalBetAmount={totalBetAmount}
+          data={data}
+          setData={setData}
+          setPrices={setPrices}
+          setEMAPrice={setEMAprice}
+          prices={prices}
+          EMAprice={EMAprice}
+          selectedCryptos={selectedCryptos}
+          selectedCurrency={selectedCurrency}
+          setSelectedCurrency={setSelectedCurrency}
+        />{" "}
+      </div>
+    </Modal>
+  );
+
   return (
     <div className="relative max-h-100vh overflow-hidden">
+      {ModalDetails}
+
       <div
         className="overflow-hidden absolute futures-circles1 w-full h-full"
         style={{
@@ -349,6 +328,7 @@ const Futures: FC = () => {
       >
         {" "}
       </div>
+
       {/* <div className="overflow-hidden absolute futures-circles w-full h-full"
                               style={{
                                 zIndex: 10,
@@ -383,14 +363,14 @@ const Futures: FC = () => {
         <div className="w-full md:px-3 h-full lg:h-[calc(100vh-85px)] overflow-hidden ">
           <div className="w-full">
             {/* right content */}
-            <div className="w-full">
+            <div className="w-full px-2">
               {/* top */}
               <div className="w-full flex md:flex-row flex-col ">
                 <div className="w-full flex flex-col">
                   <div className="w-full md:flex-row flex-col gap-2">
-                    <div className="w-full flex md:flex-row flex-col gap-3">
-                      <div className="w-full md:block hidden lg:h-[calc(100vh-87px)] overflow-auto">
-                        <div className="flex flex-row">
+                    <div className="w-full flex md:flex-row flex-col gap-3 lg:pt-0 md:pt-1">
+                      <div className="w-full lg:h-[calc(100vh-87px)] overflow-auto ">
+                        <div className="flex md:flex-row flex-col">
                           <PairPicker
                             onSymbolChange={handleSymbolChange}
                             selectedCryptos={selectedCryptos}
@@ -409,7 +389,7 @@ const Futures: FC = () => {
                           />
                         </div>
                         <div
-                          className={`w-full md:block flex-col hidden md:order-2 order-1 mt-2 md:h-[629px] ${
+                          className={`w-full md:block flex-col  md:order-2 order-1 md:mt-2 md:h-[calc((100vh-6px)-(42vh))] h-[calc((100vh+2px)-(58vh))] ${
                             showBottomPanel
                               ? "lg:h-[calc((100vh-6px)-(42vh))]"
                               : "lg:h-[calc(100vh-108px-44px)] "
@@ -423,7 +403,7 @@ const Futures: FC = () => {
                         </div>
 
                         <div
-                          className={`rounded-lg w-full bg-[#ffffff08] lg:flex lg:flex-col hidden order-3   lg:h-[calc((100vh-233px)-(58vh-79px))] mt-3 ${showBottomPanel ? "" : "lg:hidden"}`}
+                          className={`rounded-lg w-full bg-[#ffffff08] lg:flex lg:flex-col  order-3   lg:h-[calc((100vh-233px)-(58vh-79px))] hidden mt-3 ${showBottomPanel ? "" : "hidden"}`}
                         >
                           <MyPositionsFutures
                             latestOpenedPosition={latestOpenedPosition}
@@ -437,7 +417,7 @@ const Futures: FC = () => {
                         </div>
                       </div>
                       <div
-                        className={`mt-2.5 z-100 md:w-[375px] bg-[#ffffff08] h-1/2 w-full md:order-1 order-2  rounded-lg  ${ActiveButton === 1 ? "" : "hidden"}`}
+                        className={`md:flex hidden mt-2.5 z-100 md:w-[375px] bg-[#ffffff08] h-1/2 w-full md:order-1 order-2  rounded-lg  `}
                       >
                         <TradeBarFutures
                           setOpeningPrice={setOpeningPrice}
@@ -469,10 +449,8 @@ const Futures: FC = () => {
                 </div>
               </div>
 
-              {/* <div
-                className={`h-[calc(100vh-192px)] md:h-[330px] w-full md:flex lg:flex-col lg:hidden  ${
-                  ActiveButton === 2 ? "" : "hidden"
-                }`}
+              <div
+                className={`rounded-xl md:px-0 md:mt-3 mt-1.5 bg-[#ffffff08] md:h-[calc((100vh-233px)-(58vh-81px))] h-[calc((100vh-168px)-(42vh))] w-full flex lg:hidden  `}
               >
                 <MyPositionsFutures
                   latestOpenedPosition={latestOpenedPosition}
@@ -481,7 +459,7 @@ const Futures: FC = () => {
                   prices={prices}
                   handleNewNotification={handleNewNotification}
                 />
-              </div> */}
+              </div>
               {/* <div className="flex flex-row md:py-2 md:gap-2">
                 <div
                   className={`h-[calc(100vh-192px)] md:h-[330px] w-full md:block lg:flex-col lg:hidden flex-row gap-2 ${
@@ -499,92 +477,27 @@ const Futures: FC = () => {
               </div> */}
             </div>
           </div>
-          <div className="md:hidden">
+          {/* <div className="md:hidden">
             <Footer />
-          </div>
-          <div
-            className={`h-[62px] md:hidden ${isStickyBottom ? "" : "hidden"}`}
-          ></div>
+          </div> */}
 
           <div
             ref={bottomRef}
-            className={`bankGothic px-2 md:hidden h-[62px]  self-stretch bg-layer-2 flex flex-row items-start justify-between py-0 text-center text-grey font-bankgothic-md-bt border-t border-layer-3 ${isStickyBottom ? "fixed-bottom" : ""}`}
+            className={`bankGothic px-3 md:hidden h-[50px]  self-stretch bg-[#00000070] flex flex-row items-center justify-center py-0 text-center text-grey font-bankgothic-md-bt ${isStickyBottom ? "fixed-bottom" : ""}`}
           >
             <button
-              onClick={() => handleButtonClick(1)}
-              className={`bankGothic w-[70px] flex flex-col items-center justify-center py-3 px-0 box-border gap-[4px] ${
-                ActiveButton === 1 ? "text-white" : "text-text-grey"
+              onClick={toggleModal}
+              className={`bg-primary hover:bg-new-green-dark mx-2.5 py-1 w-1/2 rounded-lg flex flex-row items-center justify-center box-border  text-black transition ease-in-out duration-300
               }`}
             >
-              <img
-                className="relative w-6 h-6"
-                alt=""
-                src={`${
-                  ActiveButton === 1
-                    ? "/new/vuesaxboldbitcoinconvert2.svg"
-                    : "/new/vuesaxboldbitcoinconvert1.svg"
-                }`}
-              />
-              <div className="bankGothic relative tracking-[-0.08em] leading-[80.69%] uppercase text-[12px]">
-                Trade
-              </div>
+              LONG
             </button>
             <button
-              onClick={() => handleButtonClick(2)}
-              className={`bankGothic w-1/4 flex flex-col items-center justify-center py-3 px-0 box-border gap-[4px] ${
-                ActiveButton === 2 ? "text-white " : "text-text-grey"
+              onClick={toggleModal}
+              className={`bg-short hover:bg-new-red-dark mx-2.5 py-1 w-1/2 rounded-lg flex flex-row items-center justify-center box-border  text-black transition ease-in-out duration-300
               }`}
             >
-              <img
-                className="relative w-6 h-6 "
-                alt=""
-                src={`${
-                  ActiveButton === 2
-                    ? "/new/vuesaxboldcalendar.svg"
-                    : "/new/vuesaxboldcalendar1.svg"
-                }`}
-              />
-              <div className="bankGothic relative tracking-[-0.08em] leading-[80.69%] uppercase text-[12px]">
-                Positions
-              </div>
-            </button>
-            <button
-              onClick={() => handleButtonClick(3)}
-              className={`flex flex-col items-center justify-center py-3 px-0 box-border gap-[4px] ${
-                ActiveButton === 3 ? "text-white " : "text-text-grey"
-              }`}
-            >
-              <img
-                className="relative w-6 h-6"
-                alt=""
-                src={`${
-                  ActiveButton === 3
-                    ? "/new/vuesaxboldflash2.svg"
-                    : "/new/vuesaxboldflash1.svg"
-                }`}
-              />
-              <div className="bankGothic relative tracking-[-0.08em] leading-[80.69%] uppercase text-[12px]">
-                Predictions
-              </div>
-            </button>
-            <button
-              onClick={() => handleButtonClick(4)}
-              className={`w-[65px] flex flex-col items-center justify-center py-3 px-0 box-border gap-[4px] ${
-                ActiveButton === 4 ? "text-white " : "text-text-grey"
-              }`}
-            >
-              <img
-                className="relative w-6 h-6"
-                alt=""
-                src={`${
-                  ActiveButton === 4
-                    ? "/new/vuesaxboldmessages22.svg"
-                    : "/new/vuesaxboldmessages21.svg"
-                }`}
-              />
-              <div className="bankGothic relative tracking-[-0.08em] leading-[80.69%] uppercase text-[12px]">
-                CHATS
-              </div>
+              SHORT
             </button>
           </div>
         </div>

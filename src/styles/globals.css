@@ -1116,6 +1116,10 @@ html::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #ffffff00, #ffffff12);
 }
 
+.shadow-maindick:hover {
+  box-shadow: 0 0px 9px #ffffff55;
+}
+
 .theme-dark:root {
   --tv-color-platform-background: #d1c4e9;
   --tv-color-pane-background: rgb(251, 223, 244);
@@ -1342,6 +1346,16 @@ html::-webkit-scrollbar-thumb:hover {
       circle at right,
       rgba(67, 227, 166, 0.492),
       #00000000 43%,
+      transparent 70%
+    );
+    /* Adjust your primary color and transparency in the radial-gradient */
+  }
+
+  .futures-circles2 {
+    background: radial-gradient(
+      circle,
+      rgba(67, 227, 166, 0.241),
+      #00000000 40%,
       transparent 70%
     );
     /* Adjust your primary color and transparency in the radial-gradient */

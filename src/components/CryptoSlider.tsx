@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { motion, useAnimation } from "framer-motion";
+import Link from "next/link";
 
 interface CryptoSliderProps {
   cryptoPairs: {
@@ -299,7 +300,7 @@ const CryptoSlider: React.FC<CryptoSliderProps> = ({
     <div
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="z-10 relative h-full w-full overflow-hidden py-4 bg-backgroundColorTertiary"
+      className="z-10 relative h-full w-full overflow-hidden py-4 bg-backgroundColorTertiary "
     >
       <motion.div className="flex" animate={controls}>
         {duplicatedCryptoPairs.map((pair, index) => (
@@ -311,31 +312,33 @@ const CryptoSlider: React.FC<CryptoSliderProps> = ({
             {" "}
             {/* Adjust min-width as needed */}
             <div className="flex items-center justify-center h-full  ">
-              <div className="w-[330px] rounded-3xl bg-new-card-bg [backdrop-filter:blur(10px)] flex flex-col items-start justify-start p-6 box-border gap-[24px]">
-                <div className="self-stretch flex flex-row items-start justify-between">
-                  <div className="flex flex-col items-start justify-start gap-[12px]">
-                    <div className="relative leading-[100%] text-[20px] text-[#FFFFF]">
-                      {pair.name}
+              <Link href={`/futures?crypto=${pair.ticker.split("-")[0]}`}>
+                <div className="shadow-maindick transition-all duration-150 ease-in-out w-[330px] rounded-3xl bg-new-card-bg [backdrop-filter:blur(10px)] flex flex-col items-start justify-start p-6 box-border gap-[24px]">
+                  <div className="self-stretch flex flex-row items-start justify-between">
+                    <div className="flex flex-col items-start justify-start gap-[12px]">
+                      <div className="relative leading-[100%] text-[20px] text-[#FFFFF]">
+                        {pair.name}
+                      </div>
+                      <div className="relative text-[#B4B5C770] leading-[80.69%]">
+                        {pair.ticker}
+                      </div>
                     </div>
-                    <div className="relative text-[#B4B5C770] leading-[80.69%]">
-                      {pair.ticker}
+                    <img
+                      className="w-[50px] relative h-[55px] object-cover"
+                      alt={pair.name}
+                      src={pair.img}
+                    />
+                  </div>
+                  <div className="self-stretch flex flex-row items-center justify-between text-xl">
+                    <div className="relative leading-[100%] font-medium">
+                      {pair.price}
+                    </div>
+                    <div className="relative leading-[100%] font-medium text-primary">
+                      +2.32%
                     </div>
                   </div>
-                  <img
-                    className="w-[50px] relative h-[55px] object-cover"
-                    alt={pair.name}
-                    src={pair.img}
-                  />
                 </div>
-                <div className="self-stretch flex flex-row items-center justify-between text-xl">
-                  <div className="relative leading-[100%] font-medium">
-                    {pair.price}
-                  </div>
-                  <div className="relative leading-[100%] font-medium text-primary">
-                    +2.32%
-                  </div>
-                </div>
-              </div>
+              </Link>
             </div>
           </div>
         ))}
