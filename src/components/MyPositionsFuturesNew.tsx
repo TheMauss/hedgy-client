@@ -3118,6 +3118,22 @@ const MyPositions: FC<MyPositionsProps> = ({
                   </div>
                 </div>
                 <div className="self-stretch flex flex-row items-start justify-between text-right">
+                  <div className=" flex justify-end items-center w-1/4 text-[0.9rem] text-[#ffffff60]   font-poppins py-1.5 rounded-r">
+                    <div className="items-center flex md:flex-row flex-col w-[100%]">
+                      <div className=" w-[100%] gap-2">
+                        <button
+                          className="flex justify-center items-center mr-1 w-1/2 h-[26px] w-[100%] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.9rem]  py-1 px-1 rounded border-r border-[#1A1A25]"
+                          onClick={() => {
+                            setCurrentItem(item);
+                            setModalIsOpen(true);
+                          }}
+                        >
+                          <FaShareAlt size={15} />
+                        </button>{" "}
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="w-[63px] flex flex-col items-start justify-center  gap-[6px]">
                     <div className="relative leading-[12px] text-[#ffffff60]">
                       Entry
@@ -3177,21 +3193,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className=" flex justify-end items-center w-[100%] min-w-[140px] text-[0.9rem] text-[#ffffff60]   font-poppins py-1.5 rounded-r">
-                  <div className="items-center flex md:flex-row flex-col w-[100%]">
-                    <div className=" w-[100%] gap-2">
-                      <button
-                        className="flex justify-center items-center mr-1 w-1/2 h-[26px] w-[100%] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.9rem]  py-1 px-1 rounded border-r border-[#1A1A25]"
-                        onClick={() => {
-                          setCurrentItem(item);
-                          setModalIsOpen(true);
-                        }}
-                      >
-                        <FaShareAlt size={15} />
-                      </button>{" "}
-                    </div>
-                  </div>
-                </div>
+
                 {ModalDetails}
               </div>
             </div>
