@@ -2553,7 +2553,7 @@ const TradeBar: React.FC<
   );
 
   return (
-    <div className=" custom-scrollbar overflow-hidden md:w-[375px] w-full rounded-lg  flex flex-col items-start justify-start p-4 gap-[16px] text-left text-sm text-[#ffffff60]  font-poppins">
+    <div className="z-100 custom-scrollbar overflow-hidden md:w-[375px] w-full rounded-lg  flex flex-col items-start justify-start p-4 gap-[16px] text-left text-sm text-[#ffffff60]  font-poppins">
       {ModalDetails1}
       {ModalDetails}
       {ModalDetails2}

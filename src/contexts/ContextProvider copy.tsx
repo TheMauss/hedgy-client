@@ -21,8 +21,6 @@ import dynamic from "next/dynamic";
 
 const MAINNET_BETA_ENDPOINTS = [
   process.env.NEXT_PUBLIC_ENDPOINT5,
-  process.env.NEXT_PUBLIC_MAINNET_ENDPOINT2,
-  process.env.NEXT_PUBLIC_MAINNET_ENDPOINT3,
   // ... add more endpoints as needed
 ];
 

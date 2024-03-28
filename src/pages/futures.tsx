@@ -269,7 +269,7 @@ const Futures: FC = () => {
   const [touchEnd, setTouchEnd] = useState(null);
 
   // Minimum swipe distance
-  const minSwipeDistance = 80; // Adjust based on your needs
+  const minSwipeDistance = 100; // Adjust based on your needs
 
   const handleTouchStart = (e) => {
     const touchDown = e.touches[0].clientY;
@@ -298,7 +298,7 @@ const Futures: FC = () => {
       onRequestClose={closeModalHandler}
       style={{
         overlay: {
-          zIndex: "100",
+          zIndex: "10",
           backgroundColor: "transparent",
           backdropFilter: "blur(7px)",
         },
@@ -311,7 +311,7 @@ const Futures: FC = () => {
       }}
     >
       <div
-        className={`overflow-auto z-100 bg-[#00000099] h-[90%] w-full `}
+        className={`overflow-auto z-10 bg-[#00000099] h-[90%] w-full `}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
