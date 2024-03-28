@@ -83,6 +83,8 @@ interface TradeBarFuturesProps {
   selectedCryptos: { [key: string]: boolean };
   selectedCurrency: "SOL" | "USDC";
   setSelectedCurrency: React.Dispatch<React.SetStateAction<"SOL" | "USDC">>;
+  setToggleState: React.Dispatch<React.SetStateAction<string>>;
+  toggleState: string; // The current state
 }
 
 async function checkLPdata(
@@ -306,10 +308,11 @@ const TradeBar: React.FC<
   openingPrice,
   setSelectedCurrency,
   selectedCurrency,
+  setToggleState,
+  toggleState,
 }) => {
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
-  const [toggleState, setToggleState] = useState("LONG");
   const [amountValue, setAmountValue] = useState("");
   const [limitAmount, setLimitAmount] = useState("");
 
@@ -2143,7 +2146,7 @@ const TradeBar: React.FC<
   const [spreadPrice, setSpreadPrice] = useState(0);
 
   const spreadPercentage = (symbol) => {
-    const upperSymbol = symbol.toUpperCase();
+    const upperSymbol = symbol?.toUpperCase();
     if (LOWER_SPREAD_SYMBOLS.includes(upperSymbol)) {
       return 0.02; // Spread for lower spread symbols
     } else if (HIGHER_SPREAD_SYMBOLS.includes(upperSymbol)) {

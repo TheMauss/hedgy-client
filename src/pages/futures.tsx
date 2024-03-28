@@ -38,6 +38,25 @@ interface Position {
   order: boolean;
 }
 
+const getInitialCryptosState = (crypto) => {
+  const initialState = {
+    BTC: false,
+    SOL: false,
+    PYTH: false,
+    BONK: false,
+    JUP: false,
+    ETH: false,
+    TIA: false,
+    SUI: false,
+  };
+
+  if (crypto && initialState.hasOwnProperty(crypto.toUpperCase())) {
+    return { ...initialState, [crypto.toUpperCase()]: true };
+  }
+
+  return initialState;
+};
+
 const Futures: FC = () => {
   const [symbol, setSymbol] = useState("Crypto.SOL/USD"); // default value
   const [latestOpenedPosition, setLatestOpenedPosition] = useState<
@@ -65,18 +84,18 @@ const Futures: FC = () => {
     suiLong: "0",
     suiShort: "0",
   });
+
   const [prices, setPrices] = useState({});
   const [EMAprice, setEMAprice] = useState(null);
   const [selectedCryptos, setSelectedCryptos] = useState({
     BTC: false,
-    SOL: true,
+    SOL: false,
     PYTH: false,
     BONK: false,
     JUP: false,
     ETH: false,
     TIA: false,
     SUI: false,
-    // Add other cryptocurrencies as needed
   });
 
   const [openingPrice, setOpeningPrice] = useState(0);
@@ -85,6 +104,7 @@ const Futures: FC = () => {
   const [selectedCurrency, setSelectedCurrency] = useState<"SOL" | "USDC">(
     "SOL"
   );
+  const [toggleState, setToggleState] = useState("LONG");
 
   const router = useRouter();
   const { crypto } = router.query; // could be 'btc' or 'sol'
@@ -257,11 +277,6 @@ const Futures: FC = () => {
     setInitialPrice(parseFloat(newInitialPrice.toFixed(decimalPlaces)));
   }, [selectedCryptos, prices]);
 
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const toggleModal = () => {
-    setModalIsOpen(!modalIsOpen);
-  };
-
   const { isVisible, setIsVisible } = useVisibility();
 
   const closeModalHandler = () => {
@@ -270,6 +285,16 @@ const Futures: FC = () => {
 
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+
+  const showTradeBarAndSetToShort = () => {
+    setIsVisible(true); // Show the TradeBarFutures
+    setToggleState("SHORT"); // Set the state to "SHORT"
+  };
+
+  const showTradeBarAndSetToLong = () => {
+    setIsVisible(true); // Show the TradeBarFutures
+    setToggleState("LONG"); // Set the state to "SHORT"
+  };
 
   // Minimum swipe distance
   const minSwipeDistance = 100; // Adjust based on your needs
@@ -366,8 +391,13 @@ const Futures: FC = () => {
             onTouchEnd={handleTouchEnd}
           >
             {" "}
-            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/4 h-1.5 bg-[#ffffff60] rounded-full"></div>
+            <div
+              onClick={closeModalHandler}
+              className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/4 h-1.5 bg-[#ffffff60] rounded-full"
+            ></div>
             <TradeBarFutures
+              setToggleState={setToggleState}
+              toggleState={toggleState}
               setOpeningPrice={setOpeningPrice}
               openingPrice={openingPrice}
               setParentDivHeight={handleDivHeightChange}
@@ -464,6 +494,8 @@ const Futures: FC = () => {
                           className={`md:flex hidden mt-2.5 z-100 md:w-[375px] bg-[#ffffff08] h-1/2 w-full md:order-1 order-2  rounded-lg  `}
                         >
                           <TradeBarFutures
+                            setToggleState={setToggleState}
+                            toggleState={toggleState}
                             setOpeningPrice={setOpeningPrice}
                             openingPrice={openingPrice}
                             setParentDivHeight={handleDivHeightChange}
@@ -531,14 +563,14 @@ const Futures: FC = () => {
             className={`bankGothic px-3 md:hidden h-[50px]  self-stretch bg-[#00000040] flex flex-row items-center justify-center py-0 text-center text-grey font-bankgothic-md-bt`}
           >
             <button
-              onClick={() => setIsVisible(true)}
+              onClick={showTradeBarAndSetToLong}
               className={`bg-primary hover:bg-new-green-dark mx-2.5 py-1 w-1/2 rounded-lg flex flex-row items-center justify-center box-border  text-black transition ease-in-out duration-300
               }`}
             >
               LONG
             </button>
             <button
-              onClick={() => setIsVisible(true)}
+              onClick={showTradeBarAndSetToShort}
               className={`bg-short hover:bg-new-red-dark mx-2.5 py-1 w-1/2 rounded-lg flex flex-row items-center justify-center box-border  text-black transition ease-in-out duration-300
               }`}
             >
