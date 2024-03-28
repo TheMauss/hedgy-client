@@ -269,7 +269,7 @@ const Futures: FC = () => {
   const [touchEnd, setTouchEnd] = useState(null);
 
   // Minimum swipe distance
-  const minSwipeDistance = 50; // Adjust based on your needs
+  const minSwipeDistance = 80; // Adjust based on your needs
 
   const handleTouchStart = (e) => {
     const touchDown = e.touches[0].clientY;
