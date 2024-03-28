@@ -265,6 +265,32 @@ const Futures: FC = () => {
     setModalIsOpen(false);
   };
 
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  // Minimum swipe distance
+  const minSwipeDistance = 50; // Adjust based on your needs
+
+  const handleTouchStart = (e) => {
+    const touchDown = e.touches[0].clientY;
+    setTouchStart(touchDown);
+  };
+
+  const handleTouchEnd = (e) => {
+    const touchDown = touchStart;
+    const currentTouch = e.changedTouches[0].clientY;
+    setTouchEnd(currentTouch);
+
+    // Check if the swipe gesture is downward and exceeds the minimum swipe distance
+    if (touchDown && currentTouch - touchDown > minSwipeDistance) {
+      closeModalHandler(); // Close the modal
+    }
+
+    // Reset touch start and end
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
+
   const ModalDetails = (
     <Modal
       className="custom-scrollbar bg-[#00000080] "
@@ -272,7 +298,7 @@ const Futures: FC = () => {
       onRequestClose={closeModalHandler}
       style={{
         overlay: {
-          zIndex: "10",
+          zIndex: "100",
           backgroundColor: "transparent",
           backdropFilter: "blur(7px)",
         },
@@ -284,7 +310,11 @@ const Futures: FC = () => {
         },
       }}
     >
-      <div className={`overflow-auto z-100 bg-[#00000099] h-[90%] w-full `}>
+      <div
+        className={`overflow-auto z-100 bg-[#00000099] h-[90%] w-full `}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <TradeBarFutures
           setOpeningPrice={setOpeningPrice}
           openingPrice={openingPrice}
