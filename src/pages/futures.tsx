@@ -15,6 +15,7 @@ import { FaChevronLeft, FaChevronUp } from "react-icons/fa";
 import { Graph } from "components/GraphNew";
 import { notify } from "../utils/notifications";
 import Modal from "react-modal";
+import { useVisibility } from "components/VisibilityContext";
 
 interface Position {
   _id: string;
@@ -261,8 +262,10 @@ const Futures: FC = () => {
     setModalIsOpen(!modalIsOpen);
   };
 
+  const { isVisible, setIsVisible } = useVisibility();
+
   const closeModalHandler = () => {
-    setModalIsOpen(false);
+    setIsVisible(false); // Hide the TradeBarFutures and the pseudo-modal
   };
 
   const [touchStart, setTouchStart] = useState(null);
@@ -291,53 +294,34 @@ const Futures: FC = () => {
     setTouchEnd(null);
   };
 
-  const ModalDetails = (
-    <Modal
-      className="custom-scrollbar bg-[#00000090] "
-      isOpen={modalIsOpen}
-      onRequestClose={closeModalHandler}
-      style={{
-        overlay: {
-          zIndex: "10",
-          backgroundColor: "transparent",
-          backdropFilter: "blur(7px)",
-        },
-        content: {
-          backgroundSize: "cover",
-          position: "fixed",
-          width: "100%", // Sets the width to span the full viewport width
-          bottom: "0",
-        },
-      }}
-    >
-      <div
-        className={`overflow-auto z-10 bg-[#00000099] h-[90%] w-full `}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        <TradeBarFutures
-          setOpeningPrice={setOpeningPrice}
-          openingPrice={openingPrice}
-          setParentDivHeight={handleDivHeightChange}
-          totalBetAmount={totalBetAmount}
-          data={data}
-          setData={setData}
-          setPrices={setPrices}
-          setEMAPrice={setEMAprice}
-          prices={prices}
-          EMAprice={EMAprice}
-          selectedCryptos={selectedCryptos}
-          selectedCurrency={selectedCurrency}
-          setSelectedCurrency={setSelectedCurrency}
-        />{" "}
-      </div>
-    </Modal>
-  );
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const windowWidth = window.innerWidth;
+      setIsMobile(windowWidth <= 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const mainContent = document.querySelector(".main-content");
+    if (isVisible) {
+      mainContent.classList.add("blur-behind-modal");
+    } else {
+      mainContent.classList.remove("blur-behind-modal");
+    }
+
+    // Cleanup function to ensure the class is removed when the component unmounts
+    return () => {
+      mainContent.classList.remove("blur-behind-modal");
+    };
+  }, [isVisible]);
 
   return (
     <div className="relative max-h-100vh overflow-hidden">
-      {ModalDetails}
-
       <div
         className="overflow-hidden absolute futures-circles1 w-full h-full"
         style={{
@@ -373,7 +357,35 @@ const Futures: FC = () => {
         </title>
         <meta name="description" content="PopFi" />
       </Head>
-      <div className="relative w-full flex justify-center flex-col">
+      {isMobile && (
+        <div className={`pseudo-modal ${isVisible ? "visible" : "hidden"}`}>
+          {/* You can include a background overlay here */}
+          <div
+            className={`relative overflow-auto z-1000000 bg-[#00000090] w-full `}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            {" "}
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/4 h-1.5 bg-[#ffffff60] rounded-full"></div>
+            <TradeBarFutures
+              setOpeningPrice={setOpeningPrice}
+              openingPrice={openingPrice}
+              setParentDivHeight={handleDivHeightChange}
+              totalBetAmount={totalBetAmount}
+              data={data}
+              setData={setData}
+              setPrices={setPrices}
+              setEMAPrice={setEMAprice}
+              prices={prices}
+              EMAprice={EMAprice}
+              selectedCryptos={selectedCryptos}
+              selectedCurrency={selectedCurrency}
+              setSelectedCurrency={setSelectedCurrency}
+            />{" "}
+          </div>
+        </div>
+      )}
+      <div className="main-content relative w-full flex justify-center flex-col">
         <div className="relative lg:block hidden mt-1">
           {" "}
           {/* Ensure the parent has relative positioning */}
@@ -390,7 +402,8 @@ const Futures: FC = () => {
             />
           </button>
         </div>
-        <div className="w-full md:px-3 h-full lg:h-[calc(100vh-85px)] overflow-hidden ">
+
+        <div className=" w-full md:px-3 h-full lg:h-[calc(100vh-85px)] overflow-hidden ">
           <div className="w-full">
             {/* right content */}
             <div className="w-full px-2">
@@ -446,25 +459,27 @@ const Futures: FC = () => {
                           />
                         </div>
                       </div>
-                      <div
-                        className={`md:flex hidden mt-2.5 z-100 md:w-[375px] bg-[#ffffff08] h-1/2 w-full md:order-1 order-2  rounded-lg  `}
-                      >
-                        <TradeBarFutures
-                          setOpeningPrice={setOpeningPrice}
-                          openingPrice={openingPrice}
-                          setParentDivHeight={handleDivHeightChange}
-                          totalBetAmount={totalBetAmount}
-                          data={data}
-                          setData={setData}
-                          setPrices={setPrices}
-                          setEMAPrice={setEMAprice}
-                          prices={prices}
-                          EMAprice={EMAprice}
-                          selectedCryptos={selectedCryptos}
-                          selectedCurrency={selectedCurrency}
-                          setSelectedCurrency={setSelectedCurrency}
-                        />
-                      </div>
+                      {!isMobile && (
+                        <div
+                          className={`md:flex hidden mt-2.5 z-100 md:w-[375px] bg-[#ffffff08] h-1/2 w-full md:order-1 order-2  rounded-lg  `}
+                        >
+                          <TradeBarFutures
+                            setOpeningPrice={setOpeningPrice}
+                            openingPrice={openingPrice}
+                            setParentDivHeight={handleDivHeightChange}
+                            totalBetAmount={totalBetAmount}
+                            data={data}
+                            setData={setData}
+                            setPrices={setPrices}
+                            setEMAPrice={setEMAprice}
+                            prices={prices}
+                            EMAprice={EMAprice}
+                            selectedCryptos={selectedCryptos}
+                            selectedCurrency={selectedCurrency}
+                            setSelectedCurrency={setSelectedCurrency}
+                          />
+                        </div>
+                      )}
                       {/* <div
                         className={`lg:block hidden md:w-[315px] flex flex-col lg:h-[calc(100vh-88px)] ${showSidePanel ? "" : "lg:hidden"}`}
                       >
@@ -516,14 +531,14 @@ const Futures: FC = () => {
             className={`bankGothic px-3 md:hidden h-[50px]  self-stretch bg-[#00000040] flex flex-row items-center justify-center py-0 text-center text-grey font-bankgothic-md-bt`}
           >
             <button
-              onClick={toggleModal}
+              onClick={() => setIsVisible(true)}
               className={`bg-primary hover:bg-new-green-dark mx-2.5 py-1 w-1/2 rounded-lg flex flex-row items-center justify-center box-border  text-black transition ease-in-out duration-300
               }`}
             >
               LONG
             </button>
             <button
-              onClick={toggleModal}
+              onClick={() => setIsVisible(true)}
               className={`bg-short hover:bg-new-red-dark mx-2.5 py-1 w-1/2 rounded-lg flex flex-row items-center justify-center box-border  text-black transition ease-in-out duration-300
               }`}
             >

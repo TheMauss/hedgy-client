@@ -23,7 +23,8 @@
     "**/*.ts",
     "**/*.tsx",
     "../dapp2 - kopie/src/components/MyPositionsFutures copy.tsx",
-    "../dapp2 - kopie/src/components/MyPositions copy.tsx"
+    "../dapp2 - kopie/src/components/MyPositions copy.tsx",
+    "src/components/VisibilityContext.js"
   ],
   "exclude": [
     "public",

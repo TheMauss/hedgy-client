@@ -13,6 +13,7 @@ import ReactGA from "react-ga";
 import { Analytics } from "@vercel/analytics/react";
 import { PriorityFeeProvider } from "../contexts/PriorityFee";
 import { BackupOracleProvider } from "../contexts/BackupOracle";
+import { VisibilityProvider } from "../components/VisibilityContext";
 
 require("@solana/wallet-adapter-react-ui/styles.css");
 require("../styles/globals.css");
@@ -87,35 +88,37 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
       <ContextProvider>
         <PriorityFeeProvider>
           <BackupOracleProvider>
-            <div className="flex flex-col min-h-screen overflow-hidden">
-              {showCss && (
-                <div
-                  className="overflow-hidden absolute futures-circles w-full h-full"
-                  style={{
-                    zIndex: -1,
-                    transform: "translate(0%, -75%)",
-                    right: "0%",
-                  }}
-                >
-                  {" "}
+            <VisibilityProvider>
+              <div className="flex flex-col min-h-screen overflow-hidden">
+                {showCss && (
+                  <div
+                    className="overflow-hidden absolute futures-circles w-full h-full"
+                    style={{
+                      zIndex: -1,
+                      transform: "translate(0%, -75%)",
+                      right: "0%",
+                    }}
+                  >
+                    {" "}
+                  </div>
+                )}
+                <Notifications />
+                <Analytics />
+                {showAppBar && (
+                  <AppBar isNavOpen={isNavOpen} setIsNavOpen={setIsNavOpen} />
+                )}
+                <div className="overflow-y-auto">
+                  <ContentContainer
+                    isNavOpen={isNavOpen}
+                    setIsNavOpen={setIsNavOpen}
+                    setIsContentContainerOpen={setIsContentContainerOpen}
+                  >
+                    <Component />
+                    {showFooter && <Footer />}
+                  </ContentContainer>
                 </div>
-              )}
-              <Notifications />
-              <Analytics />
-              {showAppBar && (
-                <AppBar isNavOpen={isNavOpen} setIsNavOpen={setIsNavOpen} />
-              )}
-              <div className="overflow-y-auto">
-                <ContentContainer
-                  isNavOpen={isNavOpen}
-                  setIsNavOpen={setIsNavOpen}
-                  setIsContentContainerOpen={setIsContentContainerOpen}
-                >
-                  <Component />
-                  {showFooter && <Footer />}
-                </ContentContainer>
               </div>
-            </div>
+            </VisibilityProvider>
           </BackupOracleProvider>
         </PriorityFeeProvider>
       </ContextProvider>

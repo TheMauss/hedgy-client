@@ -12,6 +12,7 @@ import { cn } from "../utils";
 import { useRouter } from "next/router";
 import { FaPaste, FaCoins, FaUsers, FaUser } from "react-icons/fa";
 import { FaVault } from "react-icons/fa6";
+import { useVisibility } from "components/VisibilityContext";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -35,6 +36,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
   const navRef = useRef(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { fastTradeActivated, setFastTradeActivated } = useFastTrade();
+  const { isVisible, setIsVisible } = useVisibility();
 
   useEffect(() => {
     const handleResize = () => {
@@ -209,7 +211,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
   return (
     <div
       ref={navRef}
-      className="flex items-center justify-center h-[55px] flex-row bg-[#ffffff08] text-[#E0E5EA]"
+      className={`flex items-center justify-center h-[55px] flex-row bg-[#ffffff08] text-[#E0E5EA] ${isVisible ? "blur-behind-modal" : ""}`}
     >
       <div className="flex items-center justify-between w-[90%]">
         <div className="flex items-center">

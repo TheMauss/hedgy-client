@@ -23,6 +23,22 @@ body {
   background-image: #000000;
 }
 
+.pseudo-modal {
+  position: fixed; /* Or 'absolute' if 'fixed' doesn't fit your use case */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1050; /* Ensure this is above all other content */
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+}
+
+.blur-behind-modal {
+  filter: blur(7px);
+  pointer-events: none; /* Optional: Prevents interaction with the blurred elements */
+  user-select: none; /* Optional: Prevents text selection on the blurred elements */
+}
+
 @keyframes slideIn {
   from {
     transform: translateY(20px);
