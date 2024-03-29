@@ -196,7 +196,7 @@ const useChartComponent = (
           library_path: chartingLibraryPath,
           datafeed: datafeed,
           symbol: symbol,
-          interval: "1" as ResolutionString,
+          interval: "15" as ResolutionString,
           fullscreen: false,
           autosize: true,
           loading_screen: {
@@ -204,6 +204,7 @@ const useChartComponent = (
             foregroundColor: "#34C796",
           },
           theme: "dark",
+          custom_css_url: "/tv.css",
 
           toolbar_bg: "#080808",
           enabled_features: ["hide_left_toolbar_by_default"],
