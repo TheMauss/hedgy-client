@@ -108,6 +108,8 @@ interface MyPositionsProps {
     React.SetStateAction<Record<string, Position | null>>
   >;
   handleTotalBetAmountChange: (total: number) => void; // add this line
+  handleusdcTotalBetAmountChange: (total: number) => void; // add this line
+
   prices: { [key: string]: { price: number; timestamp: string } };
   handleNewNotification: (notification: Notification) => void;
 }
@@ -120,6 +122,7 @@ const MyPositions: FC<MyPositionsProps> = ({
   latestOpenedPosition,
   setLatestOpenedPosition,
   handleTotalBetAmountChange,
+  handleusdcTotalBetAmountChange,
   handleNewNotification,
 }) => {
   async function usdcSplTokenAccountSync(walletAddress) {
@@ -246,11 +249,25 @@ const MyPositions: FC<MyPositionsProps> = ({
   const isMobile = windowWidth < 768;
 
   useEffect(() => {
-    const total = positions.reduce(
-      (total, position) => total + position.betAmount,
-      0
-    );
-    handleTotalBetAmountChange(total); // This line passes the total back to the parent
+    // Calculate total only for positions where position.usdc === 0
+    const total = positions.reduce((total, position) => {
+      if (position.usdc === 0) {
+        return total + position.betAmount;
+      }
+      return total;
+    }, 0);
+    handleTotalBetAmountChange(total); // Pass the total back to the parent
+  }, [positions]); // Dependency array includes positions
+
+  useEffect(() => {
+    // Calculate total only for positions where position.usdc === 1
+    const total = positions.reduce((total, position) => {
+      if (position.usdc === 1) {
+        return total + position.betAmount;
+      }
+      return total;
+    }, 0);
+    handleusdcTotalBetAmountChange(total); // Pass the total back to the parent
   }, [positions]);
 
   const handleInputFocus: React.FocusEventHandler<HTMLInputElement> = (
@@ -3629,7 +3646,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
   if (!connected) {
     return (
-      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg   md:py-3 md:">
+      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full   rounded-lg   md:py-3 overflow-hidden">
         <div className="mx-2 pt-2 md:py-0 border-b-[2px] border-solid border-[#ffffff12] flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
@@ -3644,7 +3661,7 @@ const MyPositions: FC<MyPositionsProps> = ({
             onClick={() => setSelectedButton("Positions")}
           >
             {!isMobile ? (
-              <span>My Positions</span>
+              <span className="text-[1.05rem]">Positions</span>
             ) : (
               <span className="text-sm">Positions</span>
             )}
@@ -3658,7 +3675,7 @@ const MyPositions: FC<MyPositionsProps> = ({
             onClick={() => setSelectedButton("History")}
           >
             {!isMobile ? (
-              <span>My History</span>
+              <span className="text-[1.05rem]">History</span>
             ) : (
               <span className="text-sm">History</span>
             )}
@@ -3672,15 +3689,15 @@ const MyPositions: FC<MyPositionsProps> = ({
             onClick={() => setSelectedButton("Order")}
           >
             {!isMobile ? (
-              <span>My Orders</span>
+              <span className="text-[1.05rem]">Orders</span>
             ) : (
               <span className="text-sm">Orders</span>
             )}
           </button>
         </div>
 
-        <div className="flex flex-col items-center justify-center h-full overflow-hidden md:pb-10">
-          <FaWallet className="flex justify-center items-center text-4xl text-[#ffffff60]" />
+        <div className=" flex flex-col items-center justify-center h-full overflow-hidden md:pb-10">
+          <FaWallet className="flex justify-center items-center text-2xl text-[#ffffff60] mb-2" />
           <div className="flex justify-center items-center text-[0.95rem] text-[#ffffff60]  text-center overflow-hidden">
             Connect your wallet to see your positions.
           </div>
@@ -3693,7 +3710,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     orders.length === 0
   ) {
     return (
-      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full md:overflow-x-scroll overflow-y-hidden lg:overflow-y-auto rounded-lg   md:py-3 md:">
+      <div className="md:px-2 custom-scrollbar w-[100%] order-4 md:order-4 h-full overflow-hidden rounded-lg   md:py-3 md:">
         <div className="mx-2 pt-2 md:py-0 border-b-[2px] border-solid border-[#ffffff12] flex justify-start items-center md:justify-start custom-scrollbar sticky top-0 z-10 mb-2 ">
           <button
             className={`py-3.5 text-xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
@@ -3704,7 +3721,7 @@ const MyPositions: FC<MyPositionsProps> = ({
             onClick={() => setSelectedButton("Positions")}
           >
             {!isMobile ? (
-              <span>My Positions</span>
+              <span className="text-[1.05rem]">Positions</span>
             ) : (
               <span className="text-sm">Positions</span>
             )}
@@ -3718,7 +3735,7 @@ const MyPositions: FC<MyPositionsProps> = ({
             onClick={() => setSelectedButton("History")}
           >
             {!isMobile ? (
-              <span>My History</span>
+              <span className="text-[1.05rem]">History</span>
             ) : (
               <span className="text-sm">History</span>
             )}
@@ -3732,7 +3749,7 @@ const MyPositions: FC<MyPositionsProps> = ({
             onClick={() => setSelectedButton("Order")}
           >
             {!isMobile ? (
-              <span>My Orders</span>
+              <span className="text-[1.05rem]">Orders</span>
             ) : (
               <span className="text-sm">Orders</span>
             )}
@@ -3740,7 +3757,7 @@ const MyPositions: FC<MyPositionsProps> = ({
         </div>
 
         <div className=" flex flex-col items-center justify-center h-full overflow-hidden md:pb-10">
-          <FaStream className="text-4xl text-[#ffffff60] mb-2" />
+          <FaStream className="text-2xl text-[#ffffff60] mb-2" />
           <p className="text-[0.95rem] text-[#ffffff60]  text-center overflow-hidden">
             You don&apos;t have any opened positions yet.
           </p>
@@ -3772,7 +3789,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               onClick={() => setSelectedButton("Positions")}
             >
               {!isMobile ? (
-                <span>My Positions</span>
+                <span className="text-[1.05rem]">Positions</span>
               ) : (
                 <span className="text-sm">Positions</span>
               )}
@@ -3790,7 +3807,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               onClick={() => setSelectedButton("History")}
             >
               {!isMobile ? (
-                <span>My History</span>
+                <span className="text-[1.05rem]">History</span>
               ) : (
                 <span className="text-sm">History</span>
               )}
@@ -3804,7 +3821,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               onClick={() => setSelectedButton("Order")}
             >
               {!isMobile ? (
-                <span>My Orders</span>
+                <span className="text-[1.05rem]">Orders</span>
               ) : (
                 <span className="text-sm">Orders</span>
               )}
@@ -3819,7 +3836,7 @@ const MyPositions: FC<MyPositionsProps> = ({
             {/* This div is your new scrolling area */}
             {selectedButton === "Positions" ? (
               <div className=" flex flex-col items-center justify-center h-full overflow-hidden md:pb-0">
-                <FaStream className="text-4xl text-[#ffffff60] mb-2" />
+                <FaStream className="text-2xl text-[#ffffff60] mb-2" />
                 <p className="justify-center text-[0.95rem] text-[#ffffff60]  text-center overflow-hidden">
                   You don&apos;t have any opened positions yet.
                 </p>
@@ -3991,7 +4008,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               onClick={() => setSelectedButton("Positions")}
             >
               {!isMobile ? (
-                <span>My Positions</span>
+                <span className="text-[1.05rem]">Positions</span>
               ) : (
                 <span className="text-sm">Positions</span>
               )}
@@ -4005,7 +4022,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               onClick={() => setSelectedButton("History")}
             >
               {!isMobile ? (
-                <span>My History</span>
+                <span className="text-[1.05rem]">History</span>
               ) : (
                 <span className="text-sm">History</span>
               )}
@@ -4019,7 +4036,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               onClick={() => setSelectedButton("Order")}
             >
               {!isMobile ? (
-                <span>My Orders</span>
+                <span className="text-[1.05rem]">Orders</span>
               ) : (
                 <span className="text-sm">Orders</span>
               )}

@@ -63,6 +63,8 @@ const Futures: FC = () => {
     Record<string, Position | null>
   >({});
   const [totalBetAmount, setTotalBetAmount] = useState(0);
+  const [usdcTotalBetAmount, setUsdcTotalBetAmount] = useState(0);
+
   const [divHeight, setDivHeight] = useState("60vh");
   const [data, setData] = useState({
     btcLong: "0",
@@ -190,6 +192,10 @@ const Futures: FC = () => {
 
   const handleTotalBetAmountChange = (totalBetAmount) => {
     setTotalBetAmount(totalBetAmount);
+  };
+
+  const handleusdcTotalBetAmountChange = (usdcTotalBetAmount) => {
+    setUsdcTotalBetAmount(usdcTotalBetAmount);
   };
 
   const handleSymbolChange = (newSymbol) => {
@@ -402,6 +408,7 @@ const Futures: FC = () => {
               openingPrice={openingPrice}
               setParentDivHeight={handleDivHeightChange}
               totalBetAmount={totalBetAmount}
+              usdcTotalBetAmount={usdcTotalBetAmount}
               data={data}
               setData={setData}
               setPrices={setPrices}
@@ -484,6 +491,9 @@ const Futures: FC = () => {
                             handleTotalBetAmountChange={
                               handleTotalBetAmountChange
                             }
+                            handleusdcTotalBetAmountChange={
+                              handleusdcTotalBetAmountChange
+                            }
                             prices={prices}
                             handleNewNotification={handleNewNotification}
                           />
@@ -500,6 +510,7 @@ const Futures: FC = () => {
                             openingPrice={openingPrice}
                             setParentDivHeight={handleDivHeightChange}
                             totalBetAmount={totalBetAmount}
+                            usdcTotalBetAmount={usdcTotalBetAmount}
                             data={data}
                             setData={setData}
                             setPrices={setPrices}
@@ -533,6 +544,9 @@ const Futures: FC = () => {
                   latestOpenedPosition={latestOpenedPosition}
                   setLatestOpenedPosition={setLatestOpenedPosition}
                   handleTotalBetAmountChange={handleTotalBetAmountChange}
+                  handleusdcTotalBetAmountChange={
+                    handleusdcTotalBetAmountChange
+                  }
                   prices={prices}
                   handleNewNotification={handleNewNotification}
                 />

@@ -71,6 +71,7 @@ interface TradeBarFuturesProps {
   setParentDivHeight: (height: string) => void;
   EMAprice: number;
   totalBetAmount: number;
+  usdcTotalBetAmount: number;
   prices: { [key: string]: { price: number; timestamp: string } };
   setPrices: React.Dispatch<
     React.SetStateAction<{
@@ -299,6 +300,7 @@ const TradeBar: React.FC<
   selectedCryptos,
   setParentDivHeight,
   totalBetAmount,
+  usdcTotalBetAmount,
   data,
   setData,
   setPrices,
@@ -1320,6 +1322,8 @@ const TradeBar: React.FC<
     const maxBet = Math.min(100000, countmaxBet);
     const realbalance = selectedCurrency === "USDC" ? usdcbalance : balance; // 0,3% maximálni pozice
     const token = selectedCurrency === "USDC" ? "$" : "◎"; // 0,3% maximálni pozice
+    const currentTotalBetAmount =
+      selectedCurrency === "USDC" ? usdcTotalBetAmount * 1000 : totalBetAmount;
 
     if (warning) {
       console.error("Cannot open position due to warning:", warning);
@@ -1342,7 +1346,7 @@ const TradeBar: React.FC<
     }
 
     if (
-      totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL >
+      currentTotalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL >
       2 * maxBet * LAMPORTS_PER_SOL
     ) {
       notify({
@@ -1649,6 +1653,7 @@ const TradeBar: React.FC<
     balance,
     warning,
     totalBetAmount,
+    usdcTotalBetAmount,
     publicKey,
     notify,
     connection,
@@ -1677,6 +1682,8 @@ const TradeBar: React.FC<
     const maxBet = Math.min(100000, countmaxBet);
     const realbalance = selectedCurrency === "USDC" ? usdcbalance : balance; // 0,3% maximálni pozice
     const token = selectedCurrency === "USDC" ? "$" : "◎"; // 0,3% maximálni pozice
+    const currentTotalBetAmount =
+      selectedCurrency === "USDC" ? usdcTotalBetAmount * 1000 : totalBetAmount;
 
     if (warning) {
       console.error("Cannot open position due to warning:", warning);
@@ -1699,7 +1706,7 @@ const TradeBar: React.FC<
     }
 
     if (
-      totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL >
+      currentTotalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL >
       2 * maxBet * LAMPORTS_PER_SOL
     ) {
       notify({
