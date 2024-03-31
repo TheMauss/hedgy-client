@@ -3533,6 +3533,45 @@ const MyPositions: FC<MyPositionsProps> = ({
                               </div>
                             ) : null}
                           </div>{" "}
+                          <div className="flex flex-row items-center justify-center gap-[4px] text-left  text-short">
+                            <div className="text-[#ffffff60] pl-2">
+                              {item.usdc === 0
+                                ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
+                                : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}
+                            </div>
+                            <div
+                              className={
+                                item.priceDirection === 0
+                                  ? "text-[#34c796] "
+                                  : "text-red-500"
+                              }
+                            >
+                              {item.priceDirection === 0 ? (
+                                <>
+                                  <div className="flex flex-row items-center">
+                                    {" "}
+                                    <img
+                                      className="relative w-5 h-5 pb-0.5"
+                                      alt=""
+                                      src="/new/component-82.svg"
+                                    />
+                                    <div className="">{item.leverage}X</div>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <div className="flex flex-row items-center ">
+                                    <img
+                                      className="relative w-5 h-5 pb-0.5"
+                                      alt=""
+                                      src="/new/component-81.svg"
+                                    />
+                                    <div className=" ">{item.leverage}X</div>
+                                  </div>
+                                </>
+                              )}
+                            </div>{" "}
+                          </div>
                         </div>
                       </a>
                     </div>
@@ -3542,57 +3581,10 @@ const MyPositions: FC<MyPositionsProps> = ({
                       <div className="relative leading-[9.98px] text-[#ffffff60]">
                         Collateral
                       </div>
-                      <div className="text-[#ffffff60]">
-                        {item.usdc === 0
-                          ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
-                          : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}
-                      </div>
                     </div>
                   </div>
                 </div>
                 <div className="self-stretch flex flex-row items-start justify-between text-right">
-                  <div className="flex flex-col items-start justify-center gap-[6px]">
-                    <div className="text-[#ffffff60] relative leading-[12px]">
-                      Leverage
-                    </div>
-                    <div className="flex flex-col items-start justify-center gap-[4px] text-left text-sm text-short">
-                      <div
-                        className={
-                          item.priceDirection === 0
-                            ? "text-[#34c796] "
-                            : "text-red-500"
-                        }
-                      >
-                        {item.priceDirection === 0 ? (
-                          <>
-                            <div className="flex flex-row items-center">
-                              {" "}
-                              <img
-                                className="relative w-5 h-5 pb-0.5"
-                                alt=""
-                                src="/new/component-82.svg"
-                              />
-                              <span className="ml-1">LONG</span>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            <div className="flex flex-row items-center ">
-                              <img
-                                className="relative w-5 h-5 pb-0.5"
-                                alt=""
-                                src="/new/component-81.svg"
-                              />
-                              <span className="ml-1">SHORT</span>
-                            </div>
-                          </>
-                        )}
-                        <div className="pl-1 text-[#ffffff60]">
-                          {item.leverage}X
-                        </div>
-                      </div>{" "}
-                    </div>
-                  </div>
                   <div className="w-[63px] flex flex-col items-end justify-center gap-[6px]">
                     <div className="relative leading-[12px] text-[#ffffff60]">
                       Limit Price

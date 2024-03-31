@@ -28,6 +28,8 @@ interface InterestBarProps {
   EMAprice: number;
   symbol: string;
   selectedCurrency: "SOL" | "USDC";
+  totalDeposits: number;
+  usdcTotalDeposits: number;
 }
 
 const InterestBar: React.FC<InterestBarProps> = ({
@@ -38,6 +40,8 @@ const InterestBar: React.FC<InterestBarProps> = ({
   EMAprice,
   openingPrice,
   selectedCurrency,
+  totalDeposits,
+  usdcTotalDeposits,
 }) => {
   // You forgot to add latestOpenedPosition here
   // Safely access the properties of prices
@@ -101,7 +105,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
       ? percentage
       : `+${percentage}`;
 
-  const MAX_NOTIONAL_POSITIONS = 1000;
+  const MAX_NOTIONAL_POSITIONS = 125;
 
   const getOpenInterestValues = (sym, selectedCurrency) => {
     const capitalizeFirstLetter = (string) =>
@@ -147,85 +151,86 @@ const InterestBar: React.FC<InterestBarProps> = ({
     }
   };
 
-  const { long, short } = getOpenInterestValues(symbol, selectedCurrency);
-
-  const computeBorrowingFee = (
-    direction: "long" | "short",
-    price: number,
-    emaPrice: number
+  const getMaxOpenInterest = (
+    sym: string,
+    selectedCurrency: "SOL" | "USDC",
+    totalDeposits: number,
+    usdcTotalDeposits: number
   ) => {
-    const numerator =
-      direction === "long" ? parseFloat(long) : parseFloat(short);
-    const total = parseFloat(long) + parseFloat(short);
-    const ratio = total !== 0 ? numerator / total : 0;
-    const relativePriceDifference =
-      emaPrice !== 0 ? (price - emaPrice) / emaPrice : 0;
-    const directionalDifference =
-      direction === "long" ? relativePriceDifference : -relativePriceDifference;
-    const notionalPosition = parseFloat(long) + parseFloat(short);
+    const deposits =
+      selectedCurrency === "USDC" ? usdcTotalDeposits : totalDeposits;
 
-    const annualFee =
-      (0.6 * (ratio - 0.5) +
-        0.25 * (directionalDifference * 10) +
-        0.15 * (notionalPosition / MAX_NOTIONAL_POSITIONS)) *
-      2;
-    const hourlyFee = annualFee / (24 * 365);
+    // Map of symbols to their respective "groups" for calculation
+    const divisionMap = {
+      "Crypto.BTC/USD": 4,
+      "Crypto.SOL/USD": 4,
+      "Crypto.PYTH/USD": 25,
+      "Crypto.BONK/USD": 25,
+      "Crypto.JUP/USD": 25,
+      "Crypto.ETH/USD": 4,
+      "Crypto.TIA/USD": 25,
+      "Crypto.SUI/USD": 25,
+    };
 
-    return hourlyFee.toFixed(6);
+    // Retrieve the divisor for the given symbol, default to 0 if not found
+    const divisor = divisionMap[sym] || 0;
+
+    if (divisor === 0) {
+      console.error("Invalid symbol for max open interest calculation");
+      return 0; // Return a default or error value for invalid symbols
+    }
+
+    return deposits / divisor;
   };
 
-  const currentPrice = prices ? prices[symbol]?.price : 0;
+  const { long, short } = getOpenInterestValues(symbol, selectedCurrency);
+  const totalMaxOpenInterest = getMaxOpenInterest(
+    symbol,
+    selectedCurrency,
+    totalDeposits,
+    usdcTotalDeposits
+  );
 
-  let borrowingFeeLong =
-    computeBorrowingFee("long", currentPrice, EMAprice) || "0";
-  let borrowingFeeShort =
-    computeBorrowingFee("short", currentPrice, EMAprice) || "0";
+  const [borrowingFeeLong, setBorrowingFeeLong] = useState("0");
+  const [borrowingFeeShort, setBorrowingFeeShort] = useState("0");
 
-  if (parseFloat(borrowingFeeLong) > 0) {
-    borrowingFeeShort = "0";
-  } else if (parseFloat(borrowingFeeShort) > 0) {
-    borrowingFeeLong = "0";
-  }
+  useEffect(() => {
+    const computeBorrowingFee = (
+      direction: "long" | "short",
+      MaxOpenInterest: number
+    ) => {
+      const numerator =
+        direction === "long" ? parseFloat(long) : parseFloat(short);
+      const total = parseFloat(long) + parseFloat(short);
+      const ratio = total !== 0 ? numerator / total : 0;
 
-  // Helper function to check if value is zero or undefined
-  const isZeroOrUndefined = (value: string) =>
-    parseFloat(value) === 0 && value === undefined;
+      const annualFee =
+        0.4 * (ratio - 0.5) + (numerator / MaxOpenInterest) * 0.9;
+      const hourlyFee = annualFee / (24 * 365);
 
-  // 1. Decide fee based on volatility and notional position if long = short or either one is 0 or undefined
-  if (
-    parseFloat(long) === parseFloat(short) ||
-    isZeroOrUndefined(long) ||
-    isZeroOrUndefined(short)
-  ) {
-    const relativePriceDifference =
-      EMAprice !== 0 ? (currentPrice - EMAprice) / EMAprice : 0;
+      return hourlyFee.toFixed(6);
+    };
 
-    const directionalDifferenceLong = relativePriceDifference; // Directional difference for long
-    const directionalDifferenceShort = -relativePriceDifference; // Directional difference for short
-
-    const volatilityFeeLong = Math.abs(0.25 * (directionalDifferenceLong * 10));
-    const volatilityFeeShort = Math.abs(
-      0.25 * (directionalDifferenceShort * 10)
+    let tempBorrowingFeeLong = computeBorrowingFee(
+      "long",
+      totalMaxOpenInterest
+    );
+    let tempBorrowingFeeShort = computeBorrowingFee(
+      "short",
+      totalMaxOpenInterest
     );
 
-    const notionalPositionFee =
-      0.15 * ((parseFloat(long) + parseFloat(short)) / MAX_NOTIONAL_POSITIONS);
-
-    const combinedFeeLong =
-      ((volatilityFeeLong + notionalPositionFee) * 2) / (24 * 365);
-    const combinedFeeShort =
-      ((volatilityFeeShort + notionalPositionFee) * 2) / (24 * 365);
-
-    borrowingFeeLong = combinedFeeLong.toFixed(6);
-    borrowingFeeShort = combinedFeeShort.toFixed(6);
-
-    // 2. If EMA is above current price, then fee will be for paying short
-    if (EMAprice > currentPrice) {
-      borrowingFeeLong = "0";
-    } else if (EMAprice < currentPrice) {
-      borrowingFeeShort = "0";
+    if (parseFloat(tempBorrowingFeeLong) < 0) {
+      tempBorrowingFeeLong = "0";
     }
-  }
+
+    if (parseFloat(tempBorrowingFeeShort) < 0) {
+      tempBorrowingFeeShort = "0";
+    }
+
+    setBorrowingFeeLong(tempBorrowingFeeLong);
+    setBorrowingFeeShort(tempBorrowingFeeShort);
+  }, [long, short, totalMaxOpenInterest]);
 
   return (
     <div className="md:flex hidden font-poppins custom-scrollbar rounded-lg  w-full h-[53px] flex flex-row items-center justify-start  text-xs  overflow-auto">

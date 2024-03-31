@@ -86,6 +86,8 @@ interface TradeBarFuturesProps {
   setSelectedCurrency: React.Dispatch<React.SetStateAction<"SOL" | "USDC">>;
   setToggleState: React.Dispatch<React.SetStateAction<string>>;
   toggleState: string; // The current state
+  setTotalDeposits: (totalDeposits: number) => void; // assuming it's a function that accepts a number
+  setUsdcTotalDeposits: (usdcTotalDeposits: number) => void;
 }
 
 async function checkLPdata(
@@ -312,6 +314,8 @@ const TradeBar: React.FC<
   selectedCurrency,
   setToggleState,
   toggleState,
+  setTotalDeposits,
+  setUsdcTotalDeposits,
 }) => {
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
@@ -458,6 +462,8 @@ const TradeBar: React.FC<
       if (lpAcc) {
         const results = await checkLPdata(lpAcc, connection);
         setLPdata(results);
+        setTotalDeposits(results.totalDeposits / LAMPORTS_PER_SOL);
+        setUsdcTotalDeposits(results.usdcTotalDeposits / LAMPORTS_PER_SOL);
       }
     };
 

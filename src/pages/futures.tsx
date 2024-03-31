@@ -64,6 +64,8 @@ const Futures: FC = () => {
   >({});
   const [totalBetAmount, setTotalBetAmount] = useState(0);
   const [usdcTotalBetAmount, setUsdcTotalBetAmount] = useState(0);
+  const [totalDeposits, setTotalDeposits] = useState(0);
+  const [usdcTotalDeposits, setUsdcTotalDeposits] = useState(0);
 
   const [divHeight, setDivHeight] = useState("60vh");
   const [data, setData] = useState({
@@ -91,7 +93,7 @@ const Futures: FC = () => {
   const [EMAprice, setEMAprice] = useState(null);
   const [selectedCryptos, setSelectedCryptos] = useState({
     BTC: false,
-    SOL: false,
+    SOL: true,
     PYTH: false,
     BONK: false,
     JUP: false,
@@ -402,6 +404,8 @@ const Futures: FC = () => {
               className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/4 h-2.5 bg-[#ffffff60] rounded-full"
             ></div>
             <TradeBarFutures
+              setTotalDeposits={setTotalDeposits}
+              setUsdcTotalDeposits={setUsdcTotalDeposits}
               setToggleState={setToggleState}
               toggleState={toggleState}
               setOpeningPrice={setOpeningPrice}
@@ -459,6 +463,8 @@ const Futures: FC = () => {
                             prices={prices}
                           />
                           <InterestBar
+                            totalDeposits={totalDeposits}
+                            usdcTotalDeposits={usdcTotalDeposits}
                             openingPrice={openingPrice}
                             symbol={symbol}
                             data={data}
@@ -504,6 +510,8 @@ const Futures: FC = () => {
                           className={`md:flex hidden mt-2.5 z-100 md:w-[375px] bg-[#ffffff08] h-1/2 w-full md:order-1 order-2  rounded-lg  `}
                         >
                           <TradeBarFutures
+                            setTotalDeposits={setTotalDeposits}
+                            setUsdcTotalDeposits={setUsdcTotalDeposits}
                             setToggleState={setToggleState}
                             toggleState={toggleState}
                             setOpeningPrice={setOpeningPrice}
