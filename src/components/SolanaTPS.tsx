@@ -27,7 +27,9 @@ function SolanaTPS() {
 
   return (
     <div className="leading-[14px] flex justify-center items-center font-poppins text-basic ml-2 text-sm">
-      <span className={`${tpsColor} mr-1`}>&#9679;</span>
+      <span className={`${tpsColor} mr-1 font-regular font-poppinssad`}>
+        &#9679;
+      </span>
       TPS: {tps ? tps.toFixed(0) : "-"}
     </div>
   );

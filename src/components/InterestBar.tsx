@@ -105,8 +105,6 @@ const InterestBar: React.FC<InterestBarProps> = ({
       ? percentage
       : `+${percentage}`;
 
-  const MAX_NOTIONAL_POSITIONS = 125;
-
   const getOpenInterestValues = (sym, selectedCurrency) => {
     const capitalizeFirstLetter = (string) =>
       string.charAt(0).toUpperCase() + string.slice(1);

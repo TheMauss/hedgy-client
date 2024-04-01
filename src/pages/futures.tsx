@@ -426,7 +426,7 @@ const Futures: FC = () => {
           </div>
         </div>
       )}
-      <div className="main-content relative w-full flex justify-center flex-col">
+      <div className=" main-content relative w-full flex justify-center flex-col">
         <div className="relative lg:block hidden mt-1">
           {" "}
           {/* Ensure the parent has relative positioning */}

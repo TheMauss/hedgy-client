@@ -7,7 +7,7 @@ module.exports = {
       colors: {
         customGreen: "#22c55e",
         base: "#000000",
-        "layer-1": "#151722",
+        "layer-1": "#14141465",
         "layer-3": "#434665",
         "layer-2": "#1d202f",
         "gray-500": "#9E9E9E",

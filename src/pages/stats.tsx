@@ -174,68 +174,99 @@ const Stats: FC = () => {
   const showProtocol = () => setActiveSection("protocol");
 
   return (
-    <div>
+    <div className="relative overflow-hidden">
+      <div
+        className="hidden md:flex overflow-hidden absolute futures-circles1 w-3/4 h-full "
+        style={{
+          zIndex: 0,
+          transform: "translate(-70%, 50%)",
+          right: "0%",
+        }}
+      >
+        {" "}
+      </div>
+      <div
+        className="hidden md:flex overflow-hidden absolute futures-circles2 w-full h-full"
+        style={{
+          zIndex: 0,
+          transform: "translate(72%, 25%)",
+          right: "0%",
+        }}
+      ></div>
+      <div
+        className="md:hidden overflow-hidden absolute futures-circles1 w-3/4  h-2/3"
+        style={{
+          zIndex: 0,
+          transform: "translate(-70%, 70%)",
+          right: "0%",
+        }}
+      >
+        {" "}
+      </div>
+      <div
+        className="md:hidden overflow-hidden absolute futures-circles2 w-full h-3/4"
+        style={{
+          zIndex: 0,
+          transform: "translate(72%, -20%)",
+          right: "0%",
+        }}
+      ></div>
       <Head>
         <title>PopFi | Stats</title>
         <meta name="description" content="PopFi" />
       </Head>
-      <div className="bg-base flex justify-center md:pt-2 min-h-[calc(100vh-78px)]">
+      <div className="bg-base flex justify-center md:pt-2 min-h-[calc(100vh-20px)]">
         <div className="w-[98%] xl:w-[60%] lg:w-[60%] md:w-[60%] sm:w-[60%] lg:min-w-[780px] md:min-w-[780px] sm:min-w-[95%] ">
           <div className="bankGothic flex flex-col  gap-[8px] text-4xl mt-2 lg:text-5xl text-white">
-            <h1 className="bankGothic md:text-start text-center text-4xl mt-2 lg:text-5xl text-transparent bg-clip-text bg-white">
-              Statistics
+            <h1 className="bankGothic md:text-start text-center text-3xl mt-2 lg:text-4xl text-transparent bg-clip-text bg-white">
+              Platform Statistics
             </h1>
           </div>
-          <img
-            className="hidden md:block absolute h-[39.41%] w-[21.83%] top-[12.12%] bottom-[48.47%] right-[5%] max-w-full overflow-hidden max-h-full"
-            alt=""
-            src="/sheesh/donut1.svg"
-          />
           <div className="w-full flex md:flex-row flex-col gap-2 md:px-0 px-2 z-10"></div>
           <div className="mt-2 w-full flex md:flex-row flex-col items-start justify-start gap-[8px] md:px-0 px-2">
-            <div className="md:w-1/3 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] border-solid border-layer-3">
+            <div className="md:w-1/3 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] ">
               <img
                 className="relative w-[60px] h-[60px]"
                 alt=""
                 src="/sheesh/icons18.svg"
               />
               <div className="h-[60px] flex flex-col justify-center items-start md:items-center">
-                <div className="relative leading-[100%] font-medium md:text-center">
-                  TOTAL VOLUME (24H)
+                <div className="relative leading-[100%] text-[#ffffff80] md:text-center ">
+                  Total Volume (24H)
                 </div>
-                <div className="pt-2 relative text-xl leading-[100%] font-medium font-poppins text-white text-left md:text-center">
+                <div className="pt-2 relative text-xl leading-[100%] text-[#ffffff80] font-poppins text-white text-left md:text-center">
                   {calculateVolume().toFixed(1)} SOL (
                   {calculateVolume24().toFixed(1)})
                 </div>
               </div>
             </div>
-            <div className="z-10 md:w-1/3 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] border-solid border-layer-3">
+            <div className="z-10 md:w-1/3 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] ">
               <img
                 className="relative w-[60px] h-[60px]"
                 alt=""
                 src="/sheesh/icons19.svg"
               />
               <div className="h-[60px] flex flex-col justify-center items-start md:items-center">
-                <div className="relative leading-[100%] font-medium md:text-center">
-                  TOTAL FEES (24H)
+                <div className="relative leading-[100%] text-[#ffffff80] md:text-center">
+                  Total Fees (24H)
                 </div>
-                <div className="pt-2 relative text-xl leading-[100%] font-medium font-poppins text-white text-left md:text-center">
+                <div className="pt-2 relative text-xl leading-[100%] text-[#ffffff80] font-poppins text-white text-left md:text-center">
                   {calculateFees().toFixed(2)} SOL (
                   {calculateFees24().toFixed(2)})
                 </div>
               </div>
             </div>
-            <div className="z-10 md:w-1/3 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] border-solid border-layer-3">
+            <div className="z-10 md:w-1/3 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] ">
               <img
                 className="relative w-[60px] h-[60px]"
                 alt=""
                 src="/sheesh/icons20.svg"
               />
               <div className="h-[60px] flex flex-col justify-center items-start md:items-center">
-                <div className="relative leading-[100%] font-medium md:text-center">
-                  TRADERS (24H)
+                <div className="relative leading-[100%] text-[#ffffff80] md:text-center">
+                  Traders (24H)
                 </div>
-                <div className="pt-2 relative text-xl leading-[100%] font-medium font-poppins text-white text-left md:text-center">
+                <div className="pt-2 relative text-xl leading-[100%] text-[#ffffff80] font-poppins text-white text-left md:text-center">
                   {calculateUniquePlayers()} ({calculateUniquePlayers24()})
                 </div>
               </div>
@@ -255,14 +286,14 @@ const Stats: FC = () => {
                     key={item}
                     className="w-full text-3xl flex flex-col md:flex-row items-start justify-start gap-[8px]"
                   >
-                    <div className="z-10 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-col items-center justify-center pt-4 px-4 pb-6 gap-[16px] border-[1px] border-solid border-layer-3">
+                    <div className="z-10 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-col items-center justify-center pt-4 px-4 pb-6 gap-[16px] ">
                       <div className="flex flex-col items-center justify-center gap-[4px]">
                         <img
                           className="relative w-[84.7px] h-[80.9px]"
                           alt=""
                           src={`/${item.teamName}.png`}
                         />
-                        <div className="relative leading-[100%] font-medium flex flex-row items-center justify-center gap-2">
+                        <div className="relative leading-[100%] text-[#ffffff80] flex flex-row items-center justify-center gap-2">
                           <img
                             className=" w-[24px] h-[24px]"
                             alt=""
@@ -271,7 +302,7 @@ const Stats: FC = () => {
                           <a> {`${item.teamName}`}</a>
                         </div>
                       </div>
-                      <div className="self-stretch flex flex-row items-center justify-between text-right text-xs text-grey-text font-poppins">
+                      <div className="self-stretch flex flex-row items-center justify-between text-right text-xs text-[#ffffff60] font-poppins">
                         <div className="flex flex-col items-start justify-center gap-[16px]">
                           <div className="flex flex-col items-start justify-center gap-[4px]">
                             <div className="relative leading-[12px]">
@@ -325,31 +356,31 @@ const Stats: FC = () => {
             style={{ position: "relative", zIndex: 100 }}
             className="flex flex-col md:items-start items-center text-13xl text-white md:px-0 px-2"
           >
-            <h1 className="pt-6 bankGothic md:text-start md:text-left text-center text-4xl lg:text-5xl text-transparent bg-clip-text bg-white">
+            <h1 className="pt-4 bankGothic md:text-start md:text-left text-center text-3xl lg:text-4xl text-transparent bg-clip-text bg-white">
               Leaderboard
             </h1>
-            <div className="mt-2 flex md:flex-row flex-col items-center justify-between md:gap-[16px] text-lg text-grey-text w-full md:rounded-xl rounded-lg bg-layer-1 border-[1px] border-solid border-layer-3 px-4">
+            <div className="bg-new-card-bg mt-2 flex md:flex-row flex-col items-center justify-between md:gap-[16px] text-lg text-[#ffffff60] w-full md:rounded-xl rounded-lg px-4">
               <div className="self-stretch md:w-1/3 flex flex-row items-center justify-center md:justify-start gap-[8px] z-100 py-2">
                 <button
                   onClick={() => handleSort("PnL")}
                   className={`w-[120px] rounded-lg h-8 flex flex-row items-center justify-center box-border ${
                     sortCriterion === "PnL"
                       ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
-                      : "bg-transparent border border-grey"
+                      : "bg-transparent border border-[#ffffff24]"
                   }`}
                 >
                   <div
                     className={`flex justify-center items-center h-full w-full rounded-lg ${
                       sortCriterion === "PnL"
                         ? "bg-[#0B111B] bg-opacity-80"
-                        : "bg-opacity-0 hover:bg-[#484c6d5b]"
+                        : "bg-opacity-0 hover:bg-[#ffffff12]"
                     }`}
                   >
                     <div
                       className={`bankGothic bg-clip-text text-transparent uppercase ${
                         sortCriterion === "PnL"
                           ? "bg-gradient-to-t from-[#34C796] to-[#0B7A55]"
-                          : "bg-grey"
+                          : "bg-[#ffffff80]"
                       }`}
                     >
                       PnL
@@ -361,21 +392,21 @@ const Stats: FC = () => {
                   className={`w-[120px] rounded-lg h-8 flex flex-row items-center justify-center box-border ${
                     sortCriterion === "totalVolume"
                       ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
-                      : "bg-transparent border border-grey"
+                      : "bg-transparent border border-[#ffffff24]"
                   }`}
                 >
                   <div
                     className={`flex justify-center items-center h-full w-full rounded-lg ${
                       sortCriterion === "totalVolume"
                         ? "bg-[#0B111B] bg-opacity-80"
-                        : "bg-opacity-0 hover:bg-[#484c6d5b]"
+                        : "bg-opacity-0 hover:bg-[#ffffff12]"
                     }`}
                   >
                     <div
                       className={`bankGothic bg-clip-text text-transparent uppercase ${
                         sortCriterion === "totalVolume"
                           ? "bg-gradient-to-t from-[#34C796] to-[#0B7A55]"
-                          : "bg-grey"
+                          : "bg-[#ffffff80]"
                       }`}
                     >
                       VOL
@@ -391,8 +422,8 @@ const Stats: FC = () => {
                       className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
                         currentLeaderboard === leaderboard1Day
                           ? " cursor-pointer border-b-2 border-gradient"
-                          : "cursor-pointer text-grey-text "
-                      } ${currentLeaderboard == leaderboard1Day ? "text-white" : "text-gray-text"} `}
+                          : "cursor-pointer text-[#ffffff60] "
+                      } ${currentLeaderboard == leaderboard1Day ? "text-white" : "text-[#ffffff60]"} `}
                     >
                       1<span className="ml-0.5">d</span>
                     </div>
@@ -405,8 +436,8 @@ const Stats: FC = () => {
                       className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
                         currentLeaderboard === leaderboard7Days
                           ? " cursor-pointer border-b-2 border-gradient"
-                          : "cursor-pointer text-grey-text "
-                      } ${currentLeaderboard == leaderboard7Days ? "text-white" : "text-gray-text"} `}
+                          : "cursor-pointer text-[#ffffff60] "
+                      } ${currentLeaderboard == leaderboard7Days ? "text-white" : "text-[#ffffff60]"} `}
                     >
                       7<span className="ml-0.5">d</span>
                     </div>
@@ -421,8 +452,8 @@ const Stats: FC = () => {
                       className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
                         currentLeaderboard === leaderboardCompetetion
                           ? " cursor-pointer border-b-2 border-gradient"
-                          : "cursor-pointer text-grey-text "
-                      } ${currentLeaderboard == leaderboardCompetetion ? "text-white" : "text-gray-text"} `}
+                          : "cursor-pointer text-[#ffffff60] "
+                      } ${currentLeaderboard == leaderboardCompetetion ? "text-white" : "text-[#ffffff60]"} `}
                     >
                       Comp
                     </div>
@@ -434,8 +465,8 @@ const Stats: FC = () => {
                     className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
                       currentLeaderboard === leaderboard30Days
                         ? " cursor-pointer border-b-2 border-gradient"
-                        : "cursor-pointer text-grey-text "
-                    } ${currentLeaderboard == leaderboard30Days ? "text-white" : "text-gray-text"} `}
+                        : "cursor-pointer text-[#ffffff60] "
+                    } ${currentLeaderboard == leaderboard30Days ? "text-white" : "text-[#ffffff60]"} `}
                   >
                     30<span className="ml-0.5">d</span>
                   </div>
@@ -446,8 +477,8 @@ const Stats: FC = () => {
                     className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
                       currentLeaderboard === leaderboardallDays
                         ? " cursor-pointer border-b-2 border-gradient"
-                        : "cursor-pointer text-grey-text "
-                    } ${currentLeaderboard == leaderboardallDays ? "text-white" : "text-gray-text"} `}
+                        : "cursor-pointer text-[#ffffff60] "
+                    } ${currentLeaderboard == leaderboardallDays ? "text-white" : "text-[#ffffff60]"} `}
                   >
                     ALL
                   </div>
@@ -462,8 +493,8 @@ const Stats: FC = () => {
                       className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
                         currentLeaderboard === leaderboard1Day
                           ? " cursor-pointer border-b-2 border-gradient"
-                          : "cursor-pointer text-grey-text "
-                      } ${currentLeaderboard == leaderboard1Day ? "text-white" : "text-gray-text"} `}
+                          : "cursor-pointer text-[#ffffff60] "
+                      } ${currentLeaderboard == leaderboard1Day ? "text-white" : "text-[#ffffff60]"} `}
                     >
                       1 DAY
                     </div>
@@ -476,8 +507,8 @@ const Stats: FC = () => {
                       className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
                         currentLeaderboard === leaderboard7Days
                           ? " cursor-pointer border-b-2 border-gradient"
-                          : "cursor-pointer text-grey-text "
-                      } ${currentLeaderboard == leaderboard7Days ? "text-white" : "text-gray-text"} `}
+                          : "cursor-pointer text-[#ffffff60] "
+                      } ${currentLeaderboard == leaderboard7Days ? "text-white" : "text-[#ffffff60]"} `}
                     >
                       7 DAYS
                     </div>
@@ -492,8 +523,8 @@ const Stats: FC = () => {
                       className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
                         currentLeaderboard === leaderboardCompetetion
                           ? " cursor-pointer border-b-2 border-gradient"
-                          : "cursor-pointer text-grey-text "
-                      } ${currentLeaderboard == leaderboardCompetetion ? "text-white" : "text-gray-text"} `}
+                          : "cursor-pointer text-[#ffffff60] "
+                      } ${currentLeaderboard == leaderboardCompetetion ? "text-white" : "text-[#ffffff60]"} `}
                     >
                       COMPETITION
                     </div>
@@ -505,8 +536,8 @@ const Stats: FC = () => {
                     className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
                       currentLeaderboard === leaderboard30Days
                         ? " cursor-pointer border-b-2 border-gradient"
-                        : "cursor-pointer text-grey-text "
-                    } ${currentLeaderboard == leaderboard30Days ? "text-white" : "text-gray-text"} `}
+                        : "cursor-pointer text-[#ffffff60] "
+                    } ${currentLeaderboard == leaderboard30Days ? "text-white" : "text-[#ffffff60]"} `}
                   >
                     30 DAYS
                   </div>
@@ -517,8 +548,8 @@ const Stats: FC = () => {
                     className={`text-xl leading-[30px] bankGothic transition-colors duration-300 ease-in-out ${
                       currentLeaderboard === leaderboardallDays
                         ? " cursor-pointer border-b-2 border-gradient"
-                        : "cursor-pointer text-grey-text "
-                    } ${currentLeaderboard == leaderboardallDays ? "text-white" : "text-gray-text"} `}
+                        : "cursor-pointer text-[#ffffff60] "
+                    } ${currentLeaderboard == leaderboardallDays ? "text-white" : "text-[#ffffff60]"} `}
                   >
                     ALL TIME
                   </div>
@@ -535,14 +566,14 @@ const Stats: FC = () => {
                   style={{ position: "relative", zIndex: 100 }}
                   className="w-full text-3xl flex flex-col md:flex-row items-start justify-start gap-[8px]"
                 >
-                  <div className="z-10 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-col items-center justify-center pt-4 px-4 pb-6 gap-[16px] border-[1px] border-solid border-layer-3">
+                  <div className="z-10 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-col items-center justify-center pt-4 px-4 pb-6 gap-[16px] ">
                     <div className="flex flex-col items-center justify-center gap-[4px]">
                       <img
                         className="relative w-[84.7px] h-[80.9px]"
                         alt=""
                         src={`/sheesh/${24 + index}.svg`}
                       />
-                      <div className="relative leading-[100%] font-medium">
+                      <div className="relative leading-[100%] text-[#ffffff80]">
                         <a
                           href={`https://solscan.io/account/${item.playerAcc}`}
                           target="_blank"
@@ -551,7 +582,7 @@ const Stats: FC = () => {
                         >{`${item.playerAcc.slice(0, 3)}...${item.playerAcc.slice(-3)}`}</a>
                       </div>
                     </div>
-                    <div className="self-stretch flex flex-row items-center justify-between text-right text-xs text-grey-text font-poppins">
+                    <div className="self-stretch flex flex-row items-center justify-between text-right text-xs text-[#ffffff60] font-poppins">
                       <div className="flex flex-col items-start justify-center gap-[16px]">
                         <div className="flex flex-col items-start justify-center gap-[4px]">
                           <div className="relative leading-[12px]">
@@ -603,8 +634,8 @@ const Stats: FC = () => {
             style={{ position: "relative", zIndex: 100 }}
             className="md:px-0 px-2"
           >
-            <div className="z-10 h-[600px] overflow-scroll custom-scrollbar mt-2 rounded-lg md:rounded-2xl bg-layer-1 box-border w-full overflow-hidden flex flex-col items-start justify-start p-4 gap-[16px] text-right font-poppins border-[1px] border-solid border-layer-3">
-              <table className="w-full relative h-3 text-sm text-grey-text text-end ">
+            <div className="z-10 h-[600px] overflow-scroll custom-scrollbar mt-2 rounded-lg md:rounded-2xl bg-layer-1 box-border w-full overflow-hidden flex flex-col items-start justify-start p-4 gap-[16px] text-right font-poppins ">
+              <table className="w-full relative h-3 text-sm text-[#ffffff60] text-end ">
                 <thead>
                   <tr>
                     <th className=" font-normal w-[3%] leading-[9.98px] text-start font-poppins">

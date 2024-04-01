@@ -1317,6 +1317,8 @@ const Earn: FC = () => {
   }, [publicKey, connection]);
 
   const [activeSection, setActiveSection] = useState("deposit");
+  const [activeSection1, setActiveSection1] = useState("stake");
+
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
@@ -1330,6 +1332,8 @@ const Earn: FC = () => {
 
   const showDeposit = () => setActiveSection("deposit");
   const showWithdraw = () => setActiveSection("withdraw");
+  const showStake = () => setActiveSection1("stake");
+  const showUnstake = () => setActiveSection1("unstake");
 
   const result =
     LProviderdata?.withdrawalRequestAmount != 0 &&
@@ -1355,24 +1359,60 @@ const Earn: FC = () => {
       : ((LProviderdata?.pusdcStaked || 0) / LAMPORTS_PER_SOL) * 1000;
 
   return (
-    <div>
+    <div className="bg-base relative overflow-hidden">
+      <div
+        className="hidden md:flex overflow-hidden absolute futures-circles1 w-3/4 h-full "
+        style={{
+          zIndex: 0,
+          transform: "translate(-70%, 50%)",
+          right: "0%",
+        }}
+      >
+        {" "}
+      </div>
+      <div
+        className="hidden md:flex overflow-hidden absolute futures-circles2 w-full h-full"
+        style={{
+          zIndex: 0,
+          transform: "translate(72%, 25%)",
+          right: "0%",
+        }}
+      ></div>
+      <div
+        className="md:hidden overflow-hidden absolute futures-circles1 w-3/4  h-2/3"
+        style={{
+          zIndex: 0,
+          transform: "translate(-70%, 70%)",
+          right: "0%",
+        }}
+      >
+        {" "}
+      </div>
+      <div
+        className="md:hidden overflow-hidden absolute futures-circles2 w-full h-3/4"
+        style={{
+          zIndex: 0,
+          transform: "translate(72%, -20%)",
+          right: "0%",
+        }}
+      ></div>
       <Head>
         <title>PopFi | Vault</title>
         <meta name="description" content="PopFi" />
       </Head>
 
-      <div className="bg-base flex justify-center items-top md:pt-2 min-h-[calc(100vh-78px)]">
+      <div className="flex justify-center items-top md:pt-2 min-h-[calc(100vh-78px)]">
         <div className="w-[98%] xl:w-[60%] lg:w-[60%] md:w-[60%] sm:w-[60%] lg:min-w-[780px] md:min-w-[780px] sm:min-w-[95%] ">
           <div className="w-full bankGothic flex md:flex-row flex-col  gap-[8px] text-4xl mt-2 lg:text-5xl text-white md:justify-between items-center justify-center">
-            <h1 className="bankGothic md:text-start text-center text-4xl mt-2 lg:text-5xl text-transparent bg-clip-text bg-white">
+            <h1 className="bankGothic md:text-start text-center text-3xl mt-2 lg:text-4xl text-transparent bg-clip-text bg-white">
               Vault
             </h1>
-            <div className="w-[300px] flex flex-row items-center justify-center text-lg text-primary font-bankgothic-md-bt border-b-[1px] border-solid border-layer-3">
+            <div className="w-[300px] flex flex-row items-center justify-center text-lg text-primary font-bankgothic-md-bt border-b-[2px] border-solid border-[#ffffff12]">
               <button
                 className={`flex-1   h-10 flex flex-row  items-center justify-center py-3 px-6 transition-all duration-200 ease-in-out  ${
                   selectedCurrency === "SOL"
                     ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-b-[2px] border-solid border-primary"
-                    : "text-grey long-short-button"
+                    : "text-[#ffffff60]  long-short-button"
                 }`}
                 onClick={() => setSelectedCurrency("SOL")}
               >
@@ -1394,7 +1434,7 @@ const Earn: FC = () => {
                 className={`flex-1   h-10 flex flex-row items-center justify-center py-3 px-6 transition-all duration-200 ease-in-out  ${
                   selectedCurrency === "USDC"
                     ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-b-[2px] border-solid border-primary"
-                    : "text-grey long-short-button"
+                    : "text-[#ffffff60]  long-short-button"
                 }`}
                 onClick={() => setSelectedCurrency("USDC")} // Set selectedCurrency to 'USDC'
               >
@@ -1408,13 +1448,8 @@ const Earn: FC = () => {
               </button>
             </div>
           </div>
-          <img
-            className="hidden md:block absolute h-[39.41%] w-[21.83%] top-[12.12%] bottom-[48.47%] right-[5%] max-w-full overflow-hidden max-h-full"
-            alt=""
-            src="/sheesh/abstract06.svg"
-          />
-          <div className="pt-2 bankGothic text-grey-text flex md:flex-row flex-col items-center justify-center gap-[16px] text-base  w-full px-2 md:px-0">
-            <div className="z-10 md:w-[55%] w-full flex flex-col items-center justify-center relative gap-[8px] w-full self-stretch bg-gradient-to-t from-[#0B7A55] to-[#34C796] md:rounded-2xl rounded-lg p-[1px] ">
+          <div className="pt-2 bankGothic text-[#ffffff60] flex md:flex-row flex-col items-center justify-center gap-[16px] text-[1rem]  w-full px-2 md:px-0">
+            <div className="z-10 md:w-[55%] w-full flex flex-col items-center justify-center relative gap-[8px] w-full self-stretch bg-[#23EAA4] hover:bg-[#23EAA490] transition-all duration-200 ease-in-out text-black md:rounded-2xl rounded-lg p-[1px] ">
               <div className="w-full h-full self-stretch md:rounded-2xl rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#0b111b]  w-full flex flex-col items-end justify-center">
                 <div className="bg-base bg-opacity-70 w-full h-full self-stretch md:rounded-2xl rounded-lg  w-full flex flex-row items-center justify-center md:px-8 sm:gap-[16px]">
                   <img
@@ -1427,12 +1462,12 @@ const Earn: FC = () => {
                     }
                   />
                   <div className="flex flex-col w-2/3 text-left h-[62px] flex flex-col items-start justify-center gap-[8px] z-[0] text-[18px]">
-                    <div className="relative leading-[100%] font-medium">
+                    <div className="relative leading-[100%] text-[#ffffff60]">
                       {selectedCurrency === "SOL"
                         ? `SOLANA VAULT`
                         : `USDC VAULT`}
                     </div>
-                    <div className="relative text-[36px] leading-[100%] font-semibold font-poppins bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] text-left">
+                    <div className="relative text-[36px] leading-[100%] font-semibold font-poppins bg-[#23EAA4] hover:bg-[#23EAA490] transition-all duration-200 ease-in-out text-black [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] text-left">
                       {(
                         (calculateAPY() /
                           (LPdata?.totalDeposits / LAMPORTS_PER_SOL)) *
@@ -1445,7 +1480,7 @@ const Earn: FC = () => {
                 </div>
               </div>
             </div>
-            <div className="z-10 bankGothic text-grey-text md:rounded-2xl rounded-lg bg-layer-1 box-border w-full flex sm:flex-row flex-col sm:items-center sm:justify-start items-start justify-center md:p-8 p-4 gap-[32px] text-sm border-[1px] border-solid border-layer-3">
+            <div className="z-10 bankGothic text-[#ffffff60] md:rounded-2xl rounded-lg bg-layer-1 box-border w-full flex sm:flex-row flex-col sm:items-center sm:justify-start items-start justify-center md:p-8 p-4 gap-[32px] text-sm">
               <div className="w-1/2 flex flex-col items-start justify-center gap-[32px]">
                 <div className="flex flex-row items-center justify-start gap-[8px]">
                   <img
@@ -1454,10 +1489,10 @@ const Earn: FC = () => {
                     src="/sheesh/icons.svg"
                   />
                   <div className="flex flex-col items-start justify-center gap-[4px]">
-                    <div className=" relative leading-[100%] font-medium">
-                      EPOCH
+                    <div className=" relative leading-[100%] text-[#ffffff60]">
+                      Epoch
                     </div>
-                    <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
+                    <div className="relative text-xl leading-[100%] text-[#ffffff60] font-poppins text-white text-right">
                       {LPdata?.epoch || 0}
                     </div>
                   </div>
@@ -1466,13 +1501,13 @@ const Earn: FC = () => {
                   <img
                     className="relative rounded-lg w-[42px] h-[42px]"
                     alt=""
-                    src="/sheesh/icons1.svg"
+                    src="/sheesh/icons-1.png"
                   />
                   <div className="flex flex-col items-start justify-center gap-[4px]">
-                    <div className="relative leading-[100%] font-medium">
-                      TOKEN RATIO
+                    <div className="relative leading-[100%] text-[#ffffff60]">
+                      Token Ratio
                     </div>
-                    <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
+                    <div className="relative text-xl leading-[100%] text-[#ffffff60] font-poppins text-white text-left">
                       {selectedCurrency === "SOL"
                         ? `${(
                             ((LPdata?.psolValuation || 0) / LAMPORTS_PER_SOL) *
@@ -1491,13 +1526,13 @@ const Earn: FC = () => {
                   <img
                     className="relative rounded-lg w-[42px] h-[42px]"
                     alt=""
-                    src="/sheesh/icons2.svg"
+                    src="/sheesh/icons-2.png"
                   />
                   <div className="flex flex-col items-start justify-center gap-[4px]">
-                    <div className="relative leading-[100%] font-medium">
+                    <div className="relative leading-[100%] text-[#ffffff60]">
                       TVL
                     </div>
-                    <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
+                    <div className="relative text-xl leading-[100%] text-[#ffffff60] font-poppins text-white text-right">
                       {selectedCurrency === "SOL"
                         ? `${((LPdata?.totalDeposits || 0) / LAMPORTS_PER_SOL).toFixed(2)} SOL`
                         : `${(((LPdata?.usdcTotalDeposits || 0) / LAMPORTS_PER_SOL) * 1000).toFixed(0)} USDC`}
@@ -1509,14 +1544,14 @@ const Earn: FC = () => {
                     <img
                       className="relative rounded-lg w-[42px] h-[42px]"
                       alt=""
-                      src="/sheesh/icons3.svg"
+                      src="/sheesh/icons-5.svg"
                     />
 
                     <div className="flex flex-col items-start justify-center gap-[4px]">
-                      <div className="relative leading-[100%] font-medium">
-                        UNLOCKING IN
+                      <div className="relative leading-[100%] text-[#ffffff60]">
+                        Unlocking In
                       </div>
-                      <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
+                      <div className="relative text-xl leading-[100%] text-[#ffffff60] font-poppins text-white text-right">
                         {timeUntilNextEpoch}
                       </div>
                     </div>
@@ -1526,13 +1561,13 @@ const Earn: FC = () => {
                     <img
                       className="relative rounded-lg w-[42px] h-[42px]"
                       alt=""
-                      src="/sheesh/icons4.svg"
+                      src="/sheesh/icons-3.png"
                     />
                     <div className="flex flex-col items-start justify-center gap-[4px]">
-                      <div className="relative leading-[100%] font-medium">
-                        LOCKING IN
+                      <div className="relative leading-[100%] text-[#ffffff60]">
+                        Locking In
                       </div>
-                      <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
+                      <div className="relative text-xl leading-[100%] text-[#ffffff60] font-poppins text-white text-right">
                         {timeUntilNextlockEpoch}
                       </div>
                     </div>
@@ -1548,7 +1583,7 @@ const Earn: FC = () => {
               className={`text-2xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
                 activeSection === "deposit"
                   ? " cursor-pointer border-b-2 border-gradient"
-                  : "cursor-pointer text-grey-text "
+                  : "cursor-pointer text-[#ffffff60] "
               } ${activeSection === "withdraw" ? "" : "text-gray-text"} `}
             >
               Deposit
@@ -1558,20 +1593,20 @@ const Earn: FC = () => {
               className={`text-2xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
                 activeSection === "withdraw"
                   ? "cursor-pointer border-b-2 border-gradient"
-                  : "cursor-pointer text-grey-text "
+                  : "cursor-pointer text-[#ffffff60] "
               } ${activeSection === "deposit" ? "" : "text-gray-text"} `}
             >
               Withdraw
             </button>
           </div>
-          <div className="z-10 mt-4 text-grey-text bankGothic w-full flex md:flex-row flex-col items-start justify-start gap-[16px] text-sm px-2 md:px-0">
+          <div className="z-10 mt-4 text-[#ffffff60] bankGothic w-full flex md:flex-row flex-col items-start justify-start gap-[16px] text-sm px-2 md:px-0">
             {(activeSection === "deposit" || !isMobile) && (
-              <div className="md:w-1/2 self-stretch flex-1 rounded-lg bg-layer-1 flex flex-col items-start justify-start md:p-6 p-4 gap-[24px] border-[1px] border-solid border-layer-3">
-                <div className="self-stretch flex flex-col items-start justify-center gap-[16px] text-5xl text-white">
-                  <div className="hidden md:flex relative leading-[100%] text-[30px] font-medium">
-                    DEPOSIT
+              <div className="md:w-1/2 self-stretch flex-1 rounded-lg bg-layer-1 flex flex-col items-start justify-start md:p-6 p-4 gap-[24px]">
+                <div className="self-stretch flex flex-col items-start justify-center gap-[16px] text-5xl">
+                  <div className="hidden md:flex relative leading-[100%] text-[24px] text-white">
+                    Deposit
                   </div>
-                  <div className="self-stretch relative text-base leading-[140%] font-light font-poppins text-grey-text">
+                  <div className="self-stretch relative text-[1rem] leading-[140%] text-[#ffffff60]">
                     <p className="m-0">
                       Stake your SOL in the vault and earn fees from every trade
                       carried out on our platform. As a staker, you stand as the
@@ -1591,13 +1626,13 @@ const Earn: FC = () => {
                     <img
                       className="relative rounded-lg w-[42px] h-[42px]"
                       alt=""
-                      src="/sheesh/icons7.svg"
+                      src="/sheesh/icons-4.svg"
                     />
                     <div className="flex flex-col items-start justify-center gap-[4px]">
-                      <div className="relative leading-[100%] font-medium">
-                        DEPOSITED
+                      <div className="relative leading-[100%] text-[#ffffff60]">
+                        Deposited
                       </div>
-                      <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
+                      <div className="relative text-xl leading-[100%] text-[#ffffff60] font-poppins text-white text-right">
                         {selectedCurrency === "SOL"
                           ? `${(
                               (tokenBalance * LPdata?.psolValuation * 1000 ||
@@ -1617,7 +1652,7 @@ const Earn: FC = () => {
                       Enter Amount
                     </div>
                   </div>
-                  <div className="hover:bg-[#484c6d5b] self-stretch rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-grey border-[1px] border-solid border-layer-3">
+                  <div className=" hover:bg-[#ffffff24] transition-all duration-200 ease-in-out self-stretch rounded bg-[#ffffff12] box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-[1rem] text-grey">
                     <input
                       type="text"
                       className="w-full h-full input3-capsule__input relative leading-[14px] "
@@ -1641,29 +1676,29 @@ const Earn: FC = () => {
                           .toString();
                         setdepositValue(maxValue); // Update the state, which will update the input value reactively
                       }}
-                      className="relative leading-[14px] font-medium bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]"
+                      className="relative leading-[14px] text-[#ffffff60] bg-[#23EAA490] hover:bg-[#23EAA4] transition-all duration-200 ease-in-out text-black [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]"
                     >
                       MAX
                     </button>
                   </div>
                 </div>
-                <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]  w-full h-10   box-border text-center text-lg">
+                <div className="rounded-lg bg-[#23EAA490] hover:bg-[#23EAA4] transition-all duration-200 ease-in-out text-black p-[1px]  w-full h-10   box-border text-center text-lg">
                   <button
                     onClick={deposittoLP}
-                    className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] hover:bg-opacity-60 bg-opacity-80 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
+                    className="flex flex-row items-center justify-center h-full w-full py-3 px-6 relative font-semibold rounded-lg"
                   >
-                    DEPOSIT
+                    Deposit
                   </button>
                 </div>
               </div>
             )}
             {(activeSection === "withdraw" || !isMobile) && (
-              <div className="self-stretch md:w-1/2 z-10 flex-1 rounded-lg bg-layer-1 flex flex-col items-start justify-start md:p-6 p-4 gap-[12px] border-[1px] border-solid border-layer-3">
-                <div className="self-stretch flex flex-col items-start justify-center gap-[16px] text-5xl text-white">
-                  <div className="hidden md:flex  relative leading-[100%] font-medium  text-[30px]">
-                    WITHDRAW
+              <div className="self-stretch md:w-1/2 z-10 flex-1 rounded-lg bg-layer-1 flex flex-col items-start justify-start md:p-6 p-4 gap-[12px]">
+                <div className="self-stretch flex flex-col items-start justify-center gap-[16px] text-5xl">
+                  <div className="hidden md:flex  relative leading-[100%] text-white  text-[24px]">
+                    Withdraw
                   </div>
-                  <div className="self-stretch relative text-base leading-[140%] font-light font-poppins text-grey-text">
+                  <div className="self-stretch relative text-[1rem] leading-[140%] font-light font-poppins text-[#ffffff60]">
                     Throughout the week, your staked SOL earns trade fees.
                     Withdrawals, processed on an epoch basis, can be initiated
                     only during weekends and are available for claiming the
@@ -1678,13 +1713,13 @@ const Earn: FC = () => {
                     <img
                       className="relative rounded-lg w-[42px]"
                       alt=""
-                      src="/sheesh/icons6.svg"
+                      src="/sheesh/icons-8.svg"
                     />
                     <div className="flex flex-col items-start justify-start gap-[4px]">
-                      <div className="relative leading-[100%] font-medium">
-                        WITHDRAWABLE
+                      <div className="relative leading-[100%] text-[#ffffff60]">
+                        Withdrawable
                       </div>
-                      <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
+                      <div className="relative text-xl leading-[100%] text-[#ffffff60] font-poppins text-white text-right">
                         {selectedCurrency === "SOL"
                           ? `${(tokenBalance || 0).toFixed(2)} pSOL`
                           : `${(tokenBalance || 0).toFixed(0)} pUSDC`}
@@ -1695,13 +1730,13 @@ const Earn: FC = () => {
                     <img
                       className="relative rounded-lg w-[42px]"
                       alt=""
-                      src="/sheesh/icons1.svg"
+                      src="/sheesh/icons-1.png"
                     />
                     <div className="flex flex-col items-start justify-center gap-[4px]">
-                      <div className="relative leading-[100%] font-medium">
-                        PENDING WITHDRAWAL
+                      <div className="relative leading-[100%] text-[#ffffff60]">
+                        Pending Withdrawal
                       </div>
-                      <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
+                      <div className="relative text-xl leading-[100%] text-[#ffffff60] font-poppins text-white text-right">
                         {selectedCurrency === "SOL"
                           ? `${result}`
                           : `${usdcresult}`}
@@ -1711,7 +1746,7 @@ const Earn: FC = () => {
                 </div>
                 {LProviderdata?.withdrawalRequestAmount != 0 &&
                 LProviderdata?.withdrawalRequestEpoch == LPdata?.epoch ? (
-                  <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]   w-full h-10   box-border text-center text-lg">
+                  <div className="rounded-lg bg-[#23EAA490] hover:bg-[#23EAA4] transition-all duration-200 ease-in-out text-black p-[1px]   w-full h-10   box-border text-center text-lg">
                     <button
                       onClick={withdrawfromLP}
                       className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
@@ -1727,7 +1762,7 @@ const Earn: FC = () => {
                           Enter Amount
                         </div>
                       </div>
-                      <div className=" hover:bg-[#484c6d5b] self-stretch rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-grey border-[1px] border-solid border-layer-3">
+                      <div className="  hover:bg-[#ffffff24] transition-all duration-200 ease-in-out self-stretch rounded bg-[#ffffff12] box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-[1rem] text-grey">
                         <input
                           type="text"
                           className="w-full h-full input3-capsule__input relative leading-[14px] "
@@ -1745,16 +1780,16 @@ const Earn: FC = () => {
                             const maxValue = Number(balance).toString();
                             setwithdrawValue(maxValue);
                           }}
-                          className="relative leading-[14px] font-medium bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]"
+                          className="relative leading-[14px] text-[#ffffff60] bg-[#23EAA490] hover:bg-[#23EAA4] transition-all duration-200 ease-in-out text-black [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]"
                         >
                           MAX
                         </button>
                       </div>
                     </div>
-                    <div className="mt-6 rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]  w-full h-10   box-border text-center text-lg">
+                    <div className="mt-6 rounded-lg bg-[#23EAA490] hover:bg-[#23EAA4] transition-all duration-200 ease-in-out text-black p-[1px]  w-full h-10   box-border text-center text-lg">
                       <button
                         onClick={withdrawfromLP}
-                        className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
+                        className="flex flex-row items-center justify-center h-full w-full py-3 px-6 relative font-semibold rounded-lg"
                       >
                         WITHDRAW
                       </button>
@@ -1766,34 +1801,34 @@ const Earn: FC = () => {
           </div>
           <div className="w-full md:hidden flex justify-center items-center gap-4 my-4">
             <button
-              onClick={showDeposit}
+              onClick={showStake}
               className={`text-2xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-                activeSection === "deposit"
+                activeSection1 === "stake"
                   ? " cursor-pointer border-b-2 border-gradient"
-                  : "cursor-pointer text-grey-text "
-              } ${activeSection === "withdraw" ? "" : "text-gray-text"} `}
+                  : "cursor-pointer text-[#ffffff60] "
+              } ${activeSection1 === "unstake" ? "" : "text-gray-text"} `}
             >
               Stake
             </button>
             <button
-              onClick={showWithdraw}
+              onClick={showUnstake}
               className={`text-2xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
-                activeSection === "withdraw"
+                activeSection1 === "unstake"
                   ? "cursor-pointer border-b-2 border-gradient"
-                  : "cursor-pointer text-grey-text "
-              } ${activeSection === "deposit" ? "" : "text-gray-text"} `}
+                  : "cursor-pointer text-[#ffffff60] "
+              } ${activeSection1 === "stake" ? "" : "text-gray-text"} `}
             >
               Unstake
             </button>
           </div>
-          <div className="z-10 mt-4 text-grey-text bankGothic w-full flex md:flex-row flex-col items-start justify-start gap-[16px] text-sm px-2 md:px-0">
-            {(activeSection === "deposit" || !isMobile) && (
-              <div className="md:w-1/2 self-stretch flex-1 rounded-lg bg-layer-1 flex flex-col items-start justify-start md:p-6 p-4 gap-[24px] border-[1px] border-solid border-layer-3">
+          <div className="z-10 mt-4 text-[#ffffff60] bankGothic w-full flex md:flex-row flex-col items-start justify-start gap-[16px] text-sm px-2 md:px-0">
+            {(activeSection1 === "stake" || !isMobile) && (
+              <div className="md:w-1/2 self-stretch flex-1 rounded-lg bg-layer-1 flex flex-col items-start justify-start md:p-6 p-4 gap-[24px]">
                 <div className="self-stretch flex flex-col items-start justify-center gap-[16px] text-5xl text-white">
-                  <div className="hidden md:flex relative leading-[100%] text-[30px] font-medium">
-                    STAKE
+                  <div className="hidden md:flex relative leading-[100%] text-[24px] text-white">
+                    Stake
                   </div>
-                  <div className="self-stretch relative text-base leading-[140%] font-light font-poppins text-grey-text">
+                  <div className="self-stretch relative text-[1rem] leading-[140%] font-light font-poppins text-[#ffffff60]">
                     <p className="m-0">
                       Stake your LP tokens in the vault and earn Points for
                       every trade on the platform.
@@ -1805,14 +1840,14 @@ const Earn: FC = () => {
                     <img
                       className="relative rounded-lg w-[42px] h-[42px]"
                       alt=""
-                      src="/sheesh/icons7.svg"
+                      src="/sheesh/icons-4.svg"
                     />
                     <div className="flex flex-col items-start justify-center gap-[4px]">
-                      <div className="relative leading-[100%] font-medium">
-                        STAKED
+                      <div className="relative leading-[100%] text-[#ffffff60]">
+                        Staked
                       </div>
 
-                      <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
+                      <div className="relative text-xl leading-[100%] text-[#ffffff60] font-poppins text-white text-right">
                         {selectedCurrency === "SOL"
                           ? `${(
                               (LProviderdata?.psolStaked || 0) /
@@ -1827,12 +1862,12 @@ const Earn: FC = () => {
                   </div>
                   <div className="w-1/2 flex flex-row items-center justify-start gap-[8px]">
                     <div className="flex flex-col items-start justify-center gap-[4px]">
-                      <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]  w-full h-10   box-border text-center text-lg">
+                      <div className="rounded-lg bg-[#23EAA490] hover:bg-[#23EAA4] transition-all duration-200 ease-in-out text-black p-[1px]  w-full h-10   box-border text-center text-lg">
                         <button
                           onClick={getPoints}
-                          className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
+                          className="flex flex-row items-center justify-center h-full w-full py-3 px-6 relative font-semibold rounded-lg"
                         >
-                          GET POINTS
+                          Get Points
                         </button>
                       </div>
                     </div>
@@ -1844,7 +1879,7 @@ const Earn: FC = () => {
                       Enter Amount
                     </div>
                   </div>
-                  <div className="hover:bg-[#484c6d5b] self-stretch rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-grey border-[1px] border-solid border-layer-3">
+                  <div className=" hover:bg-[#ffffff24] transition-all duration-200 ease-in-out self-stretch rounded bg-[#ffffff12] box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-[1rem] text-grey">
                     <input
                       type="text"
                       className="w-full h-full input3-capsule__input relative leading-[14px] "
@@ -1862,29 +1897,29 @@ const Earn: FC = () => {
                         const maxValue = Number(balance).toString();
                         setStakeValue(maxValue);
                       }}
-                      className="relative leading-[14px] font-medium bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]"
+                      className="relative leading-[14px] text-[#ffffff60] bg-[#23EAA490] hover:bg-[#23EAA4] transition-all duration-200 ease-in-out text-black [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]"
                     >
                       MAX
                     </button>
                   </div>
                 </div>
-                <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]  w-full h-10   box-border text-center text-lg">
+                <div className="rounded-lg bg-[#23EAA490] hover:bg-[#23EAA4] transition-all duration-200 ease-in-out text-black p-[1px]  w-full h-10   box-border text-center text-lg">
                   <button
                     onClick={stakeTokens}
-                    className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] hover:bg-opacity-60 bg-opacity-80 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
+                    className="flex flex-row items-center justify-center h-full w-full py-3 px-6 relative font-semibold rounded-lg"
                   >
-                    STAKE
+                    Stake
                   </button>
                 </div>
               </div>
             )}
-            {(activeSection === "withdraw" || !isMobile) && (
-              <div className="self-stretch md:w-1/2 z-10 flex-1 rounded-lg bg-layer-1 flex flex-col items-start justify-start md:p-6 p-4 gap-[12px] border-[1px] border-solid border-layer-3">
+            {(activeSection1 === "unstake" || !isMobile) && (
+              <div className="self-stretch md:w-1/2 z-10 flex-1 rounded-lg bg-layer-1 flex flex-col items-start justify-start md:p-6 p-4 gap-[12px]">
                 <div className="self-stretch flex flex-col items-start justify-center gap-[16px] text-5xl text-white">
-                  <div className="hidden md:flex  relative leading-[100%] font-medium  text-[30px]">
+                  <div className="hidden md:flex  relative leading-[100%] text-white text-[24px]">
                     UNSTAKE
                   </div>
-                  <div className="self-stretch relative text-base leading-[140%] font-light font-poppins text-grey-text">
+                  <div className="self-stretch relative text-[1rem] leading-[140%]  text-[#ffffff60]">
                     Unstake your LP tokens.
                   </div>
                 </div>
@@ -1894,13 +1929,13 @@ const Earn: FC = () => {
                     <img
                       className="relative rounded-lg w-[42px]"
                       alt=""
-                      src="/sheesh/icons6.svg"
+                      src="/sheesh/icons-8.svg"
                     />
                     <div className="flex flex-col items-start justify-start gap-[4px]">
-                      <div className="relative leading-[100%] font-medium">
-                        UNSTAKEABLE
+                      <div className="relative leading-[100%] text-[#ffffff60]">
+                        Unstakeable
                       </div>
-                      <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
+                      <div className="relative text-xl leading-[100%] text-[#ffffff60] font-poppins text-white text-right">
                         {selectedCurrency === "SOL"
                           ? `${(
                               (LProviderdata?.psolStaked || 0) /
@@ -1921,7 +1956,7 @@ const Earn: FC = () => {
                         Enter Amount
                       </div>
                     </div>
-                    <div className=" hover:bg-[#484c6d5b] self-stretch rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-grey border-[1px] border-solid border-layer-3">
+                    <div className="  hover:bg-[#ffffff24] transition-all duration-200 ease-in-out self-stretch rounded bg-[#ffffff12] box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-[1rem] text-grey">
                       <input
                         type="text"
                         className="w-full h-full input3-capsule__input relative leading-[14px] "
@@ -1939,18 +1974,18 @@ const Earn: FC = () => {
                           const maxValue = Number(balance).toString();
                           setUnstakeValue(maxValue);
                         }}
-                        className="relative leading-[14px] font-medium bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]"
+                        className="relative leading-[14px] text-[#ffffff60] bg-[#23EAA490] hover:bg-[#23EAA4] transition-all duration-200 ease-in-out text-black [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]"
                       >
                         MAX
                       </button>
                     </div>
                   </div>
-                  <div className="mt-6 rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]  w-full h-10   box-border text-center text-lg">
+                  <div className="mt-6 rounded-lg bg-[#23EAA490] hover:bg-[#23EAA4] transition-all duration-200 ease-in-out text-black p-[1px]  w-full h-10   box-border text-center text-lg">
                     <button
                       onClick={unstakeTokens}
-                      className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
+                      className="flex flex-row items-center justify-center h-full w-full py-3 px-6 relative font-semibold rounded-lg"
                     >
-                      UNSTAKE
+                      Unstake
                     </button>
                   </div>
                 </div>
