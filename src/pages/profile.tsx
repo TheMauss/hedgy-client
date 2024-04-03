@@ -889,7 +889,7 @@ const Stats: FC = () => {
   const copyToClipboard = () => {
     // Ensure decodedString exists and is not empty
     if (MydecodedString) {
-      const urlToCopy = `http://localhost:3030/profile?ref=${MydecodedString}`;
+      const urlToCopy = `http://dev.popfi.io/profile?ref=${MydecodedString}`;
       navigator.clipboard
         .writeText(urlToCopy)
         .then(() => {
