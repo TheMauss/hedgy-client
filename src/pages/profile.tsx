@@ -1,7 +1,11 @@
 import Head from "next/head";
 import { FC, useEffect, useState, useCallback } from "react";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
+import Modal from "react-modal";
+
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
+
 import {
   initializeUserAcc,
   InitializeUserAccArgs,
@@ -11,6 +15,11 @@ import { PROGRAM_ID } from "../out/programId";
 import { UserAccount } from "../out/accounts/UserAccount"; // Update with the correct path
 import { notify } from "utils/notifications";
 import { AffiliateAccount } from "../out/accounts/AffiliateAccount";
+import { initializeAffilAcc } from "../out/instructions/initializeAffilAcc"; // Update with the correct path
+import {
+  withdrawAffiliateEarnings,
+  WithdrawAffiliateEarningsArgs,
+} from "../out/instructions/withdrawAffiliateEarnings"; // Update with the correct path
 import {
   setAffilAcc,
   SetAffilAccArgs,
@@ -38,6 +47,10 @@ const ASSOCIATEDTOKENPROGRAM = new PublicKey(
   process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM
 );
 const TOKENPROGRAM = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_PROGRAM);
+const PDAHOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_PDA_HOUSEWALLET);
+const USDCPDAHOUSEWALLET = new PublicKey(
+  process.env.NEXT_PUBLIC_USDCPDA_HOUSEWALLET
+);
 
 type UserStatsType = {
   playerAcc: string;
@@ -66,6 +79,8 @@ async function doesUserhaveAffiliateCode(
   connection: Connection
 ): Promise<{
   hasCode: boolean;
+  hasReferralCode: boolean;
+  myAffiliate: Uint8Array;
   usedAffiliate: Uint8Array;
   creationTime: number;
   isInitialized: boolean;
@@ -79,6 +94,8 @@ async function doesUserhaveAffiliateCode(
     console.error("Account not found or not fetched properly.");
     return {
       hasCode: false,
+      hasReferralCode: false,
+      myAffiliate: new Uint8Array(8),
       usedAffiliate: new Uint8Array(8),
       creationTime: 0,
       isInitialized: false,
@@ -100,6 +117,8 @@ async function doesUserhaveAffiliateCode(
     console.error("Failed to decode user account data:", error);
     return {
       hasCode: false,
+      hasReferralCode: false,
+      myAffiliate: new Uint8Array(8),
       usedAffiliate: new Uint8Array(8),
       creationTime: 0,
       isInitialized: false,
@@ -116,8 +135,14 @@ async function doesUserhaveAffiliateCode(
   const userrebateTier = userAccount.rebateTier.toNumber();
 
   const hasCode = userAccount.usedAffiliate.some((value) => value !== 0);
+  const hasReferralCode = userAccount.myAffiliate.some((value) => value !== 0);
+
+  console.log("My Affiliate:", userAccount.myAffiliate);
+
   return {
     hasCode,
+    hasReferralCode,
+    myAffiliate: userAccount.myAffiliate,
     usedAffiliate: userAccount.usedAffiliate,
     creationTime: creationTimeNumber,
     isInitialized: userAccount.isInitialized, // Assuming userAccount has an isInitialized property
@@ -172,6 +197,19 @@ const Stats: FC = () => {
   const [usedAffiliate, setusedAffiliate] = useState<Uint8Array>(
     new Uint8Array()
   );
+
+  const [userAffiliateData, setUserAffiliateData] = useState<{
+    hasCode: boolean;
+    hasReferralCode: boolean;
+    myAffiliate: Uint8Array;
+    usedAffiliate: Uint8Array;
+    creationTime: number;
+    isInitialized: boolean;
+    currentEpochVolume: number;
+    prevTradingVolume: number;
+    rebateTier: number;
+  } | null>(null);
+
   const [accOld, setaccOld] = useState<number>(null);
   const [issInt, setissInt] = useState<boolean>(null);
   const balance = useUserSOLBalanceStore((s) => s.solBalance);
@@ -197,6 +235,33 @@ const Stats: FC = () => {
   const setToggleChangeShort = () => {
     setToggleState("SHORT");
   };
+
+  async function getAffiliateData(
+    affiliatePublicKey: PublicKey,
+    connection: Connection
+  ): Promise<{ account: AffiliateAccount }> {
+    const accountInfo = await connection.getAccountInfo(affiliatePublicKey);
+
+    if (!accountInfo) {
+      throw new Error("Account not found or not fetched properly.");
+    }
+
+    // Convert the buffer from Solana into a Buffer type that's used by Borsh
+    const bufferData = Buffer.from(accountInfo.data);
+
+    let affiliateAccount;
+    try {
+      // Use the AffiliateAccount class to decode the data
+      affiliateAccount = AffiliateAccount.decode(bufferData);
+    } catch (error) {
+      console.error("Failed to decode affiliate account data:", error);
+      throw error;
+    }
+
+    return {
+      account: affiliateAccount.toJSON(),
+    };
+  }
 
   const LAMPORTS_PER_SOL = 1_000_000_000;
   const wallet = useWallet();
@@ -304,6 +369,37 @@ const Stats: FC = () => {
     fetchLeaderboards();
   }, [publicKey]);
 
+  const [affiliateData, setAffiliateData] = useState<AffiliateAccount | null>(
+    null
+  );
+
+  useEffect(() => {
+    if (
+      userAffiliateData?.myAffiliate &&
+      userAffiliateData.myAffiliate.length > 0
+    ) {
+      const affiliateCodeByteArray = userAffiliateData.myAffiliate;
+      // Your logic here to derive the affiliatePublicKey using the affiliateCodeByteArray
+      // This could be similar to how you derived the 'AffilAcc' in the 'onClick' function.
+
+      const fetchAffiliateData = async () => {
+        const seedsAffil = [affiliateCodeByteArray];
+        const [affiliatePublicKey] = await PublicKey.findProgramAddress(
+          seedsAffil,
+          PROGRAM_ID
+        );
+        try {
+          const data = await getAffiliateData(affiliatePublicKey, connection);
+          setAffiliateData(data.account);
+        } catch (error) {
+          console.error("Error fetching affiliate data:", error);
+        }
+      };
+
+      fetchAffiliateData();
+    }
+  }, [userAffiliateData, connection]);
+
   useEffect(() => {
     if (currentLeaderboard.length > 0) {
       const lastItem = currentLeaderboard[currentLeaderboard.length - 1];
@@ -330,6 +426,7 @@ const Stats: FC = () => {
 
         setHasAffiliate(result.hasCode);
         setusedAffiliate(result.usedAffiliate);
+        setUserAffiliateData(result);
         setrebateTier(result.rebateTier);
         settotalVolumepast4Epoch(
           result.prevTradingVolume + result.currentEpochVolume
@@ -337,7 +434,7 @@ const Stats: FC = () => {
 
         if (!result.hasCode) {
           setusedAffiliate(result.usedAffiliate);
-
+          setUserAffiliateData(result);
           setaccOld(result.creationTime);
 
           setissInt(result.isInitialized);
@@ -489,6 +586,151 @@ const Stats: FC = () => {
     notify,
   ]);
 
+  const onClick1 = useCallback(async () => {
+    // Create the instruction to initialize the user account
+    if (!publicKey) {
+      notify({
+        type: "error",
+        message: `Wallet not connected`,
+        description: "Connect the wallet in the top panel",
+      });
+      return;
+    }
+
+    const seedsUser = [Buffer.from(publicKey.toBytes())];
+
+    const [userAcc] = await PublicKey.findProgramAddress(seedsUser, PROGRAM_ID);
+
+    const seedsAffil = [affiliateCodeToUint8Array(affiliateCode)];
+    const usdcAcc = await usdcSplTokenAccountSync(publicKey);
+
+    if (userAffiliateData && !userAffiliateData.isInitialized) {
+      try {
+        const seedsAffil = [userAffiliateData.usedAffiliate];
+
+        const [AffilAcc] = await PublicKey.findProgramAddress(
+          seedsAffil,
+          PROGRAM_ID
+        );
+
+        const accounts: InitializeUserAccAccounts = {
+          userAcc: userAcc,
+          playerAcc: publicKey,
+          affilAcc: AffilAcc,
+          systemProgram: SystemProgram.programId,
+          clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
+          usdcMint: USDCMINT,
+          usdcPlayerAcc: usdcAcc,
+          associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
+          tokenProgram: TOKENPROGRAM,
+        };
+
+        const args: InitializeUserAccArgs = {
+          usedAffiliate: Array.from(userAffiliateData.usedAffiliate),
+        };
+
+        // Create a new transaction to initialize the user account and send it
+        const initTransaction = new Transaction().add(
+          initializeUserAcc(args, accounts)
+        );
+        const initSignature = await sendTransaction(
+          initTransaction,
+          connection
+        );
+
+        // Wait for transaction confirmation
+        notify({ type: "info", message: `Trying to create Trading Account` });
+        await connection.confirmTransaction(initSignature, "confirmed");
+        setUserAffiliateData((prevState) => ({ ...prevState, hasCode: false }));
+        setUserAffiliateData((prevState) => ({ ...prevState, isInt: true }));
+        notify({
+          type: "success",
+          message: `Trading account created, now create the Referral.`,
+          description: `Now create the Referral.`,
+        });
+      } catch (error) {
+        notify({
+          type: "error",
+          message: `Creation Failed`,
+          description: error?.message,
+        });
+      }
+    } else {
+      const [AffilAcc] = await PublicKey.findProgramAddress(
+        seedsAffil,
+        PROGRAM_ID
+      );
+
+      const result = await checkAffiliateInitialization(AffilAcc, connection);
+      const IsInitialized = result.IsInitialized;
+
+      if (IsInitialized) {
+        notify({ type: "error", message: "Referral code is already used." });
+      } else {
+        const args = {
+          affiliateCode: Array.from(affiliateCodeToUint8Array(affiliateCode)),
+        };
+
+        // Create the instruction to initialize the user account
+        const accounts = {
+          affilAcc: AffilAcc,
+          userAcc: userAcc,
+          playerAcc: publicKey,
+          systemProgram: SystemProgram.programId,
+          clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
+        };
+        // Create a new transaction to initialize the user account and send it
+        const initTransaction = new Transaction().add(
+          initializeAffilAcc(args, accounts)
+        );
+
+        try {
+          const initSignature = await sendTransaction(
+            initTransaction,
+            connection
+          );
+          // Notify user that the transaction was sent
+          notify({
+            type: "info",
+            message: `Creating Referral Code`,
+            txid: initSignature,
+          });
+          // Wait for transaction confirmation
+          await connection.confirmTransaction(initSignature, "confirmed");
+          setUserAffiliateData((prevState) => ({
+            ...prevState,
+            hasReferralCode: true,
+          }));
+          setUserAffiliateData((prevState) => ({ ...prevState, isInt: true }));
+          setUserAffiliateData((prevState) => ({
+            ...prevState,
+            myAffiliate: affiliateCodeToUint8Array(affiliateCode),
+          }));
+          notify({
+            type: "success",
+            message: `Your referral code has been created.`,
+            txid: initSignature,
+          });
+        } catch (error: any) {
+          // In case of an error, show only the 'error' notification
+          notify({
+            type: "error",
+            message: `Referral code was not created`,
+            description: error?.message,
+          });
+          return;
+        }
+      }
+    }
+  }, [
+    userAffiliateData,
+    affiliateCode,
+    publicKey,
+    connection,
+    sendTransaction,
+    notify,
+  ]);
+
   useEffect(() => {
     const fetchLeaderboards = async () => {
       try {
@@ -517,6 +759,7 @@ const Stats: FC = () => {
   }, [userPublicKey, leaderboardallDays]);
 
   const [decodedString, setDecodedString] = useState("");
+  const [MydecodedString, MysetDecodedString] = useState("");
 
   useEffect(() => {
     if (usedAffiliate && usedAffiliate.length > 0) {
@@ -531,30 +774,252 @@ const Stats: FC = () => {
     }
   }, [usedAffiliate]);
 
+  useEffect(() => {
+    if (
+      userAffiliateData?.myAffiliate &&
+      userAffiliateData?.myAffiliate.length > 0
+    ) {
+      const decoded = Array.from(userAffiliateData?.myAffiliate)
+        .filter((byte) => byte !== 0)
+        .map((byte) => String.fromCharCode(byte))
+        .join("");
+
+      MysetDecodedString(decoded);
+    } else {
+      MysetDecodedString("");
+    }
+  }, [userAffiliateData]);
+
+  const onClick2 = useCallback(
+    async (usdc: number) => {
+      // Create the instruction to initialize the user account
+      // if (affiliateData.totalEarned <= 0.1 * LAMPORTS_PER_SOL) {
+      //   notify({
+      //     type: "error",
+      //     message: `Rewards are less than 0.1 SOL`,
+      //     description: "Try again later.",
+      //   });
+      //   return;
+      // }
+      if (!publicKey) {
+        notify({
+          type: "error",
+          message: `Wallet not connected`,
+          description: "Connect the wallet in the top panel",
+        });
+        return;
+      }
+
+      const usdcAcc = await usdcSplTokenAccountSync(publicKey);
+      const seedsAffil = [userAffiliateData.myAffiliate];
+
+      const [AffilAcc] = await PublicKey.findProgramAddress(
+        seedsAffil,
+        PROGRAM_ID
+      );
+
+      // Create the instruction to to withdrawaffilearnings
+      const accounts = {
+        affilAcc: AffilAcc,
+        playerAcc: publicKey,
+        pdaHouseAcc: PDAHOUSEWALLET,
+        systemProgram: SystemProgram.programId,
+        usdcMint: USDCMINT,
+        usdcPlayerAcc: usdcAcc,
+        usdcPdaHouseAcc: USDCPDAHOUSEWALLET,
+        tokenProgram: TOKENPROGRAM,
+        associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
+      };
+
+      const args: WithdrawAffiliateEarningsArgs = {
+        usdc: usdc,
+      };
+
+      // Create a new transaction to initialize the user account and send it
+      const initTransaction = new Transaction().add(
+        withdrawAffiliateEarnings(args, accounts)
+      );
+
+      try {
+        const initSignature = await sendTransaction(
+          initTransaction,
+          connection
+        );
+        // Notify user that the transaction was sent
+        notify({
+          type: "info",
+          message: `Trying to withdraw earnings...`,
+          txid: initSignature,
+        });
+        // Wait for transaction confirmation
+        await connection.confirmTransaction(initSignature, "confirmed");
+        notify({
+          type: "success",
+          message: `Your referral earnings has been claimed.`,
+          txid: initSignature,
+        });
+        if (affiliateData) {
+          const updatedAffiliateData = new AffiliateAccount({
+            ...affiliateData,
+            totalEarned: 0,
+            usdcTotalEarned: 0,
+          });
+          setAffiliateData(updatedAffiliateData);
+        }
+      } catch (error: any) {
+        // In case of an error, show only the 'error' notification
+        notify({
+          type: "error",
+          message: `Could not withdraw the Affiliate Earnings`,
+          description: error?.message,
+        });
+        return;
+      }
+    },
+    [
+      userAffiliateData,
+      publicKey,
+      connection,
+      sendTransaction,
+      notify,
+      affiliateData,
+    ]
+  );
+
+  const copyToClipboard = () => {
+    // Ensure decodedString exists and is not empty
+    if (MydecodedString) {
+      const urlToCopy = `http://localhost:3030/profile?ref=${MydecodedString}`;
+      navigator.clipboard
+        .writeText(urlToCopy)
+        .then(() => {
+          console.log("URL copied to clipboard");
+          notify({ type: "info", message: "Copied to clipboard" });
+        })
+        .catch((err) => {
+          console.error("Failed to copy URL to clipboard", err);
+        });
+    }
+  };
+
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const router = useRouter();
+  const [referralCode, setReferralCode] = useState("");
+
+  const closeModalHandler = () => {
+    setModalIsOpen(false);
+  };
+
+  useEffect(() => {
+    // Ensure the user is on the /profile page and that a referral code is provided in the URL query
+    if (router.query.ref && router.pathname === "/profile") {
+      setAffiliateCode(router.query.ref as string); // Set the referral code from the URL
+      setModalIsOpen(true); // Show the modal indicating the referral code is accepted or to take further action
+    }
+  }, [router.query.ref, router.pathname]);
+
+  const ModalDetails = (
+    <Modal
+      className="custom-scrollbar bg-layer-2"
+      isOpen={modalIsOpen}
+      onRequestClose={closeModalHandler}
+      style={{
+        overlay: {
+          zIndex: "100",
+          backgroundColor: "transparent",
+          backdropFilter: "blur(5px)",
+        },
+        content: {
+          backgroundSize: "cover",
+          position: "fixed",
+          width: "320px",
+          height: "290px",
+          top: "35%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        },
+      }}
+    >
+      <div className="relative rounded tradingcard ">
+        <div className="">
+          <div className="font-poppins w-[100%] h-[100%] bg-layer-2 text-[#ffffff60]  font-poppins px-5 pt-3 pb rounded text-[1rem]">
+            <div className="bankGothic text-center font-semibold text-[1.5rem] text-[#F7931A]">
+              You have been referred by {affiliateCode}
+            </div>
+            By opening a trading account on PopFi, I agree to the following:
+            <div className="relative leading-[14px] inline-block max-w-[250px]">
+              Priority Fees
+            </div>
+            <div className="self-stretch flex flex-col items-start justify-start gap-[12px]">
+              <div className="self-stretch flex flex-row items-center justify-start">
+                <button
+                  onClick={onClick}
+                  className="relative leading-[14px] font-medium bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]"
+                >
+                  APPLY
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Modal>
+  );
+
   return (
-    <div>
+    <div className="relative overflow-hidden">
+      {ModalDetails}
+      <div
+        className="hidden md:flex overflow-hidden absolute futures-circles1 w-3/4 h-full "
+        style={{
+          zIndex: 0,
+          transform: "translate(-70%, 50%)",
+          right: "0%",
+        }}
+      >
+        {" "}
+      </div>
+      <div
+        className="hidden md:flex overflow-hidden absolute futures-circles2 w-full h-full"
+        style={{
+          zIndex: 0,
+          transform: "translate(72%, 25%)",
+          right: "0%",
+        }}
+      ></div>
+      <div
+        className="md:hidden overflow-hidden absolute futures-circles1 w-3/4  h-2/3"
+        style={{
+          zIndex: 0,
+          transform: "translate(-70%, 70%)",
+          right: "0%",
+        }}
+      >
+        {" "}
+      </div>
+      <div
+        className="md:hidden overflow-hidden absolute futures-circles2 w-full h-3/4"
+        style={{
+          zIndex: 0,
+          transform: "translate(72%, -20%)",
+          right: "0%",
+        }}
+      ></div>
       <Head>
         <title>PopFi | Personal Stats</title>
         <meta name="description" content="PopFi" />
       </Head>
       <div className="bg-base flex justify-center md:pt-2 min-h-[calc(100vh-78px)]">
         <div className="w-[98%] xl:w-[60%] lg:w-[60%] md:w-[60%] sm:w-[60%] lg:min-w-[780px] md:min-w-[780px] sm:min-w-[95%] px-2 z-0">
-          <div className="bankGothic flex flex-col  gap-[8px] text-4xl mt-2 lg:text-5xl text-white z-0"></div>
-
-          <img
-            className="hidden md:block absolute  h-[39.41%] w-[23.83%] top-[12.12%] bottom-[48.47%] right-[5%] max-w-full overflow-hidden max-h-full z-0"
-            style={{ overflow: "hidden" }}
-            alt=""
-            src="/personal/vectortri.svg"
-          />
+          <div className="bankGothic flex flex-col  gap-[8px] text-3xl mt-2 lg:text-4xl text-white z-0"></div>
           <div className="w-full flex md:flex-row flex-col gap-2 md:px-0  z-100">
             <div className="w-full flex justify-center md:justify-start items-center gap-4">
-              <h1 className="bankGothic md:text-start text-center text-4xl mt-2 lg:text-5xl text-transparent bg-clip-text bg-white">
+              <h1 className="bankGothic md:text-start text-center text-3xl mt-2 lg:text-4xl text-transparent bg-clip-text bg-white">
                 Your Stats
               </h1>
             </div>
             {!hasAffiliate ? (
-              <div className="md:mt-4 z-10 w-full md:w-[350px] self-stretch rounded-lg bg-layer-1 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-gryy-text border-[1px] hover:bg-[#484c6d5b] border-solid border-layer-3 ">
+              <div className="md:mt-4 z-10 w-full md:w-[350px] self-stretch rounded-lg bg-layer-1 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-gryy-text  hover:bg-[#484c6d5b]  ">
                 <input
                   className="w-full h-full input3-capsule__input relative leading-[14px] "
                   type="text"
@@ -572,7 +1037,7 @@ const Stats: FC = () => {
                 </button>
               </div>
             ) : (
-              <div className="md:mt-4  z-10 font-poppins w-full md:w-[350px] self-stretch rounded-lg bg-layer-1 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-grey-text border-[1px] hover:bg-[#484c6d5b] border-solid border-layer-3 ">
+              <div className="md:mt-4  z-10 font-poppins w-full md:w-[350px] self-stretch rounded-lg bg-layer-1 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-grey-text  hover:bg-[#484c6d5b]  ">
                 Used Code
                 <div className="relative leading-[14px] font-medium bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
                   {decodedString}
@@ -583,9 +1048,9 @@ const Stats: FC = () => {
 
           <div
             style={{ position: "relative", zIndex: 100 }}
-            className="z-10 mt-4 w-full flex md:flex-row flex-col items-start justify-start gap-[8px] md:px-0"
+            className="z-10 mt-2 w-full flex md:flex-row flex-col items-start justify-start gap-[8px] md:px-0"
           >
-            <div className="z-10 md:w-1/5 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] border-solid border-layer-3">
+            <div className="z-10 md:w-1/5 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ">
               <img
                 className="relative w-[60px] h-[60px]"
                 alt=""
@@ -601,7 +1066,7 @@ const Stats: FC = () => {
                 </div>
               </div>
             </div>
-            <div className="z-10 md:w-1/5 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] border-solid border-layer-3">
+            <div className="z-10 md:w-1/5 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ">
               <img
                 className="relative w-[60px] h-[60px]"
                 alt=""
@@ -616,7 +1081,7 @@ const Stats: FC = () => {
                 </div>
               </div>
             </div>
-            <div className="z-10 md:w-1/5 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] border-solid border-layer-3">
+            <div className="z-10 md:w-1/5 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ">
               <img
                 className="relative w-[60px] h-[60px]"
                 alt=""
@@ -635,7 +1100,7 @@ const Stats: FC = () => {
                 </div>
               </div>
             </div>
-            <div className="z-10 md:w-1/5 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] border-solid border-layer-3">
+            <div className="z-10 md:w-1/5 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ">
               <img
                 className="relative w-[60px] h-[60px]"
                 alt=""
@@ -652,7 +1117,7 @@ const Stats: FC = () => {
                 </div>
               </div>
             </div>
-            <div className="z-100 md:w-1/5 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] border-solid border-layer-3">
+            <div className="z-100 md:w-1/5 w-full rounded-lg md:rounded-2xl bg-layer-1 flex flex-row md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ">
               <img
                 className="relative w-[60px] h-[60px]"
                 alt=""
@@ -673,7 +1138,7 @@ const Stats: FC = () => {
 
           <div
             style={{ position: "relative", zIndex: 100 }}
-            className="z-100 mt-2 md:rounded-2xl rounded-lg bg-layer-1 box-border w-full flex flex-col items-start justify-center md:p-8 p-4 gap-[16px] text-sm border-[1px] border-solid border-layer-3"
+            className="z-100 mt-2 md:rounded-2xl rounded-lg bg-layer-1 box-border w-full flex flex-col items-start justify-center md:p-8 p-4 gap-[16px] text-sm  "
           >
             <div className="self-stretch flex flex-col items-start justify-center gap-[8px] text-center text-lg text-grey font-poppins z-100">
               <div className="self-stretch flex flex-row items-center justify-between z-100">
@@ -838,12 +1303,12 @@ const Stats: FC = () => {
             <div className="w-full flex justify-center md:justify-start items-center gap-4"></div>
             <div className="w-full flex md:flex-row flex-col gap-2 md:px-0  z-100">
               <div className="w-full flex justify-center md:justify-start items-center gap-4">
-                <h1 className="bankGothic md:text-start text-center text-4xl mt-2 lg:text-5xl text-transparent bg-clip-text bg-white">
+                <h1 className="bankGothic md:text-start text-center text-3xl mt-2 lg:text-4xl text-transparent bg-clip-text bg-white">
                   Opening Fee Tiers
                 </h1>
               </div>
 
-              <div className="md:mt-4 z-10 font-poppins w-full md:w-[350px] self-stretch rounded-lg bg-layer-1 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-grey-text border-[1px] hover:bg-[#484c6d5b] border-solid border-layer-3">
+              <div className="md:mt-4 z-10 font-poppins w-full md:w-[350px] self-stretch rounded-lg bg-layer-1 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-grey-text  hover:bg-[#484c6d5b] ">
                 Your Volume
                 <span className="text-[#34C796]">
                   {(totalVolumepast4Epoch / LAMPORTS_PER_SOL).toFixed(0)} SOL
@@ -853,7 +1318,7 @@ const Stats: FC = () => {
 
             <div className="z-10 w-full flex md:flex-row flex-col items-stretch justify-start md:gap-[12px] gap-[8px] ">
               <div
-                className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 0 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 0 ? "border-solid border-[#0F7F59]" : "border-solid border-layer-3"}`}
+                className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 0 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ${rebateTier === 0 ? "border-solid border-[#0F7F59]" : ""}`}
               >
                 <div
                   className={`md:block hidden rounded-full ${rebateTier === 0 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
@@ -884,7 +1349,7 @@ const Stats: FC = () => {
                 </div>
               </div>
               <div
-                className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 5 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 5 ? "border-solid border-[#0F7F59]" : "border-solid border-layer-3"}`}
+                className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 5 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ${rebateTier === 5 ? "border-solid border-[#0F7F59]" : ""}`}
               >
                 <div
                   className={`md:block hidden rounded-full ${rebateTier === 5 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
@@ -915,7 +1380,7 @@ const Stats: FC = () => {
                 </div>
               </div>
               <div
-                className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 10 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 10 ? "border-solid border-[#0F7F59]" : "border-solid border-layer-3"}`}
+                className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 10 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ${rebateTier === 10 ? "border-solid border-[#0F7F59]" : ""}`}
               >
                 <div
                   className={`md:block hidden rounded-full ${rebateTier === 10 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
@@ -946,7 +1411,7 @@ const Stats: FC = () => {
                 </div>
               </div>
               <div
-                className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 15 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 15 ? "border-solid border-[#0F7F59]" : "border-solid border-layer-3"}`}
+                className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 15 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ${rebateTier === 15 ? "border-solid border-[#0F7F59]" : ""}`}
               >
                 <div
                   className={`md:block hidden rounded-full ${rebateTier === 15 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
@@ -980,7 +1445,7 @@ const Stats: FC = () => {
           </div>
           <div className="z-10 md:mt-3 mt-2 w-full flex md:flex-row flex-col items-start justify-start md:gap-[12px] gap-[8px] ">
             <div
-              className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 20 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 20 ? "border-solid border-[#0F7F59]" : "border-solid border-layer-3"}`}
+              className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 20 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ${rebateTier === 20 ? "border-solid border-[#0F7F59]" : ""}`}
             >
               <div
                 className={`md:block hidden rounded-full ${rebateTier === 20 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
@@ -1011,7 +1476,7 @@ const Stats: FC = () => {
               </div>
             </div>
             <div
-              className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 25 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 25 ? "border-solid border-[#0F7F59]" : "border-solid border-layer-3"}`}
+              className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 25 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ${rebateTier === 25 ? "border-solid border-[#0F7F59]" : ""}`}
             >
               <div
                 className={`md:block hidden rounded-full ${rebateTier === 25 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
@@ -1042,7 +1507,7 @@ const Stats: FC = () => {
               </div>
             </div>
             <div
-              className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 30 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 30 ? "border-solid border-[#0F7F59]" : "border-solid border-layer-3"}`}
+              className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 30 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ${rebateTier === 30 ? "border-solid border-[#0F7F59]" : ""}`}
             >
               <div
                 className={`md:block hidden rounded-full ${rebateTier === 30 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
@@ -1073,7 +1538,7 @@ const Stats: FC = () => {
               </div>
             </div>
             <div
-              className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 35 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px] border-[1px] ${rebateTier === 35 ? "border-solid border-[#0F7F59]" : "border-solid border-layer-3"}`}
+              className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 35 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ${rebateTier === 35 ? "border-solid border-[#0F7F59]" : ""}`}
             >
               <div
                 className={`md:block hidden rounded-full ${rebateTier === 35 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
@@ -1104,6 +1569,184 @@ const Stats: FC = () => {
               </div>
             </div>
           </div>
+          <h1 className="bankGothic md:text-start text-center text-3xl pt-4 lg:text-4xl text-transparent bg-clip-text bg-white">
+            Referral System
+          </h1>
+          <img
+            className="hidden md:block absolute h-[39.41%] w-[21.83%] top-[12.12%] bottom-[48.47%] right-[5%] max-w-full overflow-hidden max-h-full"
+            alt=""
+            src="/sheesh/donut3.svg"
+          />
+          {!userAffiliateData?.hasReferralCode ? (
+            <div className="pb-8 pt-2 flex md:flex-row flex-col items-center justify-center gap-[16px] text-xl text-white z-100">
+              <div className="md:w-[35%] w-full self-stretch bg-gradient-to-t from-[#0B7A55] to-[#34C796] md:rounded-2xl rounded-lg p-[1px] ">
+                <div className="w-full h-full self-stretch md:rounded-2xl rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#0b111b]  w-full flex flex-col items-start justify-center">
+                  <div className="bg-base bg-opacity-70 w-full h-full self-stretch md:rounded-2xl rounded-lg  w-full flex flex-col items-start justify-center md:p-8 p-4  gap-[12px]">
+                    <div className="bankGothic relative leading-[100%] font-medium bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+                      How it Works
+                    </div>
+                    <div className="font-poppins relative text-sm leading-[130%] text-white flex items-center w-full">
+                      Refer friends to trade on PopFi and earn a share of their
+                      trading fees!{" "}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="z-10 self-stretch md:rounded-2xl rounded-lg bg-layer-1 box-border md:w-[65%] w-full flex flex-col items-start justify-center md:p-8 p-4 gap-[12px] text-grey-text ">
+                <div className="pb-2 md:pb-2 bankGothic relative leading-[100%] font-medium">
+                  Create Promo Code
+                </div>
+                <div className="self-stretch flex md:flex-row flex-col items-end justify-start gap-[16px] text-base text-grey font-poppins">
+                  <div className="w-full md:h-10 h-8  rounded-lg bg-layer-2 border border-layer-3 px-2">
+                    <input
+                      type="text"
+                      className="w-full h-full input3-capsule__input relative leading-[14px] "
+                      id="affiliateCode"
+                      value={affiliateCode}
+                      onChange={(e) => setAffiliateCode(e.target.value)}
+                      maxLength={8}
+                      placeholder="Enter 8 letters"
+                    />
+                  </div>
+                  <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px] md:w-1/4 w-full h-10   box-border text-center text-lg">
+                    <button
+                      onClick={onClick1}
+                      className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
+                    >
+                      <button className="font-semibold bg-clip-text text-transparent bg-gradient-to-t from-[#34C796] to-[#0B7A55]">
+                        CREATE
+                      </button>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="pb-8 z-10 pt-2 flex md:flex-row flex-col items-center justify-center gap-[16px] text-white px-2 md:px-0 z-100">
+              <div className="z-10 md:w-[35%] self-stretch bg-gradient-to-t from-[#0B7A55] to-[#34C796] md:rounded-2xl rounded-lg p-[1px]">
+                <div className="w-full h-full self-stretch md:rounded-2xl rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#0b111b]  w-full flex flex-col items-start justify-center">
+                  <div className="flex items-center justify-center bg-base bg-opacity-70 w-full h-full self-stretch md:rounded-2xl rounded-lg  w-full flex flex-col items-start justify-center md:p-8 p-4  gap-[12px]">
+                    <div className="bankGothic font-medium text-grey-text relative leading-[100%] text-center">
+                      YOUR REFERRAL CODE
+                    </div>
+                    <div className="flex flex-col items-center justify-center text-right text-13xl text-white font-poppins">
+                      <div className="flex flex-row items-center  justify-center gap-[8px]">
+                        <div className="text-3xl relative leading-[100%] font-medium">
+                          {MydecodedString}
+                        </div>
+                        <button>
+                          <img
+                            onClick={copyToClipboard}
+                            className="relative w-6 h-6"
+                            alt=""
+                            src="/sheesh/vuesaxlinearcopy.svg"
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className=" z-10 md:w-[65%] w-full md:rounded-2xl rounded-lg bg-layer-1 flex flex-col items-center justify-start p-4 md:p-8 gap-[32px] text-sm ">
+                <div className="font-poppins w-full flex flex-row items-start justify-center gap-[32px]">
+                  <div className="flex w-1/2 flex-row items-center justify-start gap-[12px]">
+                    <img
+                      className="relative rounded-lg w-[42px] h-[42px]"
+                      alt=""
+                      src="/sheesh/icons12.svg"
+                    />
+                    <div className="flex flex-col items-start justify-center gap-[4px]">
+                      <div className="text-grey-text relative leading-[100%] ">
+                        TOTAL USERS
+                      </div>
+                      <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
+                        {affiliateData?.totalAffiliatesUsers}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex w-1/2 flex-row items-center justify-start gap-[12px]">
+                    <img
+                      className="relative rounded-lg w-[42px] h-[42px]"
+                      alt=""
+                      src="/sheesh/icons2.svg"
+                    />
+                    <div className="flex flex-col items-start justify-center gap-[4px]">
+                      <div className="text-grey-text text-grey-textrelative leading-[100%] ">
+                        TOTAL VOLUME
+                      </div>
+                      <div className="relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
+                        {(
+                          affiliateData?.totalAffiliatesVolume /
+                          LAMPORTS_PER_SOL
+                        ).toFixed(1)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="font-poppins w-full flex flex-row items-start justify-center gap-[32px]">
+                  <div className="flex w-1/2 flex-row items-center justify-start gap-[12px]">
+                    <img
+                      className="relative rounded-lg w-[42px] h-[42px]"
+                      alt=""
+                      src="/sheesh/icons13.svg"
+                    />
+                    <div className=" flex flex-col items-start justify-center gap-[4px]">
+                      <div className="text-grey-text relative leading-[100%] ">
+                        CLAIM
+                      </div>
+                      <div className="text-start relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
+                        {(
+                          affiliateData?.totalEarned / LAMPORTS_PER_SOL
+                        ).toFixed(2)}{" "}
+                        SOL
+                      </div>
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px] w-1/2 h-10   box-border text-center text-lg">
+                    <button
+                      onClick={() => onClick2(0)}
+                      className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
+                    >
+                      <button className="font-semibold bg-clip-text text-transparent bg-gradient-to-t from-[#34C796] to-[#0B7A55]">
+                        SOL
+                      </button>
+                    </button>
+                  </div>
+                </div>
+                <div className="font-poppins w-full flex flex-row items-start justify-center gap-[32px]">
+                  <div className="flex w-1/2 flex-row items-center justify-start gap-[12px]">
+                    <img
+                      className="relative rounded-lg w-[42px]"
+                      alt=""
+                      src="/sheesh/icons1.svg"
+                    />
+                    <div className=" flex flex-col items-start justify-center gap-[4px]">
+                      <div className="text-grey-text relative leading-[100%] ">
+                        CLAIM
+                      </div>
+                      <div className="text-start relative text-xl leading-[100%] font-medium font-poppins text-white text-right">
+                        {(
+                          (affiliateData?.usdcTotalEarned / LAMPORTS_PER_SOL) *
+                          1000
+                        ).toFixed(2)}{" "}
+                        USDC
+                      </div>
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px] w-1/2 h-10   box-border text-center text-lg">
+                    <button
+                      onClick={() => onClick2(1)}
+                      className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
+                    >
+                      <button className="font-semibold bg-clip-text text-transparent bg-gradient-to-t from-[#34C796] to-[#0B7A55]">
+                        USDC
+                      </button>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

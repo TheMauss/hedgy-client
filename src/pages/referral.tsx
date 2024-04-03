@@ -530,7 +530,7 @@ const Referral: FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="z-10 self-stretch md:rounded-2xl rounded-lg bg-layer-1 box-border md:w-[65%] w-full flex flex-col items-start justify-center md:p-8 p-4 gap-[12px] text-grey-text border-[1px] border-solid border-layer-3">
+              <div className="z-10 self-stretch md:rounded-2xl rounded-lg bg-layer-1 box-border md:w-[65%] w-full flex flex-col items-start justify-center md:p-8 p-4 gap-[12px] text-grey-text ">
                 <div className="pb-2 md:pb-2 bankGothic relative leading-[100%] font-medium">
                   CREATE PROMO CODE
                 </div>
@@ -585,7 +585,7 @@ const Referral: FC = () => {
                   </div>
                 </div>
               </div>
-              <div className=" z-10 md:w-[65%] w-full md:rounded-2xl rounded-lg bg-layer-1 flex flex-col items-center justify-start p-4 md:p-8 gap-[32px] text-sm border-[1px] border-solid border-layer-3">
+              <div className=" z-10 md:w-[65%] w-full md:rounded-2xl rounded-lg bg-layer-1 flex flex-col items-center justify-start p-4 md:p-8 gap-[32px] text-sm ">
                 <div className="font-poppins w-full flex flex-row items-start justify-center gap-[32px]">
                   <div className="flex w-1/2 flex-row items-center justify-start gap-[12px]">
                     <img

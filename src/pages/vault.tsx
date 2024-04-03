@@ -1749,9 +1749,9 @@ const Earn: FC = () => {
                   <div className="rounded-lg bg-[#23EAA490] hover:bg-[#23EAA4] transition-all duration-200 ease-in-out text-black p-[1px]   w-full h-10   box-border text-center text-lg">
                     <button
                       onClick={withdrawfromLP}
-                      className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
+                      className="flex flex-row items-center justify-center h-full w-full py-3 px-6 relative font-semibold rounded-lg"
                     >
-                      CLAIM WITHDRAWALS
+                      Claim Withdrawals
                     </button>
                   </div>
                 ) : (
