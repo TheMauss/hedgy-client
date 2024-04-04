@@ -3,9 +3,9 @@ import { FC, useEffect, useState, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import Modal from "react-modal";
-
+import ReactConfetti from "react-confetti";
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
-
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import {
   initializeUserAcc,
   InitializeUserAccArgs,
@@ -194,6 +194,8 @@ const Stats: FC = () => {
   const { publicKey, sendTransaction } = useWallet();
   const { connection } = useConnection();
   const [affiliateCode, setAffiliateCode] = useState<string>("");
+  const [myAffiliateCode, setMyAffiliateCode] = useState<string>("");
+
   const [usedAffiliate, setusedAffiliate] = useState<Uint8Array>(
     new Uint8Array()
   );
@@ -506,13 +508,18 @@ const Stats: FC = () => {
         );
 
         // Wait for transaction confirmation
-        notify({ type: "info", message: `Trying to create Trading Account` });
+        notify({ type: "info", message: `Creating Trading Account` });
         await connection.confirmTransaction(initSignature, "confirmed");
         setissInt(true);
+        setUserAffiliateData((prevState) => ({
+          ...prevState,
+          isInitialized: true,
+        }));
         setaccOld(currentTime - 1);
+        setModalIsOpen(false);
         notify({
           type: "success",
-          message: `Trading account successfully created, now enter the Referral.`,
+          message: `Trading account successfully created.`,
         });
       } catch (error) {
         notify({
@@ -601,7 +608,7 @@ const Stats: FC = () => {
 
     const [userAcc] = await PublicKey.findProgramAddress(seedsUser, PROGRAM_ID);
 
-    const seedsAffil = [affiliateCodeToUint8Array(affiliateCode)];
+    const seedsAffil = [affiliateCodeToUint8Array(myAffiliateCode)];
     const usdcAcc = await usdcSplTokenAccountSync(publicKey);
 
     if (userAffiliateData && !userAffiliateData.isInitialized) {
@@ -642,11 +649,13 @@ const Stats: FC = () => {
         notify({ type: "info", message: `Trying to create Trading Account` });
         await connection.confirmTransaction(initSignature, "confirmed");
         setUserAffiliateData((prevState) => ({ ...prevState, hasCode: false }));
-        setUserAffiliateData((prevState) => ({ ...prevState, isInt: true }));
+        setUserAffiliateData((prevState) => ({
+          ...prevState,
+          isInitialized: true,
+        }));
         notify({
           type: "success",
-          message: `Trading account created, now create the Referral.`,
-          description: `Now create the Referral.`,
+          message: `Trading account created.`,
         });
       } catch (error) {
         notify({
@@ -668,7 +677,7 @@ const Stats: FC = () => {
         notify({ type: "error", message: "Referral code is already used." });
       } else {
         const args = {
-          affiliateCode: Array.from(affiliateCodeToUint8Array(affiliateCode)),
+          affiliateCode: Array.from(affiliateCodeToUint8Array(myAffiliateCode)),
         };
 
         // Create the instruction to initialize the user account
@@ -704,7 +713,7 @@ const Stats: FC = () => {
           setUserAffiliateData((prevState) => ({ ...prevState, isInt: true }));
           setUserAffiliateData((prevState) => ({
             ...prevState,
-            myAffiliate: affiliateCodeToUint8Array(affiliateCode),
+            myAffiliate: affiliateCodeToUint8Array(myAffiliateCode),
           }));
           notify({
             type: "success",
@@ -724,7 +733,7 @@ const Stats: FC = () => {
     }
   }, [
     userAffiliateData,
-    affiliateCode,
+    myAffiliateCode,
     publicKey,
     connection,
     sendTransaction,
@@ -889,7 +898,7 @@ const Stats: FC = () => {
   const copyToClipboard = () => {
     // Ensure decodedString exists and is not empty
     if (MydecodedString) {
-      const urlToCopy = `http://dev.popfi.io/profile?ref=${MydecodedString}`;
+      const urlToCopy = `http://localhost:3030/profile?ref=${MydecodedString}`;
       navigator.clipboard
         .writeText(urlToCopy)
         .then(() => {
@@ -914,9 +923,16 @@ const Stats: FC = () => {
     // Ensure the user is on the /profile page and that a referral code is provided in the URL query
     if (router.query.ref && router.pathname === "/profile") {
       setAffiliateCode(router.query.ref as string); // Set the referral code from the URL
-      setModalIsOpen(true); // Show the modal indicating the referral code is accepted or to take further action
+      if (
+        userAffiliateData?.isInitialized === true &&
+        userAffiliateData?.usedAffiliate.length > 0
+      ) {
+        setModalIsOpen(false);
+      } else {
+        setModalIsOpen(true); // Show the modal indicating the referral code is accepted or to take further action
+      }
     }
-  }, [router.query.ref, router.pathname]);
+  }, [router.query.ref, router.pathname, userAffiliateData]);
 
   const ModalDetails = (
     <Modal
@@ -927,7 +943,7 @@ const Stats: FC = () => {
         overlay: {
           zIndex: "100",
           backgroundColor: "transparent",
-          backdropFilter: "blur(5px)",
+          backdropFilter: "blur(3px)",
         },
         content: {
           backgroundSize: "cover",
@@ -940,27 +956,50 @@ const Stats: FC = () => {
         },
       }}
     >
-      <div className="relative rounded tradingcard ">
-        <div className="">
-          <div className="font-poppins w-[100%] h-[100%] bg-layer-2 text-[#ffffff60]  font-poppins px-5 pt-3 pb rounded text-[1rem]">
-            <div className="bankGothic text-center font-semibold text-[1.5rem] text-[#F7931A]">
-              You have been referred by {affiliateCode}
-            </div>
-            By opening a trading account on PopFi, I agree to the following:
-            <div className="relative leading-[14px] inline-block max-w-[250px]">
-              Priority Fees
-            </div>
-            <div className="self-stretch flex flex-col items-start justify-start gap-[12px]">
-              <div className="self-stretch flex flex-row items-center justify-start">
-                <button
-                  onClick={onClick}
-                  className="relative leading-[14px] font-medium bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]"
-                >
-                  APPLY
-                </button>
-              </div>
-            </div>
+      <div className="relative rounded tradingcard">
+        <div className="font-poppins w-[100%] h-[100%] bg-[#080808] text-white px-5 pt-3 pb-3 pb rounded text-[1rem]">
+          <div className="pt-4 bankGothic text-center font-semibold text-[1.5rem] text-[#F7931A]">
+            🎉 Welcome Aboard! 🎉
           </div>
+          <div className="text-left font-bold text-xl mt-4">
+            Your invitation from{" "}
+            <span className="text-[#F7931A]">{affiliateCode}</span> unlocks an
+            exclusive offer!
+          </div>
+          <div className="font-poppins pt-4 text-slate-300 text-lg text-left">
+            Join the PopFi today and enjoy a{" "}
+            <span className="font-bold text-[#F7931A]">
+              permanent 5% discount
+            </span>{" "}
+            on all your opening fees.
+          </div>
+
+          {wallet.connected ? (
+            <button
+              className="mt-4 p-2 bg-primary hover:bg-new-green-dark w-full rounded-lg flex flex-row items-center justify-center box-border  text-black transition ease-in-out duration-300"
+              onClick={onClick}
+            >
+              OPEN ACCOUNT
+            </button>
+          ) : (
+            <div
+              className={`flex justify-center items-center w-full mt-6 rounded-lg bg-primar  cursor-pointer font-semibold   text-center text-lg text-black transition ease-in-out duration-300 ${
+                toggleState === "LONG"
+                  ? "bg-primary hover:bg-new-green-dark"
+                  : "bg-short hover:bg-new-red-dark"
+              }`}
+            >
+              <WalletMultiButton
+                style={{
+                  width: "100%",
+                  backgroundColor: "transparent",
+                  color: "black",
+                }}
+                className="w-[100%]"
+              ></WalletMultiButton>
+            </div>
+          )}
+          <div className="pt-6"></div>
         </div>
       </div>
     </Modal>
@@ -969,6 +1008,11 @@ const Stats: FC = () => {
   return (
     <div className="relative overflow-hidden">
       {ModalDetails}
+      {modalIsOpen && (
+        <>
+          <ReactConfetti />
+        </>
+      )}
       <div
         className="hidden md:flex overflow-hidden absolute futures-circles1 w-3/4 h-full "
         style={{
@@ -1344,7 +1388,7 @@ const Stats: FC = () => {
                     0% Discount
                   </div>
                   <div className="relative text-base leading-[140%] font-light text-grey-text">
-                    less than 1,000 SOL Vol
+                    less than 100k USD Vol
                   </div>
                 </div>
               </div>
@@ -1375,7 +1419,7 @@ const Stats: FC = () => {
                     5% Discount
                   </div>
                   <div className="relative text-base leading-[140%] font-light text-grey-text">
-                    1,000 to 2,000 SOL Vol
+                    100k to 200k USD Vol
                   </div>
                 </div>
               </div>
@@ -1406,7 +1450,7 @@ const Stats: FC = () => {
                     10% Discount
                   </div>
                   <div className="relative text-base leading-[140%] font-light text-grey-text">
-                    2,000 to 5,000 SOL Vol
+                    200k to 500k USD Vol
                   </div>
                 </div>
               </div>
@@ -1437,7 +1481,7 @@ const Stats: FC = () => {
                     15% Discount
                   </div>
                   <div className="relative text-base leading-[140%] font-light text-grey-text">
-                    5,000 to 10,000 SOL Vol
+                    500k to 10m USD Vol
                   </div>
                 </div>
               </div>
@@ -1471,7 +1515,7 @@ const Stats: FC = () => {
                   20% Discount
                 </div>
                 <div className="relative text-base leading-[140%] font-light text-grey-text">
-                  10,000 to 20,000 SOL Vol
+                  1m to 2m USD Vol
                 </div>
               </div>
             </div>
@@ -1502,7 +1546,7 @@ const Stats: FC = () => {
                   25% Discount
                 </div>
                 <div className="relative text-base leading-[140%] font-light text-grey-text">
-                  20,000 to 40,000 SOL Vol
+                  2m to 4m USD Vol
                 </div>
               </div>
             </div>
@@ -1533,7 +1577,7 @@ const Stats: FC = () => {
                   30% Discount
                 </div>
                 <div className="relative text-base leading-[140%] font-light text-grey-text">
-                  40,000 to 80,000 SOL Vol
+                  4m to 8m SOL Vol
                 </div>
               </div>
             </div>
@@ -1564,7 +1608,7 @@ const Stats: FC = () => {
                   35% Discount
                 </div>
                 <div className="relative text-base leading-[140%] font-light text-grey-text">
-                  more than 80,000 SOL Vol
+                  more than 8m Vol
                 </div>
               </div>
             </div>
@@ -1572,11 +1616,6 @@ const Stats: FC = () => {
           <h1 className="bankGothic md:text-start text-center text-3xl pt-4 lg:text-4xl text-transparent bg-clip-text bg-white">
             Referral System
           </h1>
-          <img
-            className="hidden md:block absolute h-[39.41%] w-[21.83%] top-[12.12%] bottom-[48.47%] right-[5%] max-w-full overflow-hidden max-h-full"
-            alt=""
-            src="/sheesh/donut3.svg"
-          />
           {!userAffiliateData?.hasReferralCode ? (
             <div className="pb-8 pt-2 flex md:flex-row flex-col items-center justify-center gap-[16px] text-xl text-white z-100">
               <div className="md:w-[35%] w-full self-stretch bg-gradient-to-t from-[#0B7A55] to-[#34C796] md:rounded-2xl rounded-lg p-[1px] ">
@@ -1602,8 +1641,8 @@ const Stats: FC = () => {
                       type="text"
                       className="w-full h-full input3-capsule__input relative leading-[14px] "
                       id="affiliateCode"
-                      value={affiliateCode}
-                      onChange={(e) => setAffiliateCode(e.target.value)}
+                      value={myAffiliateCode}
+                      onChange={(e) => setMyAffiliateCode(e.target.value)}
                       maxLength={8}
                       placeholder="Enter 8 letters"
                     />

@@ -92,9 +92,6 @@ export const ContentContainer: React.FC<Props> = ({
             <NavElement label="Stats" href="/stats" />
           </li>
           <li>
-            <NavElement label="Referral" href="/referral" />
-          </li>
-          <li>
             <NavElement label="Vault" href="/vault" />
           </li>
         </ul>

@@ -274,26 +274,11 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
                   />
                   <span className="mx-0.5 z-10"></span>
 
-                  <div className="parentDiv z-10">
-                    <div
-                      ref={buttonRef}
-                      onMouseEnter={handleMouseEnterButton}
-                      onMouseLeave={handleMouseLeave}
-                    >
-                      <button
-                        className={cn(
-                          "mt-1 font-medium group flex h-full flex-col items-center justify-between hover:bg-[#ffffff08] px-2.5 py-0.5 rounded duration-300 ease-out text-[1rem]"
-                        )}
-                      >
-                        <div className="flex flex-row items-center gap-3 bankGothicc">
-                          Earn
-                        </div>
-                        <div ref={divRef} />
-                      </button>
-                    </div>
-
-                    {ModalDetails1}
-                  </div>
+                  <NavElement
+                    label="Vault"
+                    href="/vault"
+                    navigationStarts={() => setIsNavOpen(false)}
+                  />
                 </>
               )}
               {isMediumScreen && (
@@ -320,26 +305,11 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
                     />
                     <span className="mx-0.5 z-10"></span>
 
-                    <div className="parentDiv z-10">
-                      <div
-                        ref={buttonRef}
-                        onMouseEnter={handleMouseEnterButton}
-                        onMouseLeave={handleMouseLeave}
-                      >
-                        <button
-                          className={cn(
-                            "mt-1 font-medium group flex h-full flex-col items-center justify-between hover:bg-[#1a1a25] px-2.5 py-0.5 rounded duration-300 ease-out text-[1rem]"
-                          )}
-                        >
-                          <div className="flex flex-row items-center gap-3 bankGothicc">
-                            Earn
-                          </div>
-                          <div ref={divRef} />
-                        </button>
-                      </div>
-
-                      {ModalDetails1}
-                    </div>
+                    <NavElement
+                      label="Vault"
+                      href="/vault"
+                      navigationStarts={() => setIsNavOpen(false)}
+                    />
                   </>
                 </div>
               )}
