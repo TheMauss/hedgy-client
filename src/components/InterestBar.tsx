@@ -241,7 +241,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
             {displayedPercentage}%
           </div>
         </div>
-        <div className="min-w-[110px] box-border h-8 flex flex-col items-center justify-center  md:border-l-[1px] border-solid border-layer-3">
+        <div className="min-w-[110px] box-border h-8 flex flex-col items-center justify-center  md:border-l-[1px] border-solid border-[#ffffff24]">
           <div className="self-stretch flex flex-col md:pl-4 items-start justify-center gap-[4px]">
             <div className="relative leading-[12px] text-[#ffffff60]">
               Open (L)
@@ -251,7 +251,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
             </div>
           </div>
         </div>
-        <div className="min-w-[110px] box-border h-8 flex flex-col items-center justify-center  border-l-[1px] border-solid border-layer-3">
+        <div className="min-w-[110px] box-border h-8 flex flex-col items-center justify-center  border-l-[1px] border-solid border-[#ffffff24]">
           <div className="self-stretch flex flex-col pl-4 items-start justify-center gap-[4px]">
             <div className="relative leading-[12px] text-[#ffffff60]">
               Open (S)
@@ -261,7 +261,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
             </div>
           </div>
         </div>
-        <div className="min-w-[120px] box-border h-8 flex flex-col items-center justify-center  border-l-[1px] border-solid border-layer-3">
+        <div className="min-w-[120px] box-border h-8 flex flex-col items-center justify-center  border-l-[1px] border-solid border-[#ffffff24]">
           <div className="self-stretch flex flex-col pl-4 items-start justify-center gap-[4px]">
             <div className="relative leading-[12px] text-[#ffffff60]">
               Borrowing (L)
@@ -273,7 +273,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
             </div>
           </div>
         </div>
-        <div className="min-w-[120px] box-border h-8 flex flex-col items-center justify-center  border-l-[1px] border-solid border-layer-3">
+        <div className="min-w-[120px] box-border h-8 flex flex-col items-center justify-center  border-l-[1px] border-solid border-[#ffffff24]">
           <div className="self-stretch flex flex-col pl-4 items-start justify-center gap-[4px]">
             <div className="relative leading-[12px] text-[#ffffff60]">
               Borrowing (S)

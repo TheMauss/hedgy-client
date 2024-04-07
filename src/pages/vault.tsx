@@ -32,6 +32,7 @@ import {
   WithdrawFromStakingArgs,
   WithdrawFromStakingAccounts,
   ClaimPointsAccounts,
+  ClaimPointsArgs,
   claimPoints,
 } from "../out/instructions/"; // Update with the correct path
 import { PROGRAM_ID } from "../out/programId";
@@ -82,6 +83,8 @@ async function checkLPdata(
   cumulativePnlRate: number;
   psolValuation: number;
   pusdcValuation: number;
+  projectsDepositedSol: number;
+  projectsDepositedUsdc: number;
 }> {
   const accountInfo = await connection.getAccountInfo(lpAcc);
 
@@ -100,6 +103,8 @@ async function checkLPdata(
       cumulativePnlRate: 0,
       psolValuation: 0,
       pusdcValuation: 0,
+      projectsDepositedSol: 0,
+      projectsDepositedUsdc: 0,
     };
   }
 
@@ -129,6 +134,8 @@ async function checkLPdata(
     cumulativePnlRate: LpAccount.cumulativePnlRate.toNumber(),
     psolValuation: LpAccount.psolValuation.toNumber(),
     pusdcValuation: LpAccount.pusdcValuation.toNumber(),
+    projectsDepositedSol: LpAccount.projectsDepositedSol.toNumber(),
+    projectsDepositedUsdc: LpAccount.projectsDepositedUsdc.toNumber(),
   };
 }
 
@@ -318,6 +325,8 @@ const Earn: FC = () => {
     cumulativePnlRate: number;
     psolValuation: number;
     pusdcValuation: number;
+    projectsDepositedSol: number;
+    projectsDepositedUsdc: number;
   } | null>(null);
   const [LProviderdata, setLProviderdata] = useState<{
     isInitialized: boolean;
@@ -394,6 +403,7 @@ const Earn: FC = () => {
       setisInit(result);
     }
   };
+
   useEffect(() => {
     fetchcheckuserdata();
   }, [publicKey, connection]);
@@ -593,8 +603,11 @@ const Earn: FC = () => {
     // Calculate the total deposits in the unit of the selected currency
     const totalDepositsInSelectedCurrency =
       selectedCurrency === "SOL"
-        ? LPdata.totalDeposits / LAMPORTS_PER_SOL
-        : (LPdata.usdcTotalDeposits / LAMPORTS_PER_SOL) * 1000;
+        ? (LPdata.totalDeposits + LPdata.projectsDepositedSol) /
+          LAMPORTS_PER_SOL
+        : ((LPdata.usdcTotalDeposits + LPdata.projectsDepositedUsdc) /
+            LAMPORTS_PER_SOL) *
+          1000;
 
     if (LPdata?.locked) {
       notify({ type: "info", message: `Vault is locked.` });
@@ -749,63 +762,123 @@ const Earn: FC = () => {
           PROGRAM_ID
         );
 
-        const args: StakeForPointsArgs = {
-          depositAmount: new BN(deposit),
-          usdc: usdc,
-        };
-        const accounts: StakeForPointsAccounts = {
-          liqProvider: LProviderAcc,
-          userAcc: userAcc,
-          providersWallet: publicKey,
-          lpAcc: lpAcc,
-          signerWalletAccount: SIGNERWALLET,
-          ratioAcc: RATIOACC,
-          houseAcc: HOUSEWALLET,
-          pdaHouseAcc: PDAHOUSEWALLET,
-          mint: mintAddress,
-          solOracleAccount: new PublicKey(
-            "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix"
-          ),
-          providersSplTokenAccount: splTokenAccount,
-          splPdaHouseAcc: splPDA,
-          associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
-          tokenProgram: TOKENPROGRAM,
-          systemProgram: SystemProgram.programId,
-        };
+        const seedsAffil = [isInit.usedAffiliate];
 
-        const initTransaction = new Transaction().add(
-          stakeForPoints(args, accounts)
-        );
-        const initSignature = await sendTransaction(
-          initTransaction,
-          connection
+        const [AffilAcc] = await PublicKey.findProgramAddress(
+          seedsAffil,
+          PROGRAM_ID
         );
 
-        notify({
-          type: "info",
-          message: `Staking LP Token.`,
-          txid: signature,
-        });
-        await connection.confirmTransaction(initSignature, "confirmed");
-        const result = await checkLiquidiryProviderAcc(
-          LProviderAcc,
-          connection
-        );
-        setLProviderdata(result);
-        const results = await checkLPdata(lpAcc, connection);
-        setLPdata(results);
-        notify({
-          type: "success",
-          message: `Successfully staked LP tokens`,
-        });
-        getUserSOLBalance(publicKey, connection);
-        getUserUSDCBalance(publicKey, connection);
-        const tokenBalance = await getSplTokenBalance(
-          connection,
-          publicKey,
-          selectedCurrency
-        );
-        setTokenBalance(tokenBalance);
+        const usdcAcc = await usdcSplTokenAccountSync(publicKey);
+
+        if (!isInit.isInitialized) {
+          try {
+            const accounts: InitializeUserAccAccounts = {
+              userAcc: userAcc,
+              playerAcc: publicKey,
+              affilAcc: AffilAcc,
+              systemProgram: SystemProgram.programId,
+              clock: new PublicKey(
+                "SysvarC1ock11111111111111111111111111111111"
+              ),
+              usdcMint: USDCMINT,
+              usdcPlayerAcc: usdcAcc,
+              associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
+              tokenProgram: TOKENPROGRAM,
+            };
+
+            const args: InitializeUserAccArgs = {
+              usedAffiliate: Array.from(isInit.usedAffiliate),
+            };
+
+            // Create a new transaction to initialize the user account and send it
+            const initTransaction = new Transaction().add(
+              initializeUserAcc(args, accounts)
+            );
+            const initSignature = await sendTransaction(
+              initTransaction,
+              connection
+            );
+
+            // Wait for transaction confirmation
+            notify({ type: "info", message: `Creating Trading Account` });
+            await connection.confirmTransaction(initSignature, "confirmed");
+            fetchcheckuserdata();
+            notify({
+              type: "success",
+              message: `Trading account created, you can stake now`,
+            });
+          } catch (error) {
+            notify({
+              type: "error",
+              message: `Creation Failed`,
+              description: error?.message,
+            });
+          }
+        } else {
+          console.log(isInit.isInitialized, isInit.usedAffiliate, "isinit");
+          console.log("affilacc", AffilAcc.toString());
+
+          const args: StakeForPointsArgs = {
+            depositAmount: new BN(deposit),
+            usdc: usdc,
+            affiliateCode: Array.from(isInit.usedAffiliate),
+          };
+          const accounts: StakeForPointsAccounts = {
+            liqProvider: LProviderAcc,
+            userAcc: userAcc,
+            providersWallet: publicKey,
+            lpAcc: lpAcc,
+            signerWalletAccount: SIGNERWALLET,
+            ratioAcc: RATIOACC,
+            houseAcc: HOUSEWALLET,
+            pdaHouseAcc: PDAHOUSEWALLET,
+            mint: mintAddress,
+            solOracleAccount: new PublicKey(
+              "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix"
+            ),
+            providersSplTokenAccount: splTokenAccount,
+            splPdaHouseAcc: splPDA,
+            associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
+            tokenProgram: TOKENPROGRAM,
+            systemProgram: SystemProgram.programId,
+            affilAcc: AffilAcc,
+          };
+
+          const initTransaction = new Transaction().add(
+            stakeForPoints(args, accounts)
+          );
+          const initSignature = await sendTransaction(
+            initTransaction,
+            connection
+          );
+
+          notify({
+            type: "info",
+            message: `Staking LP Token.`,
+            txid: signature,
+          });
+          await connection.confirmTransaction(initSignature, "confirmed");
+          const result = await checkLiquidiryProviderAcc(
+            LProviderAcc,
+            connection
+          );
+          setLProviderdata(result);
+          const results = await checkLPdata(lpAcc, connection);
+          setLPdata(results);
+          notify({
+            type: "success",
+            message: `Successfully staked LP tokens`,
+          });
+          getUserSOLBalance(publicKey, connection);
+          getUserUSDCBalance(publicKey, connection);
+          const tokenBalance = await getSplTokenBalance(
+            connection,
+            publicKey,
+            selectedCurrency
+          );
+          setTokenBalance(tokenBalance);
+        }
       } catch (error) {
         notify({
           type: "error",
@@ -815,6 +888,7 @@ const Earn: FC = () => {
       }
     }
   }, [
+    isInit,
     connection,
     publicKey,
     stakeValue,
@@ -880,9 +954,17 @@ const Earn: FC = () => {
           PROGRAM_ID
         );
 
+        const seedsAffil = [isInit.usedAffiliate];
+
+        const [AffilAcc] = await PublicKey.findProgramAddress(
+          seedsAffil,
+          PROGRAM_ID
+        );
+
         const args: WithdrawFromStakingArgs = {
           withdrawAmount: new BN(deposit),
           usdc: usdc,
+          affiliateCode: Array.from(isInit.usedAffiliate),
         };
         const accounts: WithdrawFromStakingAccounts = {
           liqProvider: LProviderAcc,
@@ -902,6 +984,7 @@ const Earn: FC = () => {
           associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
           tokenProgram: TOKENPROGRAM,
           systemProgram: SystemProgram.programId,
+          affilAcc: AffilAcc,
         };
 
         const initTransaction = new Transaction().add(
@@ -946,6 +1029,7 @@ const Earn: FC = () => {
       }
     }
   }, [
+    isInit,
     connection,
     publicKey,
     unstakeValue,
@@ -1011,6 +1095,17 @@ const Earn: FC = () => {
           PROGRAM_ID
         );
 
+        const seedsAffil = [isInit.usedAffiliate];
+
+        const [AffilAcc] = await PublicKey.findProgramAddress(
+          seedsAffil,
+          PROGRAM_ID
+        );
+
+        const args: ClaimPointsArgs = {
+          affiliateCode: Array.from(isInit.usedAffiliate),
+        };
+
         const accounts: ClaimPointsAccounts = {
           liqProvider: LProviderAcc,
           userAcc: userAcc,
@@ -1024,9 +1119,12 @@ const Earn: FC = () => {
             "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix"
           ),
           systemProgram: SystemProgram.programId,
+          affilAcc: AffilAcc,
         };
 
-        const initTransaction = new Transaction().add(claimPoints(accounts));
+        const initTransaction = new Transaction().add(
+          claimPoints(args, accounts)
+        );
         const initSignature = await sendTransaction(
           initTransaction,
           connection
@@ -1056,6 +1154,7 @@ const Earn: FC = () => {
       }
     }
   }, [
+    isInit,
     connection,
     publicKey,
     LPdata,
@@ -1184,6 +1283,7 @@ const Earn: FC = () => {
       }
     }
   }, [
+    isInit,
     connection,
     publicKey,
     withdrawValue,
@@ -1281,6 +1381,7 @@ const Earn: FC = () => {
       // Check if the user has an affiliate code when the component mounts
       if (lpAcc) {
         const results = await checkLPdata(lpAcc, connection);
+        console.log(results);
         setLPdata(results);
       }
     };
@@ -1534,8 +1635,8 @@ const Earn: FC = () => {
                     </div>
                     <div className="relative text-xl leading-[100%] text-[#ffffff60] font-poppins text-white text-right">
                       {selectedCurrency === "SOL"
-                        ? `${((LPdata?.totalDeposits || 0) / LAMPORTS_PER_SOL).toFixed(2)} SOL`
-                        : `${(((LPdata?.usdcTotalDeposits || 0) / LAMPORTS_PER_SOL) * 1000).toFixed(0)} USDC`}
+                        ? `${((LPdata?.totalDeposits + LPdata?.projectsDepositedSol || 0) / LAMPORTS_PER_SOL).toFixed(2)} SOL`
+                        : `${(((LPdata?.usdcTotalDeposits + LPdata?.projectsDepositedUsdc || 0) / LAMPORTS_PER_SOL) * 1000).toFixed(0)} USDC`}
                     </div>
                   </div>
                 </div>

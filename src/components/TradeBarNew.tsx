@@ -17,11 +17,11 @@ import useUserSOLBalanceStore from "../../src/stores/useUserSOLBalanceStore";
 import { useBackupOracle } from "../contexts/BackupOracle";
 import { LongShortRatio } from "../out/accounts/LongShortRatio"; // Update with the correct path
 import { UserAccount } from "../out/accounts/UserAccount"; // Update with the correct path
-import {
-  CreateBinOptAccounts,
-  CreateBinOptArgs,
-  createBinOpt,
-} from "../out/instructions/createBinOpt";
+// import {
+//   CreateBinOptAccounts,
+//   CreateBinOptArgs,
+//   createBinOpt,
+// } from "../out/instructions/createBinOpt";
 import {
   InitializeUserAccAccounts,
   InitializeUserAccArgs,
@@ -793,330 +793,330 @@ const TradeBar: React.FC<
     }
   };
 
-  const onClick = useCallback(
-    async (direction = null) => {
-      const countmaxBet =
-        selectedCurrency === "USDC"
-          ? ((((LPdata?.usdcTotalDeposits + LPdata?.usdcPnl) / 200) * 3) /
-              5 /
-              LAMPORTS_PER_SOL) *
-            1000
-          : (((LPdata?.totalDeposits + LPdata?.pnl) / 200) * 3) /
-            5 /
-            LAMPORTS_PER_SOL; // 0,3% maximálni pozice
+  // const onClick = useCallback(
+  //   async (direction = null) => {
+  //     const countmaxBet =
+  //       selectedCurrency === "USDC"
+  //         ? ((((LPdata?.usdcTotalDeposits + LPdata?.usdcPnl) / 200) * 3) /
+  //             5 /
+  //             LAMPORTS_PER_SOL) *
+  //           1000
+  //         : (((LPdata?.totalDeposits + LPdata?.pnl) / 200) * 3) /
+  //           5 /
+  //           LAMPORTS_PER_SOL; // 0,3% maximálni pozice
 
-      const maxBet = Math.min(100000, countmaxBet);
-      const realbalance = selectedCurrency === "USDC" ? usdcbalance : balance; // 0,3% maximálni pozice
-      const token = selectedCurrency === "USDC" ? "$" : "◎"; // 0,3% maximálni pozice
-      if (parseFloat(amountValue) > maxBet) {
-        notify({
-          type: "error",
-          message: `Position Reverted`,
-          description: `Maximum Collateral is ${maxBet.toFixed(2)} ${token}`,
-        });
-        return;
-      }
+  //     const maxBet = Math.min(100000, countmaxBet);
+  //     const realbalance = selectedCurrency === "USDC" ? usdcbalance : balance; // 0,3% maximálni pozice
+  //     const token = selectedCurrency === "USDC" ? "$" : "◎"; // 0,3% maximálni pozice
+  //     if (parseFloat(amountValue) > maxBet) {
+  //       notify({
+  //         type: "error",
+  //         message: `Position Reverted`,
+  //         description: `Maximum Collateral is ${maxBet.toFixed(2)} ${token}`,
+  //       });
+  //       return;
+  //     }
 
-      if (
-        totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL >
-        2 * maxBet * LAMPORTS_PER_SOL
-      ) {
-        notify({
-          type: "error",
-          message: `Position Reverted`,
-          description: `Collateral limit per user is ${(2 * maxBet).toFixed(2)}`,
-        });
-        return;
-      }
+  //     if (
+  //       totalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL >
+  //       2 * maxBet * LAMPORTS_PER_SOL
+  //     ) {
+  //       notify({
+  //         type: "error",
+  //         message: `Position Reverted`,
+  //         description: `Collateral limit per user is ${(2 * maxBet).toFixed(2)}`,
+  //       });
+  //       return;
+  //     }
 
-      const cryptoSettings = {
-        SOL: {
-          symbolCode: 0,
-          oracleAddy: "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix",
-        },
-        BTC: {
-          symbolCode: 1,
-          oracleAddy: "HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J",
-        },
-        // Add more cryptocurrencies here in the same pattern
-      };
+  //     const cryptoSettings = {
+  //       SOL: {
+  //         symbolCode: 0,
+  //         oracleAddy: "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix",
+  //       },
+  //       BTC: {
+  //         symbolCode: 1,
+  //         oracleAddy: "HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J",
+  //       },
+  //       // Add more cryptocurrencies here in the same pattern
+  //     };
 
-      let symbolCode;
-      let oracleAddy;
-      const selectedCrypto = Object.keys(selectedCryptos).find(
-        (key) => selectedCryptos[key]
-      );
+  //     let symbolCode;
+  //     let oracleAddy;
+  //     const selectedCrypto = Object.keys(selectedCryptos).find(
+  //       (key) => selectedCryptos[key]
+  //     );
 
-      if (selectedCrypto && cryptoSettings[selectedCrypto]) {
-        symbolCode = cryptoSettings[selectedCrypto].symbolCode;
-        oracleAddy = cryptoSettings[selectedCrypto].oracleAddy;
-      } else {
-        throw new Error("Invalid or unsupported symbol");
-      }
+  //     if (selectedCrypto && cryptoSettings[selectedCrypto]) {
+  //       symbolCode = cryptoSettings[selectedCrypto].symbolCode;
+  //       oracleAddy = cryptoSettings[selectedCrypto].oracleAddy;
+  //     } else {
+  //       throw new Error("Invalid or unsupported symbol");
+  //     }
 
-      if (!publicKey) {
-        notify({
-          type: "error",
-          message: `Wallet not connected`,
-          description: "Connect the wallet in the top panel",
-        });
-        return;
-      }
+  //     if (!publicKey) {
+  //       notify({
+  //         type: "error",
+  //         message: `Wallet not connected`,
+  //         description: "Connect the wallet in the top panel",
+  //       });
+  //       return;
+  //     }
 
-      if (!amountValue || parseFloat(amountValue) === 0) {
-        notify({
-          type: "error",
-          message: "Amount feels empty",
-          description: "Fill the Trade Amount",
-        });
-        return;
-      }
+  //     if (!amountValue || parseFloat(amountValue) === 0) {
+  //       notify({
+  //         type: "error",
+  //         message: "Amount feels empty",
+  //         description: "Fill the Trade Amount",
+  //       });
+  //       return;
+  //     }
 
-      if (activeButton === 5 && inputValue === 0 && inputValue2 === 0) {
-        notify({
-          type: "error",
-          message: "Expiration time is zero",
-          description: "Change the Custom Time",
-        });
-        return;
-      }
+  //     if (activeButton === 5 && inputValue === 0 && inputValue2 === 0) {
+  //       notify({
+  //         type: "error",
+  //         message: "Expiration time is zero",
+  //         description: "Change the Custom Time",
+  //       });
+  //       return;
+  //     }
 
-      if (parseFloat(amountValue) > realbalance) {
-        notify({
-          type: "info",
-          message: "Insufficient balance",
-          description: "Trade Amount is greater than the available balance",
-        });
-        return;
-      }
+  //     if (parseFloat(amountValue) > realbalance) {
+  //       notify({
+  //         type: "info",
+  //         message: "Insufficient balance",
+  //         description: "Trade Amount is greater than the available balance",
+  //       });
+  //       return;
+  //     }
 
-      const minAmount = selectedCurrency === "SOL" ? 0.05 : 5;
-      const maxAmount = selectedCurrency === "SOL" ? 1 : 100;
+  //     const minAmount = selectedCurrency === "SOL" ? 0.05 : 5;
+  //     const maxAmount = selectedCurrency === "SOL" ? 1 : 100;
 
-      if (
-        parseFloat(amountValue) > maxBet ||
-        parseFloat(amountValue) < minAmount
-      ) {
-        notify({
-          type: "info",
-          message: "Invalid trade amount",
-          description: `Trade Amount should be between ${minAmount.toFixed(2)}${token} and ${maxAmount.toFixed(2)}${token}`,
-        });
-        return;
-      }
+  //     if (
+  //       parseFloat(amountValue) > maxBet ||
+  //       parseFloat(amountValue) < minAmount
+  //     ) {
+  //       notify({
+  //         type: "info",
+  //         message: "Invalid trade amount",
+  //         description: `Trade Amount should be between ${minAmount.toFixed(2)}${token} and ${maxAmount.toFixed(2)}${token}`,
+  //       });
+  //       return;
+  //     }
 
-      const seedsAffil = [isInit.usedAffiliate];
+  //     const seedsAffil = [isInit.usedAffiliate];
 
-      const [AffilAcc] = await PublicKey.findProgramAddress(
-        seedsAffil,
-        PROGRAM_ID
-      );
+  //     const [AffilAcc] = await PublicKey.findProgramAddress(
+  //       seedsAffil,
+  //       PROGRAM_ID
+  //     );
 
-      let signature: TransactionSignature = "";
-      try {
-        // Get the current time and add 1 to the time number
-        const now = Date.now();
-        const timeNumber = (Math.floor(now / 1000) % 1000000) + 1;
+  //     let signature: TransactionSignature = "";
+  //     try {
+  //       // Get the current time and add 1 to the time number
+  //       const now = Date.now();
+  //       const timeNumber = (Math.floor(now / 1000) % 1000000) + 1;
 
-        const betAmount =
-          selectedCurrency === "USDC"
-            ? (parseFloat(amountValue) * LAMPORTS_PER_SOL) / 1000
-            : parseFloat(amountValue) * LAMPORTS_PER_SOL;
+  //       const betAmount =
+  //         selectedCurrency === "USDC"
+  //           ? (parseFloat(amountValue) * LAMPORTS_PER_SOL) / 1000
+  //           : parseFloat(amountValue) * LAMPORTS_PER_SOL;
 
-        let expiration = 0;
-        if (activeButton === 1) {
-          expiration = 3 * 60; // 1 minute
-        } else if (activeButton === 2) {
-          expiration = 5 * 60; // 5 minutes
-        } else if (activeButton === 3) {
-          expiration = 60 * 60; // 1 hour
-        } else if (activeButton === 4) {
-          expiration = 60 * 60 * 4; // 4 hours
-        } else if (activeButton === 5) {
-          expiration = inputValue * 60 * 60 + inputValue2 * 60; // Custom time in seconds
-        }
+  //       let expiration = 0;
+  //       if (activeButton === 1) {
+  //         expiration = 3 * 60; // 1 minute
+  //       } else if (activeButton === 2) {
+  //         expiration = 5 * 60; // 5 minutes
+  //       } else if (activeButton === 3) {
+  //         expiration = 60 * 60; // 1 hour
+  //       } else if (activeButton === 4) {
+  //         expiration = 60 * 60 * 4; // 4 hours
+  //       } else if (activeButton === 5) {
+  //         expiration = inputValue * 60 * 60 + inputValue2 * 60; // Custom time in seconds
+  //       }
 
-        const priceDirection =
-          toggleState === "LONG" ? 0 : toggleState === "SHORT" ? 1 : -1;
-        if (priceDirection === -1) {
-          throw new Error("Invalid toggle state");
-        }
+  //       const priceDirection =
+  //         toggleState === "LONG" ? 0 : toggleState === "SHORT" ? 1 : -1;
+  //       if (priceDirection === -1) {
+  //         throw new Error("Invalid toggle state");
+  //       }
 
-        const seeds = [
-          Buffer.from(publicKey.toBytes()),
-          new BN(timeNumber).toArray("le", 8),
-        ];
+  //       const seeds = [
+  //         Buffer.from(publicKey.toBytes()),
+  //         new BN(timeNumber).toArray("le", 8),
+  //       ];
 
-        const [pda] = await PublicKey.findProgramAddress(seeds, PROGRAM_ID);
+  //       const [pda] = await PublicKey.findProgramAddress(seeds, PROGRAM_ID);
 
-        const seedsUser = [Buffer.from(publicKey.toBytes())];
+  //       const seedsUser = [Buffer.from(publicKey.toBytes())];
 
-        const [userAcc] = await PublicKey.findProgramAddress(
-          seedsUser,
-          PROGRAM_ID
-        );
+  //       const [userAcc] = await PublicKey.findProgramAddress(
+  //         seedsUser,
+  //         PROGRAM_ID
+  //       );
 
-        const usedAffiliate = isInit.usedAffiliate;
-        const usdc = selectedCurrency === "USDC" ? 1 : 0;
-        const backOracle = isBackupOracle === true ? 0 : 1;
+  //       const usedAffiliate = isInit.usedAffiliate;
+  //       const usdc = selectedCurrency === "USDC" ? 1 : 0;
+  //       const backOracle = isBackupOracle === true ? 0 : 1;
 
-        const args: CreateBinOptArgs = {
-          number: new BN(timeNumber),
-          affiliateCode: Array.from(usedAffiliate),
-          betAmount: new BN(betAmount),
-          expiration: new BN(expiration),
-          priceDirection: new BN(priceDirection),
-          symbol: symbolCode,
-          slippagePrice: new BN(initialPrice * 100000000),
-          slippage: new BN(slippageTolerance),
-          backOracle: backOracle,
-          usdc: usdc,
-        };
-        console.log(
-          "Creating Binary Option",
-          "Initial Price",
-          initialPrice,
-          "Position Size",
-          betAmount / LAMPORTS_PER_SOL,
-          "Expiration Time",
-          expiration,
-          "Direction",
-          priceDirection,
-          "Symbol",
-          symbolCode,
-          "Slippage",
-          slippageTolerance
-        );
+  //       const args: CreateBinOptArgs = {
+  //         number: new BN(timeNumber),
+  //         affiliateCode: Array.from(usedAffiliate),
+  //         betAmount: new BN(betAmount),
+  //         expiration: new BN(expiration),
+  //         priceDirection: new BN(priceDirection),
+  //         symbol: symbolCode,
+  //         slippagePrice: new BN(initialPrice * 100000000),
+  //         slippage: new BN(slippageTolerance),
+  //         backOracle: backOracle,
+  //         usdc: usdc,
+  //       };
+  //       console.log(
+  //         "Creating Binary Option",
+  //         "Initial Price",
+  //         initialPrice,
+  //         "Position Size",
+  //         betAmount / LAMPORTS_PER_SOL,
+  //         "Expiration Time",
+  //         expiration,
+  //         "Direction",
+  //         priceDirection,
+  //         "Symbol",
+  //         symbolCode,
+  //         "Slippage",
+  //         slippageTolerance
+  //       );
 
-        const usdcAcc = await usdcSplTokenAccountSync(publicKey);
+  //       const usdcAcc = await usdcSplTokenAccountSync(publicKey);
 
-        if (!isInit.isInitialized) {
-          try {
-            const accounts: InitializeUserAccAccounts = {
-              userAcc: userAcc,
-              playerAcc: publicKey,
-              affilAcc: AffilAcc,
-              systemProgram: SystemProgram.programId,
-              clock: new PublicKey(
-                "SysvarC1ock11111111111111111111111111111111"
-              ),
-              usdcMint: USDCMINT,
-              usdcPlayerAcc: usdcAcc,
-              associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
-              tokenProgram: TOKENPROGRAM,
-            };
+  //       if (!isInit.isInitialized) {
+  //         try {
+  //           const accounts: InitializeUserAccAccounts = {
+  //             userAcc: userAcc,
+  //             playerAcc: publicKey,
+  //             affilAcc: AffilAcc,
+  //             systemProgram: SystemProgram.programId,
+  //             clock: new PublicKey(
+  //               "SysvarC1ock11111111111111111111111111111111"
+  //             ),
+  //             usdcMint: USDCMINT,
+  //             usdcPlayerAcc: usdcAcc,
+  //             associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
+  //             tokenProgram: TOKENPROGRAM,
+  //           };
 
-            const args: InitializeUserAccArgs = {
-              usedAffiliate: Array.from(isInit.usedAffiliate),
-            };
+  //           const args: InitializeUserAccArgs = {
+  //             usedAffiliate: Array.from(isInit.usedAffiliate),
+  //           };
 
-            // Create a new transaction to initialize the user account and send it
-            const initTransaction = new Transaction().add(
-              initializeUserAcc(args, accounts)
-            );
-            const initSignature = await sendTransaction(
-              initTransaction,
-              connection
-            );
+  //           // Create a new transaction to initialize the user account and send it
+  //           const initTransaction = new Transaction().add(
+  //             initializeUserAcc(args, accounts)
+  //           );
+  //           const initSignature = await sendTransaction(
+  //             initTransaction,
+  //             connection
+  //           );
 
-            // Wait for transaction confirmation
-            notify({ type: "info", message: `Creating Trading Account` });
-            await connection.confirmTransaction(initSignature, "confirmed");
-            fetchcheckuserdata();
-            setModalIsOpen(false);
-            notify({
-              type: "success",
-              message: `Trading account created`,
-            });
-          } catch (error) {
-            notify({
-              type: "error",
-              message: `Creation Failed`,
-              description: error?.message,
-            });
-          }
-        } else {
-          const accounts: CreateBinOptAccounts = {
-            binOpt: new PublicKey(pda.toString()),
-            playerAcc: publicKey,
-            userAcc: userAcc,
-            ratioAcc: RATIOACC,
-            houseAcc: HOUSEWALLET,
-            oracleAccount: new PublicKey(oracleAddy),
-            solOracleAccount: new PublicKey(
-              "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix"
-            ),
-            pdaHouseAcc: PDAHOUSEWALLET,
-            affilAcc: AffilAcc,
-            lpAcc: LPACC,
-            signerWalletAccount: SIGNERWALLET,
-            systemProgram: SystemProgram.programId,
-            usdcMint: USDCMINT,
-            usdcPlayerAcc: usdcAcc,
-            usdcPdaHouseAcc: USDCPDAHOUSEWALLET,
-            tokenProgram: TOKENPROGRAM,
-            associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
-          };
+  //           // Wait for transaction confirmation
+  //           notify({ type: "info", message: `Creating Trading Account` });
+  //           await connection.confirmTransaction(initSignature, "confirmed");
+  //           fetchcheckuserdata();
+  //           setModalIsOpen(false);
+  //           notify({
+  //             type: "success",
+  //             message: `Trading account created`,
+  //           });
+  //         } catch (error) {
+  //           notify({
+  //             type: "error",
+  //             message: `Creation Failed`,
+  //             description: error?.message,
+  //           });
+  //         }
+  //       } else {
+  //         const accounts: CreateBinOptAccounts = {
+  //           binOpt: new PublicKey(pda.toString()),
+  //           playerAcc: publicKey,
+  //           userAcc: userAcc,
+  //           ratioAcc: RATIOACC,
+  //           houseAcc: HOUSEWALLET,
+  //           oracleAccount: new PublicKey(oracleAddy),
+  //           solOracleAccount: new PublicKey(
+  //             "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix"
+  //           ),
+  //           pdaHouseAcc: PDAHOUSEWALLET,
+  //           affilAcc: AffilAcc,
+  //           lpAcc: LPACC,
+  //           signerWalletAccount: SIGNERWALLET,
+  //           systemProgram: SystemProgram.programId,
+  //           usdcMint: USDCMINT,
+  //           usdcPlayerAcc: usdcAcc,
+  //           usdcPdaHouseAcc: USDCPDAHOUSEWALLET,
+  //           tokenProgram: TOKENPROGRAM,
+  //           associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
+  //         };
 
-          let PRIORITY_FEE_IX;
+  //         let PRIORITY_FEE_IX;
 
-          if (isPriorityFee) {
-            const priorityfees = await getPriorityFeeEstimate();
-            PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
-              microLamports: priorityfees,
-            });
-          } else {
-            PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
-              microLamports: 0,
-            });
-          }
+  //         if (isPriorityFee) {
+  //           const priorityfees = await getPriorityFeeEstimate();
+  //           PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+  //             microLamports: priorityfees,
+  //           });
+  //         } else {
+  //           PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+  //             microLamports: 0,
+  //           });
+  //         }
 
-          const transaction = new Transaction()
-            .add(createBinOpt(args, accounts))
-            .add(PRIORITY_FEE_IX);
+  //         const transaction = new Transaction()
+  //           .add(createBinOpt(args, accounts))
+  //           .add(PRIORITY_FEE_IX);
 
-          signature = await sendTransaction(transaction, connection);
-          notify({
-            type: "info",
-            message: `Opening Position`,
-            txid: signature,
-          });
-          // Wait for transaction confirmation before showing the 'success' notification
-          await connection.confirmTransaction(signature, "confirmed");
-        }
-      } catch (error: any) {
-        // In case of an error, show only the 'error' notification
-        notify({
-          type: "error",
-          message: `Position Reverted`,
-          description: error?.message,
-          txid: signature,
-        });
-        return;
-      }
-    },
-    [
-      isBackupOracle,
-      selectedCurrency,
-      isPriorityFee,
-      LPdata,
-      slippageTolerance,
-      isInit,
-      balance,
-      initialPrice,
-      totalBetAmount,
-      publicKey,
-      notify,
-      connection,
-      sendTransaction,
-      activeButton,
-      inputValue,
-      inputValue2,
-      amountValue,
-      toggleState,
-      selectedCryptos,
-    ]
-  );
+  //         signature = await sendTransaction(transaction, connection);
+  //         notify({
+  //           type: "info",
+  //           message: `Opening Position`,
+  //           txid: signature,
+  //         });
+  //         // Wait for transaction confirmation before showing the 'success' notification
+  //         await connection.confirmTransaction(signature, "confirmed");
+  //       }
+  //     } catch (error: any) {
+  //       // In case of an error, show only the 'error' notification
+  //       notify({
+  //         type: "error",
+  //         message: `Position Reverted`,
+  //         description: error?.message,
+  //         txid: signature,
+  //       });
+  //       return;
+  //     }
+  //   },
+  //   [
+  //     isBackupOracle,
+  //     selectedCurrency,
+  //     isPriorityFee,
+  //     LPdata,
+  //     slippageTolerance,
+  //     isInit,
+  //     balance,
+  //     initialPrice,
+  //     totalBetAmount,
+  //     publicKey,
+  //     notify,
+  //     connection,
+  //     sendTransaction,
+  //     activeButton,
+  //     inputValue,
+  //     inputValue2,
+  //     amountValue,
+  //     toggleState,
+  //     selectedCryptos,
+  //   ]
+  // );
 
   const payoutValue = (Number(amountValue) * Number(payout)).toFixed(2);
 
@@ -1678,7 +1678,7 @@ const TradeBar: React.FC<
       </div>
       {wallet.connected ? (
         <button
-          onClick={onClick}
+          // onClick={onClick}
           className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  ${
             toggleState === "LONG"
               ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-[2px] border-solid border-primary"

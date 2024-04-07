@@ -13,6 +13,7 @@ export interface AffiliateAccountFields {
   ambassador: boolean;
   usdcTotalAffiliatesVolume: BN;
   usdcTotalEarned: BN;
+  referralPoints: BN;
 }
 
 export interface AffiliateAccountJSON {
@@ -25,6 +26,7 @@ export interface AffiliateAccountJSON {
   ambassador: boolean;
   usdcTotalAffiliatesVolume: string;
   usdcTotalEarned: string;
+  referralPoints: string;
 }
 
 export class AffiliateAccount {
@@ -37,6 +39,7 @@ export class AffiliateAccount {
   readonly ambassador: boolean;
   readonly usdcTotalAffiliatesVolume: BN;
   readonly usdcTotalEarned: BN;
+  readonly referralPoints: BN;
 
   static readonly discriminator = Buffer.from([
     189, 94, 244, 154, 243, 52, 127, 157,
@@ -52,6 +55,7 @@ export class AffiliateAccount {
     borsh.bool("ambassador"),
     borsh.u64("usdcTotalAffiliatesVolume"),
     borsh.u64("usdcTotalEarned"),
+    borsh.u64("referralPoints"),
   ]);
 
   constructor(fields: AffiliateAccountFields) {
@@ -64,6 +68,7 @@ export class AffiliateAccount {
     this.ambassador = fields.ambassador;
     this.usdcTotalAffiliatesVolume = fields.usdcTotalAffiliatesVolume;
     this.usdcTotalEarned = fields.usdcTotalEarned;
+    this.referralPoints = fields.referralPoints;
   }
 
   static async fetch(
@@ -119,6 +124,7 @@ export class AffiliateAccount {
       ambassador: dec.ambassador,
       usdcTotalAffiliatesVolume: dec.usdcTotalAffiliatesVolume,
       usdcTotalEarned: dec.usdcTotalEarned,
+      referralPoints: dec.referralPoints,
     });
   }
 
@@ -133,6 +139,7 @@ export class AffiliateAccount {
       ambassador: this.ambassador,
       usdcTotalAffiliatesVolume: this.usdcTotalAffiliatesVolume.toString(),
       usdcTotalEarned: this.usdcTotalEarned.toString(),
+      referralPoints: this.referralPoints.toString(),
     };
   }
 
@@ -147,6 +154,7 @@ export class AffiliateAccount {
       ambassador: obj.ambassador,
       usdcTotalAffiliatesVolume: new BN(obj.usdcTotalAffiliatesVolume),
       usdcTotalEarned: new BN(obj.usdcTotalEarned),
+      referralPoints: new BN(obj.referralPoints),
     });
   }
 }

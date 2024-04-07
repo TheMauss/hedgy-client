@@ -9,6 +9,8 @@ export type {
 } from "./createLimitOrder";
 export { updatePrice } from "./updatePrice";
 export type { UpdatePriceArgs, UpdatePriceAccounts } from "./updatePrice";
+export { confirmPriceUpdate } from "./confirmPriceUpdate";
+export type { ConfirmPriceUpdateAccounts } from "./confirmPriceUpdate";
 export { initializeUserAcc } from "./initializeUserAcc";
 export type {
   InitializeUserAccArgs,
@@ -39,6 +41,13 @@ export { updateLpAccFee } from "./updateLpAccFee";
 export type { UpdateLpAccFeeAccounts } from "./updateLpAccFee";
 export { haltLpAcc } from "./haltLpAcc";
 export type { HaltLpAccAccounts } from "./haltLpAcc";
+export { changeMaxDeposits } from "./changeMaxDeposits";
+export type {
+  ChangeMaxDepositsArgs,
+  ChangeMaxDepositsAccounts,
+} from "./changeMaxDeposits";
+export { lockLpAcc } from "./lockLpAcc";
+export type { LockLpAccAccounts } from "./lockLpAcc";
 export { stakeForPoints } from "./stakeForPoints";
 export type {
   StakeForPointsArgs,
@@ -50,7 +59,7 @@ export type {
   WithdrawFromStakingAccounts,
 } from "./withdrawFromStaking";
 export { claimPoints } from "./claimPoints";
-export type { ClaimPointsAccounts } from "./claimPoints";
+export type { ClaimPointsArgs, ClaimPointsAccounts } from "./claimPoints";
 export { depositPolIntoLp } from "./depositPolIntoLp";
 export type {
   DepositPolIntoLpArgs,
@@ -84,7 +93,3 @@ export { updateFutCont } from "./updateFutCont";
 export type { UpdateFutContArgs, UpdateFutContAccounts } from "./updateFutCont";
 export { updatefeesFutCont } from "./updatefeesFutCont";
 export type { UpdatefeesFutContAccounts } from "./updatefeesFutCont";
-export { createBinOpt } from "./createBinOpt";
-export type { CreateBinOptArgs, CreateBinOptAccounts } from "./createBinOpt";
-export { resolveBinOpt } from "./resolveBinOpt";
-export type { ResolveBinOptArgs, ResolveBinOptAccounts } from "./resolveBinOpt";

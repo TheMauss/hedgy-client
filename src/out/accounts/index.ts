@@ -3,8 +3,6 @@ export type {
   FuturesContractFields,
   FuturesContractJSON,
 } from "./FuturesContract";
-export { BinaryOption } from "./BinaryOption";
-export type { BinaryOptionFields, BinaryOptionJSON } from "./BinaryOption";
 export { AffiliateAccount } from "./AffiliateAccount";
 export type {
   AffiliateAccountFields,

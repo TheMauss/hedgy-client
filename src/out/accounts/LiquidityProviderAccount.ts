@@ -14,7 +14,6 @@ export interface LiquidityProviderAccountFields {
   lastKnownUsdcCumulativeFeeRate: BN;
   pusdcStaked: BN;
   psolStaked: BN;
-  lastClaimEpoch: BN;
 }
 
 export interface LiquidityProviderAccountJSON {
@@ -28,7 +27,6 @@ export interface LiquidityProviderAccountJSON {
   lastKnownUsdcCumulativeFeeRate: string;
   pusdcStaked: string;
   psolStaked: string;
-  lastClaimEpoch: string;
 }
 
 export class LiquidityProviderAccount {
@@ -42,7 +40,6 @@ export class LiquidityProviderAccount {
   readonly lastKnownUsdcCumulativeFeeRate: BN;
   readonly pusdcStaked: BN;
   readonly psolStaked: BN;
-  readonly lastClaimEpoch: BN;
 
   static readonly discriminator = Buffer.from([
     37, 78, 108, 229, 124, 38, 135, 141,
@@ -59,7 +56,6 @@ export class LiquidityProviderAccount {
     borsh.u64("lastKnownUsdcCumulativeFeeRate"),
     borsh.u64("pusdcStaked"),
     borsh.u64("psolStaked"),
-    borsh.u64("lastClaimEpoch"),
   ]);
 
   constructor(fields: LiquidityProviderAccountFields) {
@@ -73,7 +69,6 @@ export class LiquidityProviderAccount {
     this.lastKnownUsdcCumulativeFeeRate = fields.lastKnownUsdcCumulativeFeeRate;
     this.pusdcStaked = fields.pusdcStaked;
     this.psolStaked = fields.psolStaked;
-    this.lastClaimEpoch = fields.lastClaimEpoch;
   }
 
   static async fetch(
@@ -130,7 +125,6 @@ export class LiquidityProviderAccount {
       lastKnownUsdcCumulativeFeeRate: dec.lastKnownUsdcCumulativeFeeRate,
       pusdcStaked: dec.pusdcStaked,
       psolStaked: dec.psolStaked,
-      lastClaimEpoch: dec.lastClaimEpoch,
     });
   }
 
@@ -147,7 +141,6 @@ export class LiquidityProviderAccount {
         this.lastKnownUsdcCumulativeFeeRate.toString(),
       pusdcStaked: this.pusdcStaked.toString(),
       psolStaked: this.psolStaked.toString(),
-      lastClaimEpoch: this.lastClaimEpoch.toString(),
     };
   }
 
@@ -165,7 +158,6 @@ export class LiquidityProviderAccount {
       ),
       pusdcStaked: new BN(obj.pusdcStaked),
       psolStaked: new BN(obj.psolStaked),
-      lastClaimEpoch: new BN(obj.lastClaimEpoch),
     });
   }
 }

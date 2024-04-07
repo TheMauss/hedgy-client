@@ -3,12 +3,11 @@ import {
   ConnectionProvider,
   WalletProvider,
 } from "@solana/wallet-adapter-react";
-import {
-  PhantomWalletAdapter,
-  SolflareWalletAdapter,
-  TorusWalletAdapter,
-  LedgerWalletAdapter,
-} from "@solana/wallet-adapter-wallets";
+import { BackpackWalletAdapter } from "@solana/wallet-adapter-backpack";
+import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
+import { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";
+
+import { LedgerWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { Cluster, clusterApiUrl } from "@solana/web3.js";
 import { FC, ReactNode, useCallback, useMemo } from "react";
 import { AutoConnectProvider, useAutoConnect } from "./AutoConnectProvider";
@@ -45,7 +44,7 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
     () => [
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter(),
-      new TorusWalletAdapter(),
+      new BackpackWalletAdapter(),
       new LedgerWalletAdapter(),
     ],
     [network]

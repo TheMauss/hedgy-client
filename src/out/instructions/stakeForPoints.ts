@@ -10,6 +10,7 @@ import { PROGRAM_ID } from "../programId";
 export interface StakeForPointsArgs {
   depositAmount: BN;
   usdc: number;
+  affiliateCode: Array<number>;
 }
 
 export interface StakeForPointsAccounts {
@@ -28,11 +29,13 @@ export interface StakeForPointsAccounts {
   associatedTokenProgram: PublicKey;
   tokenProgram: PublicKey;
   systemProgram: PublicKey;
+  affilAcc: PublicKey;
 }
 
 export const layout = borsh.struct([
   borsh.u64("depositAmount"),
   borsh.u8("usdc"),
+  borsh.array(borsh.u8(), 8, "affiliateCode"),
 ]);
 
 export function stakeForPoints(
@@ -68,6 +71,7 @@ export function stakeForPoints(
     },
     { pubkey: accounts.tokenProgram, isSigner: false, isWritable: false },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
+    { pubkey: accounts.affilAcc, isSigner: false, isWritable: true },
   ];
   const identifier = Buffer.from([8, 117, 14, 251, 187, 192, 135, 230]);
   const buffer = Buffer.alloc(1000);
@@ -75,6 +79,7 @@ export function stakeForPoints(
     {
       depositAmount: args.depositAmount,
       usdc: args.usdc,
+      affiliateCode: args.affiliateCode,
     },
     buffer
   );

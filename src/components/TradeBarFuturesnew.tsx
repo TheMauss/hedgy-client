@@ -1,5 +1,8 @@
 import { BN } from "@project-serum/anchor";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { WalletConnectWalletAdapter } from "@solana/wallet-adapter-wallets";
+
 import {
   ComputeBudgetProgram,
   Connection,
@@ -41,7 +44,6 @@ import {
 import { PROGRAM_ID } from "../out/programId";
 import useUserSOLBalanceStore from "../stores/useUserSOLBalanceStore";
 import { notify } from "../utils/notifications";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 const HOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_HOUSE_WALLET);
 const SIGNERWALLET = new PublicKey(process.env.NEXT_PUBLIC_SIGNER_WALLET);
@@ -104,6 +106,8 @@ async function checkLPdata(
   pnl: number;
   cumulativeFeeRate: number;
   cumulativePnlRate: number;
+  projectsDepositedSol: number;
+  projectsDepositedUsdc: number;
 }> {
   const accountInfo = await connection.getAccountInfo(lpAcc);
 
@@ -119,6 +123,8 @@ async function checkLPdata(
       usdcPnl: 0,
       cumulativeFeeRate: 0,
       cumulativePnlRate: 0,
+      projectsDepositedSol: 0,
+      projectsDepositedUsdc: 0,
     };
   }
 
@@ -146,6 +152,8 @@ async function checkLPdata(
 
     cumulativeFeeRate: LpAccount.cumulativeFeeRate.toNumber(),
     cumulativePnlRate: LpAccount.cumulativePnlRate.toNumber(),
+    projectsDepositedSol: LpAccount.projectsDepositedSol.toNumber(),
+    projectsDepositedUsdc: LpAccount.projectsDepositedUsdc.toNumber(),
   };
 }
 
@@ -443,6 +451,8 @@ const TradeBar: React.FC<
 
     cumulativeFeeRate: number;
     cumulativePnlRate: number;
+    projectsDepositedSol: number;
+    projectsDepositedUsdc: number;
   } | null>(null);
 
   useEffect(() => {
@@ -462,8 +472,14 @@ const TradeBar: React.FC<
       if (lpAcc) {
         const results = await checkLPdata(lpAcc, connection);
         setLPdata(results);
-        setTotalDeposits(results.totalDeposits / LAMPORTS_PER_SOL);
-        setUsdcTotalDeposits(results.usdcTotalDeposits / LAMPORTS_PER_SOL);
+        setTotalDeposits(
+          (results.totalDeposits + results.projectsDepositedSol) /
+            LAMPORTS_PER_SOL
+        );
+        setUsdcTotalDeposits(
+          (results.usdcTotalDeposits + results.projectsDepositedUsdc) /
+            LAMPORTS_PER_SOL
+        );
       }
     };
 
@@ -1317,11 +1333,19 @@ const TradeBar: React.FC<
   const FutOrder = useCallback(async () => {
     const countmaxBet =
       selectedCurrency === "USDC"
-        ? ((((LPdata?.usdcTotalDeposits + LPdata?.usdcPnl) / 200) * 3) /
+        ? ((((LPdata?.usdcTotalDeposits +
+            LPdata?.usdcPnl +
+            LPdata?.projectsDepositedUsdc) /
+            200) *
+            3) /
             5 /
             LAMPORTS_PER_SOL) *
           1000
-        : (((LPdata?.totalDeposits + LPdata?.pnl) / 200) * 3) /
+        : (((LPdata?.totalDeposits +
+            LPdata?.pnl +
+            LPdata?.projectsDepositedSol) /
+            200) *
+            3) /
           5 /
           LAMPORTS_PER_SOL; // 0,3% maximálni pozice
 
@@ -1677,11 +1701,19 @@ const TradeBar: React.FC<
   const onClick = useCallback(async () => {
     const countmaxBet =
       selectedCurrency === "USDC"
-        ? ((((LPdata?.usdcTotalDeposits + LPdata?.usdcPnl) / 200) * 3) /
+        ? ((((LPdata?.usdcTotalDeposits +
+            LPdata?.usdcPnl +
+            LPdata?.projectsDepositedUsdc) /
+            200) *
+            3) /
             5 /
             LAMPORTS_PER_SOL) *
           1000
-        : (((LPdata?.totalDeposits + LPdata?.pnl) / 200) * 3) /
+        : (((LPdata?.totalDeposits +
+            LPdata?.pnl +
+            LPdata?.projectsDepositedSol) /
+            200) *
+            3) /
           5 /
           LAMPORTS_PER_SOL; // 0,3% maximálni pozice
 
@@ -2277,9 +2309,14 @@ const TradeBar: React.FC<
     const totalDepositsKey = currencySuffix
       ? `usdcTotalDeposits`
       : "totalDeposits";
+
+    const totalPOLDepositsKey = currencySuffix
+      ? `projectsDepositedUsdc`
+      : "projectsDepositedSol";
     console.log(totalDepositsKey, "TotalDepositss");
 
-    const totalDeposits = LPdata?.[totalDepositsKey] || 0;
+    const totalDeposits =
+      LPdata?.[totalDepositsKey] + LPdata?.[totalPOLDepositsKey] || 0;
     console.log(totalDeposits, "TotalDepositss");
 
     const oiSol = totalDeposits / 4; // Open interest for large caps
@@ -2523,7 +2560,7 @@ const TradeBar: React.FC<
 
   const ModalDetails2 = (
     <Modal
-      className="z-10000 custom-scrollbar bg-layer-2 rounded-md border-[1px] border-solid border-layer-3"
+      className="z-10000 custom-scrollbar bg-black rounded-md border-[1px] border-solid border-[#ffffff24]"
       isOpen={modalIsOpen2}
       onRequestClose={() => setModalIsOpen2(false)}
       style={{
@@ -2539,7 +2576,7 @@ const TradeBar: React.FC<
         },
       }}
     >
-      <div className="w-32 rounded-md bg-layer-2 text-[#ffffff60] ">
+      <div className="w-32 rounded-md bg-layer-1 text-[#ffffff60] ">
         <button
           onClick={() => selectCurrencyAndCloseModal("SOL")}
           className="w-full rounded-t-md flex flex-row gap-2 py-1 px-2 hover:bg-[#ffffff24]"

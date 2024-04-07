@@ -10,6 +10,7 @@ import { PROGRAM_ID } from "../programId";
 export interface WithdrawFromStakingArgs {
   withdrawAmount: BN;
   usdc: number;
+  affiliateCode: Array<number>;
 }
 
 export interface WithdrawFromStakingAccounts {
@@ -28,11 +29,13 @@ export interface WithdrawFromStakingAccounts {
   associatedTokenProgram: PublicKey;
   tokenProgram: PublicKey;
   systemProgram: PublicKey;
+  affilAcc: PublicKey;
 }
 
 export const layout = borsh.struct([
   borsh.u64("withdrawAmount"),
   borsh.u8("usdc"),
+  borsh.array(borsh.u8(), 8, "affiliateCode"),
 ]);
 
 export function withdrawFromStaking(
@@ -68,6 +71,7 @@ export function withdrawFromStaking(
     },
     { pubkey: accounts.tokenProgram, isSigner: false, isWritable: false },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
+    { pubkey: accounts.affilAcc, isSigner: false, isWritable: true },
   ];
   const identifier = Buffer.from([248, 242, 89, 213, 189, 152, 231, 144]);
   const buffer = Buffer.alloc(1000);
@@ -75,6 +79,7 @@ export function withdrawFromStaking(
     {
       withdrawAmount: args.withdrawAmount,
       usdc: args.usdc,
+      affiliateCode: args.affiliateCode,
     },
     buffer
   );

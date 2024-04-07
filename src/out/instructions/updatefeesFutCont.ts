@@ -10,6 +10,7 @@ import { PROGRAM_ID } from "../programId";
 export interface UpdatefeesFutContAccounts {
   futCont: PublicKey;
   signerServer: PublicKey;
+  lpAcc: PublicKey;
   oracleAccount: PublicKey;
   houseAcc: PublicKey;
   ratioAcc: PublicKey;
@@ -23,6 +24,7 @@ export function updatefeesFutCont(
   const keys: Array<AccountMeta> = [
     { pubkey: accounts.futCont, isSigner: false, isWritable: true },
     { pubkey: accounts.signerServer, isSigner: true, isWritable: false },
+    { pubkey: accounts.lpAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.oracleAccount, isSigner: false, isWritable: false },
     { pubkey: accounts.houseAcc, isSigner: false, isWritable: false },
     { pubkey: accounts.ratioAcc, isSigner: false, isWritable: false },
