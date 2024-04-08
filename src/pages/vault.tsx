@@ -1450,7 +1450,9 @@ const Earn: FC = () => {
     (LProviderdata?.usdcWithdrawalRequestEpoch == LPdata?.epoch ||
       LProviderdata?.usdcWithdrawalRequestEpoch == LPdata?.epoch + 1)
       ? (
-          (LProviderdata?.usdcWithdrawalRequestAmount || 0) / LAMPORTS_PER_SOL
+          ((LProviderdata?.usdcWithdrawalRequestAmount || 0) /
+            LAMPORTS_PER_SOL) *
+          1000
         ).toFixed(2)
       : "0 USDC";
 

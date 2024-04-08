@@ -33,9 +33,9 @@ export interface WithdrawFromStakingAccounts {
 }
 
 export const layout = borsh.struct([
+  borsh.array(borsh.u8(), 8, "affiliateCode"),
   borsh.u64("withdrawAmount"),
   borsh.u8("usdc"),
-  borsh.array(borsh.u8(), 8, "affiliateCode"),
 ]);
 
 export function withdrawFromStaking(
@@ -77,9 +77,9 @@ export function withdrawFromStaking(
   const buffer = Buffer.alloc(1000);
   const len = layout.encode(
     {
+      affiliateCode: args.affiliateCode,
       withdrawAmount: args.withdrawAmount,
       usdc: args.usdc,
-      affiliateCode: args.affiliateCode,
     },
     buffer
   );

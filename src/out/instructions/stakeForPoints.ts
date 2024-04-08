@@ -33,9 +33,9 @@ export interface StakeForPointsAccounts {
 }
 
 export const layout = borsh.struct([
+  borsh.array(borsh.u8(), 8, "affiliateCode"),
   borsh.u64("depositAmount"),
   borsh.u8("usdc"),
-  borsh.array(borsh.u8(), 8, "affiliateCode"),
 ]);
 
 export function stakeForPoints(
@@ -77,9 +77,9 @@ export function stakeForPoints(
   const buffer = Buffer.alloc(1000);
   const len = layout.encode(
     {
+      affiliateCode: args.affiliateCode,
       depositAmount: args.depositAmount,
       usdc: args.usdc,
-      affiliateCode: args.affiliateCode,
     },
     buffer
   );
