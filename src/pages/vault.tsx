@@ -1462,7 +1462,7 @@ const Earn: FC = () => {
       : ((LProviderdata?.pusdcStaked || 0) / LAMPORTS_PER_SOL) * 1000;
 
   return (
-    <div className="bg-base relative overflow-hidden">
+    <div className="md:bg-base relative overflow-hidden">
       <div
         className="hidden md:flex overflow-hidden absolute futures-circles1 w-3/4 h-full "
         style={{
@@ -1482,20 +1482,20 @@ const Earn: FC = () => {
         }}
       ></div>
       <div
-        className="md:hidden overflow-hidden absolute futures-circles1 w-3/4  h-2/3"
+        className="md:hidden overflow-hidden absolute futures-circles1 w-full  h-1/3"
         style={{
-          zIndex: 0,
-          transform: "translate(-70%, 70%)",
+          zIndex: -1,
+          transform: "translate(-40%, 140%)",
           right: "0%",
         }}
       >
         {" "}
       </div>
       <div
-        className="md:hidden overflow-hidden absolute futures-circles2 w-full h-3/4"
+        className="md:hidden overflow-hidden absolute futures-circles2 w-full h-1/3"
         style={{
-          zIndex: 0,
-          transform: "translate(72%, -20%)",
+          zIndex: -1,
+          transform: "translate(48%, 30%)",
           right: "0%",
         }}
       ></div>
@@ -1504,7 +1504,7 @@ const Earn: FC = () => {
         <meta name="description" content="PopFi" />
       </Head>
 
-      <div className="flex justify-center items-top md:pt-2 min-h-[calc(100vh-78px)]">
+      <div className="flex justify-center items-top md:pt-2 min-h-[calc(100vh-78px)] z-100">
         <div className="w-[98%] xl:w-[60%] lg:w-[60%] md:w-[60%] sm:w-[60%] lg:min-w-[780px] md:min-w-[780px] sm:min-w-[95%] ">
           <div className="w-full bankGothic flex md:flex-row flex-col  gap-[8px] text-4xl mt-2 lg:text-5xl text-white md:justify-between items-center justify-center">
             <h1 className="bankGothic md:text-start text-center text-3xl mt-2 lg:text-4xl text-transparent bg-clip-text bg-white">
@@ -1680,10 +1680,10 @@ const Earn: FC = () => {
             </div>
           </div>
 
-          <div className="w-full md:hidden flex justify-center items-center gap-4 my-4">
+          <div className="w-full md:hidden flex justify-center items-center gap-4 my-4 z-1000">
             <button
               onClick={showDeposit}
-              className={`text-2xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
+              className={`z-1000 text-2xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
                 activeSection === "deposit"
                   ? " cursor-pointer border-b-2 border-gradient"
                   : "cursor-pointer text-[#ffffff60] "
@@ -1693,7 +1693,7 @@ const Earn: FC = () => {
             </button>
             <button
               onClick={showWithdraw}
-              className={`text-2xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
+              className={`z-1000 text-2xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
                 activeSection === "withdraw"
                   ? "cursor-pointer border-b-2 border-gradient"
                   : "cursor-pointer text-[#ffffff60] "
@@ -1702,9 +1702,9 @@ const Earn: FC = () => {
               Withdraw
             </button>
           </div>
-          <div className="z-10 mt-4 text-[#ffffff60] bankGothic w-full flex md:flex-row flex-col items-start justify-start gap-[16px] text-sm px-2 md:px-0">
+          <div className="z-1000 mt-4 text-[#ffffff60] bankGothic w-full flex md:flex-row flex-col items-start justify-start gap-[16px] text-sm px-2 md:px-0">
             {(activeSection === "deposit" || !isMobile) && (
-              <div className="md:w-1/2 self-stretch flex-1 rounded-lg bg-layer-1 flex flex-col items-start justify-start md:p-6 p-4 gap-[24px]">
+              <div className="z-1000 md:w-1/2 self-stretch flex-1 rounded-lg bg-layer-1 flex flex-col items-start justify-start md:p-6 p-4 gap-[24px]">
                 <div className="self-stretch flex flex-col items-start justify-center gap-[16px] text-5xl">
                   <div className="hidden md:flex relative leading-[100%] text-[24px] text-white">
                     Deposit
@@ -1902,10 +1902,10 @@ const Earn: FC = () => {
               </div>
             )}
           </div>
-          <div className="w-full md:hidden flex justify-center items-center gap-4 my-4">
+          <div className="z-1000 w-full md:hidden flex justify-center items-center gap-4 my-4">
             <button
               onClick={showStake}
-              className={`text-2xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
+              className={`z-1000 text-2xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
                 activeSection1 === "stake"
                   ? " cursor-pointer border-b-2 border-gradient"
                   : "cursor-pointer text-[#ffffff60] "
@@ -1915,7 +1915,7 @@ const Earn: FC = () => {
             </button>
             <button
               onClick={showUnstake}
-              className={`text-2xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
+              className={`z-1000 text-2xl leading-[20px] bankGothic transition-colors duration-300 ease-in-out ${
                 activeSection1 === "unstake"
                   ? "cursor-pointer border-b-2 border-gradient"
                   : "cursor-pointer text-[#ffffff60] "

@@ -91,15 +91,27 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
             <VisibilityProvider>
               <div className="flex flex-col min-h-screen overflow-hidden">
                 {showCss && (
-                  <div
-                    className="overflow-hidden absolute futures-circles w-full h-full"
-                    style={{
-                      zIndex: -1,
-                      transform: "translate(0%, -75%)",
-                      right: "0%",
-                    }}
-                  >
-                    {" "}
+                  <div>
+                    <div
+                      className="lg:hidden overflow-hidden absolute futures-circles lg:w-4/5 w-full h-full"
+                      style={{
+                        zIndex: -1,
+                        transform: "translate(0%, -75%)",
+                        right: "0%",
+                      }}
+                    >
+                      {" "}
+                    </div>
+                    <div
+                      className="hidden lg:flex overflow-hidden absolute futures-circles lg:w-4/5 w-full h-full"
+                      style={{
+                        zIndex: -1,
+                        transform: "translate(-10%, -68%)",
+                        right: "0%",
+                      }}
+                    >
+                      {" "}
+                    </div>
                   </div>
                 )}
                 <Notifications />

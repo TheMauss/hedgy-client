@@ -1291,6 +1291,16 @@ html::-webkit-scrollbar-thumb:hover {
 
 /* Adjust gradient for larger devices */
 @media only screen and (min-width: 2300px) {
+  .futures-circles {
+    background: radial-gradient(
+      circle,
+      rgba(67, 227, 166, 0.241),
+      #00000000 45%,
+      transparent 70%
+    );
+    /* Adjust your primary color and transparency in the radial-gradient */
+  }
+
   .custom-blur-circle {
     background: radial-gradient(
       circle,

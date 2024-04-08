@@ -489,7 +489,7 @@ const Futures: FC = () => {
                         </div>
 
                         <div
-                          className={`rounded-lg w-full bg-[#ffffff08] lg:flex lg:flex-col  order-3   lg:h-[calc((100vh-233px)-(58vh-79px))] hidden mt-3 ${showBottomPanel ? "" : "hidden"}`}
+                          className={`rounded-lg w-full bg-[#ffffff08]  lg:flex-col  order-3   lg:h-[calc((100vh-233px)-(58vh-79px))] hidden mt-3 ${showBottomPanel ? "lg:flex" : "hidden"}`}
                         >
                           <MyPositionsFutures
                             latestOpenedPosition={latestOpenedPosition}

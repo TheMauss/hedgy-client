@@ -958,17 +958,17 @@ const Stats: FC = () => {
     >
       <div className="relative rounded tradingcard">
         <div className="font-poppins w-[100%] h-[100%] bg-[#080808] text-white px-5 pt-3 pb-3 pb rounded text-[1rem]">
-          <div className="pt-4 bankGothic text-center font-semibold text-[1.5rem] text-[#F7931A]">
+          <div className="pt-4 bankGothic text-center font-semibold text-[1.5rem] text-primary">
             🎉 Welcome Aboard! 🎉
           </div>
           <div className="text-left font-bold text-xl mt-4">
             Your invitation from{" "}
-            <span className="text-[#F7931A]">{affiliateCode}</span> unlocks an
+            <span className="text-primary">{affiliateCode}</span> unlocks an
             exclusive offer!
           </div>
           <div className="font-poppins pt-4 text-slate-300 text-lg text-left">
             Join the PopFi today and enjoy a{" "}
-            <span className="font-bold text-[#F7931A]">
+            <span className="font-bold text-primary">
               permanent 5% discount
             </span>{" "}
             on all your opening fees.
@@ -1006,7 +1006,7 @@ const Stats: FC = () => {
   );
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="md:bg-base relative overflow-hidden">
       {ModalDetails}
       {modalIsOpen && (
         <>
@@ -1032,20 +1032,28 @@ const Stats: FC = () => {
         }}
       ></div>
       <div
-        className="md:hidden overflow-hidden absolute futures-circles1 w-3/4  h-2/3"
+        className="md:hidden overflow-hidden absolute futures-circles1 w-full  h-1/4"
         style={{
-          zIndex: 0,
-          transform: "translate(-70%, 70%)",
+          zIndex: -1,
+          transform: "translate(-45%, 80%)",
           right: "0%",
         }}
       >
         {" "}
       </div>
       <div
-        className="md:hidden overflow-hidden absolute futures-circles2 w-full h-3/4"
+        className="md:hidden overflow-hidden absolute futures-circles2 w-full h-1/4"
         style={{
-          zIndex: 0,
-          transform: "translate(72%, -20%)",
+          zIndex: -1,
+          transform: "translate(49%, -10%)",
+          right: "0%",
+        }}
+      ></div>
+      <div
+        className="md:hidden overflow-hidden absolute futures-circles2 w-full h-1/4"
+        style={{
+          zIndex: -1,
+          transform: "translate(65%, 200%)",
           right: "0%",
         }}
       ></div>
@@ -1053,7 +1061,7 @@ const Stats: FC = () => {
         <title>PopFi | Personal Stats</title>
         <meta name="description" content="PopFi" />
       </Head>
-      <div className="bg-base flex justify-center md:pt-2 min-h-[calc(100vh-78px)]">
+      <div className=" flex justify-center md:pt-2 min-h-[calc(100vh-78px)]">
         <div className="w-[98%] xl:w-[60%] lg:w-[60%] md:w-[60%] sm:w-[60%] lg:min-w-[780px] md:min-w-[780px] sm:min-w-[95%] px-2 z-0">
           <div className="bankGothic flex flex-col  gap-[8px] text-3xl mt-2 lg:text-4xl text-white z-0"></div>
           <div className="w-full flex md:flex-row flex-col gap-2 md:px-0  z-100">
