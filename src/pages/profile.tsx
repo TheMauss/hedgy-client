@@ -112,7 +112,6 @@ async function doesUserhaveAffiliateCode(
   try {
     // Use the UserAccount class to decode the data
     userAccount = UserAccount.decode(bufferData);
-    console.log("Decoded user account:", userAccount);
   } catch (error) {
     console.error("Failed to decode user account data:", error);
     return {
@@ -136,8 +135,6 @@ async function doesUserhaveAffiliateCode(
 
   const hasCode = userAccount.usedAffiliate.some((value) => value !== 0);
   const hasReferralCode = userAccount.myAffiliate.some((value) => value !== 0);
-
-  console.log("My Affiliate:", userAccount.myAffiliate);
 
   return {
     hasCode,
@@ -430,6 +427,7 @@ const Stats: FC = () => {
         setusedAffiliate(result.usedAffiliate);
         setUserAffiliateData(result);
         setrebateTier(result.rebateTier);
+        setissInt(result.isInitialized);
         settotalVolumepast4Epoch(
           result.prevTradingVolume + result.currentEpochVolume
         );
@@ -534,12 +532,13 @@ const Stats: FC = () => {
         message:
           "Referrals can only be used on accounts created within less than 24 hours.",
       });
-    } else {
-      const setAffiliateArgs: SetAffilAccArgs = {
+    } else if (isIntUser) {
+      console.log("sending isinit");
+      const args: SetAffilAccArgs = {
         usedAffiliate: Array.from(affiliateCodeToUint8Array(affiliateCode)), // This is just an example; you will replace with actual data
       };
 
-      const setAffilAccs: SetAffilAccAccounts = {
+      const accounts: SetAffilAccAccounts = {
         userAcc: userAcc, // Just a placeholder; replace with actual account
         affilAcc: AffilAcc, // Placeholder
         playerAcc: publicKey, // Placeholder
@@ -548,7 +547,7 @@ const Stats: FC = () => {
       };
 
       const initTransaction = new Transaction().add(
-        setAffilAcc(setAffiliateArgs, setAffilAccs)
+        setAffilAcc(args, accounts)
       );
 
       try {
@@ -584,7 +583,6 @@ const Stats: FC = () => {
     }
   }, [
     issInt,
-    ,
     accOld,
     affiliateCode,
     publicKey,

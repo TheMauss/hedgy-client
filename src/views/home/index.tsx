@@ -150,19 +150,16 @@ export const HomeView: FC = ({}) => {
   useEffect(() => {
     const socket = socketIOClient(ENDPOINT);
 
-    socket.on("priceUpdate", (updatedPrices) => {
+    socket.once("priceUpdate", (updatedPrices) => {
       const newPrices = { ...prices };
       updatedPrices.forEach((updatedPrice) => {
         newPrices[updatedPrice.symbol] = updatedPrice.price;
       });
 
       setPrices(newPrices);
-    });
-
-    // Disconnect the socket when the component unmounts
-    return () => {
+      // Disconnect from the socket after receiving the first update
       socket.disconnect();
-    };
+    });
   }, []);
 
   useEffect(() => {
@@ -182,22 +179,45 @@ export const HomeView: FC = ({}) => {
     };
   }, []);
 
-  const btcPrice = Number(prices["Crypto.BTC/USD"] / 100000000) || 35432.2;
+  const btcPrice =
+    Number((prices["Crypto.BTC/USD"] / 100000000).toFixed(1)) || 69453.2;
+  const solPrice =
+    Number((prices["Crypto.SOL/USD"] / 100000000).toFixed(2)) || 34.35;
+  const ethPrice =
+    Number((prices["Crypto.ETH/USD"] / 100000000).toFixed(2)) || 3532.2;
+  const suiPrice =
+    Number((prices["Crypto.SUI/USD"] / 100000000).toFixed(3)) || 1.6015;
+  const tiaPrice =
+    Number((prices["Crypto.TIA/USD"] / 100000000).toFixed(3)) || 11.624;
+  const pythPrice =
+    Number((prices["Crypto.PYTH/USD"] / 100000000).toFixed(3)) || 0.8653;
+  const jupPrice =
+    Number((prices["Crypto.JUP/USD"] / 100000000).toFixed(3)) || 1.356;
+  const bonkPrice =
+    Number((prices["Crypto.BONK/USD"] / 1000000000).toFixed(7)) || 0.000022;
+
   const openBtcPrice =
-    Number(openPrices["Crypto.BTC/USD"] / 100000000) || 35502.2;
+    Number(openPrices["Crypto.BTC/USD"] / 100000000) || 69453.2;
+  const openSolPrice =
+    Number(openPrices["Crypto.SOL/USD"] / 100000000) || 34.35;
+  const openEthPrice = Number(openPrices["Crypto.ETH/USD"] / 100000000) || 3532;
+  const openSuiPrice = Number(openPrices["Crypto.SUI/USD"] / 100000000) || 1.6;
+  const openTiaPrice = Number(openPrices["Crypto.TIA/USD"] / 100000000) || 11.6;
+  const openPythPrice =
+    Number(openPrices["Crypto.PYTH/USD"] / 100000000) || 0.8;
+  const openJupPrice = Number(openPrices["Crypto.JUP/USD"] / 100000000) || 1.3;
+  const openBonkPrice =
+    Number(openPrices["Crypto.BONK/USD"] / 1000000000) || 0.000022;
 
-  const change = ((btcPrice - openBtcPrice) / openBtcPrice) * 100;
-  const displayChange = change > 0 ? `${change.toFixed(2)}` : change.toFixed(2);
-
-  const color =
-    change > 0
-      ? "bankGothic bg-clip-text bg-gradient-to-t from-[#0B7A55] to-[#34C796]   text-5xl md:text-6xl text-center text-transparent uppercase"
-      : "bankGothic bg-clip-text bg-clip-text bg-gradient-to-t from-[#7A3636] to-[#C44141]  text-5xl md:text-6xl text-center text-transparent uppercase";
-
-  const solPrice = Number(prices["Crypto.SOL/USD"] / 100000000) || 34.35;
-  const openSolPrice = Number(openPrices["Crypto.SOL/USD"] / 100000000) || 34;
-
+  const changeBtc = ((btcPrice - openBtcPrice) / openBtcPrice) * 100;
   const changesol = ((solPrice - openSolPrice) / openSolPrice) * 100;
+  const changeEth = ((ethPrice - openEthPrice) / openEthPrice) * 100;
+  const changeSui = ((suiPrice - openSuiPrice) / openSuiPrice) * 100;
+  const changeTia = ((tiaPrice - openTiaPrice) / openTiaPrice) * 100;
+  const changePyth = ((pythPrice - openPythPrice) / openPythPrice) * 100;
+  const changeJup = ((jupPrice - openJupPrice) / openJupPrice) * 100;
+  const changeBonk = ((bonkPrice - openBonkPrice) / openBonkPrice) * 100;
+
   const displayChangesol =
     changesol > 0 ? `${changesol.toFixed(2)}` : changesol.toFixed(2);
 
@@ -300,27 +320,31 @@ export const HomeView: FC = ({}) => {
   const cryptoPairs1 = [
     {
       name: "Bitcoin",
-      price: "$68,321",
+      price: `${btcPrice}`,
       ticker: "BTC-PERP",
       img: "coins/120x120/Btc.png",
+      change: `${changeBtc.toFixed(2)}`,
     },
     {
       name: "Ethereum",
-      price: "$4,321",
+      price: `${ethPrice}`,
       ticker: "ETH-PERP",
       img: "coins/120x120/Eth.png",
+      change: `${changeEth.toFixed(2)}`,
     },
     {
       name: "Solana",
-      price: "$132.11",
+      price: `${solPrice}`,
       ticker: "SOL-PERP",
       img: "coins/120x120/Sol.png",
+      change: `${changesol.toFixed(2)}`,
     },
     {
       name: "Bonk",
-      price: "$1.32",
+      price: `${bonkPrice}`,
       ticker: "BONK-PERP",
       img: "coins/120x120/Bonk.png",
+      change: `${changeBonk.toFixed(2)}`,
     },
     // Add more pairs as needed
   ];
@@ -328,27 +352,31 @@ export const HomeView: FC = ({}) => {
   const cryptoPairs2 = [
     {
       name: "Pyth",
-      price: "$68,321",
+      price: `${pythPrice}`,
       ticker: "PYTH-PERP",
       img: "coins/120x120/Pyth.png",
+      change: `${changePyth.toFixed(2)}`,
     },
     {
       name: "Jup",
-      price: "$4,321",
+      price: `${jupPrice}`,
       ticker: "JUP-PERP",
       img: "coins/120x120/Jup.png",
+      change: `${changeJup.toFixed(2)}`,
     },
     {
       name: "Sui",
-      price: "$132.11",
+      price: `${suiPrice}`,
       ticker: "SUI-PERP",
       img: "coins/120x120/Sui.png",
+      change: `${changeSui.toFixed(2)}`,
     },
     {
       name: "Tia",
-      price: "$1.32",
+      price: `${tiaPrice}`,
       ticker: "TIA-PERP",
       img: "coins/120x120/Tia.png",
+      change: `${changeTia.toFixed(2)}`,
     },
     // Add more pairs as needed
   ];

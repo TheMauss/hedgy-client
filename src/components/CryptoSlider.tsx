@@ -8,6 +8,7 @@ interface CryptoSliderProps {
     price: string;
     ticker: string;
     img: string;
+    change: string;
   }[];
   direction: "left" | "right";
 }
@@ -18,44 +19,6 @@ const CryptoSlider: React.FC<CryptoSliderProps> = ({
 }) => {
   // Ensure pairs are duplicated for infinite scroll effect
   const duplicatedCryptoPairs = [
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
-    ...cryptoPairs,
     ...cryptoPairs,
     ...cryptoPairs,
     ...cryptoPairs,
@@ -333,8 +296,10 @@ const CryptoSlider: React.FC<CryptoSliderProps> = ({
                     <div className="relative leading-[100%] font-medium">
                       {pair.price}
                     </div>
-                    <div className="relative leading-[100%] font-medium text-primary">
-                      +2.32%
+                    <div
+                      className={`relative leading-[100%] font-medium ${Number(pair.change) >= 0 ? "text-primary" : "text-short"}`}
+                    >
+                      {pair.change}%
                     </div>
                   </div>
                 </div>
