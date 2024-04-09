@@ -78,9 +78,9 @@ const Notification = ({
   }, [onHide, id]);
 
   const gradientBackgrounds = {
-    success: "linear-gradient(to right, #0B7A55, #34C796)",
-    info: "linear-gradient(to right, #633640, #4b4e9d)",
-    error: "linear-gradient(to right, #7A3636, #C44141)",
+    success: "linear-gradient(to right, #111111, #2d5547)",
+    info: "linear-gradient(to right, #111111, #2e2e2e)",
+    error: "linear-gradient(to right, #111111, #3c2121)",
   };
 
   const notificationClasses = `max-w-sm ${
@@ -88,6 +88,14 @@ const Notification = ({
   } bg-bkg-1 rounded-md mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 p-2 mx-4 mb-4 overflow-hidden font-poppins ${
     exit ? "notification-exit" : "notification-enter"
   }`;
+
+  const progressColor = {
+    success: "bg-primary",
+    info: "bg-[#484848]",
+    error: "bg-[#ff4c4c]",
+  };
+
+  const className = progressColor[type] || "default-class";
 
   return (
     <div className={notificationClasses}>
@@ -97,20 +105,22 @@ const Notification = ({
       >
         <div
           style={{ width: `${progress}%`, height: "2px", marginTop: "auto" }}
-          className={`bg-layer-3 pt-2 rounded-t-md`}
+          className={`${className} pt-2 rounded-t-md`}
         />
         <div
-          className={`p-3 rounded-b-md bg-base bg-opacity-90 flex items-center`}
+          className={`p-3 rounded-b-md bg-[#00000085] bg-opacity-90 flex items-center`}
         >
           {/* Icon and message layout */}
           <div className={`flex-shrink-0`}>
             {type === "success" && (
-              <CheckCircleIcon className={`h-8 w-8 mr-1 text-green`} />
+              <CheckCircleIcon className={`h-8 w-8 mr-1 text-primary`} />
             )}
             {type === "info" && (
               <InformationCircleIcon className={`h-8 w-8 mr-1 text-red`} />
             )}
-            {type === "error" && <XCircleIcon className={`h-8 w-8 mr-1`} />}
+            {type === "error" && (
+              <XCircleIcon className={`h-8 w-8 mr-1 text-[#ff4c4c]`} />
+            )}
           </div>
           <div className={`ml-2 flex-1`}>
             <div className={`font-bold text-fgd-1`}>{message}</div>

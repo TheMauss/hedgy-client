@@ -231,24 +231,35 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
           {isMobile ? (
             // Code for Mobile
 
-            <WalletMultiButtonDynamic className="[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-8 flex flex-row items-center justify-center  border-[1px] border-solid border-primary">
-              {connected ? (
-                <div className="text-primary w-full flex flex-col h-full items-start justify-center text-[15px]">
-                  <div className="h-1/2 text-[10px]">
-                    {wallet.publicKey.toBase58().slice(0, 3)}...
-                    {wallet.publicKey.toBase58().slice(-3)}
+            <div className="flex items-center bg-primary rounded-xl h-9 hover:bg-new-green-dark transition ease-in-out duration-300">
+              <WalletMultiButtonDynamic
+                className="box-border flex flex-row items-center justify-center "
+                style={{
+                  width: "100%",
+                  height: 40,
+                  backgroundColor: "transparent",
+                  color: "black",
+                }}
+              >
+                {" "}
+                {connected ? (
+                  <div className="text-black w-full flex flex-col h-full items-center justify-center text-[16px]">
+                    <div className="h-1/3 text-[10px] w-full">
+                      {wallet.publicKey.toBase58().slice(0, 3)}...
+                      {wallet.publicKey.toBase58().slice(-3)}
+                    </div>
+                    <div className=" text-[13px]">
+                      {(balance || 0).toLocaleString("en-US", {
+                        useGrouping: false,
+                      })}{" "}
+                      SOL
+                    </div>
                   </div>
-                  <div className=" text-[13px]">
-                    {(balance || 0).toLocaleString("en-US", {
-                      useGrouping: false,
-                    })}{" "}
-                    SOL
-                  </div>
-                </div>
-              ) : (
-                <div className="text-primary">CONNECT</div>
-              )}
-            </WalletMultiButtonDynamic>
+                ) : (
+                  <div className="text-black">CONNECT</div>
+                )}
+              </WalletMultiButtonDynamic>
+            </div>
           ) : (
             <>
               {!isMediumScreen && (
@@ -323,15 +334,23 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
               <Link href="/profile">
                 <FaUser className="mr-2 text-[#ffffff24] hover:text-[#23EAA4] text-xl transition-all duration-200 ease-in-out" />
               </Link>
-              <div className="flex items-center">
-                <WalletMultiButtonDynamic className="[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-8 flex flex-row items-center justify-center  border-[1px] border-solid border-primary">
+              <div className="flex items-center bg-primary rounded-xl h-9 hover:bg-new-green-dark transition ease-in-out duration-300">
+                <WalletMultiButtonDynamic
+                  className="box-border flex flex-row items-center justify-center "
+                  style={{
+                    width: "100%",
+                    height: 40,
+                    backgroundColor: "transparent",
+                    color: "black",
+                  }}
+                >
                   {connected ? (
-                    <div className="text-primary w-full flex flex-col h-full items-start justify-center text-[15px]">
-                      <div className="h-1/2 text-[10px]">
+                    <div className="text-black w-full flex flex-col h-full items-center justify-center text-[16px]">
+                      <div className="h-1/3 text-[10px] w-full">
                         {wallet.publicKey.toBase58().slice(0, 3)}...
                         {wallet.publicKey.toBase58().slice(-3)}
                       </div>
-                      <div className=" text-[13px]">
+                      <div className=" text-[13px] w-full">
                         {(balance || 0).toLocaleString("en-US", {
                           useGrouping: false,
                         })}{" "}
@@ -339,7 +358,9 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
                       </div>
                     </div>
                   ) : (
-                    <div className="text-primary">CONNECT</div>
+                    <div className="text-black flex items-center justify-center w-full h-full">
+                      CONNECT
+                    </div>
                   )}
                 </WalletMultiButtonDynamic>{" "}
               </div>
@@ -365,24 +386,35 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
               <Link href="/profile">
                 <FaUser className="mr-2 text-[#ffffff24] hover:text-[#23EAA4] text-xl transition-all duration-200 ease-in-out" />
               </Link>
-              <WalletMultiButtonDynamic className="[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-8 flex flex-row items-center justify-center  border-[1px] border-solid border-primary">
-                {connected ? (
-                  <div className="text-primary w-full flex flex-col h-full items-start justify-center text-[15px]">
-                    <div className="h-1/2 text-[10px]">
-                      {wallet.publicKey.toBase58().slice(0, 3)}...
-                      {wallet.publicKey.toBase58().slice(-3)}
+              <div className="flex items-center bg-primary rounded-xl h-9 hover:bg-new-green-dark transition ease-in-out duration-300">
+                <WalletMultiButtonDynamic
+                  className="box-border flex flex-row items-center justify-center "
+                  style={{
+                    width: "100%",
+                    height: 40,
+                    backgroundColor: "transparent",
+                    color: "black",
+                  }}
+                >
+                  {" "}
+                  {connected ? (
+                    <div className="text-black w-full flex flex-col h-full items-start justify-center text-[15px]">
+                      <div className="h-1/2 text-[10px]">
+                        {wallet.publicKey.toBase58().slice(0, 3)}...
+                        {wallet.publicKey.toBase58().slice(-3)}
+                      </div>
+                      <div className=" text-[13px]">
+                        {(balance || 0).toLocaleString("en-US", {
+                          useGrouping: false,
+                        })}{" "}
+                        SOL
+                      </div>
                     </div>
-                    <div className=" text-[13px]">
-                      {(balance || 0).toLocaleString("en-US", {
-                        useGrouping: false,
-                      })}{" "}
-                      SOL
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-primary">CONNECT</div>
-                )}
-              </WalletMultiButtonDynamic>{" "}
+                  ) : (
+                    <div className="text-black">CONNECT</div>
+                  )}
+                </WalletMultiButtonDynamic>{" "}
+              </div>
             </div>
           )}
         </div>

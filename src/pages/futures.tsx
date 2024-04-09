@@ -356,6 +356,22 @@ const Futures: FC = () => {
   return (
     <div className="relative max-h-100vh overflow-hidden">
       <div
+        className="overflow-hidden absolute futures-circles4 w-full h-full"
+        style={{
+          zIndex: 0,
+          transform: "translate(-42%, -28%)",
+          right: "0%",
+        }}
+      ></div>
+      <div
+        className="overflow-hidden absolute futures-circles5 w-full h-full"
+        style={{
+          zIndex: 0,
+          transform: "translate(40%, -30%)",
+          right: "0%",
+        }}
+      ></div>
+      <div
         className="overflow-hidden absolute futures-circles1 w-full h-full"
         style={{
           zIndex: 0,

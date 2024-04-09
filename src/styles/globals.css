@@ -1283,8 +1283,28 @@ html::-webkit-scrollbar-thumb:hover {
   background: radial-gradient(
     circle,
     rgba(67, 227, 166, 0.241),
-    #00000000 62%,
+    #00000000 60%,
     transparent 70%
+  );
+  /* Adjust your primary color and transparency in the radial-gradient */
+}
+
+.futures-circles4 {
+  background: radial-gradient(
+    circle,
+    rgba(111, 111, 111, 0.241),
+    #00000000 41%,
+    transparent 30%
+  );
+  /* Adjust your primary color and transparency in the radial-gradient */
+}
+
+.futures-circles5 {
+  background: radial-gradient(
+    circle,
+    rgba(66, 66, 66, 0.241),
+    #00000000 41%,
+    transparent 30%
   );
   /* Adjust your primary color and transparency in the radial-gradient */
 }

@@ -1464,6 +1464,22 @@ const Earn: FC = () => {
   return (
     <div className="md:bg-base relative overflow-hidden">
       <div
+        className="hidden md:flex overflow-hidden absolute futures-circles4 w-full h-full"
+        style={{
+          zIndex: 0,
+          transform: "translate(-18%, -30%)",
+          right: "0%",
+        }}
+      ></div>
+      <div
+        className="overflow-hidden absolute futures-circles4 w-full h-full"
+        style={{
+          zIndex: -1,
+          transform: "translate(-18%, -30%)",
+          right: "0%",
+        }}
+      ></div>
+      <div
         className="hidden md:flex overflow-hidden absolute futures-circles1 w-3/4 h-full "
         style={{
           zIndex: 0,
