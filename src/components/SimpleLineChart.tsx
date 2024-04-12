@@ -22,16 +22,16 @@ const SimpleLineChart = ({ data, toggleState }) => {
         time: formatDate(entry.hour), // Convert hour to a readable date/time string
         valueToShow:
           toggleState === "LONG"
-            ? (entry.PnL / 1_000_000_000).toFixed(3)
-            : (entry.Roi ?? 0).toFixed(3),
+            ? (entry.solPnl / 1_000_000_000).toFixed(3)
+            : (entry.solRoi ?? 0).toFixed(3),
       }))
     : [];
 
   const minY = Math.min(
-    ...(data?.map((item) => item.PnL / 1_000_000_000) ?? [])
+    ...(data?.map((item) => item.solPnl / 1_000_000_000) ?? [])
   );
   const maxY = Math.max(
-    ...(data?.map((item) => item.PnL / 1_000_000_000) ?? [])
+    ...(data?.map((item) => item.solPnl / 1_000_000_000) ?? [])
   );
 
   // Add some padding

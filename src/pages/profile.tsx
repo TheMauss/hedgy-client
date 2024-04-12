@@ -53,13 +53,21 @@ const USDCPDAHOUSEWALLET = new PublicKey(
 );
 
 type UserStatsType = {
-  playerAcc: string;
-  totalTrades: number;
-  totalVolume: number;
-  winRate: number;
-  creationTime: number;
-  PnL: number;
-  ROI: number;
+  playerAcc: String;
+  Frame: String;
+  totalTrades: Number;
+  totalWins: Number;
+  solVolume: Number;
+  usdcVolume: Number;
+  solWinVolume: Number;
+  usdcWinVolume: Number;
+  solPnL: Number;
+  usdcPnL: Number;
+  solRate: Number;
+  usdRate: Number;
+  hour: Number;
+  createdAt: Date;
+  updatedAt: Date;
   // other fields...
 };
 
@@ -192,6 +200,9 @@ const Stats: FC = () => {
   const { connection } = useConnection();
   const [affiliateCode, setAffiliateCode] = useState<string>("");
   const [myAffiliateCode, setMyAffiliateCode] = useState<string>("");
+  const [selectedCurrency, setSelectedCurrency] = useState<"SOL" | "USDC">(
+    "SOL"
+  );
 
   const [usedAffiliate, setusedAffiliate] = useState<Uint8Array>(
     new Uint8Array()
@@ -223,6 +234,8 @@ const Stats: FC = () => {
   const [currentLeaderboard, setCurrentLeaderboard] = useState([]);
   const [latestPnL, setLatestPnL] = useState(null);
   const [latestRoi, setLatestRoi] = useState(null);
+  const [latestusdPnL, setLatestusdPnL] = useState(null);
+  const [latestusdRoi, setLatestusdRoi] = useState(null);
   const [tradesSum, setTradesSum] = useState(null);
 
   const [toggleState, setToggleState] = useState("LONG");
@@ -402,8 +415,12 @@ const Stats: FC = () => {
   useEffect(() => {
     if (currentLeaderboard.length > 0) {
       const lastItem = currentLeaderboard[currentLeaderboard.length - 1];
-      setLatestPnL(lastItem.PnL);
-      setLatestRoi(lastItem.Roi);
+      setLatestPnL((lastItem.solPnl / LAMPORTS_PER_SOL).toFixed(2));
+      setLatestRoi((lastItem.solRoi * 100).toFixed(2));
+      setLatestusdPnL(
+        (lastItem.usdcPnL / LAMPORTS_PER_SOL / 1000000).toFixed(2)
+      );
+      setLatestusdRoi((lastItem.usdcRoi * 100).toFixed(2));
       setTradesSum(lastItem.totalTrades);
     }
   }, [currentLeaderboard]);
@@ -762,6 +779,7 @@ const Stats: FC = () => {
         (user) => user.playerAcc === userPublicKey
       );
       setUserData(userStats);
+      console.log("userdata", userStats);
     }
   }, [userPublicKey, leaderboardallDays]);
 
@@ -1068,6 +1086,48 @@ const Stats: FC = () => {
                 Your Stats
               </h1>
             </div>
+          </div>
+          <div className="w-full flex md:flex-row flex-col justify-between  items-center gap-4">
+            <div className="w-[300px] flex flex-row items-center justify-center text-lg text-primary font-bankgothic-md-bt border-b-[2px] border-solid border-[#ffffff12]">
+              <button
+                className={`flex-1   h-10 flex flex-row  items-center justify-center py-3 px-6 transition-all duration-200 ease-in-out  ${
+                  selectedCurrency === "SOL"
+                    ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-b-[2px] border-solid border-primary"
+                    : "text-[#ffffff60]  long-short-button"
+                }`}
+                onClick={() => setSelectedCurrency("SOL")}
+              >
+                <div
+                  className={`flex justify-center items-center h-full w-full rounded-lg ${
+                    selectedCurrency === "SOL" ? "" : ""
+                  }`}
+                >
+                  <div
+                    className={`bankGothic uppercase  ${
+                      selectedCurrency === "SOL" ? "" : ""
+                    }`}
+                  >
+                    SOL
+                  </div>
+                </div>
+              </button>
+              <button
+                className={`flex-1   h-10 flex flex-row items-center justify-center py-3 px-6 transition-all duration-200 ease-in-out  ${
+                  selectedCurrency === "USDC"
+                    ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-b-[2px] border-solid border-primary"
+                    : "text-[#ffffff60]  long-short-button"
+                }`}
+                onClick={() => setSelectedCurrency("USDC")} // Set selectedCurrency to 'USDC'
+              >
+                <div
+                  className={`bankGothic  uppercase ${
+                    selectedCurrency === "USDC" ? "" : ""
+                  }`}
+                >
+                  USDC
+                </div>
+              </button>
+            </div>
             {!hasAffiliate ? (
               <div className="md:mt-4 z-10 w-full md:w-[350px] self-stretch rounded-lg bg-layer-1 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-gryy-text  hover:bg-[#484c6d5b]  ">
                 <input
@@ -1127,7 +1187,7 @@ const Stats: FC = () => {
                   TRADES
                 </div>
                 <div className="pt-2 relative text-xl leading-[100%] font-medium font-poppins text-white text-left md:text-center">
-                  {userData?.totalTrades ?? "-"}
+                  {Number(userData?.totalTrades) ?? "-"}
                 </div>
               </div>
             </div>
@@ -1142,11 +1202,21 @@ const Stats: FC = () => {
                   VOLUME
                 </div>
                 <div className="pt-2 relative text-xl leading-[100%] font-medium font-poppins text-white text-left md:text-center">
-                  {userData?.totalVolume !== undefined
-                    ? ((userData.totalVolume / LAMPORTS_PER_SOL) * 2).toFixed(
-                        1
-                      ) + "SOL"
-                    : "-"}
+                  {selectedCurrency === "SOL"
+                    ? userData?.solVolume !== undefined
+                      ? (
+                          (Number(userData.solVolume) / LAMPORTS_PER_SOL) *
+                          2
+                        ).toFixed(1) + " SOL"
+                      : "-"
+                    : userData?.usdcVolume !== undefined
+                      ? (
+                          (Number(userData.usdcVolume) /
+                            LAMPORTS_PER_SOL /
+                            1000000000) *
+                          2
+                        ).toFixed(0) + "k USD"
+                      : "-"}
                 </div>
               </div>
             </div>
@@ -1161,9 +1231,13 @@ const Stats: FC = () => {
                   WIN RATIO
                 </div>
                 <div className="pt-2 relative text-xl leading-[100%] font-medium font-poppins text-white text-left md:text-center">
-                  {userData?.winRate
-                    ? (userData.winRate * 100).toFixed(1) + " %"
-                    : "-"}
+                  {selectedCurrency === "SOL"
+                    ? userData?.solRate !== undefined
+                      ? (Number(userData.solRate) * 100).toFixed(1) + " %"
+                      : "-"
+                    : userData?.usdRate !== undefined
+                      ? (Number(userData.usdRate) * 100).toFixed(1) + " %"
+                      : "-"}
                 </div>
               </div>
             </div>
@@ -1178,9 +1252,21 @@ const Stats: FC = () => {
                   PnL
                 </div>
                 <div className="pt-2 relative text-xl leading-[100%] font-medium font-poppins text-white text-left md:text-center">
-                  {userData?.PnL !== undefined
-                    ? (userData?.PnL / LAMPORTS_PER_SOL).toFixed(1) + " SOL"
-                    : "-"}
+                  {selectedCurrency === "SOL"
+                    ? userData?.solPnL !== undefined
+                      ? (
+                          (Number(userData.solPnL) / LAMPORTS_PER_SOL) *
+                          2
+                        ).toFixed(1) + " SOL"
+                      : "-"
+                    : userData?.usdcPnL !== undefined
+                      ? (
+                          (Number(userData.usdcPnL) /
+                            LAMPORTS_PER_SOL /
+                            1000000) *
+                          2
+                        ).toFixed(0) + " USD"
+                      : "-"}
                 </div>
               </div>
             </div>
@@ -1328,12 +1414,22 @@ const Stats: FC = () => {
                   className={`${toggleState === "LONG" ? (latestPnL >= 0 ? "text-[#34C796]" : "text-red-500") : latestRoi >= 0 ? "text-[#34C796]" : "text-red-500"}`}
                 >
                   {toggleState === "LONG"
-                    ? latestPnL >= 0
-                      ? `+${(latestPnL / LAMPORTS_PER_SOL).toFixed(2)} SOL`
-                      : `${(latestPnL / LAMPORTS_PER_SOL).toFixed(2)} SOL`
-                    : latestRoi >= 0
-                      ? `+${(latestRoi * 100).toFixed(2)} %`
-                      : `${(latestRoi * 100).toFixed(2)} %`}
+                    ? selectedCurrency === "SOL"
+                      ? latestPnL >= 0
+                        ? `+${latestPnL} SOL`
+                        : `${latestPnL} SOL`
+                      : // Assuming you have a way to convert or format latestPnL for USDC, if needed
+                        latestPnL >= 0
+                        ? `+${latestusdPnL} USD`
+                        : `${latestusdPnL} USD`
+                    : selectedCurrency === "SOL"
+                      ? latestPnL >= 0
+                        ? `+${latestRoi} %`
+                        : `${latestRoi} %`
+                      : // Assuming you have a way to convert or format latestPnL for USDC, if needed
+                        latestPnL >= 0
+                        ? `+${latestusdRoi} %`
+                        : `${latestusdRoi} %`}
                 </div>
 
                 <div className="text-center md:text-xl text-lg font-poppins text-grey-text font-semibold">

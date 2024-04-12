@@ -8,9 +8,9 @@ import * as borsh from "@coral-xyz/borsh"; // eslint-disable-line @typescript-es
 import { PROGRAM_ID } from "../programId";
 
 export interface StakeForPointsArgs {
+  affiliateCode: Array<number>;
   depositAmount: BN;
   usdc: number;
-  affiliateCode: Array<number>;
 }
 
 export interface StakeForPointsAccounts {
