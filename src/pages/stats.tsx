@@ -274,7 +274,7 @@ const Stats: FC = () => {
       </Head>
       <div className="bg-base flex justify-center md:pt-2 min-h-[calc(100vh-20px)]">
         <div className="w-[98%] xl:w-[60%] lg:w-[60%] md:w-[60%] sm:w-[60%] lg:min-w-[780px] md:min-w-[780px] sm:min-w-[95%] ">
-          <div className="bankGothic flex flex-row justify-between  gap-[8px] text-4xl mt-2 lg:text-5xl text-white">
+          <div className="bankGothic flex md:flex-row flex-col justify-center items-center md:justify-between  gap-[8px] text-4xl mt-2 lg:text-5xl text-white">
             <h1 className="bankGothic md:text-start text-center text-3xl mt-2 lg:text-4xl text-transparent bg-clip-text bg-white">
               Platform Statistics
             </h1>
