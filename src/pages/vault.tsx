@@ -380,12 +380,25 @@ const Earn: FC = () => {
     fetchLeaderboards();
   }, []);
 
-  const calculateAPY = () => {
+  const calculateAPY = (selectedCurrency, LPdata) => {
     let APY = 0;
     leaderboard30Days.forEach((item) => {
-      APY += (item.Fees * 4) / 10 + -item.PnL;
+      if (selectedCurrency === "SOL") {
+        APY += (item.solFees * 7) / 10 - item.solPnL;
+      } else {
+        APY += (item.usdcFees * 7) / 10 - item.usdcPnL; // Assuming usdFees and usdPnL exist
+      }
     });
-    return APY / LAMPORTS_PER_SOL;
+    return selectedCurrency === "SOL"
+      ? (APY / LAMPORTS_PER_SOL / (LPdata?.totalDeposits / LAMPORTS_PER_SOL)) *
+          100 *
+          12 // Convert lamports to SOL if the selected currency is SOL
+      : (APY /
+          LAMPORTS_PER_SOL /
+          (LPdata?.usdcTotalDeposits / LAMPORTS_PER_SOL) /
+          1000000000) *
+          100 *
+          12; // Directly in USD if the selected currency is USD
   };
 
   const fetchcheckuserdata = async () => {
@@ -1462,11 +1475,11 @@ const Earn: FC = () => {
       : ((LProviderdata?.pusdcStaked || 0) / LAMPORTS_PER_SOL) * 1000;
 
   return (
-    <div className="md:bg-base relative overflow-hidden">
+    <div className="relative overflow-hidden">
       <div
         className="hidden md:flex overflow-hidden absolute futures-circles4 w-full h-full"
         style={{
-          zIndex: 0,
+          zIndex: -1,
           transform: "translate(-18%, -30%)",
           right: "0%",
         }}
@@ -1587,13 +1600,7 @@ const Earn: FC = () => {
                         : `USDC VAULT`}
                     </div>
                     <div className="relative text-[36px] leading-[100%] font-semibold font-poppins bg-[#23EAA4] hover:bg-[#23EAA490] transition-all duration-200 ease-in-out text-black [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] text-left">
-                      {(
-                        (calculateAPY() /
-                          (LPdata?.totalDeposits / LAMPORTS_PER_SOL)) *
-                        100 *
-                        12
-                      ).toFixed(1)}
-                      % APY
+                      {calculateAPY(selectedCurrency, LPdata).toFixed(1)}% APY
                     </div>
                   </div>
                 </div>
@@ -1651,7 +1658,7 @@ const Earn: FC = () => {
                     <div className="relative leading-[100%] text-[#ffffff60]">
                       TVL
                     </div>
-                    <div className="relative text-xl leading-[100%] text-[#ffffff60] font-poppins text-white text-right">
+                    <div className="relative text-xl leading-[100%] text-[#ffffff60] font-poppins text-white text-left">
                       {selectedCurrency === "SOL"
                         ? `${((LPdata?.totalDeposits + LPdata?.projectsDepositedSol || 0) / LAMPORTS_PER_SOL).toFixed(2)} SOL`
                         : `${(((LPdata?.usdcTotalDeposits + LPdata?.projectsDepositedUsdc || 0) / LAMPORTS_PER_SOL) * 1000).toFixed(0)} USDC`}
@@ -1966,7 +1973,7 @@ const Earn: FC = () => {
                         Staked
                       </div>
 
-                      <div className="relative text-xl leading-[100%] text-[#ffffff60] font-poppins text-white text-right">
+                      <div className="relative text-xl leading-[100%] text-[#ffffff60] font-poppins text-white text-left">
                         {selectedCurrency === "SOL"
                           ? `${(
                               (LProviderdata?.psolStaked || 0) /

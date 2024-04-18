@@ -15,24 +15,35 @@ const formatDate = (timestamp) => {
 };
 
 // Assume the data prop will be the array of hourly data passed to this component
-const SimpleLineChart = ({ data, toggleState }) => {
+const SimpleLineChart = ({ data, toggleState, selectedCurrency }) => {
   // Check if data is an array before mapping
   const formattedData = Array.isArray(data)
     ? data.map((entry) => ({
         time: formatDate(entry.hour), // Convert hour to a readable date/time string
         valueToShow:
           toggleState === "LONG"
-            ? (entry.solPnl / 1_000_000_000).toFixed(3)
-            : (entry.solRoi ?? 0).toFixed(3),
+            ? selectedCurrency === "SOL"
+              ? (entry.solPnl / 1_000_000_000).toFixed(3) // solPnl for SOL
+              : (entry.usdcPnL / 1_000_000_000_000_000).toFixed(3) // usdcPnL for USD assuming conversion
+            : selectedCurrency === "SOL"
+              ? (entry.solRoi * 100).toFixed(3) // solRoi as percentage for SOL
+              : (entry.usdcRoi * 100).toFixed(3), // usdcRoi as percentage for USD
       }))
     : [];
 
-  const minY = Math.min(
-    ...(data?.map((item) => item.solPnl / 1_000_000_000) ?? [])
-  );
-  const maxY = Math.max(
-    ...(data?.map((item) => item.solPnl / 1_000_000_000) ?? [])
-  );
+  // Function to get value based on toggleState and selectedCurrency
+  const getValue = (item) => {
+    if (toggleState === "LONG") {
+      return selectedCurrency === "SOL"
+        ? (item.solPnl ?? 0) / 1_000_000_000
+        : (item.usdcPnL ?? 0) / 1_000_000_000_000_000; // Assuming 1_000_000 is the scale for usdcPnL
+    } else {
+      return (item.solRoi ?? 0) * 100; // Here assuming the same scaling for ROI in both currencies
+    }
+  };
+
+  const minY = Math.min(...(data?.map(getValue) ?? []));
+  const maxY = Math.max(...(data?.map(getValue) ?? []));
 
   // Add some padding
   const padding = (maxY - minY) * 0.15; // Use 15% padding as you have updated
@@ -76,7 +87,7 @@ const SimpleLineChart = ({ data, toggleState }) => {
           dot={false}
           strokeWidth={3}
         />
-        <ReferenceLine y={0} stroke="#434665" strokeWidth={1} />
+        <ReferenceLine y={0} stroke="#ffffff24" strokeWidth={1} />
       </LineChart>
     </ResponsiveContainer>
   );

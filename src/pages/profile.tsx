@@ -300,8 +300,10 @@ const Stats: FC = () => {
     // Assuming the first entry should start with 0 PnL
     const initialPoint = {
       ...sortedData[0],
-      PnL: 0,
-      Roi: 0,
+      solPnl: 0,
+      solRoi: 0,
+      usdcPnL: 0,
+      usdcRoi: 0,
       hour: sortedData[0].hour - interval, // setting to one interval before the first
     };
 
@@ -378,7 +380,10 @@ const Stats: FC = () => {
       }
     };
 
-    fetchLeaderboards();
+    const timerId = setTimeout(fetchLeaderboards, 300);
+
+    // Clear the timeout when the component unmounts or the publicKey changes
+    return () => clearTimeout(timerId);
   }, [publicKey]);
 
   const [affiliateData, setAffiliateData] = useState<AffiliateAccount | null>(
@@ -415,13 +420,13 @@ const Stats: FC = () => {
   useEffect(() => {
     if (currentLeaderboard.length > 0) {
       const lastItem = currentLeaderboard[currentLeaderboard.length - 1];
-      setLatestPnL((lastItem.solPnl / LAMPORTS_PER_SOL).toFixed(2));
-      setLatestRoi((lastItem.solRoi * 100).toFixed(2));
+      setLatestPnL(((lastItem.solPnl ?? 0) / LAMPORTS_PER_SOL).toFixed(2));
+      setLatestRoi(((lastItem.solRoi ?? 0) * 100).toFixed(2));
       setLatestusdPnL(
-        (lastItem.usdcPnL / LAMPORTS_PER_SOL / 1000000).toFixed(2)
+        ((lastItem.usdcPnL ?? 0) / LAMPORTS_PER_SOL / 1000000).toFixed(2)
       );
-      setLatestusdRoi((lastItem.usdcRoi * 100).toFixed(2));
-      setTradesSum(lastItem.totalTrades);
+      setLatestusdRoi(((lastItem.usdcRoi ?? 0) * 100).toFixed(2));
+      setTradesSum(lastItem.totalTrades ?? 0);
     }
   }, [currentLeaderboard]);
 
@@ -950,6 +955,29 @@ const Stats: FC = () => {
     }
   }, [router.query.ref, router.pathname, userAffiliateData]);
 
+  function formatNumber(num) {
+    if (num >= 1_000_000) {
+      return (
+        (num / 1_000_000).toLocaleString(undefined, {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        }) + "M"
+      );
+    } else if (num >= 1_000) {
+      return (
+        (num / 1_000).toLocaleString(undefined, {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        }) + "k"
+      );
+    } else {
+      return num.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 1,
+      });
+    }
+  }
+
   const ModalDetails = (
     <Modal
       className="custom-scrollbar bg-layer-2"
@@ -1129,7 +1157,7 @@ const Stats: FC = () => {
               </button>
             </div>
             {!hasAffiliate ? (
-              <div className="md:mt-4 z-10 w-full md:w-[350px] self-stretch rounded-lg bg-layer-1 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-gryy-text  hover:bg-[#484c6d5b]  ">
+              <div className="md:mt-4 z-10 w-full md:w-[350px] self-stretch rounded-lg bg-layer-1 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-gryy-text  hover:bg-[#ffffff24] transition-all duration-200 ease-in-out ">
                 <input
                   className="w-full h-full input3-capsule__input relative leading-[14px] "
                   type="text"
@@ -1147,7 +1175,7 @@ const Stats: FC = () => {
                 </button>
               </div>
             ) : (
-              <div className="md:mt-4  z-10 font-poppins w-full md:w-[350px] self-stretch rounded-lg bg-layer-1 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-grey-text  hover:bg-[#484c6d5b]  ">
+              <div className="md:mt-4  z-10 font-poppins w-full md:w-[350px] self-stretch rounded-lg bg-layer-1 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-grey-text  hover:bg-[#ffffff24] transition-all duration-200 ease-in-out">
                 Used Code
                 <div className="relative leading-[14px] font-medium bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
                   {decodedString}
@@ -1204,18 +1232,17 @@ const Stats: FC = () => {
                 <div className="pt-2 relative text-xl leading-[100%] font-medium font-poppins text-white text-left md:text-center">
                   {selectedCurrency === "SOL"
                     ? userData?.solVolume !== undefined
-                      ? (
-                          (Number(userData.solVolume) / LAMPORTS_PER_SOL) *
-                          2
-                        ).toFixed(1) + " SOL"
+                      ? formatNumber(
+                          (Number(userData.solVolume) / LAMPORTS_PER_SOL) * 2
+                        ) + " SOL"
                       : "-"
                     : userData?.usdcVolume !== undefined
-                      ? (
+                      ? formatNumber(
                           (Number(userData.usdcVolume) /
                             LAMPORTS_PER_SOL /
-                            1000000000) *
-                          2
-                        ).toFixed(0) + "k USD"
+                            1000000) *
+                            2
+                        ) + " USD"
                       : "-"}
                 </div>
               </div>
@@ -1254,18 +1281,14 @@ const Stats: FC = () => {
                 <div className="pt-2 relative text-xl leading-[100%] font-medium font-poppins text-white text-left md:text-center">
                   {selectedCurrency === "SOL"
                     ? userData?.solPnL !== undefined
-                      ? (
-                          (Number(userData.solPnL) / LAMPORTS_PER_SOL) *
-                          2
-                        ).toFixed(1) + " SOL"
+                      ? formatNumber(
+                          Number(userData.solPnL) / LAMPORTS_PER_SOL
+                        ) + " SOL"
                       : "-"
                     : userData?.usdcPnL !== undefined
-                      ? (
-                          (Number(userData.usdcPnL) /
-                            LAMPORTS_PER_SOL /
-                            1000000) *
-                          2
-                        ).toFixed(0) + " USD"
+                      ? formatNumber(
+                          Number(userData.usdcPnL) / LAMPORTS_PER_SOL / 1000000
+                        ) + " USD"
                       : "-"}
                 </div>
               </div>
@@ -1284,21 +1307,21 @@ const Stats: FC = () => {
                     className={`w-[81px] rounded-lg h-8 flex flex-row items-center justify-center box-border ${
                       toggleState === "LONG"
                         ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
-                        : "bg-transparent border border-grey"
+                        : "bg-transparent border border-[#ffffff36]"
                     }`}
                   >
                     <div
                       className={`flex justify-center items-center h-full w-full rounded-lg ${
                         toggleState === "LONG"
                           ? "bg-[#0B111B] bg-opacity-80"
-                          : "bg-opacity-0 hover:bg-[#484c6d5b]"
+                          : "bg-opacity-0 hover:bg-[#ffffff24]"
                       }`}
                     >
                       <div
                         className={`bankGothic bg-clip-text text-transparent uppercase ${
                           toggleState === "LONG"
                             ? "bg-gradient-to-t from-[#34C796] to-[#0B7A55]"
-                            : "bg-grey"
+                            : "bg-[#ffffff36]"
                         }`}
                       >
                         PNL
@@ -1310,21 +1333,21 @@ const Stats: FC = () => {
                     className={`w-[81px] rounded-lg h-8 flex flex-row items-center justify-center box-border ${
                       toggleState === "SHORT"
                         ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
-                        : "bg-transparent border border-grey"
+                        : "bg-transparent border border-[#ffffff36]"
                     }`}
                   >
                     <div
                       className={`flex justify-center items-center h-full w-full rounded-lg ${
                         toggleState === "SHORT"
                           ? "bg-[#0B111B] bg-opacity-80"
-                          : "bg-opacity-0 hover:bg-[#484c6d5b]"
+                          : "bg-opacity-0 hover:bg-[#ffffff24]"
                       }`}
                     >
                       <div
                         className={`bankGothic bg-clip-text text-transparent uppercase ${
                           toggleState === "SHORT"
                             ? "bg-gradient-to-t from-[#34C796] to-[#0B7A55]"
-                            : "bg-grey"
+                            : "bg-[#ffffff36]"
                         }`}
                       >
                         ROI
@@ -1340,7 +1363,7 @@ const Stats: FC = () => {
                         currentLeaderboard === UserData1Day
                           ? " cursor-pointer border-b-2 border-gradient"
                           : "cursor-pointer text-grey-text "
-                      } ${currentLeaderboard == UserData1Day ? "text-white" : "text-gray-text"} `}
+                      } ${currentLeaderboard == UserData1Day ? "text-white" : "text-[#ffffff80]"} `}
                     >
                       1 DAY
                     </div>
@@ -1352,7 +1375,7 @@ const Stats: FC = () => {
                         currentLeaderboard === UserData7Days
                           ? " cursor-pointer border-b-2 border-gradient"
                           : "cursor-pointer text-grey-text "
-                      } ${currentLeaderboard == UserData7Days ? "text-white" : "text-gray-text"} `}
+                      } ${currentLeaderboard == UserData7Days ? "text-white" : "text-[#ffffff80]"} `}
                     >
                       7 DAYS
                     </div>
@@ -1364,7 +1387,7 @@ const Stats: FC = () => {
                         currentLeaderboard === UserData30Days
                           ? " cursor-pointer border-b-2 border-gradient"
                           : "cursor-pointer text-grey-text "
-                      } ${currentLeaderboard == UserData30Days ? "text-white" : "text-gray-text"} `}
+                      } ${currentLeaderboard == UserData30Days ? "text-white" : "text-[#ffffff80]"} `}
                     >
                       30 DAYS
                     </div>
@@ -1378,7 +1401,7 @@ const Stats: FC = () => {
                         currentLeaderboard === UserData1Day
                           ? " cursor-pointer border-b-2 border-gradient"
                           : "cursor-pointer text-grey-text "
-                      } ${currentLeaderboard == UserData1Day ? "text-white" : "text-gray-text"} `}
+                      } ${currentLeaderboard == UserData1Day ? "text-white" : "text-[#ffffff80]"} `}
                     >
                       1d
                     </div>
@@ -1390,7 +1413,7 @@ const Stats: FC = () => {
                         currentLeaderboard === UserData7Days
                           ? " cursor-pointer border-b-2 border-gradient"
                           : "cursor-pointer text-grey-text "
-                      } ${currentLeaderboard == UserData7Days ? "text-white" : "text-gray-text"} `}
+                      } ${currentLeaderboard == UserData7Days ? "text-white" : "text-[#ffffff80]"} `}
                     >
                       7d
                     </div>
@@ -1402,7 +1425,7 @@ const Stats: FC = () => {
                         currentLeaderboard === UserData30Days
                           ? " cursor-pointer border-b-2 border-gradient"
                           : "cursor-pointer text-grey-text "
-                      } ${currentLeaderboard == UserData30Days ? "text-white" : "text-gray-text"} `}
+                      } ${currentLeaderboard == UserData30Days ? "text-white" : "text-[#ffffff80]"} `}
                     >
                       30d
                     </div>
@@ -1413,23 +1436,31 @@ const Stats: FC = () => {
                 <div
                   className={`${toggleState === "LONG" ? (latestPnL >= 0 ? "text-[#34C796]" : "text-red-500") : latestRoi >= 0 ? "text-[#34C796]" : "text-red-500"}`}
                 >
-                  {toggleState === "LONG"
-                    ? selectedCurrency === "SOL"
-                      ? latestPnL >= 0
-                        ? `+${latestPnL} SOL`
-                        : `${latestPnL} SOL`
-                      : // Assuming you have a way to convert or format latestPnL for USDC, if needed
-                        latestPnL >= 0
-                        ? `+${latestusdPnL} USD`
-                        : `${latestusdPnL} USD`
-                    : selectedCurrency === "SOL"
-                      ? latestPnL >= 0
-                        ? `+${latestRoi} %`
-                        : `${latestRoi} %`
-                      : // Assuming you have a way to convert or format latestPnL for USDC, if needed
-                        latestPnL >= 0
-                        ? `+${latestusdRoi} %`
-                        : `${latestusdRoi} %`}
+                  {
+                    toggleState === "LONG"
+                      ? selectedCurrency === "SOL"
+                        ? latestPnL || latestPnL === 0 // Check if latestPnL is a number or zero
+                          ? latestPnL >= 0
+                            ? `+${latestPnL} SOL`
+                            : `${latestPnL} SOL`
+                          : "0 SOL" // Default to "0 SOL" if latestPnL is null, undefined, or NaN
+                        : latestusdPnL || latestusdPnL === 0 // Check if latestusdPnL is a number or zero
+                          ? latestusdPnL >= 0
+                            ? `+${latestusdPnL} USD`
+                            : `${latestusdPnL} USD`
+                          : "0 USD" // Default to "0 USD" if latestusdPnL is null, undefined, or NaN
+                      : selectedCurrency === "SOL"
+                        ? latestRoi || latestRoi === 0 // Check if latestRoi is a number or zero
+                          ? latestRoi >= 0
+                            ? `+${latestRoi} %`
+                            : `${latestRoi} %`
+                          : "0 %" // Default to "0 %" if latestRoi is null, undefined, or NaN
+                        : latestusdRoi || latestusdRoi === 0 // Check if latestusdRoi is a number or zero
+                          ? latestusdRoi >= 0
+                            ? `+${latestusdRoi} %`
+                            : `${latestusdRoi} %`
+                          : "0 %" // Default to "0 %" if latestusdRoi is null, undefined, or NaN
+                  }
                 </div>
 
                 <div className="text-center md:text-xl text-lg font-poppins text-grey-text font-semibold">
@@ -1441,6 +1472,7 @@ const Stats: FC = () => {
               <SimpleLineChart
                 data={currentLeaderboard}
                 toggleState={toggleState}
+                selectedCurrency={selectedCurrency}
               />
             </div>
           </div>
@@ -1454,7 +1486,7 @@ const Stats: FC = () => {
                 </h1>
               </div>
 
-              <div className="md:mt-4 z-10 font-poppins w-full md:w-[350px] self-stretch rounded-lg bg-layer-1 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-grey-text  hover:bg-[#484c6d5b] ">
+              <div className="md:mt-4 z-10 font-poppins w-full md:w-[350px] self-stretch rounded-lg bg-layer-1 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-grey-text  hover:bg-[#ffffff24] transition-all duration-200 ease-in-out">
                 Your Volume
                 <span className="text-[#34C796]">
                   {(totalVolumepast4Epoch / LAMPORTS_PER_SOL).toFixed(0)} SOL
@@ -1720,8 +1752,8 @@ const Stats: FC = () => {
           </h1>
           {!userAffiliateData?.hasReferralCode ? (
             <div className="pb-8 pt-2 flex md:flex-row flex-col items-center justify-center gap-[16px] text-xl text-white z-100">
-              <div className="md:w-[35%] w-full self-stretch bg-gradient-to-t from-[#0B7A55] to-[#34C796] md:rounded-2xl rounded-lg p-[1px] ">
-                <div className="w-full h-full self-stretch md:rounded-2xl rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#0b111b]  w-full flex flex-col items-start justify-center">
+              <div className="md:w-[35%] w-full self-stretch bg-[#23EAA4] hover:bg-[#23EAA490] transition-all duration-200 ease-in-out text-black md:rounded-2xl rounded-lg p-[1px] ">
+                <div className="w-full h-full self-stretch md:rounded-2xl rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#0b111b]  w-full flex flex-col items-end justify-center">
                   <div className="bg-base bg-opacity-70 w-full h-full self-stretch md:rounded-2xl rounded-lg  w-full flex flex-col items-start justify-center md:p-8 p-4  gap-[12px]">
                     <div className="bankGothic relative leading-[100%] font-medium bg-gradient-to-t from-[#0B7A55] to-[#34C796] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
                       How it Works
@@ -1733,12 +1765,12 @@ const Stats: FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="z-10 self-stretch md:rounded-2xl rounded-lg bg-layer-1 box-border md:w-[65%] w-full flex flex-col items-start justify-center md:p-8 p-4 gap-[12px] text-grey-text ">
+              <div className="z-10 self-stretch md:rounded-2xl rounded-lg bg-layer-1 box-border md:w-[65%] w-full flex flex-col items-start justify-center md:p-8 p-4 gap-[12px] text-white">
                 <div className="pb-2 md:pb-2 bankGothic relative leading-[100%] font-medium">
                   Create Promo Code
                 </div>
                 <div className="self-stretch flex md:flex-row flex-col items-end justify-start gap-[16px] text-base text-grey font-poppins">
-                  <div className="w-full md:h-10 h-8  rounded-lg bg-layer-2 border border-layer-3 px-2">
+                  <div className="w-full hover:bg-[#ffffff24] transition-all duration-200 ease-in-out self-stretch rounded bg-[#ffffff12] box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-[1rem] text-grey">
                     <input
                       type="text"
                       className="w-full h-full input3-capsule__input relative leading-[14px] "
@@ -1749,14 +1781,12 @@ const Stats: FC = () => {
                       placeholder="Enter 8 letters"
                     />
                   </div>
-                  <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px] md:w-1/4 w-full h-10   box-border text-center text-lg">
+                  <div className="rounded-lg bg-[#23EAA490] hover:bg-[#23EAA4] transition-all duration-200 ease-in-out text-black p-[1px] md:w-1/4 w-full h-10   box-border text-center text-lg">
                     <button
                       onClick={onClick1}
-                      className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
+                      className="font-poppins flex flex-row items-center justify-center h-full w-full py-3 px-6 relative font-semibold rounded-lg"
                     >
-                      <button className="font-semibold bg-clip-text text-transparent bg-gradient-to-t from-[#34C796] to-[#0B7A55]">
-                        CREATE
-                      </button>
+                      CREATE
                     </button>
                   </div>
                 </div>
@@ -1764,8 +1794,8 @@ const Stats: FC = () => {
             </div>
           ) : (
             <div className="pb-8 z-10 pt-2 flex md:flex-row flex-col items-center justify-center gap-[16px] text-white px-2 md:px-0 z-100">
-              <div className="z-10 md:w-[35%] self-stretch bg-gradient-to-t from-[#0B7A55] to-[#34C796] md:rounded-2xl rounded-lg p-[1px]">
-                <div className="w-full h-full self-stretch md:rounded-2xl rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#0b111b]  w-full flex flex-col items-start justify-center">
+              <div className="md:w-[35%] w-full self-stretch bg-[#23EAA4] hover:bg-[#23EAA490] transition-all duration-200 ease-in-out text-black md:rounded-2xl rounded-lg p-[1px] ">
+                <div className="w-full h-full self-stretch md:rounded-2xl rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#0b111b]  w-full flex flex-col items-end justify-center">
                   <div className="flex items-center justify-center bg-base bg-opacity-70 w-full h-full self-stretch md:rounded-2xl rounded-lg  w-full flex flex-col items-start justify-center md:p-8 p-4  gap-[12px]">
                     <div className="bankGothic font-medium text-grey-text relative leading-[100%] text-center">
                       YOUR REFERRAL CODE
@@ -1843,14 +1873,12 @@ const Stats: FC = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px] w-1/2 h-10   box-border text-center text-lg">
+                  <div className="rounded-lg bg-[#23EAA490] hover:bg-[#23EAA4] transition-all duration-200 ease-in-out text-black p-[1px] p-[1px] w-1/2 h-10   box-border text-center text-lg">
                     <button
                       onClick={() => onClick2(0)}
-                      className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
+                      className="font-poppins flex flex-row items-center justify-center h-full w-full py-3 px-6 relative font-semibold rounded-lg"
                     >
-                      <button className="font-semibold bg-clip-text text-transparent bg-gradient-to-t from-[#34C796] to-[#0B7A55]">
-                        SOL
-                      </button>
+                      SOL
                     </button>
                   </div>
                 </div>
@@ -1874,14 +1902,12 @@ const Stats: FC = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="rounded-lg bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px] w-1/2 h-10   box-border text-center text-lg">
+                  <div className="rounded-lg bg-[#23EAA490] hover:bg-[#23EAA4] transition-all duration-200 ease-in-out text-black p-[1px] w-1/2 h-10   box-border text-center text-lg">
                     <button
                       onClick={() => onClick2(1)}
-                      className="font-poppins flex flex-row items-center justify-center bg-[#0B111B] bg-opacity-80 hover:bg-opacity-60 h-full w-full py-3 px-6 relative font-semibold rounded-lg"
+                      className="font-poppins flex flex-row items-center justify-center h-full w-full py-3 px-6 relative font-semibold rounded-lg"
                     >
-                      <button className="font-semibold bg-clip-text text-transparent bg-gradient-to-t from-[#34C796] to-[#0B7A55]">
-                        USDC
-                      </button>
+                      USDC
                     </button>
                   </div>
                 </div>

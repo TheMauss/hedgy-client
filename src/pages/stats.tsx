@@ -23,11 +23,17 @@ const Stats: FC = () => {
 
   const [sortCriterion, setSortCriterion] = useState("PnL"); // Default sorting criterion
 
-  const sortLeaderboard = (leaderboard, criterion) => {
+  const sortLeaderboard = (leaderboard, criterion, selectedCurrency) => {
     return [...leaderboard].sort((a, b) => {
-      return criterion === "totalVolume"
-        ? b.totalVolume - a.totalVolume
-        : b.PnL - a.PnL;
+      if (criterion === "totalVolume") {
+        return selectedCurrency === "SOL"
+          ? b.solVolume - a.solVolume
+          : b.usdcVolume - a.usdcVolume;
+      } else if (criterion === "PnL") {
+        return selectedCurrency === "SOL"
+          ? b.solPnL - a.solPnL
+          : b.usdcPnL - a.usdcPnL;
+      }
     });
   };
 
@@ -81,20 +87,31 @@ const Stats: FC = () => {
     fetchLeaderboards();
   }, []);
 
-  const handleSort = (criterion) => {
-    const sortedLeaderboard1Day = sortLeaderboard(leaderboard1Day, criterion);
-    const sortedLeaderboard7Days = sortLeaderboard(leaderboard7Days, criterion);
+  const handleSort = (criterion, selectedCurrency) => {
+    const sortedLeaderboard1Day = sortLeaderboard(
+      leaderboard1Day,
+      criterion,
+      selectedCurrency
+    );
+    const sortedLeaderboard7Days = sortLeaderboard(
+      leaderboard7Days,
+      criterion,
+      selectedCurrency
+    );
     const sortedLeaderboard30Days = sortLeaderboard(
       leaderboard30Days,
-      criterion
+      criterion,
+      selectedCurrency
     );
     const sortedLeaderboardCompetition = sortLeaderboard(
       leaderboardCompetetion,
-      criterion
+      criterion,
+      selectedCurrency
     );
     const sortedLeaderboardAllDays = sortLeaderboard(
       leaderboardallDays,
-      criterion
+      criterion,
+      selectedCurrency
     );
 
     setLeaderboard1Day(sortedLeaderboard1Day);
@@ -121,20 +138,25 @@ const Stats: FC = () => {
     setSortCriterion(criterion);
   };
 
-  const calculateVolume = () => {
+  const calculateVolume = (selectedCurrency) => {
     let volume = 0;
     leaderboardallDays.forEach((item) => {
-      volume += 2 * item.totalVolume;
+      volume +=
+        selectedCurrency === "SOL" ? 2 * item.solVolume : 2 * item.usdcVolume; // Assuming usdVolume exists
     });
-    return volume / LAMPORTS_PER_SOL;
+    return selectedCurrency === "SOL"
+      ? volume / LAMPORTS_PER_SOL // Convert lamports to SOL if the selected currency is SOL
+      : volume / LAMPORTS_PER_SOL / 1000000; // Return directly in USD if the selected currency is USD
   };
 
-  const calculateFees = () => {
+  const calculateFees = (selectedCurrency) => {
     let fees = 0;
     leaderboardallDays.forEach((item) => {
-      fees += item.Fees;
+      fees += selectedCurrency === "SOL" ? item.solFees : item.usdcFees; // Assuming usdFees exists
     });
-    return fees / LAMPORTS_PER_SOL;
+    return selectedCurrency === "SOL"
+      ? fees / LAMPORTS_PER_SOL // Convert lamports to SOL if the selected currency is SOL
+      : fees / LAMPORTS_PER_SOL / 1000000; // Return directly in USD if the selected currency is USD
   };
 
   const calculateUniquePlayers = () => {
@@ -145,20 +167,51 @@ const Stats: FC = () => {
     return uniquePlayers.size;
   };
 
-  const calculateVolume24 = () => {
+  function formatNumber(num) {
+    if (num >= 1_000_000) {
+      return (
+        (num / 1_000_000).toLocaleString(undefined, {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        }) + "M"
+      );
+    } else if (num >= 1_000) {
+      return (
+        (num / 1_000).toLocaleString(undefined, {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        }) + "k"
+      );
+    } else {
+      return num.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 1,
+      });
+    }
+  }
+
+  const calculateVolume24 = (selectedCurrency) => {
     let volume = 0;
     leaderboard1Day.forEach((item) => {
-      volume += 2 * item.totalVolume;
+      if (selectedCurrency === "SOL") {
+        volume += item.solVolume; // Assuming totalVolume is already in lamports for SOL
+      } else {
+        volume += item.usdcVolume; // Assuming usdVolume is the volume in USD
+      }
     });
-    return volume / LAMPORTS_PER_SOL;
+    return selectedCurrency === "SOL"
+      ? volume / LAMPORTS_PER_SOL // Convert lamports to SOL if the selected currency is SOL
+      : volume / LAMPORTS_PER_SOL / 1000000; // Return directly in USD if the selected currency is USD
   };
 
-  const calculateFees24 = () => {
+  const calculateFees24 = (selectedCurrency) => {
     let fees = 0;
     leaderboard1Day.forEach((item) => {
-      fees += item.Fees;
+      fees += selectedCurrency === "SOL" ? item.solFees : item.usdcFees; // Assuming usdFees exists
     });
-    return fees / LAMPORTS_PER_SOL;
+    return selectedCurrency === "SOL"
+      ? fees / LAMPORTS_PER_SOL // Convert lamports to SOL if the selected currency is SOL
+      : fees / LAMPORTS_PER_SOL / 1000000; // Return directly in USD if the selected currency is USD
   };
 
   const calculateUniquePlayers24 = () => {
@@ -168,6 +221,10 @@ const Stats: FC = () => {
     });
     return uniquePlayers.size;
   };
+
+  const [selectedCurrency, setSelectedCurrency] = useState<"SOL" | "USDC">(
+    "SOL"
+  );
 
   const [activeSection, setActiveSection] = useState("protocol");
   const showPersonal = () => setActiveSection("personal");
@@ -217,10 +274,50 @@ const Stats: FC = () => {
       </Head>
       <div className="bg-base flex justify-center md:pt-2 min-h-[calc(100vh-20px)]">
         <div className="w-[98%] xl:w-[60%] lg:w-[60%] md:w-[60%] sm:w-[60%] lg:min-w-[780px] md:min-w-[780px] sm:min-w-[95%] ">
-          <div className="bankGothic flex flex-col  gap-[8px] text-4xl mt-2 lg:text-5xl text-white">
+          <div className="bankGothic flex flex-row justify-between  gap-[8px] text-4xl mt-2 lg:text-5xl text-white">
             <h1 className="bankGothic md:text-start text-center text-3xl mt-2 lg:text-4xl text-transparent bg-clip-text bg-white">
               Platform Statistics
             </h1>
+            <div className="w-[300px] flex flex-row items-center justify-center text-lg text-primary font-bankgothic-md-bt border-b-[2px] border-solid border-[#ffffff12]">
+              <button
+                className={`flex-1   h-10 flex flex-row  items-center justify-center py-3 px-6 transition-all duration-200 ease-in-out  ${
+                  selectedCurrency === "SOL"
+                    ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-b-[2px] border-solid border-primary"
+                    : "text-[#ffffff60]  long-short-button"
+                }`}
+                onClick={() => setSelectedCurrency("SOL")}
+              >
+                <div
+                  className={`flex justify-center items-center h-full w-full rounded-lg ${
+                    selectedCurrency === "SOL" ? "" : ""
+                  }`}
+                >
+                  <div
+                    className={`bankGothic uppercase  ${
+                      selectedCurrency === "SOL" ? "" : ""
+                    }`}
+                  >
+                    SOL
+                  </div>
+                </div>
+              </button>
+              <button
+                className={`flex-1   h-10 flex flex-row items-center justify-center py-3 px-6 transition-all duration-200 ease-in-out  ${
+                  selectedCurrency === "USDC"
+                    ? "[flex-1 [background:linear-gradient(180deg,_rgba(35,_167,_123,_0),_rgba(13,_125,_87,_0.13))] box-border h-10 flex flex-row items-center justify-center py-3 px-6 border-b-[2px] border-solid border-primary"
+                    : "text-[#ffffff60]  long-short-button"
+                }`}
+                onClick={() => setSelectedCurrency("USDC")} // Set selectedCurrency to 'USDC'
+              >
+                <div
+                  className={`bankGothic  uppercase ${
+                    selectedCurrency === "USDC" ? "" : ""
+                  }`}
+                >
+                  USDC
+                </div>
+              </button>
+            </div>
           </div>
           <div className="w-full flex md:flex-row flex-col gap-2 md:px-0 px-2 z-10"></div>
           <div className="mt-2 w-full flex md:flex-row flex-col items-start justify-start gap-[8px] md:px-0 px-2">
@@ -235,8 +332,8 @@ const Stats: FC = () => {
                   Total Volume (24H)
                 </div>
                 <div className="pt-2 relative text-xl leading-[100%] text-[#ffffff80] font-poppins text-white text-left md:text-center">
-                  {calculateVolume().toFixed(1)} SOL (
-                  {calculateVolume24().toFixed(1)})
+                  {formatNumber(calculateVolume(selectedCurrency))} SOL (
+                  {formatNumber(calculateVolume24(selectedCurrency))})
                 </div>
               </div>
             </div>
@@ -251,8 +348,8 @@ const Stats: FC = () => {
                   Total Fees (24H)
                 </div>
                 <div className="pt-2 relative text-xl leading-[100%] text-[#ffffff80] font-poppins text-white text-left md:text-center">
-                  {calculateFees().toFixed(2)} SOL (
-                  {calculateFees24().toFixed(2)})
+                  {formatNumber(calculateFees(selectedCurrency))} SOL (
+                  {formatNumber(calculateFees24(selectedCurrency))})
                 </div>
               </div>
             </div>
@@ -274,8 +371,8 @@ const Stats: FC = () => {
           </div>
 
           {isTeamCompetition && (
-            <h1 className="pt-6 bankGothic md:text-start md:text-left text-center text-4xl lg:text-5xl text-transparent bg-clip-text bg-white">
-              DAO WARS
+            <h1 className="pt-6 bankGothic md:text-start md:text-left text-center text-3xl lg:text-4xl text-transparent bg-clip-text bg-white">
+              DAO Wars
             </h1>
           )}
           {isTeamCompetition && (
@@ -317,11 +414,19 @@ const Stats: FC = () => {
                               Total Volume
                             </div>
                             <div className="relative text-[15px] leading-[12px] text-white">
-                              {(
-                                (item.totalVolume / LAMPORTS_PER_SOL) *
-                                2
-                              ).toFixed(1)}{" "}
-                              SOL
+                              {selectedCurrency === "SOL"
+                                ? item?.solVolume !== undefined
+                                  ? formatNumber(
+                                      Number(item.solVolume) / LAMPORTS_PER_SOL
+                                    ) + " SOL"
+                                  : "-"
+                                : item?.usdcVolume !== undefined
+                                  ? formatNumber(
+                                      Number(item.usdcVolume) /
+                                        LAMPORTS_PER_SOL /
+                                        1000000
+                                    ) + " USD"
+                                  : "-"}
                             </div>
                           </div>
                         </div>
@@ -331,16 +436,28 @@ const Stats: FC = () => {
                               Win Ratio
                             </div>
                             <div className="relative text-[15px] leading-[12px] text-white">
-                              {Number.isInteger(100 * item.winRate)
-                                ? 100 * item.winRate
-                                : (100 * item.winRate).toFixed(1)}{" "}
+                              {Number.isInteger(100 * item.solRate)
+                                ? 100 * item.solRate
+                                : (100 * item.solRate).toFixed(1)}{" "}
                               %
                             </div>
                           </div>
                           <div className="flex flex-col items-end justify-center gap-[4px]">
                             <div className="relative leading-[12px]">PnL</div>
                             <div className="relative text-[15px] leading-[12px] text-white">
-                              {(item.PnL / LAMPORTS_PER_SOL).toFixed(2)} SOL
+                              {selectedCurrency === "SOL"
+                                ? item?.solPnL !== undefined
+                                  ? formatNumber(
+                                      Number(item.solPnL) / LAMPORTS_PER_SOL
+                                    ) + " SOL"
+                                  : "-"
+                                : item?.usdcPnL !== undefined
+                                  ? formatNumber(
+                                      Number(item.usdcPnL) /
+                                        LAMPORTS_PER_SOL /
+                                        1000000
+                                    ) + " USD"
+                                  : "-"}{" "}
                             </div>
                           </div>
                         </div>
@@ -362,7 +479,7 @@ const Stats: FC = () => {
             <div className="bg-new-card-bg mt-2 flex md:flex-row flex-col items-center justify-between md:gap-[16px] text-lg text-[#ffffff60] w-full md:rounded-xl rounded-lg px-4">
               <div className="self-stretch md:w-1/3 flex flex-row items-center justify-center md:justify-start gap-[8px] z-100 py-2">
                 <button
-                  onClick={() => handleSort("PnL")}
+                  onClick={() => handleSort("PnL", selectedCurrency)}
                   className={`w-[120px] rounded-lg h-8 flex flex-row items-center justify-center box-border ${
                     sortCriterion === "PnL"
                       ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
@@ -388,7 +505,7 @@ const Stats: FC = () => {
                   </div>
                 </button>
                 <button
-                  onClick={() => handleSort("totalVolume")}
+                  onClick={() => handleSort("totalVolume", selectedCurrency)}
                   className={`w-[120px] rounded-lg h-8 flex flex-row items-center justify-center box-border ${
                     sortCriterion === "totalVolume"
                       ? "bg-gradient-to-t from-[#0B7A55] to-[#34C796] p-[1px]"
@@ -597,11 +714,19 @@ const Stats: FC = () => {
                             Total Volume
                           </div>
                           <div className="relative text-[15px] leading-[12px] text-white">
-                            {(
-                              (item.totalVolume / LAMPORTS_PER_SOL) *
-                              2
-                            ).toFixed(1)}{" "}
-                            SOL
+                            {selectedCurrency === "SOL"
+                              ? item?.solVolume !== undefined
+                                ? formatNumber(
+                                    Number(item.solVolume) / LAMPORTS_PER_SOL
+                                  ) + " SOL"
+                                : "-"
+                              : item?.usdcVolume !== undefined
+                                ? formatNumber(
+                                    Number(item.usdcVolume) /
+                                      LAMPORTS_PER_SOL /
+                                      1000000
+                                  ) + " USD"
+                                : "-"}
                           </div>
                         </div>
                       </div>
@@ -611,16 +736,28 @@ const Stats: FC = () => {
                             Win Ratio
                           </div>
                           <div className="relative text-[15px] leading-[12px] text-white">
-                            {Number.isInteger(100 * item.winRate)
-                              ? 100 * item.winRate
-                              : (100 * item.winRate).toFixed(1)}{" "}
+                            {Number.isInteger(100 * item.solRate)
+                              ? 100 * item.solRate
+                              : (100 * item.solRate).toFixed(1)}{" "}
                             %
                           </div>
                         </div>
                         <div className="flex flex-col items-end justify-center gap-[4px]">
                           <div className="relative leading-[12px]">PnL</div>
                           <div className="relative text-[15px] leading-[12px] text-white">
-                            {(item.PnL / LAMPORTS_PER_SOL).toFixed(2)} SOL
+                            {selectedCurrency === "SOL"
+                              ? item?.solPnL !== undefined
+                                ? formatNumber(
+                                    Number(item.solPnL) / LAMPORTS_PER_SOL
+                                  ) + " SOL"
+                                : "-"
+                              : item?.usdcPnL !== undefined
+                                ? formatNumber(
+                                    Number(item.usdcPnL) /
+                                      LAMPORTS_PER_SOL /
+                                      1000000
+                                  ) + " USD"
+                                : "-"}
                           </div>
                         </div>
                       </div>
@@ -677,22 +814,42 @@ const Stats: FC = () => {
                       </td>
                       <td className="text-white">{item.totalTrades}</td>
                       <td className="text-white">
-                        {" "}
-                        {((item.totalVolume / LAMPORTS_PER_SOL) * 2).toFixed(
-                          1
-                        )}{" "}
-                        SOL
+                        {selectedCurrency === "SOL"
+                          ? item?.solVolume !== undefined
+                            ? formatNumber(
+                                Number(item.solVolume) / LAMPORTS_PER_SOL
+                              ) + " SOL"
+                            : "-"
+                          : item?.usdcVolume !== undefined
+                            ? formatNumber(
+                                Number(item.usdcVolume) /
+                                  LAMPORTS_PER_SOL /
+                                  1000000
+                              ) + " USD"
+                            : "-"}
                       </td>
                       <td className="text-white">
                         {" "}
-                        {Number.isInteger(100 * item.winRate)
-                          ? 100 * item.winRate
-                          : (100 * item.winRate).toFixed(1)}{" "}
+                        {Number.isInteger(100 * item.solRate)
+                          ? 100 * item.solRate
+                          : (100 * item.solRate).toFixed(1)}{" "}
                         %
                       </td>
                       <td className="text-white py-2">
                         {" "}
-                        {(item.PnL / LAMPORTS_PER_SOL).toFixed(2)} SOL
+                        {selectedCurrency === "SOL"
+                          ? item?.solPnL !== undefined
+                            ? formatNumber(
+                                Number(item.solPnL) / LAMPORTS_PER_SOL
+                              ) + " SOL"
+                            : "-"
+                          : item?.usdcPnL !== undefined
+                            ? formatNumber(
+                                Number(item.usdcPnL) /
+                                  LAMPORTS_PER_SOL /
+                                  1000000
+                              ) + " USD"
+                            : "-"}{" "}
                       </td>
                       {/* ... other user details in table cells */}
                     </tr>
