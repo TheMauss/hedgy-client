@@ -3,7 +3,7 @@ import TradeBarFutures from "../components/TradeBarFuturesnew";
 import RecentPredictions from "../components/RecentPredictionsNew";
 import MyPositionsFutures from "../components/MyPositionsFuturesNew";
 import AppBar from "../components/AppBar";
-
+import { useWallet } from "@solana/wallet-adapter-react";
 import { FC, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import React from "react";
@@ -16,6 +16,22 @@ import { Graph } from "components/GraphNew";
 import { notify } from "../utils/notifications";
 import Modal from "react-modal";
 import { useVisibility } from "components/VisibilityContext";
+import socketIOClient from "socket.io-client";
+import usePageVisibility from "../hooks/usePageVisibility";
+import useUserActivity from "../hooks/useUserActivity";
+import { useMemo } from "react";
+
+const symbolMap = {
+  0: "Crypto.SOL/USD",
+  1: "Crypto.BTC/USD",
+  2: "Crypto.PYTH/USD",
+  3: "Crypto.BONK/USD",
+  4: "Crypto.JUP/USD",
+  5: "Crypto.ETH/USD",
+  6: "Crypto.TIA/USD",
+  7: "Crypto.SUI/USD",
+  // Add more symbols as needed
+};
 
 interface Position {
   _id: string;
@@ -57,6 +73,23 @@ const getInitialCryptosState = (crypto) => {
   return initialState;
 };
 
+const useUniqueSymbols = (positions, defaultSymbol) => {
+  return useMemo(() => {
+    const newSymbols = new Set([defaultSymbol]);
+
+    positions.forEach((position) => {
+      const mappedSymbol = symbolMap[position.symbol];
+      if (mappedSymbol) {
+        newSymbols.add(mappedSymbol);
+      }
+    });
+
+    return Array.from(newSymbols);
+  }, [positions.map((pos) => pos.symbol).join(","), defaultSymbol]); // Only recompute if the list of position symbols changes
+};
+
+const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT153;
+
 const Futures: FC = () => {
   const [symbol, setSymbol] = useState("Crypto.SOL/USD"); // default value
   const [latestOpenedPosition, setLatestOpenedPosition] = useState<
@@ -91,6 +124,7 @@ const Futures: FC = () => {
 
   const [prices, setPrices] = useState({});
   const [EMAprice, setEMAprice] = useState(null);
+  const [positions, setPositions] = useState<Position[]>([]);
   const [selectedCryptos, setSelectedCryptos] = useState({
     BTC: false,
     SOL: true,
@@ -103,6 +137,7 @@ const Futures: FC = () => {
   });
 
   const [openingPrice, setOpeningPrice] = useState(0);
+  const { publicKey } = useWallet();
   const [initialPrice, setInitialPrice] = useState(0);
   const [selectedPair, setSelectedPair] = useState("");
   const [selectedCurrency, setSelectedCurrency] = useState<"SOL" | "USDC">(
@@ -122,6 +157,46 @@ const Futures: FC = () => {
   let debounceTimer;
   const debounceDelay = 75;
   let lastNotificationTime = 0;
+
+  const [socket, setSocket] = useState(null);
+  const isVisiblePrice = usePageVisibility();
+  const { isActive, setIsActive } = useUserActivity(15000);
+  const socketRef = useRef(socket);
+  const symbols = useUniqueSymbols(positions, symbol);
+
+  useEffect(() => {
+    // Check if a socket connection should be established
+    if (publicKey && isActive && !socketRef.current) {
+      console.log("Establishing new socket connection...");
+      const newSocket = socketIOClient(ENDPOINT, {
+        reconnectionAttempts: 5,
+        reconnectionDelay: 3000,
+      });
+      setSocket(newSocket);
+      socketRef.current = newSocket;
+
+      newSocket.on("connect", () => {
+        console.log("Connected to WebSocket server");
+        newSocket.emit("subscribe", { publicKey, symbols });
+      });
+
+      newSocket.on("connect_error", (error) => {
+        console.log("Connection Error:", error);
+      });
+
+      newSocket.on("disconnect", () => {
+        console.log("Disconnected from WebSocket server");
+      });
+
+      // Cleanup on component unmount or conditions no longer met
+      return () => {
+        console.log("Cleaning up: Unsubscribing and disconnecting.");
+        newSocket.emit("unsubscribe", { publicKey, symbols });
+        newSocket.close();
+        socketRef.current = null;
+      };
+    }
+  }, [publicKey, symbols, isActive, socketRef]);
 
   // Example adjustment for immediate deduplication
   const handleNewNotification = (newNotification) => {
@@ -438,6 +513,8 @@ const Futures: FC = () => {
               selectedCryptos={selectedCryptos}
               selectedCurrency={selectedCurrency}
               setSelectedCurrency={setSelectedCurrency}
+              isActive={isActive}
+              setIsActive={setIsActive}
             />{" "}
           </div>
         </div>
@@ -518,6 +595,8 @@ const Futures: FC = () => {
                             }
                             prices={prices}
                             handleNewNotification={handleNewNotification}
+                            setPositions={setPositions}
+                            positions={positions}
                           />
                         </div>
                       </div>
@@ -544,6 +623,8 @@ const Futures: FC = () => {
                             selectedCryptos={selectedCryptos}
                             selectedCurrency={selectedCurrency}
                             setSelectedCurrency={setSelectedCurrency}
+                            isActive={isActive}
+                            setIsActive={setIsActive}
                           />
                         </div>
                       )}
@@ -573,6 +654,8 @@ const Futures: FC = () => {
                   }
                   prices={prices}
                   handleNewNotification={handleNewNotification}
+                  setPositions={setPositions}
+                  positions={positions}
                 />
               </div>
               {/* <div className="flex flex-row md:py-2 md:gap-2">

@@ -2,7 +2,11 @@ import { BN } from "@project-serum/anchor";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { WalletConnectWalletAdapter } from "@solana/wallet-adapter-wallets";
-
+import {
+  PythSolanaReceiver,
+  InstructionWithEphemeralSigners,
+} from "@pythnetwork/pyth-solana-receiver";
+import { PriceServiceConnection } from "@pythnetwork/price-service-client";
 import {
   ComputeBudgetProgram,
   Connection,
@@ -11,6 +15,7 @@ import {
   SystemProgram,
   Transaction,
   TransactionSignature,
+  sendAndConfirmRawTransaction,
 } from "@solana/web3.js";
 import axios from "axios";
 import dynamic from "next/dynamic";
@@ -44,6 +49,7 @@ import {
 import { PROGRAM_ID } from "../out/programId";
 import useUserSOLBalanceStore from "../stores/useUserSOLBalanceStore";
 import { notify } from "../utils/notifications";
+import useUserActivity from "../hooks/useUserActivity";
 
 const HOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_HOUSE_WALLET);
 const SIGNERWALLET = new PublicKey(process.env.NEXT_PUBLIC_SIGNER_WALLET);
@@ -69,6 +75,37 @@ const ETHORACLE = process.env.NEXT_PUBLIC_ETH;
 const TIAORACLE = process.env.NEXT_PUBLIC_TIA;
 const SUIORACLE = process.env.NEXT_PUBLIC_SUI;
 
+const priceIdToSymbolMap = {
+  e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43:
+    "Crypto.BTC/USD",
+  ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d:
+    "Crypto.SOL/USD",
+  "0a0408d619e9380abad35060f9192039ed5042fa6f82301d0e48bb52be830996":
+    "Crypto.JUP/USD",
+  ff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace:
+    "Crypto.ETH/USD",
+  "09f7c1d7dfbb7df2b8fe3d3d87ee94a2259d212da4f30c1f0540d066dfa44723":
+    "Crypto.TIA/USD",
+  "23d7315113f5b1d3ba7a83604c44b94d79f4fd69af77f804fc7f920a6dc65744":
+    "Crypto.SUI/USD",
+  "0bbf28e9a841a1cc788f6a361b17ca072d0ea3098a1e5df1c3922d06719579ff":
+    "Crypto.PYTH/USD",
+  "72b021217ca3fe68922a19aaf990109cb9d84e9ad004b4d2025ad6f529314419":
+    "Crypto.BONK/USD",
+  // Add more mappings as necessary
+};
+
+const PRICE_IDS = [
+  "e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43",
+  "ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d",
+  "0a0408d619e9380abad35060f9192039ed5042fa6f82301d0e48bb52be830996",
+  "ff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace",
+  "09f7c1d7dfbb7df2b8fe3d3d87ee94a2259d212da4f30c1f0540d066dfa44723",
+  "23d7315113f5b1d3ba7a83604c44b94d79f4fd69af77f804fc7f920a6dc65744",
+  "0bbf28e9a841a1cc788f6a361b17ca072d0ea3098a1e5df1c3922d06719579ff",
+  "72b021217ca3fe68922a19aaf990109cb9d84e9ad004b4d2025ad6f529314419",
+];
+
 interface TradeBarFuturesProps {
   setParentDivHeight: (height: string) => void;
   EMAprice: number;
@@ -90,6 +127,8 @@ interface TradeBarFuturesProps {
   toggleState: string; // The current state
   setTotalDeposits: (totalDeposits: number) => void; // assuming it's a function that accepts a number
   setUsdcTotalDeposits: (usdcTotalDeposits: number) => void;
+  isActive: boolean;
+  setIsActive: (isActive: boolean) => void;
 }
 
 async function checkLPdata(
@@ -274,6 +313,7 @@ function getDynamicLeverage(longShortRatio, priceDirection) {
 }
 
 const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT1;
+const ENDPOINT1 = "https://hermes.pyth.network";
 const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
 const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT5;
 
@@ -324,6 +364,7 @@ const TradeBar: React.FC<
   toggleState,
   setTotalDeposits,
   setUsdcTotalDeposits,
+  setIsActive,
 }) => {
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
@@ -749,39 +790,42 @@ const TradeBar: React.FC<
   }, [connection]);
 
   useEffect(() => {
-    const socket = socketIOClient(ENDPOINT);
-
-    socket.on("priceUpdate", (updatedPrices) => {
-      const newPrices = { ...prices };
-      const selectedCryptosSafe = selectedCryptos || {};
-
-      const selectedCrypto = Object.keys(selectedCryptosSafe).find(
-        (key) => selectedCryptosSafe[key]
-      );
-
-      updatedPrices.forEach((updatedPrice) => {
-        newPrices[updatedPrice.symbol] = {
-          price: updatedPrice.price,
-          timestamp: updatedPrice.timestamp,
-        };
-
-        if (updatedPrice && selectedCrypto) {
-          const selectedCryptoSymbol = `Crypto.${selectedCrypto.toUpperCase()}/USD`;
-
-          if (updatedPrice.symbol === selectedCryptoSymbol) {
-            setEMAPrice(updatedPrice.EMA);
-          }
-        }
-      });
-
-      setPrices(newPrices);
+    const connection = new PriceServiceConnection(ENDPOINT1, {
+      priceFeedRequestConfig: { binary: true },
     });
 
-    // Disconnect the socket when the component unmounts
-    return () => {
-      socket.disconnect();
+    // Function to handle incoming price updates
+    const handlePriceUpdate = (priceFeed) => {
+      const priceData = priceFeed.getPriceNoOlderThan(8);
+      const symbol = priceIdToSymbolMap[priceFeed.id]; // Make sure this map is defined somewhere in your code
+
+      if (symbol) {
+        const updatedPrices = {
+          ...prices,
+          [symbol]: {
+            price: parseFloat(priceData.price),
+            timestamp: priceData.publishTime.toString(),
+          },
+        };
+        setPrices((currentPrices) => ({
+          ...currentPrices,
+          [symbol]: {
+            price: parseFloat(priceData.price),
+            timestamp: priceData.publishTime.toString(),
+          },
+        }));
+      } else {
+        console.error(`Symbol not found for priceFeed ID: ${priceFeed.id}`);
+      }
     };
-  }, [selectedCryptos]);
+
+    // Subscribe to price updates
+    connection.subscribePriceFeedUpdates(PRICE_IDS, handlePriceUpdate);
+    return () => {
+      // Close the WebSocket connection when the component unmounts
+      connection.closeWebSocket();
+    };
+  }, []);
 
   useEffect(() => {
     const selectedCryptosSafe = selectedCryptos || {};
@@ -1158,13 +1202,13 @@ const TradeBar: React.FC<
               (priceInUsd * (1 + finalSpreadRatio)) / leverage +
               (priceInUsd *
                 (1 + finalSpreadRatio) *
-                (18 + finalSpreadRatio * 100)) /
+                (13 + finalSpreadRatio * 100)) /
                 10000
             : priceInUsd * (1 - finalSpreadRatio) +
               (priceInUsd * (1 - finalSpreadRatio)) / leverage -
               (priceInUsd *
                 (1 - finalSpreadRatio) *
-                (18 + finalSpreadRatio * 100)) /
+                (13 + finalSpreadRatio * 100)) /
                 10000;
 
         const liquidationPrice = priceDisplay.toFixed(decimalPlaces);
@@ -1988,7 +2032,7 @@ const TradeBar: React.FC<
           houseAcc: HOUSEWALLET,
           oracleAccount: new PublicKey(oracleAddy),
           solOracleAccount: new PublicKey(
-            "J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix"
+            "3fpFnRbRX5r6vQKGbmKGqEiC6u7BK8o2FMJcziy2MqBW"
           ),
           pdaHouseAcc: PDAHOUSEWALLET,
           affilAcc: AffilAcc,
@@ -2397,6 +2441,15 @@ const TradeBar: React.FC<
         : availableLiquidity / LAMPORTS_PER_SOL
     );
   }, [data, toggleState, selectedCryptos, LPdata, selectedCurrency]);
+
+  const handleButtonClick3 = () => {
+    setIsActive(true); // Set user as active on any button click
+    if (selectedOrder === "MARKET") {
+      onClick();
+    } else {
+      FutOrder();
+    }
+  };
 
   const ModalDetails1 = (
     <Modal
@@ -3095,7 +3148,7 @@ const TradeBar: React.FC<
 
       {wallet.connected ? (
         <button
-          onClick={selectedOrder === "MARKET" ? onClick : FutOrder}
+          onClick={handleButtonClick3}
           className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  text-black transition ease-in-out duration-300 ${
             toggleState === "LONG"
               ? "bg-primary hover:bg-new-green-dark"

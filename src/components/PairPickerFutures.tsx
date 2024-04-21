@@ -287,6 +287,8 @@ export const PairPicker: React.FC<PairPickerProps> = ({
     const matchingOption = options.find((option) =>
       option.value.includes(`${cryptoKey}/USD`)
     );
+    console.log("matchingOption", matchingOption);
+
     return matchingOption || options[0];
   };
 

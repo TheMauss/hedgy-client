@@ -112,6 +112,8 @@ interface MyPositionsProps {
 
   prices: { [key: string]: { price: number; timestamp: string } };
   handleNewNotification: (notification: Notification) => void;
+  positions: Position[];
+  setPositions: React.Dispatch<React.SetStateAction<Position[]>>;
 }
 
 const LAMPORTS_PER_SOL = 1_000_000_000;
@@ -124,6 +126,8 @@ const MyPositions: FC<MyPositionsProps> = ({
   handleTotalBetAmountChange,
   handleusdcTotalBetAmountChange,
   handleNewNotification,
+  positions,
+  setPositions,
 }) => {
   async function usdcSplTokenAccountSync(walletAddress) {
     let mintAddress = USDCMINT;
@@ -184,8 +188,6 @@ const MyPositions: FC<MyPositionsProps> = ({
   const { connection } = useConnection();
   const { sendTransaction } = useWallet();
   const [selectedButton, setSelectedButton] = useState("Positions");
-
-  const [positions, setPositions] = useState<Position[]>([]);
   const [orders, setOrders] = useState<Position[]>([]);
 
   const [resolvedPositions, setResolvedPositions] = useState<Position[]>([]);
