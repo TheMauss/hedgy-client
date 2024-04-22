@@ -1460,7 +1460,7 @@ const MyPositions: FC<MyPositionsProps> = ({
             <Modal
               isOpen={modalIsOpen1}
               onRequestClose={() => setModalIsOpen1(false)}
-              className="  rounded-lg px-4 py-6 border border-layer-3"
+              className="rounded-xl  border border-layer-1 bg-base"
               style={{
                 overlay: {
                   backgroundColor: "transparent",
@@ -1477,7 +1477,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               }}
             >
               {currentItem && (
-                <div className="relative  flex-col h-full font-poppins ">
+                <div className="rounded-xl relative  flex-col h-full font-poppins px-4 py-6 bg-[#ffffff12]">
                   <div className="mb-3 leading-[80.69%] bankGothic uppercase text-xl text-white ">
                     Update Position
                   </div>
@@ -1495,7 +1495,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                   </div>
                   <div className="flex justify-center flex justify-center items-center gap-2">
                     <div className="py-2 w-[50%]">
-                      <div className="mb-2 flex-1 rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 border-[1px] border-solid border-layer-3 hover:bg-[#ffffff24] transition-all duration-200 ease-in-out border border-layer-3">
+                      <div className="mb-2 flex-1 rounded bg-[#ffffff12] box-border h-10 flex flex-row items-center justify-between py-0 px-2  hover:bg-[#ffffff24] transition-all duration-200 ease-in-out">
                         <input
                           type="text"
                           placeholder="Take Profit"
@@ -1517,7 +1517,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                           </div>
                         </span>
                       </div>
-                      <div className="flex-1 rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 border-[1px] border-solid border-layer-3 hover:bg-[#ffffff24] transition-all duration-200 ease-in-out">
+                      <div className="flex-1 rounded bg-[#ffffff12] box-border h-10 flex flex-row items-center justify-between py-0 px-2  hover:bg-[#ffffff24] transition-all duration-200 ease-in-out">
                         <input
                           type="text"
                           placeholder="Stop Loss"
@@ -1541,7 +1541,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                       </div>
                     </div>
                     <div className="py-2 w-[50%]">
-                      <div className="mb-2 hover:bg-[#ffffff24] transition-all duration-200 ease-in-out flex-1 rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 border-[1px] border-solid border-layer-3">
+                      <div className="mb-2 hover:bg-[#ffffff24] transition-all duration-200 ease-in-out flex-1 rounded bg-[#ffffff12] box-border h-10 flex flex-row items-center justify-between py-0 px-2 ">
                         <input
                           type="text"
                           placeholder="Profit"
@@ -1561,7 +1561,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                         </span>
                       </div>
 
-                      <div className="hover:bg-[#ffffff24] transition-all duration-200 ease-in-out flex-1 rounded bg-layer-2 box-border h-10 flex flex-row items-center justify-between py-0 px-2 border-[1px] border-solid border-layer-3">
+                      <div className="hover:bg-[#ffffff24] transition-all duration-200 ease-in-out flex-1 rounded bg-[#ffffff12] box-border h-10 flex flex-row items-center justify-between py-0 px-2 ">
                         <input
                           type="text"
                           placeholder="Loss"
@@ -1614,7 +1614,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
           const ModalDetails2 = (
             <Modal
-              className="  rounded-[2rem] border border-layer-3"
+              className=" rounded-xl border border-layer-1 bg-base"
               isOpen={modalIsOpen}
               onRequestClose={() => setModalIsOpen(false)}
               style={{
@@ -1633,7 +1633,7 @@ const MyPositions: FC<MyPositionsProps> = ({
             >
               {currentItem && (
                 <div
-                  className="custom-scrollbar h-full w-full p-0 m-0 box-border"
+                  className="rounded-xl custom-scrollbar h-full w-full p-0 m-0 box-border bg-[#ffffff12]"
                   id="my-modal"
                   style={{}}
                 >
@@ -1793,7 +1793,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                         </div>
                         <div className="flex flex-col items-center justify-center gap-[64px] text-base text-[#ffffff60]">
                           <div className="flex flex-col items-start justify-center gap-[32px] text-5xl">
-                            <div className="relative leading-[48px] ">
+                            <div className="relative leading-[48px] text-[#ffffff60]">
                               Entry Price
                             </div>
                             <div className="relative text-[78px] leading-[100%] font-medium text-white">
@@ -1836,7 +1836,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                             </div>
                           </div>
                           <div className="flex flex-col items-start justify-center gap-[32px] text-5xl">
-                            <div className="relative leading-[48px] ">
+                            <div className="relative leading-[48px] text-[#ffffff60]">
                               Mark Price
                             </div>
                             <div className="relative text-[78px] leading-[100%] font-medium text-white">
@@ -1881,7 +1881,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                         </div>
                       </div>
                     </div>
-                    <div className="self-stretch bg-layer-2 flex flex-row items-center justify-between px-24 py-14 z-[2] text-right text-base text-[#ffffff60] font-poppins">
+                    <div className="self-stretch bg-[#ffffff12] flex flex-row items-center justify-between px-24 py-14 z-[2] text-right text-base text-[#ffffff60] font-poppins">
                       <div className="flex-1 flex flex-row items-center justify-between">
                         <div className="flex flex-row items-center justify-start gap-[32px]">
                           <img
@@ -1889,7 +1889,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                             alt=""
                             src="/sheesh/vuesaxbulkdiscountshape.svg"
                           />
-                          <div className="relative leading-[48px] text-5xl">
+                          <div className="relative leading-[48px] text-5xl text-[#ffffff60]">
                             Use Code
                           </div>
                         </div>
@@ -2499,7 +2499,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
     const ModalDetails = (
       <Modal
-        className="  rounded-[2rem] border border-layer-3"
+        className="  rounded-xl border border-layer-1 bg-base"
         isOpen={modalIsOpen}
         onRequestClose={() => setModalIsOpen(false)}
         style={{
@@ -2518,7 +2518,7 @@ const MyPositions: FC<MyPositionsProps> = ({
       >
         {currentItem && (
           <div
-            className="custom-scrollbar h-full w-full p-0 m-0 box-border"
+            className="rounded-xl custom-scrollbar h-full w-full p-0 m-0 box-border bg-[#ffffff12]"
             id="my-modal"
             style={{}}
           >
@@ -2672,7 +2672,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                   </div>
                   <div className="flex flex-col items-center justify-center gap-[64px] text-base text-[#ffffff60]">
                     <div className="flex flex-col items-start justify-center gap-[32px] text-5xl">
-                      <div className="relative leading-[48px] ">
+                      <div className="relative leading-[48px] text-[#ffffff60]">
                         Entry Price
                       </div>
                       <div className="relative text-[78px] leading-[100%] font-medium text-white">
@@ -2708,7 +2708,9 @@ const MyPositions: FC<MyPositionsProps> = ({
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-center gap-[32px] text-5xl">
-                      <div className="relative leading-[48px] ">Exit Price</div>
+                      <div className="relative leading-[48px] text-[#ffffff60]">
+                        Exit Price
+                      </div>
                       <div className="relative text-[78px] leading-[100%] font-medium text-white">
                         {currentItem.symbol === 1
                           ? (currentItem.finalPrice / 100000000).toFixed(1)
@@ -2742,7 +2744,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                   </div>
                 </div>
               </div>
-              <div className="self-stretch bg-layer-2 flex flex-row items-center justify-between px-24 py-14 z-[2] text-right text-base text-[#ffffff60] font-poppins">
+              <div className="self-stretch bg-[#ffffff12] flex flex-row items-center justify-between px-24 py-14 z-[2] text-right text-base text-[#ffffff60] font-poppins">
                 <div className="flex-1 flex flex-row items-center justify-between">
                   <div className="flex flex-row items-center justify-start gap-[32px]">
                     <img
@@ -2750,7 +2752,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                       alt=""
                       src="/sheesh/vuesaxbulkdiscountshape.svg"
                     />
-                    <div className="relative leading-[48px] text-5xl">
+                    <div className="relative leading-[48px] text-5xl text-[#ffffff60]">
                       Use Code
                     </div>
                   </div>

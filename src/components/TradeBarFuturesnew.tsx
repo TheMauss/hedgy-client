@@ -2842,7 +2842,7 @@ const TradeBar: React.FC<
         </div>
         <div className="self-stretch flex flex-col items-start justify-start  gap-[16px]">
           <Slider
-            min={1}
+            min={2}
             max={getMaxLeverage(selectedCryptos)}
             step={1}
             value={leverage}
