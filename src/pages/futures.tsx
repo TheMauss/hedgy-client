@@ -161,10 +161,13 @@ const Futures: FC = () => {
   const [socket, setSocket] = useState(null);
   const isVisiblePrice = usePageVisibility();
   const { isActive, setIsActive } = useUserActivity(15000);
+  const [symbolSub, setSymbolSub] = useState("Crypto.SOL/USD"); // default value
   const socketRef = useRef(socket);
-  const symbols = useUniqueSymbols(positions, symbol);
+  const symbols = useUniqueSymbols(positions, symbolSub);
 
   useEffect(() => {
+    console.log("bitte", symbolSub);
+    const symbol = symbolSub;
     // Check if a socket connection should be established
     if (publicKey && isActive && !socketRef.current) {
       console.log("Establishing new socket connection...");
@@ -177,7 +180,7 @@ const Futures: FC = () => {
 
       newSocket.on("connect", () => {
         console.log("Connected to WebSocket server");
-        newSocket.emit("subscribe", { publicKey, symbols });
+        newSocket.emit("subscribe", { publicKey, symbol });
       });
 
       newSocket.on("connect_error", (error) => {
@@ -191,12 +194,12 @@ const Futures: FC = () => {
       // Cleanup on component unmount or conditions no longer met
       return () => {
         console.log("Cleaning up: Unsubscribing and disconnecting.");
-        newSocket.emit("unsubscribe", { publicKey, symbols });
+        newSocket.emit("unsubscribe", { publicKey, symbol });
         newSocket.close();
         socketRef.current = null;
       };
     }
-  }, [publicKey, symbols, isActive, socketRef]);
+  }, [publicKey, symbolSub, isActive, socketRef]);
 
   // Example adjustment for immediate deduplication
   const handleNewNotification = (newNotification) => {
@@ -515,6 +518,7 @@ const Futures: FC = () => {
               setSelectedCurrency={setSelectedCurrency}
               isActive={isActive}
               setIsActive={setIsActive}
+              setSymbolSub={setSymbolSub}
             />{" "}
           </div>
         </div>
@@ -597,6 +601,9 @@ const Futures: FC = () => {
                             handleNewNotification={handleNewNotification}
                             setPositions={setPositions}
                             positions={positions}
+                            isActive={isActive}
+                            setIsActive={setIsActive}
+                            setSymbolSub={setSymbolSub}
                           />
                         </div>
                       </div>
@@ -625,6 +632,7 @@ const Futures: FC = () => {
                             setSelectedCurrency={setSelectedCurrency}
                             isActive={isActive}
                             setIsActive={setIsActive}
+                            setSymbolSub={setSymbolSub}
                           />
                         </div>
                       )}
@@ -656,6 +664,9 @@ const Futures: FC = () => {
                   handleNewNotification={handleNewNotification}
                   setPositions={setPositions}
                   positions={positions}
+                  isActive={isActive}
+                  setIsActive={setIsActive}
+                  setSymbolSub={setSymbolSub}
                 />
               </div>
               {/* <div className="flex flex-row md:py-2 md:gap-2">

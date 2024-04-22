@@ -129,6 +129,7 @@ interface TradeBarFuturesProps {
   setUsdcTotalDeposits: (usdcTotalDeposits: number) => void;
   isActive: boolean;
   setIsActive: (isActive: boolean) => void;
+  setSymbolSub: React.Dispatch<React.SetStateAction<string>>;
 }
 
 async function checkLPdata(
@@ -365,6 +366,7 @@ const TradeBar: React.FC<
   setTotalDeposits,
   setUsdcTotalDeposits,
   setIsActive,
+  setSymbolSub,
 }) => {
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
@@ -2442,7 +2444,38 @@ const TradeBar: React.FC<
     );
   }, [data, toggleState, selectedCryptos, LPdata, selectedCurrency]);
 
+  const symbolMap = {
+    BTC: "Crypto.BTC/USD",
+    SOL: "Crypto.SOL/USD",
+    PYTH: "Crypto.PYTH/USD",
+    BONK: "Crypto.BONK/USD",
+    JUP: "Crypto.JUP/USD",
+    ETH: "Crypto.ETH/USD",
+    TIA: "Crypto.TIA/USD",
+    SUI: "Crypto.SUI/USD",
+
+    // Add other mappings as necessary
+  };
+
+  const getActiveSymbol = () => {
+    const activeKey = Object.keys(selectedCryptos).find(
+      (key) => selectedCryptos[key]
+    );
+    console.log("Active key:", activeKey); // Outputs the key that is active
+
+    const symbol = symbolMap[activeKey]; // Lookup the symbol in the map
+    console.log("Mapped symbol:", symbol); // Outputs the corresponding symbol or undefined
+
+    return symbol || "Crypto.SOL/USD"; // Fallback to "Crypto.SOL/USD" if symbol is undefined
+  };
+
+  const handleMouseEnter = () => {
+    setSymbolSub(getActiveSymbol());
+    setIsActive(true); // Set user as active when the mouse enters the button area
+  };
+
   const handleButtonClick3 = () => {
+    setSymbolSub(getActiveSymbol());
     setIsActive(true); // Set user as active on any button click
     if (selectedOrder === "MARKET") {
       onClick();
@@ -3148,6 +3181,7 @@ const TradeBar: React.FC<
 
       {wallet.connected ? (
         <button
+          onMouseEnter={handleMouseEnter}
           onClick={handleButtonClick3}
           className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  text-black transition ease-in-out duration-300 ${
             toggleState === "LONG"

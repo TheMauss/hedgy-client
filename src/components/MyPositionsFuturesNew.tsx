@@ -114,6 +114,9 @@ interface MyPositionsProps {
   handleNewNotification: (notification: Notification) => void;
   positions: Position[];
   setPositions: React.Dispatch<React.SetStateAction<Position[]>>;
+  isActive: boolean;
+  setIsActive: (isActive: boolean) => void;
+  setSymbolSub: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const LAMPORTS_PER_SOL = 1_000_000_000;
@@ -128,6 +131,9 @@ const MyPositions: FC<MyPositionsProps> = ({
   handleNewNotification,
   positions,
   setPositions,
+  isActive,
+  setIsActive,
+  setSymbolSub,
 }) => {
   async function usdcSplTokenAccountSync(walletAddress) {
     let mintAddress = USDCMINT;
@@ -1387,6 +1393,26 @@ const MyPositions: FC<MyPositionsProps> = ({
     }
   };
 
+  const getActiveSymbol = (item) => {
+    const activeKey = item.symbol;
+    console.log("Active key:", activeKey); // Outputs the key that is active
+
+    const symbol = symbolMap[activeKey]; // Lookup the symbol in the map
+    console.log("Mapped symbol:", symbol); // Outputs the corresponding symbol or undefined
+
+    return symbol || "Crypto.SOL/USD"; // Fallback to "Crypto.SOL/USD" if symbol is undefined
+  };
+
+  const handleMouseEnter = (item) => () => {
+    setSymbolSub(getActiveSymbol(item));
+    setIsActive(true); // Set user as active when the mouse enters the button area
+  };
+  const handleButtonClick3 = (item) => {
+    setSymbolSub(getActiveSymbol(item));
+    setIsActive(true); // Set user as active on any button click
+    resolveFutCont(item);
+  };
+
   const renderPositions = (positionsToRender: Position[]) => {
     const unresolvedPositions = positionsToRender
       .filter((item) => !item.resolved)
@@ -2123,7 +2149,8 @@ const MyPositions: FC<MyPositionsProps> = ({
                     </div>
                     <button
                       className="flex justify-center items-center h-[26px] md:w-[45%] w-[95%] min:w-[100px] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
-                      onClick={() => resolveFutCont(item)}
+                      onClick={() => handleButtonClick3(item)}
+                      onMouseEnter={handleMouseEnter(item)}
                     >
                       Close
                     </button>
@@ -2447,7 +2474,8 @@ const MyPositions: FC<MyPositionsProps> = ({
                       <div className="px-1"></div>
                       <button
                         className="h-[26px] md:w-[45%] w-[95%]  bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
-                        onClick={() => resolveFutCont(item)}
+                        onClick={() => handleButtonClick3(item)}
+                        onMouseEnter={handleMouseEnter(item)}
                       >
                         Close
                       </button>
