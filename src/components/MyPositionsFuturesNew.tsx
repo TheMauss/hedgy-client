@@ -76,7 +76,7 @@ async function simulateTransactionWithRetries(
   transaction,
   connection,
   maxRetries = 10,
-  delayDuration = 100
+  delayDuration = 150
 ) {
   let lastError = null;
   for (let attempt = 1; attempt <= maxRetries; attempt++) {

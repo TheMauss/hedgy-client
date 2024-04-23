@@ -165,41 +165,80 @@ const Futures: FC = () => {
   const socketRef = useRef(socket);
   const symbols = useUniqueSymbols(positions, symbolSub);
 
+  const clientCurrentSymbol = useRef(null);
+
   useEffect(() => {
-    console.log("bitte", symbolSub);
+    console.log("Setting up socket connection for symbol:", symbolSub);
     const symbol = symbolSub;
-    // Check if a socket connection should be established
-    if (publicKey && isActive && !socketRef.current) {
-      console.log("Establishing new socket connection...");
-      const newSocket = socketIOClient(ENDPOINT, {
-        reconnectionAttempts: 5,
-        reconnectionDelay: 3000,
-      });
-      setSocket(newSocket);
-      socketRef.current = newSocket;
 
-      newSocket.on("connect", () => {
-        console.log("Connected to WebSocket server");
-        newSocket.emit("subscribe", { publicKey, symbol });
-      });
+    // Ensure the socket is connected and active
+    if (publicKey && isActive) {
+      if (!socketRef.current) {
+        console.log("Establishing new socket connection...");
+        const newSocket = socketIOClient(ENDPOINT, {
+          reconnectionAttempts: 5,
+          reconnectionDelay: 3000,
+        });
 
-      newSocket.on("connect_error", (error) => {
-        console.log("Connection Error:", error);
-      });
+        newSocket.on("connect", () => {
+          console.log("Connected to WebSocket server");
+          newSocket.emit("subscribe", { publicKey, symbol });
+          clientCurrentSymbol.current = symbol; // Set the current symbol on successful connection
+        });
 
-      newSocket.on("disconnect", () => {
-        console.log("Disconnected from WebSocket server");
-      });
+        newSocket.on("connect_error", (error) => {
+          console.log("Connection Error:", error);
+        });
+
+        newSocket.on("disconnect", () => {
+          console.log("Disconnected from WebSocket server");
+        });
+
+        socketRef.current = newSocket;
+      } else {
+        console.log("Updating subscription to new symbol:", symbol);
+        // Unsubscribe from previous symbol and subscribe to new symbol
+        if (clientCurrentSymbol.current) {
+          socketRef.current.emit("unsubscribe", {
+            publicKey,
+            symbol: clientCurrentSymbol.current,
+          });
+        }
+        socketRef.current.emit("subscribe", { publicKey, symbol });
+        clientCurrentSymbol.current = symbol; // Update the current symbol reference
+      }
 
       // Cleanup on component unmount or conditions no longer met
       return () => {
-        console.log("Cleaning up: Unsubscribing and disconnecting.");
-        newSocket.emit("unsubscribe", { publicKey, symbol });
-        newSocket.close();
-        socketRef.current = null;
+        if (socketRef.current) {
+          console.log("Cleaning up: Unsubscribing and disconnecting.");
+          if (clientCurrentSymbol.current) {
+            socketRef.current.emit("unsubscribe", {
+              publicKey,
+              symbol: clientCurrentSymbol.current,
+            });
+          }
+          // socketRef.current.close();
+          // socketRef.current = null;
+        }
       };
     }
   }, [publicKey, symbolSub, isActive, socketRef]);
+
+  useEffect(() => {
+    const checkConnectionInterval = setInterval(() => {
+      if (socketRef.current) {
+        const isConnected = socketRef.current.connected;
+        if (!isConnected) {
+          // Attempt to reconnect or handle a disconnected socket
+          socketRef.current.connect();
+        } else {
+        }
+      }
+    }, 15000); // Check every 10 seconds
+
+    return () => clearInterval(checkConnectionInterval);
+  }, []);
 
   // Example adjustment for immediate deduplication
   const handleNewNotification = (newNotification) => {

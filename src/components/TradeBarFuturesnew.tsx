@@ -140,7 +140,7 @@ async function simulateTransactionWithRetries(
   transaction,
   connection,
   maxRetries = 10,
-  delayDuration = 100
+  delayDuration = 150
 ) {
   let lastError = null;
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -844,15 +844,15 @@ const TradeBar: React.FC<
         const updatedPrices = {
           ...prices,
           [symbol]: {
-            price: parseFloat(priceData.price),
-            timestamp: priceData.publishTime.toString(),
+            price: parseFloat(priceData?.price),
+            timestamp: priceData?.publishTime.toString(),
           },
         };
         setPrices((currentPrices) => ({
           ...currentPrices,
           [symbol]: {
-            price: parseFloat(priceData.price),
-            timestamp: priceData.publishTime.toString(),
+            price: parseFloat(priceData?.price),
+            timestamp: priceData?.publishTime.toString(),
           },
         }));
       } else {
