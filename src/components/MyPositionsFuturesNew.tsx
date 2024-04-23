@@ -68,6 +68,43 @@ const ETHORACLE = process.env.NEXT_PUBLIC_ETH;
 const TIAORACLE = process.env.NEXT_PUBLIC_TIA;
 const SUIORACLE = process.env.NEXT_PUBLIC_SUI;
 
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function simulateTransactionWithRetries(
+  transaction,
+  connection,
+  maxRetries = 10,
+  delayDuration = 100
+) {
+  let lastError = null;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`Attempting simulation ${attempt}/${maxRetries}...`);
+      const simulationResult =
+        await connection.simulateTransaction(transaction);
+      if (simulationResult.value.err) {
+        lastError = simulationResult.value.err;
+        // Optionally, handle adjustments based on the error here
+        if (attempt < maxRetries) {
+          await delay(delayDuration);
+        }
+      } else {
+        console.log("Simulation successful");
+        return { success: true }; // Simulation succeeded
+      }
+    } catch (error) {
+      lastError = error;
+      if (attempt < maxRetries) {
+        console.log(`Waiting ${delayDuration}ms before retrying...`);
+        await delay(delayDuration);
+      }
+    }
+  }
+  return { success: false, error: lastError }; // All attempts failed
+}
+
 interface Position {
   _id: string;
   futuresContract: string;
@@ -235,6 +272,7 @@ const MyPositions: FC<MyPositionsProps> = ({
   const { isPriorityFee } = usePriorityFee();
   const { isBackupOracle } = useBackupOracle();
   const [totalPages, setTotalPages] = useState(1);
+  const [isTransactionPending, setIsTransactionPending] = useState(false);
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
@@ -1029,6 +1067,7 @@ const MyPositions: FC<MyPositionsProps> = ({
   };
 
   const resolveFutCont = async (position: Position) => {
+    setIsTransactionPending(true);
     const seedsUser = [Buffer.from(publicKey.toBytes())];
 
     const [userAcc] = await PublicKey.findProgramAddress(seedsUser, PROGRAM_ID);
@@ -1102,6 +1141,8 @@ const MyPositions: FC<MyPositionsProps> = ({
       .add(resolveFutContuser(args, accounts))
       .add(PRIORITY_FEE_IX);
 
+    await simulateTransactionWithRetries(transaction, connection);
+
     let signature: TransactionSignature = "";
     try {
       // Send the transaction
@@ -1114,11 +1155,11 @@ const MyPositions: FC<MyPositionsProps> = ({
 
       // Wait for confirmation
       await connection.confirmTransaction(signature, "confirmed");
-
+      setIsTransactionPending(false);
       // Optionally, show a success notification
     } catch (error: any) {
       console.error("Transaction failed:", error);
-
+      setIsTransactionPending(false);
       // Optionally, show an error notification
       handleNewNotification({
         id: generateUniqueId(),
@@ -2150,9 +2191,22 @@ const MyPositions: FC<MyPositionsProps> = ({
                     <button
                       className="flex justify-center items-center h-[26px] md:w-[45%] w-[95%] min:w-[100px] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
                       onClick={() => handleButtonClick3(item)}
-                      onMouseEnter={handleMouseEnter(item)}
+                      // onMouseEnter={handleMouseEnter(item)}
                     >
-                      Close
+                      {isTransactionPending ? (
+                        <div className="flex items-center justify-center">
+                          <div
+                            className="spinner-border animate-spin inline-block w-4 h-4 border-4 rounded-full"
+                            role="status"
+                          >
+                            <span className="visually-hidden">.</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="transition ease-in-out duration-300">
+                          Close
+                        </div>
+                      )}
                     </button>
                   </div>
                 </div>
@@ -2475,9 +2529,24 @@ const MyPositions: FC<MyPositionsProps> = ({
                       <button
                         className="h-[26px] md:w-[45%] w-[95%]  bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
                         onClick={() => handleButtonClick3(item)}
-                        onMouseEnter={handleMouseEnter(item)}
+                        // onMouseEnter={handleMouseEnter(item)}
                       >
-                        Close
+                        {isTransactionPending ? (
+                          <div className="flex items-center justify-center">
+                            <div
+                              className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full"
+                              role="status"
+                            >
+                              <span className="visually-hidden">
+                                Loading...
+                              </span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-black text-lg transition ease-in-out duration-300">
+                            Close
+                          </div>
+                        )}
                       </button>
                     </div>
                   </div>

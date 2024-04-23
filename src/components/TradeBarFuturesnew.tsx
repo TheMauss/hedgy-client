@@ -132,6 +132,43 @@ interface TradeBarFuturesProps {
   setSymbolSub: React.Dispatch<React.SetStateAction<string>>;
 }
 
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function simulateTransactionWithRetries(
+  transaction,
+  connection,
+  maxRetries = 10,
+  delayDuration = 100
+) {
+  let lastError = null;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`Attempting simulation ${attempt}/${maxRetries}...`);
+      const simulationResult =
+        await connection.simulateTransaction(transaction);
+      if (simulationResult.value.err) {
+        lastError = simulationResult.value.err;
+        // Optionally, handle adjustments based on the error here
+        if (attempt < maxRetries) {
+          await delay(delayDuration);
+        }
+      } else {
+        console.log("Simulation successful");
+        return { success: true }; // Simulation succeeded
+      }
+    } catch (error) {
+      lastError = error;
+      if (attempt < maxRetries) {
+        console.log(`Waiting ${delayDuration}ms before retrying...`);
+        await delay(delayDuration);
+      }
+    }
+  }
+  return { success: false, error: lastError }; // All attempts failed
+}
+
 async function checkLPdata(
   lpAcc: PublicKey,
   connection: Connection
@@ -428,6 +465,8 @@ const TradeBar: React.FC<
   const [selectedOrder, setSelectedOrder] = useState<"MARKET" | "LIMIT">(
     "MARKET"
   );
+
+  const [isTransactionPending, setIsTransactionPending] = useState(false);
 
   const handleButtonClick = (buttonIndex: number) => {
     setActiveButton(buttonIndex);
@@ -1994,6 +2033,7 @@ const TradeBar: React.FC<
           });
         }
       } else {
+        setIsTransactionPending(true);
         const args: CreateFutContArgs = {
           number: new BN(timeNumber),
           affiliateCode: Array.from(isInit.usedAffiliate),
@@ -2061,9 +2101,16 @@ const TradeBar: React.FC<
           });
         }
 
-        const transaction = new Transaction()
+        const feePayer = publicKey;
+
+        // Prepare the transaction with futures contract creation and priority fee
+        const transaction = new Transaction({
+          feePayer: feePayer, // Explicitly setting the fee payer
+        })
           .add(createFutCont(args, accounts))
           .add(PRIORITY_FEE_IX);
+
+        await simulateTransactionWithRetries(transaction, connection);
 
         signature = await sendTransaction(transaction, connection);
         notify({
@@ -2073,6 +2120,7 @@ const TradeBar: React.FC<
         });
         // Wait for transaction confirmation before showing the 'success' notification
         await connection.confirmTransaction(signature, "confirmed");
+        setIsTransactionPending(false);
       }
     } catch (error: any) {
       // In case of an error, show only the 'error' notification
@@ -2082,6 +2130,7 @@ const TradeBar: React.FC<
         description: error?.message,
         txid: signature,
       });
+      setIsTransactionPending(false);
       return;
     }
   }, [
@@ -3181,17 +3230,29 @@ const TradeBar: React.FC<
 
       {wallet.connected ? (
         <button
-          onMouseEnter={handleMouseEnter}
+          // onMouseEnter={handleMouseEnter}
           onClick={handleButtonClick3}
-          className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  text-black transition ease-in-out duration-300 ${
+          disabled={isTransactionPending}
+          className={`w-full rounded-lg h-[50px] flex flex-row items-center justify-center box-border text-black transition ease-in-out duration-300 ${
             toggleState === "LONG"
               ? "bg-primary hover:bg-new-green-dark"
               : "bg-short hover:bg-new-red-dark"
           }`}
         >
-          <div className="text-black text-lg transition ease-in-out duration-300">
-            {selectedOrder === "MARKET" ? "OPEN POSITION" : "CREATE ORDER"}{" "}
-          </div>
+          {isTransactionPending ? (
+            <div className="flex items-center justify-center">
+              <div
+                className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full"
+                role="status"
+              >
+                <span className="visually-hidden">.</span>
+              </div>
+            </div>
+          ) : (
+            <div className="text-black text-lg transition ease-in-out duration-300">
+              {selectedOrder === "MARKET" ? "OPEN POSITION" : "CREATE ORDER"}{" "}
+            </div>
+          )}
         </button>
       ) : (
         <div
