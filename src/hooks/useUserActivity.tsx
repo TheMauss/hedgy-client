@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-function useUserActivity(timeout = 15000) {
+function useUserActivity(timeout = 10000) {
   // Default timeout to 15 seconds
   const [isActive, setIsActiveState] = useState(false);
   let timeoutId;
