@@ -202,7 +202,6 @@ const Futures: FC = () => {
       } else {
         console.log("Updating subscription to new symbol:", symbol);
         // Unsubscribe from previous symbol and subscribe to new symbol
-        setIsSocketConnected(false);
         if (clientCurrentSymbol.current) {
           socketRef.current.emit("unsubscribe", {
             publicKey,
@@ -210,7 +209,6 @@ const Futures: FC = () => {
           });
         }
         socketRef.current.emit("subscribe", { publicKey, symbol });
-        setIsSocketConnected(true);
         clientCurrentSymbol.current = symbol; // Update the current symbol reference
       }
 
