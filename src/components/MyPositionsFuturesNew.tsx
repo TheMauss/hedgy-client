@@ -3696,11 +3696,11 @@ const MyPositions: FC<MyPositionsProps> = ({
                   </div>
                 </div>
                 <div className="self-stretch flex flex-row items-end justify-between text-right">
-                  <div className="w-[63px] flex flex-col items-end justify-center gap-[6px]">
+                  <div className="w-[63px] flex flex-col items-start justify-center gap-[6px]">
                     <div className="relative leading-[12px] text-[#ffffff60]">
                       Limit Price
                     </div>
-                    <div className="flex flex-col items-end justify-center text-sm text-white">
+                    <div className="flex flex-col items-start justify-start text-white text-xs text-left">
                       <div className="relative leading-[12px]">
                         {item.symbol === 1
                           ? (item.initialPrice / 100000000).toFixed(1)
