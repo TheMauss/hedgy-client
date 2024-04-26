@@ -651,6 +651,7 @@ const Futures: FC = () => {
                             isActive={isActive}
                             setIsActive={setIsActive}
                             setSymbolSub={setSymbolSub}
+                            isSocketConnected={isSocketConnected}
                           />
                         </div>
                       </div>
@@ -715,6 +716,7 @@ const Futures: FC = () => {
                   isActive={isActive}
                   setIsActive={setIsActive}
                   setSymbolSub={setSymbolSub}
+                  isSocketConnected={isSocketConnected}
                 />
               </div>
               {/* <div className="flex flex-row md:py-2 md:gap-2">

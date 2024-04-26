@@ -1667,6 +1667,12 @@ const TradeBar: React.FC<
           });
         }
       } else {
+        setIsTransactionPending(true);
+
+        while (!isSocketConnected) {
+          await new Promise((resolve) => setTimeout(resolve, 50)); // Wait for 100 milliseconds before checking again
+        }
+
         const args: CreateLimitOrderArgs = {
           number: new BN(timeNumber),
           betAmount: new BN(betAmount),
@@ -1783,6 +1789,7 @@ const TradeBar: React.FC<
     availableLiquidity,
     selectedCurrency,
     limitAmount,
+    isSocketConnected,
   ]);
 
   const onClick = useCallback(async () => {
@@ -2035,10 +2042,10 @@ const TradeBar: React.FC<
           });
         }
       } else {
+        setIsTransactionPending(true);
         while (!isSocketConnected) {
           await new Promise((resolve) => setTimeout(resolve, 50)); // Wait for 100 milliseconds before checking again
         }
-        setIsTransactionPending(true);
         const args: CreateFutContArgs = {
           number: new BN(timeNumber),
           affiliateCode: Array.from(isInit.usedAffiliate),
