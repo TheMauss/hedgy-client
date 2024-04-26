@@ -2541,16 +2541,14 @@ const MyPositions: FC<MyPositionsProps> = ({
                         {isTransactionPending ? (
                           <div className="flex items-center justify-center">
                             <div
-                              className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full"
+                              className="spinner-border animate-spin inline-block w-4 h-4 border-4 rounded-full"
                               role="status"
                             >
-                              <span className="visually-hidden">
-                                Loading...
-                              </span>
+                              <span className="visually-hidden">.</span>
                             </div>
                           </div>
                         ) : (
-                          <div className="text-black text-lg transition ease-in-out duration-300">
+                          <div className="transition ease-in-out duration-300">
                             Close
                           </div>
                         )}
