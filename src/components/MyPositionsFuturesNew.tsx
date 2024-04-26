@@ -3512,7 +3512,7 @@ const MyPositions: FC<MyPositionsProps> = ({
               <div className=" flex justify-end items-center w-[20%] min-w-[140px] text-[0.9rem] text-[#ffffff60]   font-poppins py-1.5 rounded-r">
                 <div className="flex justify-end  w-full min-w-[140px]">
                   <button
-                    className="h-[26px] md:w-[45%] w-[95%]  bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
+                    className="text-[#ffffff60] h-[26px] md:w-[45%] w-[95%]  bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
                     onClick={() => closeOrder(item)}
                   >
                     Close
@@ -3687,10 +3687,15 @@ const MyPositions: FC<MyPositionsProps> = ({
                       <div className="relative leading-[9.98px] text-[#ffffff60]">
                         Collateral
                       </div>
+                      <div className="relative leading-[12px] mt-1 text-[1.05rem] ">
+                        {item.usdc === 0
+                          ? `${(item.betAmount / LAMPORTS_PER_SOL).toFixed(2)}◎`
+                          : `${((item.betAmount / LAMPORTS_PER_SOL) * 1000).toFixed(1)}$`}
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div className="self-stretch flex flex-row items-start justify-between text-right">
+                <div className="self-stretch flex flex-row items-end justify-between text-right">
                   <div className="w-[63px] flex flex-col items-end justify-center gap-[6px]">
                     <div className="relative leading-[12px] text-[#ffffff60]">
                       Limit Price
@@ -3721,9 +3726,7 @@ const MyPositions: FC<MyPositionsProps> = ({
                       </div>
                     </div>
                   </div>
-                </div>
-                <div className=" flex justify-end items-center w-[100%] min-w-[140px] text-[0.9rem] text-[#ffffff60]   font-poppins py-1.5 rounded-r">
-                  <div className="items-center flex md:flex-row flex-col w-[100%]">
+                  <div className="text-[#ffffff60] items-center flex md:flex-row flex-col w-[50%] items-end">
                     <div className=" w-[100%] gap-2">
                       <button
                         className="flex justify-center items-center h-[26px] w-full min:w-[100px] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
@@ -3734,6 +3737,8 @@ const MyPositions: FC<MyPositionsProps> = ({
                     </div>
                   </div>
                 </div>
+
+                <div className=" flex justify-end items-center w-[100%] min-w-[140px] text-[0.9rem] text-[#ffffff60]   font-poppins py-1.5 rounded-r"></div>
               </div>
             </div>
           );
