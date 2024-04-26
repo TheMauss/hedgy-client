@@ -130,6 +130,7 @@ interface TradeBarFuturesProps {
   isActive: boolean;
   setIsActive: (isActive: boolean) => void;
   setSymbolSub: React.Dispatch<React.SetStateAction<string>>;
+  isSocketConnected: boolean; // Add isSocketConnected
 }
 
 function delay(ms) {
@@ -404,6 +405,7 @@ const TradeBar: React.FC<
   setUsdcTotalDeposits,
   setIsActive,
   setSymbolSub,
+  isSocketConnected,
 }) => {
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
@@ -2033,6 +2035,9 @@ const TradeBar: React.FC<
           });
         }
       } else {
+        while (!isSocketConnected) {
+          await new Promise((resolve) => setTimeout(resolve, 50)); // Wait for 100 milliseconds before checking again
+        }
         setIsTransactionPending(true);
         const args: CreateFutContArgs = {
           number: new BN(timeNumber),
@@ -2156,6 +2161,7 @@ const TradeBar: React.FC<
     availableLiquidity,
     selectedCurrency,
     isBackupOracle,
+    isSocketConnected,
   ]);
 
   const onClick1 = useCallback(async () => {

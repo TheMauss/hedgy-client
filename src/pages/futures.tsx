@@ -164,6 +164,7 @@ const Futures: FC = () => {
   const [symbolSub, setSymbolSub] = useState("Crypto.SOL/USD"); // default value
   const socketRef = useRef(socket);
   const symbols = useUniqueSymbols(positions, symbolSub);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
 
   const clientCurrentSymbol = useRef(null);
 
@@ -184,20 +185,24 @@ const Futures: FC = () => {
           console.log("Connected to WebSocket server");
           newSocket.emit("subscribe", { publicKey, symbol });
           clientCurrentSymbol.current = symbol; // Set the current symbol on successful connection
+          setIsSocketConnected(true);
         });
 
         newSocket.on("connect_error", (error) => {
           console.log("Connection Error:", error);
+          setIsSocketConnected(false);
         });
 
         newSocket.on("disconnect", () => {
           console.log("Disconnected from WebSocket server");
+          setIsSocketConnected(false);
         });
 
         socketRef.current = newSocket;
       } else {
         console.log("Updating subscription to new symbol:", symbol);
         // Unsubscribe from previous symbol and subscribe to new symbol
+        setIsSocketConnected(false);
         if (clientCurrentSymbol.current) {
           socketRef.current.emit("unsubscribe", {
             publicKey,
@@ -205,6 +210,7 @@ const Futures: FC = () => {
           });
         }
         socketRef.current.emit("subscribe", { publicKey, symbol });
+        setIsSocketConnected(true);
         clientCurrentSymbol.current = symbol; // Update the current symbol reference
       }
 
@@ -218,12 +224,13 @@ const Futures: FC = () => {
               symbol: clientCurrentSymbol.current,
             });
           }
+          setIsSocketConnected(false);
           // socketRef.current.close();
           // socketRef.current = null;
         }
       };
     }
-  }, [publicKey, symbolSub, isActive, socketRef]);
+  }, [publicKey, symbolSub, isActive, socketRef, isSocketConnected]);
 
   useEffect(() => {
     const checkConnectionInterval = setInterval(() => {
@@ -558,6 +565,7 @@ const Futures: FC = () => {
               isActive={isActive}
               setIsActive={setIsActive}
               setSymbolSub={setSymbolSub}
+              isSocketConnected={isSocketConnected}
             />{" "}
           </div>
         </div>
@@ -672,6 +680,7 @@ const Futures: FC = () => {
                             isActive={isActive}
                             setIsActive={setIsActive}
                             setSymbolSub={setSymbolSub}
+                            isSocketConnected={isSocketConnected}
                           />
                         </div>
                       )}
