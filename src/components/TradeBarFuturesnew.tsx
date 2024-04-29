@@ -130,7 +130,7 @@ interface TradeBarFuturesProps {
   isActive: boolean;
   setIsActive: (isActive: boolean) => void;
   setSymbolSub: React.Dispatch<React.SetStateAction<string>>;
-  isSocketConnected: boolean; // Add isSocketConnected
+  isSocketConnectedRef: React.RefObject<boolean>;
 }
 
 function delay(ms) {
@@ -405,7 +405,7 @@ const TradeBar: React.FC<
   setUsdcTotalDeposits,
   setIsActive,
   setSymbolSub,
-  isSocketConnected,
+  isSocketConnectedRef,
 }) => {
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
@@ -1669,10 +1669,6 @@ const TradeBar: React.FC<
       } else {
         setIsTransactionPending(true);
 
-        while (!isSocketConnected) {
-          await new Promise((resolve) => setTimeout(resolve, 50)); // Wait for 100 milliseconds before checking again
-        }
-
         const args: CreateLimitOrderArgs = {
           number: new BN(timeNumber),
           betAmount: new BN(betAmount),
@@ -1789,7 +1785,7 @@ const TradeBar: React.FC<
     availableLiquidity,
     selectedCurrency,
     limitAmount,
-    isSocketConnected,
+    isSocketConnectedRef,
   ]);
 
   const onClick = useCallback(async () => {
@@ -2043,9 +2039,6 @@ const TradeBar: React.FC<
         }
       } else {
         setIsTransactionPending(true);
-        while (!isSocketConnected) {
-          await new Promise((resolve) => setTimeout(resolve, 50)); // Wait for 100 milliseconds before checking again
-        }
         const args: CreateFutContArgs = {
           number: new BN(timeNumber),
           affiliateCode: Array.from(isInit.usedAffiliate),
@@ -2168,7 +2161,7 @@ const TradeBar: React.FC<
     availableLiquidity,
     selectedCurrency,
     isBackupOracle,
-    isSocketConnected,
+    isSocketConnectedRef,
   ]);
 
   const onClick1 = useCallback(async () => {
@@ -2536,9 +2529,13 @@ const TradeBar: React.FC<
     setIsActive(true); // Set user as active when the mouse enters the button area
   };
 
-  const handleButtonClick3 = () => {
+  const handleButtonClick3 = async () => {
     setSymbolSub(getActiveSymbol());
     setIsActive(true); // Set user as active on any button click
+    while (!isSocketConnectedRef.current) {
+      await new Promise((resolve) => setTimeout(resolve, 50)); // Wait for 100 milliseconds before checking again
+    }
+
     if (selectedOrder === "MARKET") {
       onClick();
     } else {

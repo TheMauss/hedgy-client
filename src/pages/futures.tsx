@@ -164,7 +164,7 @@ const Futures: FC = () => {
   const [symbolSub, setSymbolSub] = useState("Crypto.SOL/USD"); // default value
   const socketRef = useRef(socket);
   const symbols = useUniqueSymbols(positions, symbolSub);
-  const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const isSocketConnectedRef = useRef(false);
 
   const clientCurrentSymbol = useRef(null);
 
@@ -185,21 +185,22 @@ const Futures: FC = () => {
           console.log("Connected to WebSocket server");
           newSocket.emit("subscribe", { publicKey, symbol });
           clientCurrentSymbol.current = symbol; // Set the current symbol on successful connection
-          setIsSocketConnected(true);
+          isSocketConnectedRef.current = true;
         });
 
         newSocket.on("connect_error", (error) => {
           console.log("Connection Error:", error);
-          setIsSocketConnected(false);
+          isSocketConnectedRef.current = false;
         });
 
         newSocket.on("disconnect", () => {
           console.log("Disconnected from WebSocket server");
-          setIsSocketConnected(false);
+          isSocketConnectedRef.current = true;
         });
 
         socketRef.current = newSocket;
       } else {
+        isSocketConnectedRef.current = false;
         console.log("Updating subscription to new symbol:", symbol);
         // Unsubscribe from previous symbol and subscribe to new symbol
         if (clientCurrentSymbol.current) {
@@ -210,6 +211,7 @@ const Futures: FC = () => {
         }
         socketRef.current.emit("subscribe", { publicKey, symbol });
         clientCurrentSymbol.current = symbol; // Update the current symbol reference
+        isSocketConnectedRef.current = true;
       }
 
       // Cleanup on component unmount or conditions no longer met
@@ -222,13 +224,13 @@ const Futures: FC = () => {
               symbol: clientCurrentSymbol.current,
             });
           }
-          setIsSocketConnected(false);
+          isSocketConnectedRef.current = false;
           // socketRef.current.close();
           // socketRef.current = null;
         }
       };
     }
-  }, [publicKey, symbolSub, isActive, socketRef, isSocketConnected]);
+  }, [publicKey, symbolSub, isActive]);
 
   useEffect(() => {
     const checkConnectionInterval = setInterval(() => {
@@ -563,7 +565,7 @@ const Futures: FC = () => {
               isActive={isActive}
               setIsActive={setIsActive}
               setSymbolSub={setSymbolSub}
-              isSocketConnected={isSocketConnected}
+              isSocketConnectedRef={isSocketConnectedRef}
             />{" "}
           </div>
         </div>
@@ -649,7 +651,7 @@ const Futures: FC = () => {
                             isActive={isActive}
                             setIsActive={setIsActive}
                             setSymbolSub={setSymbolSub}
-                            isSocketConnected={isSocketConnected}
+                            isSocketConnectedRef={isSocketConnectedRef}
                           />
                         </div>
                       </div>
@@ -679,7 +681,7 @@ const Futures: FC = () => {
                             isActive={isActive}
                             setIsActive={setIsActive}
                             setSymbolSub={setSymbolSub}
-                            isSocketConnected={isSocketConnected}
+                            isSocketConnectedRef={isSocketConnectedRef}
                           />
                         </div>
                       )}
@@ -714,7 +716,7 @@ const Futures: FC = () => {
                   isActive={isActive}
                   setIsActive={setIsActive}
                   setSymbolSub={setSymbolSub}
-                  isSocketConnected={isSocketConnected}
+                  isSocketConnectedRef={isSocketConnectedRef}
                 />
               </div>
               {/* <div className="flex flex-row md:py-2 md:gap-2">

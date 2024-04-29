@@ -154,7 +154,7 @@ interface MyPositionsProps {
   isActive: boolean;
   setIsActive: (isActive: boolean) => void;
   setSymbolSub: React.Dispatch<React.SetStateAction<string>>;
-  isSocketConnected: boolean; // Add isSocketConnected
+  isSocketConnectedRef: React.RefObject<boolean>;
 }
 
 const LAMPORTS_PER_SOL = 1_000_000_000;
@@ -172,7 +172,7 @@ const MyPositions: FC<MyPositionsProps> = ({
   isActive,
   setIsActive,
   setSymbolSub,
-  isSocketConnected,
+  isSocketConnectedRef,
 }) => {
   async function usdcSplTokenAccountSync(walletAddress) {
     let mintAddress = USDCMINT;
@@ -1071,7 +1071,7 @@ const MyPositions: FC<MyPositionsProps> = ({
   const resolveFutCont = async (position: Position) => {
     setIsTransactionPending(true);
 
-    while (!isSocketConnected) {
+    while (!isSocketConnectedRef) {
       await new Promise((resolve) => setTimeout(resolve, 50)); // Wait for 100 milliseconds before checking again
     }
 
