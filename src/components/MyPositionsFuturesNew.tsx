@@ -1100,6 +1100,11 @@ const MyPositions: FC<MyPositionsProps> = ({
       // Wait for confirmation
       await connection.confirmTransaction(signature, "confirmed");
       setIsTransactionPending(false);
+      handleNewNotification({
+        id: generateUniqueId(),
+        type: "success",
+        message: `Closing Order Created`,
+      });
       // Optionally, show a success notification
     } catch (error: any) {
       console.error("Transaction failed:", error);

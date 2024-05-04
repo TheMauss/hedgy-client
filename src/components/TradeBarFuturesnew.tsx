@@ -2108,6 +2108,11 @@ const TradeBar: React.FC<
         });
         // Wait for transaction confirmation before showing the 'success' notification
         await connection.confirmTransaction(signature, "confirmed");
+        notify({
+          type: "success",
+          message: `Market Order Created`,
+          txid: signature,
+        });
         setIsTransactionPending(false);
       }
     } catch (error: any) {
