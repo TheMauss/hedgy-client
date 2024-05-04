@@ -32,11 +32,6 @@ import { LiquidityPoolAccount } from "../out/accounts/LiquidityPoolAccount";
 import { LongShortRatio } from "../out/accounts/LongShortRatio"; // Update with the correct path
 import { UserAccount } from "../out/accounts/UserAccount"; // Update with the correct path
 import {
-  CreateFutContAccounts,
-  CreateFutContArgs,
-  createFutCont,
-} from "../out/instructions/createFutCont";
-import {
   CreateLimitOrderAccounts,
   CreateLimitOrderArgs,
   createLimitOrder,
@@ -49,7 +44,6 @@ import {
 import { PROGRAM_ID } from "../out/programId";
 import useUserSOLBalanceStore from "../stores/useUserSOLBalanceStore";
 import { notify } from "../utils/notifications";
-import useUserActivity from "../hooks/useUserActivity";
 
 const HOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_HOUSE_WALLET);
 const SIGNERWALLET = new PublicKey(process.env.NEXT_PUBLIC_SIGNER_WALLET);
@@ -127,10 +121,6 @@ interface TradeBarFuturesProps {
   toggleState: string; // The current state
   setTotalDeposits: (totalDeposits: number) => void; // assuming it's a function that accepts a number
   setUsdcTotalDeposits: (usdcTotalDeposits: number) => void;
-  isActive: boolean;
-  setIsActive: (isActive: boolean) => void;
-  setSymbolSub: React.Dispatch<React.SetStateAction<string>>;
-  isSocketConnectedRef: React.RefObject<boolean>;
 }
 
 function delay(ms) {
@@ -403,9 +393,9 @@ const TradeBar: React.FC<
   toggleState,
   setTotalDeposits,
   setUsdcTotalDeposits,
-  setIsActive,
-  setSymbolSub,
-  isSocketConnectedRef,
+  // setIsActive,
+  // setSymbolSub,
+  // isSocketConnectedRef,
 }) => {
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
@@ -1621,7 +1611,6 @@ const TradeBar: React.FC<
       const usdcAcc = await usdcSplTokenAccountSync(publicKey);
 
       const usdc = selectedCurrency === "USDC" ? 1 : 0;
-      const backOracle = isBackupOracle === true ? 0 : 1;
 
       if (!isInit.isInitialized) {
         try {
@@ -1678,8 +1667,9 @@ const TradeBar: React.FC<
           slPrice: new BN(stopLoss),
           tpPrice: new BN(takeProfit),
           initialPrice: new BN(parseFloat(limitAmount) * 100000000),
-          backOracle: backOracle,
+          slippage: new BN(slippageTolerance),
           usdc: usdc,
+          market: 1,
         };
         console.log(
           "Creating Order",
@@ -1699,8 +1689,6 @@ const TradeBar: React.FC<
           takeProfit / 100000000
         );
 
-        const seedsRatio = [Buffer.from(HOUSEWALLET.toBytes())];
-
         const accounts: CreateLimitOrderAccounts = {
           futCont: pda,
           playerAcc: publicKey,
@@ -1709,7 +1697,6 @@ const TradeBar: React.FC<
           houseAcc: HOUSEWALLET,
           lpAcc: LPACC,
           signerServer: SIGNERWALLET,
-          oracleAccount: new PublicKey(oracleAddy),
           pdaHouseAcc: PDAHOUSEWALLET,
           systemProgram: SystemProgram.programId,
           usdcMint: USDCMINT,
@@ -1749,8 +1736,10 @@ const TradeBar: React.FC<
           message: `Limit Order Created`,
           txid: signature,
         });
+        setIsTransactionPending(false);
       }
     } catch (error: any) {
+      setIsTransactionPending(false);
       // In case of an error, show only the 'error' notification
       notify({
         type: "error",
@@ -1785,7 +1774,6 @@ const TradeBar: React.FC<
     availableLiquidity,
     selectedCurrency,
     limitAmount,
-    isSocketConnectedRef,
   ]);
 
   const onClick = useCallback(async () => {
@@ -2039,19 +2027,19 @@ const TradeBar: React.FC<
         }
       } else {
         setIsTransactionPending(true);
-        const args: CreateFutContArgs = {
+
+        const args: CreateLimitOrderArgs = {
           number: new BN(timeNumber),
-          affiliateCode: Array.from(isInit.usedAffiliate),
           betAmount: new BN(betAmount),
           leverage: new BN(leverage),
           priceDirection: priceDirection,
           symbol: symbolCode,
           slPrice: new BN(stopLoss),
           tpPrice: new BN(takeProfit),
-          slippagePrice: new BN(initialPrice * 100000000),
+          initialPrice: new BN(initialPrice * 100000000),
           slippage: new BN(slippageTolerance),
-          backOracle: backOracle,
           usdc: usdc,
+          market: 0,
         };
         console.log(
           "Opening Futures Position",
@@ -2068,23 +2056,20 @@ const TradeBar: React.FC<
           "SL",
           stopLoss / 100000000,
           "TP",
-          takeProfit / 100000000
+          takeProfit / 100000000,
+          "Slippage Tolerance",
+          slippageTolerance
         );
 
-        const accounts: CreateFutContAccounts = {
+        const accounts: CreateLimitOrderAccounts = {
           futCont: pda,
           playerAcc: publicKey,
           userAcc: userAcc,
           ratioAcc: RATIOACC,
           houseAcc: HOUSEWALLET,
-          oracleAccount: new PublicKey(oracleAddy),
-          solOracleAccount: new PublicKey(
-            "3fpFnRbRX5r6vQKGbmKGqEiC6u7BK8o2FMJcziy2MqBW"
-          ),
-          pdaHouseAcc: PDAHOUSEWALLET,
-          affilAcc: AffilAcc,
           lpAcc: LPACC,
-          signerWalletAccount: SIGNERWALLET,
+          signerServer: SIGNERWALLET,
+          pdaHouseAcc: PDAHOUSEWALLET,
           systemProgram: SystemProgram.programId,
           usdcMint: USDCMINT,
           usdcPlayerAcc: usdcAcc,
@@ -2112,10 +2097,8 @@ const TradeBar: React.FC<
         const transaction = new Transaction({
           feePayer: feePayer, // Explicitly setting the fee payer
         })
-          .add(createFutCont(args, accounts))
+          .add(createLimitOrder(args, accounts))
           .add(PRIORITY_FEE_IX);
-
-        await simulateTransactionWithRetries(transaction, connection);
 
         signature = await sendTransaction(transaction, connection);
         notify({
@@ -2161,7 +2144,6 @@ const TradeBar: React.FC<
     availableLiquidity,
     selectedCurrency,
     isBackupOracle,
-    isSocketConnectedRef,
   ]);
 
   const onClick1 = useCallback(async () => {
@@ -2512,30 +2494,7 @@ const TradeBar: React.FC<
     // Add other mappings as necessary
   };
 
-  const getActiveSymbol = () => {
-    const activeKey = Object.keys(selectedCryptos).find(
-      (key) => selectedCryptos[key]
-    );
-    console.log("Active key:", activeKey); // Outputs the key that is active
-
-    const symbol = symbolMap[activeKey]; // Lookup the symbol in the map
-    console.log("Mapped symbol:", symbol); // Outputs the corresponding symbol or undefined
-
-    return symbol || "Crypto.SOL/USD"; // Fallback to "Crypto.SOL/USD" if symbol is undefined
-  };
-
-  const handleMouseEnter = () => {
-    setSymbolSub(getActiveSymbol());
-    setIsActive(true); // Set user as active when the mouse enters the button area
-  };
-
   const handleButtonClick3 = async () => {
-    setSymbolSub(getActiveSymbol());
-    setIsActive(true); // Set user as active on any button click
-    while (!isSocketConnectedRef.current) {
-      await new Promise((resolve) => setTimeout(resolve, 50)); // Wait for 100 milliseconds before checking again
-    }
-
     if (selectedOrder === "MARKET") {
       onClick();
     } else {

@@ -80,15 +80,10 @@ export type {
   WithdrawFromLiquidityPoolArgs,
   WithdrawFromLiquidityPoolAccounts,
 } from "./withdrawFromLiquidityPool";
-export { createFutCont } from "./createFutCont";
-export type { CreateFutContArgs, CreateFutContAccounts } from "./createFutCont";
 export { resolveFutCont } from "./resolveFutCont";
 export type { ResolveFutContAccounts } from "./resolveFutCont";
-export { resolveFutContuser } from "./resolveFutContuser";
-export type {
-  ResolveFutContuserArgs,
-  ResolveFutContuserAccounts,
-} from "./resolveFutContuser";
+export { closeFutCont } from "./closeFutCont";
+export type { CloseFutContAccounts } from "./closeFutCont";
 export { updateFutCont } from "./updateFutCont";
 export type { UpdateFutContArgs, UpdateFutContAccounts } from "./updateFutCont";
 export { updatefeesFutCont } from "./updatefeesFutCont";

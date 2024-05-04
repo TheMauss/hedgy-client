@@ -1,6 +1,7 @@
 import { BN } from "@project-serum/anchor";
 // import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 // import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+// import { WalletConnectWalletAdapter } from "@solana/wallet-adapter-wallets";
 // import {
 //   PythSolanaReceiver,
 //   InstructionWithEphemeralSigners,
@@ -14,6 +15,7 @@ import { BN } from "@project-serum/anchor";
 //   SystemProgram,
 //   Transaction,
 //   TransactionSignature,
+//   sendAndConfirmRawTransaction,
 // } from "@solana/web3.js";
 // import axios from "axios";
 // import dynamic from "next/dynamic";
@@ -24,7 +26,6 @@ import { BN } from "@project-serum/anchor";
 // import Modal from "react-modal";
 // import socketIOClient from "socket.io-client";
 // import { usePriorityFee } from "../contexts/PriorityFee";
-// import { useBackupOracle } from "../contexts/BackupOracle";
 
 // import { LiquidityPoolAccount } from "../out/accounts/LiquidityPoolAccount";
 // import { LongShortRatio } from "../out/accounts/LongShortRatio"; // Update with the correct path
@@ -35,11 +36,6 @@ import { BN } from "@project-serum/anchor";
 //   createFutCont,
 // } from "../out/instructions/createFutCont";
 // import {
-//   CreateLimitOrderAccounts,
-//   CreateLimitOrderArgs,
-//   createLimitOrder,
-// } from "../out/instructions/createLimitOrder";
-// import {
 //   InitializeUserAccAccounts,
 //   InitializeUserAccArgs,
 //   initializeUserAcc,
@@ -47,6 +43,7 @@ import { BN } from "@project-serum/anchor";
 // import { PROGRAM_ID } from "../out/programId";
 // import useUserSOLBalanceStore from "../stores/useUserSOLBalanceStore";
 // import { notify } from "../utils/notifications";
+// import useUserActivity from "../hooks/useUserActivity";
 
 // const HOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_HOUSE_WALLET);
 // const SIGNERWALLET = new PublicKey(process.env.NEXT_PUBLIC_SIGNER_WALLET);
@@ -63,7 +60,6 @@ import { BN } from "@project-serum/anchor";
 // const RATIOACC = new PublicKey(process.env.NEXT_PUBLIC_RATIO_ACC);
 // const LPACC = new PublicKey(process.env.NEXT_PUBLIC_LP_ACC);
 
-// const SOLCALCULATOR = process.env.NEXT_PUBLIC_SOL_CALCULATOR;
 // const SOLORACLE = process.env.NEXT_PUBLIC_SOL;
 // const BTCORACLE = process.env.NEXT_PUBLIC_BTC;
 // const PYTHORACLE = process.env.NEXT_PUBLIC_PYTH;
@@ -72,6 +68,37 @@ import { BN } from "@project-serum/anchor";
 // const ETHORACLE = process.env.NEXT_PUBLIC_ETH;
 // const TIAORACLE = process.env.NEXT_PUBLIC_TIA;
 // const SUIORACLE = process.env.NEXT_PUBLIC_SUI;
+
+// const priceIdToSymbolMap = {
+//   e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43:
+//     "Crypto.BTC/USD",
+//   ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d:
+//     "Crypto.SOL/USD",
+//   "0a0408d619e9380abad35060f9192039ed5042fa6f82301d0e48bb52be830996":
+//     "Crypto.JUP/USD",
+//   ff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace:
+//     "Crypto.ETH/USD",
+//   "09f7c1d7dfbb7df2b8fe3d3d87ee94a2259d212da4f30c1f0540d066dfa44723":
+//     "Crypto.TIA/USD",
+//   "23d7315113f5b1d3ba7a83604c44b94d79f4fd69af77f804fc7f920a6dc65744":
+//     "Crypto.SUI/USD",
+//   "0bbf28e9a841a1cc788f6a361b17ca072d0ea3098a1e5df1c3922d06719579ff":
+//     "Crypto.PYTH/USD",
+//   "72b021217ca3fe68922a19aaf990109cb9d84e9ad004b4d2025ad6f529314419":
+//     "Crypto.BONK/USD",
+//   // Add more mappings as necessary
+// };
+
+// const PRICE_IDS = [
+//   "e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43",
+//   "ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d",
+//   "0a0408d619e9380abad35060f9192039ed5042fa6f82301d0e48bb52be830996",
+//   "ff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace",
+//   "09f7c1d7dfbb7df2b8fe3d3d87ee94a2259d212da4f30c1f0540d066dfa44723",
+//   "23d7315113f5b1d3ba7a83604c44b94d79f4fd69af77f804fc7f920a6dc65744",
+//   "0bbf28e9a841a1cc788f6a361b17ca072d0ea3098a1e5df1c3922d06719579ff",
+//   "72b021217ca3fe68922a19aaf990109cb9d84e9ad004b4d2025ad6f529314419",
+// ];
 
 // interface TradeBarFuturesProps {
 //   setParentDivHeight: (height: string) => void;
@@ -94,6 +121,47 @@ import { BN } from "@project-serum/anchor";
 //   toggleState: string; // The current state
 //   setTotalDeposits: (totalDeposits: number) => void; // assuming it's a function that accepts a number
 //   setUsdcTotalDeposits: (usdcTotalDeposits: number) => void;
+//   isActive: boolean;
+//   setIsActive: (isActive: boolean) => void;
+//   setSymbolSub: React.Dispatch<React.SetStateAction<string>>;
+//   isSocketConnectedRef: React.RefObject<boolean>;
+// }
+
+// function delay(ms) {
+//   return new Promise((resolve) => setTimeout(resolve, ms));
+// }
+
+// async function simulateTransactionWithRetries(
+//   transaction,
+//   connection,
+//   maxRetries = 10,
+//   delayDuration = 150
+// ) {
+//   let lastError = null;
+//   for (let attempt = 1; attempt <= maxRetries; attempt++) {
+//     try {
+//       console.log(`Attempting simulation ${attempt}/${maxRetries}...`);
+//       const simulationResult =
+//         await connection.simulateTransaction(transaction);
+//       if (simulationResult.value.err) {
+//         lastError = simulationResult.value.err;
+//         // Optionally, handle adjustments based on the error here
+//         if (attempt < maxRetries) {
+//           await delay(delayDuration);
+//         }
+//       } else {
+//         console.log("Simulation successful");
+//         return { success: true }; // Simulation succeeded
+//       }
+//     } catch (error) {
+//       lastError = error;
+//       if (attempt < maxRetries) {
+//         console.log(`Waiting ${delayDuration}ms before retrying...`);
+//         await delay(delayDuration);
+//       }
+//     }
+//   }
+//   return { success: false, error: lastError }; // All attempts failed
 // }
 
 // async function checkLPdata(
@@ -278,6 +346,7 @@ import { BN } from "@project-serum/anchor";
 // }
 
 // const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT1;
+// const ENDPOINT1 = "https://hermes.pyth.network";
 // const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
 // const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT5;
 
@@ -328,6 +397,9 @@ import { BN } from "@project-serum/anchor";
 //   toggleState,
 //   setTotalDeposits,
 //   setUsdcTotalDeposits,
+//   setIsActive,
+//   setSymbolSub,
+//   isSocketConnectedRef,
 // }) => {
 //   const { connection } = useConnection();
 //   const { publicKey, sendTransaction } = useWallet();
@@ -389,6 +461,8 @@ import { BN } from "@project-serum/anchor";
 //   const [selectedOrder, setSelectedOrder] = useState<"MARKET" | "LIMIT">(
 //     "MARKET"
 //   );
+
+//   const [isTransactionPending, setIsTransactionPending] = useState(false);
 
 //   const handleButtonClick = (buttonIndex: number) => {
 //     setActiveButton(buttonIndex);
@@ -753,39 +827,42 @@ import { BN } from "@project-serum/anchor";
 //   }, [connection]);
 
 //   useEffect(() => {
-//     const socket = socketIOClient(ENDPOINT);
-
-//     socket.on("priceUpdate", (updatedPrices) => {
-//       const newPrices = { ...prices };
-//       const selectedCryptosSafe = selectedCryptos || {};
-
-//       const selectedCrypto = Object.keys(selectedCryptosSafe).find(
-//         (key) => selectedCryptosSafe[key]
-//       );
-
-//       updatedPrices.forEach((updatedPrice) => {
-//         newPrices[updatedPrice.symbol] = {
-//           price: updatedPrice.price,
-//           timestamp: updatedPrice.timestamp,
-//         };
-
-//         if (updatedPrice && selectedCrypto) {
-//           const selectedCryptoSymbol = `Crypto.${selectedCrypto.toUpperCase()}/USD`;
-
-//           if (updatedPrice.symbol === selectedCryptoSymbol) {
-//             setEMAPrice(updatedPrice.EMA);
-//           }
-//         }
-//       });
-
-//       setPrices(newPrices);
+//     const connection = new PriceServiceConnection(ENDPOINT1, {
+//       priceFeedRequestConfig: { binary: true },
 //     });
 
-//     // Disconnect the socket when the component unmounts
-//     return () => {
-//       socket.disconnect();
+//     // Function to handle incoming price updates
+//     const handlePriceUpdate = (priceFeed) => {
+//       const priceData = priceFeed.getPriceNoOlderThan(8);
+//       const symbol = priceIdToSymbolMap[priceFeed.id]; // Make sure this map is defined somewhere in your code
+
+//       if (symbol) {
+//         const updatedPrices = {
+//           ...prices,
+//           [symbol]: {
+//             price: parseFloat(priceData?.price),
+//             timestamp: priceData?.publishTime.toString(),
+//           },
+//         };
+//         setPrices((currentPrices) => ({
+//           ...currentPrices,
+//           [symbol]: {
+//             price: parseFloat(priceData?.price),
+//             timestamp: priceData?.publishTime.toString(),
+//           },
+//         }));
+//       } else {
+//         console.error(`Symbol not found for priceFeed ID: ${priceFeed.id}`);
+//       }
 //     };
-//   }, [selectedCryptos]);
+
+//     // Subscribe to price updates
+//     connection.subscribePriceFeedUpdates(PRICE_IDS, handlePriceUpdate);
+//     return () => {
+//       // Close the WebSocket connection when the component unmounts
+//       connection.closeWebSocket();
+//     };
+//   }, []);
 
 //   useEffect(() => {
 //     const selectedCryptosSafe = selectedCryptos || {};
@@ -1162,13 +1239,13 @@ import { BN } from "@project-serum/anchor";
 //               (priceInUsd * (1 + finalSpreadRatio)) / leverage +
 //               (priceInUsd *
 //                 (1 + finalSpreadRatio) *
-//                 (18 + finalSpreadRatio * 100)) /
+//                 (13 + finalSpreadRatio * 100)) /
 //                 10000
 //             : priceInUsd * (1 - finalSpreadRatio) +
 //               (priceInUsd * (1 - finalSpreadRatio)) / leverage -
 //               (priceInUsd *
 //                 (1 - finalSpreadRatio) *
-//                 (18 + finalSpreadRatio * 100)) /
+//                 (13 + finalSpreadRatio * 100)) /
 //                 10000;
 
 //         const liquidationPrice = priceDisplay.toFixed(decimalPlaces);
@@ -1333,374 +1410,6 @@ import { BN } from "@project-serum/anchor";
 //     // Update the isPriorityFee state when the toggle button is clicked
 //     setBackupOracle(!isBackupOracle);
 //   };
-
-//   const FutOrder = useCallback(async () => {
-//     const countmaxBet =
-//       selectedCurrency === "USDC"
-//         ? ((((LPdata?.usdcTotalDeposits +
-//             LPdata?.usdcPnl +
-//             LPdata?.projectsDepositedUsdc) /
-//             200) *
-//             3) /
-//             5 /
-//             LAMPORTS_PER_SOL) *
-//           1000
-//         : (((LPdata?.totalDeposits +
-//             LPdata?.pnl +
-//             LPdata?.projectsDepositedSol) /
-//             200) *
-//             3) /
-//           5 /
-//           LAMPORTS_PER_SOL; // 0,3% maximálni pozice
-
-//     const maxBet = Math.min(100000, countmaxBet);
-//     const realbalance = selectedCurrency === "USDC" ? usdcbalance : balance; // 0,3% maximálni pozice
-//     const token = selectedCurrency === "USDC" ? "$" : "◎"; // 0,3% maximálni pozice
-//     const currentTotalBetAmount =
-//       selectedCurrency === "USDC" ? usdcTotalBetAmount * 1000 : totalBetAmount;
-
-//     if (warning) {
-//       console.error("Cannot open position due to warning:", warning);
-//       // Optionally, show a warning notification
-//       notify({
-//         type: "info",
-//         message: `Position Reverted`,
-//         description: warning,
-//       });
-//       return; // Exit function early
-//     }
-
-//     if (parseFloat(amountValue) > maxBet) {
-//       notify({
-//         type: "error",
-//         message: `Position Reverted`,
-//         description: `Maximum Collateral is ${maxBet.toFixed(2)} ${token}`,
-//       });
-//       return;
-//     }
-
-//     if (
-//       currentTotalBetAmount + parseFloat(amountValue) * LAMPORTS_PER_SOL >
-//       2 * maxBet * LAMPORTS_PER_SOL
-//     ) {
-//       notify({
-//         type: "error",
-//         message: `Position Reverted`,
-//         description: `Collateral limit per user is ${(2 * maxBet).toFixed(2)}`,
-//       });
-//       return;
-//     }
-
-//     const cryptoSettings = {
-//       SOL: {
-//         symbolCode: 0,
-//         oracleAddy: SOLORACLE,
-//       },
-//       BTC: {
-//         symbolCode: 1,
-//         oracleAddy: BTCORACLE,
-//       },
-//       PYTH: {
-//         symbolCode: 2,
-//         oracleAddy: PYTHORACLE,
-//       },
-//       BONK: {
-//         symbolCode: 3,
-//         oracleAddy: BONKORACLE,
-//       },
-//       JUP: {
-//         symbolCode: 4,
-//         oracleAddy: JUPORACLE,
-//       },
-//       ETH: {
-//         symbolCode: 5,
-//         oracleAddy: ETHORACLE,
-//       },
-//       TIA: {
-//         symbolCode: 6,
-//         oracleAddy: TIAORACLE,
-//       },
-//       SUI: {
-//         symbolCode: 7,
-//         oracleAddy: SUIORACLE,
-//       },
-//       // Add more cryptocurrencies here in the same pattern
-//     };
-
-//     let symbolCode;
-//     let oracleAddy;
-//     const selectedCrypto = Object.keys(selectedCryptos).find(
-//       (key) => selectedCryptos[key]
-//     );
-
-//     if (selectedCrypto && cryptoSettings[selectedCrypto]) {
-//       symbolCode = cryptoSettings[selectedCrypto].symbolCode;
-//       oracleAddy = cryptoSettings[selectedCrypto].oracleAddy;
-//     } else {
-//       throw new Error("Invalid or unsupported symbol");
-//     }
-
-//     if (!publicKey) {
-//       notify({
-//         type: "info",
-//         message: `Wallet not connected`,
-//         description: "Connect the wallet in the top panel",
-//       });
-//       return;
-//     }
-
-//     if (!amountValue || parseFloat(amountValue) === 0) {
-//       notify({
-//         type: "info",
-//         message: "Amount feels empty",
-//         description: "Fill the Trade Amount",
-//       });
-//       return;
-//     }
-
-//     if (parseFloat(amountValue) > realbalance) {
-//       notify({
-//         type: "info",
-//         message: "Insufficient balance",
-//         description: "Trade Amount is greater than the available balance",
-//       });
-//       return;
-//     }
-
-//     if ((parseFloat(amountValue) - fee) * leverage > availableLiquidity) {
-//       notify({
-//         type: "error",
-//         message: "Insufficient balance",
-//         description: "Not enough available liquidity in the Vault",
-//       });
-//       return;
-//     }
-
-//     const minAmount = selectedCurrency === "SOL" ? 0.05 : 5;
-
-//     if (
-//       parseFloat(amountValue) > maxBet ||
-//       parseFloat(amountValue) < minAmount
-//     ) {
-//       notify({
-//         type: "info",
-//         message: "Invalid trade amount",
-//         description: `Trade Amount should be between ${minAmount.toFixed(2)}${token} and ${maxBet.toFixed(2)}${token}`,
-//       });
-//       return;
-//     }
-
-//     let signature: TransactionSignature = "";
-//     try {
-//       // Get the current time and add 1 to the time number
-//       const now = Date.now();
-//       const timeNumber = (Math.floor(now / 1000) % 1000000) + 1;
-
-//       const betAmount =
-//         selectedCurrency === "USDC"
-//           ? (parseFloat(amountValue) * LAMPORTS_PER_SOL) / 1000
-//           : parseFloat(amountValue) * LAMPORTS_PER_SOL;
-
-//       const stopLoss = isNaN(parseFloat(LossValue))
-//         ? 0
-//         : parseFloat(LossValue) * 100000000;
-//       const takeProfit = isNaN(parseFloat(ProfitValue))
-//         ? 0
-//         : parseFloat(ProfitValue) * 100000000;
-
-//       const priceDirection =
-//         toggleState === "LONG" ? 0 : toggleState === "SHORT" ? 1 : -1;
-//       if (priceDirection === -1) {
-//         throw new Error("Invalid toggle state");
-//       }
-
-//       const seeds = [
-//         Buffer.from(publicKey.toBytes()),
-//         new BN(timeNumber).toArray("le", 8),
-//       ];
-
-//       const [pda] = await PublicKey.findProgramAddress(seeds, PROGRAM_ID);
-
-//       const seedsUser = [Buffer.from(publicKey.toBytes())];
-
-//       const [userAcc] = await PublicKey.findProgramAddress(
-//         seedsUser,
-//         PROGRAM_ID
-//       );
-
-//       const seedsAffil = [isInit.usedAffiliate];
-
-//       const [AffilAcc] = await PublicKey.findProgramAddress(
-//         seedsAffil,
-//         PROGRAM_ID
-//       );
-
-//       const usdcAcc = await usdcSplTokenAccountSync(publicKey);
-
-//       const usdc = selectedCurrency === "USDC" ? 1 : 0;
-//       const backOracle = isBackupOracle === true ? 0 : 1;
-
-//       if (!isInit.isInitialized) {
-//         try {
-//           const accounts: InitializeUserAccAccounts = {
-//             userAcc: userAcc,
-//             playerAcc: publicKey,
-//             affilAcc: AffilAcc,
-//             systemProgram: SystemProgram.programId,
-//             clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
-//             usdcMint: USDCMINT,
-//             usdcPlayerAcc: usdcAcc,
-//             associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
-//             tokenProgram: TOKENPROGRAM,
-//           };
-
-//           const args: InitializeUserAccArgs = {
-//             usedAffiliate: Array.from(isInit.usedAffiliate),
-//           };
-
-//           // Create a new transaction to initialize the user account and send it
-//           const initTransaction = new Transaction().add(
-//             initializeUserAcc(args, accounts)
-//           );
-//           const initSignature = await sendTransaction(
-//             initTransaction,
-//             connection
-//           );
-
-//           // Wait for transaction confirmation
-//           notify({ type: "info", message: `Creating Trading Account` });
-//           await connection.confirmTransaction(initSignature, "confirmed");
-//           fetchcheckuserdata();
-//           setModalIsOpen(false);
-//           notify({
-//             type: "success",
-//             message: `Trading account created`,
-//           });
-//         } catch (error) {
-//           notify({
-//             type: "error",
-//             message: `Creation Failed`,
-//             description: error?.message,
-//           });
-//         }
-//       } else {
-//         const args: CreateLimitOrderArgs = {
-//           number: new BN(timeNumber),
-//           betAmount: new BN(betAmount),
-//           leverage: new BN(leverage),
-//           priceDirection: priceDirection,
-//           symbol: symbolCode,
-//           slPrice: new BN(stopLoss),
-//           tpPrice: new BN(takeProfit),
-//           initialPrice: new BN(parseFloat(limitAmount) * 100000000),
-//           backOracle: backOracle,
-//           usdc: usdc,
-//         };
-//         console.log(
-//           "Creating Order",
-//           "Est. Initial Price",
-//           initialPrice,
-//           "Collateral",
-//           betAmount / LAMPORTS_PER_SOL,
-//           "Leverage",
-//           leverage,
-//           "Direction",
-//           priceDirection,
-//           "Symbol",
-//           symbolCode,
-//           "SL",
-//           stopLoss / 100000000,
-//           "TP",
-//           takeProfit / 100000000
-//         );
-
-//         const seedsRatio = [Buffer.from(HOUSEWALLET.toBytes())];
-
-//         const accounts: CreateLimitOrderAccounts = {
-//           futCont: pda,
-//           playerAcc: publicKey,
-//           userAcc: userAcc,
-//           ratioAcc: RATIOACC,
-//           houseAcc: HOUSEWALLET,
-//           lpAcc: LPACC,
-//           signerServer: SIGNERWALLET,
-//           oracleAccount: new PublicKey(oracleAddy),
-//           pdaHouseAcc: PDAHOUSEWALLET,
-//           systemProgram: SystemProgram.programId,
-//           usdcMint: USDCMINT,
-//           usdcPlayerAcc: usdcAcc,
-//           usdcPdaHouseAcc: USDCPDAHOUSEWALLET,
-//           tokenProgram: TOKENPROGRAM,
-//           associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
-//         };
-
-//         let PRIORITY_FEE_IX;
-
-//         if (isPriorityFee) {
-//           const priorityfees = await getPriorityFeeEstimate();
-//           PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
-//             microLamports: priorityfees,
-//           });
-//         } else {
-//           PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
-//             microLamports: 0,
-//           });
-//         }
-
-//         const transaction = new Transaction()
-//           .add(createLimitOrder(args, accounts))
-//           .add(PRIORITY_FEE_IX);
-
-//         signature = await sendTransaction(transaction, connection);
-//         notify({
-//           type: "info",
-//           message: `Creating Order`,
-//           txid: signature,
-//         });
-//         // Wait for transaction confirmation before showing the 'success' notification
-//         await connection.confirmTransaction(signature, "confirmed");
-//         notify({
-//           type: "success",
-//           message: `Limit Order Created`,
-//           txid: signature,
-//         });
-//       }
-//     } catch (error: any) {
-//       // In case of an error, show only the 'error' notification
-//       notify({
-//         type: "error",
-//         message: `Position Reverted`,
-//         description: error?.message,
-//         txid: signature,
-//       });
-//       return;
-//     }
-//   }, [
-//     isBackupOracle,
-//     fee,
-//     isPriorityFee,
-//     LPdata,
-//     selectedCryptos,
-//     slippageTolerance,
-//     isInit,
-//     initialPrice,
-//     balance,
-//     warning,
-//     totalBetAmount,
-//     usdcTotalBetAmount,
-//     publicKey,
-//     notify,
-//     connection,
-//     sendTransaction,
-//     ProfitValue,
-//     LossValue,
-//     leverage,
-//     amountValue,
-//     toggleState,
-//     availableLiquidity,
-//     selectedCurrency,
-//     limitAmount,
-//   ]);
 
 //   const onClick = useCallback(async () => {
 //     const countmaxBet =
@@ -1908,176 +1617,87 @@ import { BN } from "@project-serum/anchor";
 //       const usdc = selectedCurrency === "USDC" ? 1 : 0;
 //       const backOracle = isBackupOracle === true ? 0 : 1;
 
-//       if (!isInit.isInitialized) {
-//         try {
-//           const accounts: InitializeUserAccAccounts = {
-//             userAcc: userAcc,
-//             playerAcc: publicKey,
-//             affilAcc: AffilAcc,
-//             systemProgram: SystemProgram.programId,
-//             clock: new PublicKey("SysvarC1ock11111111111111111111111111111111"),
-//             usdcMint: USDCMINT,
-//             usdcPlayerAcc: usdcAcc,
-//             associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
-//             tokenProgram: TOKENPROGRAM,
-//           };
+//       setIsTransactionPending(true);
+//       const args: CreateFutContArgs = {
+//         number: new BN(timeNumber),
+//         affiliateCode: Array.from(isInit.usedAffiliate),
+//         betAmount: new BN(betAmount),
+//         leverage: new BN(leverage),
+//         priceDirection: priceDirection,
+//         symbol: symbolCode,
+//         slPrice: new BN(stopLoss),
+//         tpPrice: new BN(takeProfit),
+//         slippagePrice: new BN(initialPrice * 100000000),
+//         slippage: new BN(slippageTolerance),
+//         backOracle: backOracle,
+//         usdc: usdc,
+//       };
+//       console.log(
+//         "Opening Futures Position",
+//         "Est. Initial Price",
+//         initialPrice,
+//         "Collateral",
+//         betAmount / LAMPORTS_PER_SOL,
+//         "Leverage",
+//         leverage,
+//         "Direction",
+//         priceDirection,
+//         "Symbol",
+//         symbolCode,
+//         "SL",
+//         stopLoss / 100000000,
+//         "TP",
+//         takeProfit / 100000000
+//       );
 
-//           const args: InitializeUserAccArgs = {
-//             usedAffiliate: Array.from(isInit.usedAffiliate),
-//           };
+//       const accounts: CreateFutContAccounts = {
+//         futCont: pda,
+//         playerAcc: publicKey,
+//         userAcc: userAcc,
+//         ratioAcc: RATIOACC,
+//         houseAcc: HOUSEWALLET,
+//         houseAcc: HOUSEWALLET,
+//         oracleAccount: new PublicKey(oracleAddy),
+//         pdaHouseAcc: PDAHOUSEWALLET,
+//         affilAcc: AffilAcc,
+//         lpAcc: LPACC,
+//         signerWalletAccount: SIGNERWALLET,
+//         systemProgram: SystemProgram.programId,
+//       };
 
-//           // Create a new transaction to initialize the user account and send it
-//           const initTransaction = new Transaction().add(
-//             initializeUserAcc(args, accounts)
-//           );
-//           const initSignature = await sendTransaction(
-//             initTransaction,
-//             connection
-//           );
+//       let PRIORITY_FEE_IX;
 
-//           // Wait for transaction confirmation
-//           notify({ type: "info", message: `Creating Trading Account` });
-//           await connection.confirmTransaction(initSignature, "confirmed");
-//           fetchcheckuserdata();
-//           setModalIsOpen(false);
-//           notify({
-//             type: "success",
-//             message: `Trading account created`,
-//           });
-//         } catch (error) {
-//           notify({
-//             type: "error",
-//             message: `Creation Failed`,
-//             description: error?.message,
-//           });
-//         }
+//       if (isPriorityFee) {
+//         const priorityfees = await getPriorityFeeEstimate();
+//         PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+//           microLamports: priorityfees,
+//         });
 //       } else {
-//         let PRIORITY_FEE_IX;
-
-//         if (isPriorityFee) {
-//           const priorityfees = await getPriorityFeeEstimate();
-//           PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
-//             microLamports: priorityfees,
-//           });
-//         } else {
-//           PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
-//             microLamports: 0,
-//           });
-//         }
-
-//         const priceServiceConnection = new PriceServiceConnection(
-//           "https://hermes.pyth.network/",
-//           { priceFeedRequestConfig: { binary: true } }
-//         );
-
-//         // https://hermes.pyth.network/docs for more information.
-//         const priceUpdateData: string[] =
-//           await priceServiceConnection.getLatestVaas([oracleAddy]);
-
-//         const pythSolanaReceiver = new PythSolanaReceiver({
-//           connection,
-//           wallet,
+//         PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+//           microLamports: 0,
 //         });
-
-//         const transactionBuilder = pythSolanaReceiver.newTransactionBuilder({
-//           closeUpdateAccounts: false,
-//         });
-
-//         await transactionBuilder.addPostPriceUpdates(priceUpdateData);
-
-//         await transactionBuilder.addPriceConsumerInstructions(
-//           async (
-//             getPriceUpdateAccount: (priceFeedId: string) => PublicKey
-//           ): Promise<InstructionWithEphemeralSigners[]> => {
-//             let oracleAdd = getPriceUpdateAccount(oracleAddy);
-
-//             const args: CreateFutContArgs = {
-//               number: new BN(timeNumber),
-//               affiliateCode: Array.from(isInit.usedAffiliate),
-//               betAmount: new BN(betAmount),
-//               leverage: new BN(leverage),
-//               priceDirection: priceDirection,
-//               symbol: symbolCode,
-//               slPrice: new BN(stopLoss),
-//               tpPrice: new BN(takeProfit),
-//               slippagePrice: new BN(initialPrice * 100000000),
-//               slippage: new BN(slippageTolerance),
-//               backOracle: backOracle,
-//               usdc: usdc,
-//             };
-//             console.log(
-//               "Opening Futures Position",
-//               "Est. Initial Price",
-//               initialPrice,
-//               "Collateral",
-//               betAmount / LAMPORTS_PER_SOL,
-//               "Leverage",
-//               leverage,
-//               "Direction",
-//               priceDirection,
-//               "Symbol",
-//               symbolCode,
-//               "SL",
-//               stopLoss / 100000000,
-//               "TP",
-//               takeProfit / 100000000
-//             );
-
-//             const accounts: CreateFutContAccounts = {
-//               futCont: pda,
-//               playerAcc: publicKey,
-//               userAcc: userAcc,
-//               ratioAcc: RATIOACC,
-//               houseAcc: HOUSEWALLET,
-//               oracleAccount: new PublicKey(oracleAdd),
-//               solOracleAccount: new PublicKey(SOLCALCULATOR),
-//               pdaHouseAcc: PDAHOUSEWALLET,
-//               affilAcc: AffilAcc,
-//               lpAcc: LPACC,
-//               signerWalletAccount: SIGNERWALLET,
-//               systemProgram: SystemProgram.programId,
-//               usdcMint: USDCMINT,
-//               usdcPlayerAcc: usdcAcc,
-//               usdcPdaHouseAcc: USDCPDAHOUSEWALLET,
-//               tokenProgram: TOKENPROGRAM,
-//               associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
-//             };
-
-//             // Your application logic to create futures contracts, for example:
-//             const futContInstruction = createFutCont(args, accounts);
-//             const instructions = [futContInstruction];
-
-//             return instructions.map((instruction) => ({
-//               instruction: instruction,
-//               signers: [], // Add any ephemeral signers if your instruction requires them
-//             }));
-//           }
-//         );
-
-//         // Finalize and send the transactions
-//         const transactions =
-//           await transactionBuilder.buildVersionedTransactions({
-//             computeUnitPriceMicroLamports: 0, // Adjust as needed
-//           });
-
-//         const signatures = await pythSolanaReceiver.provider.sendAll(
-//           transactions,
-//           { skipPreflight: true }
-//         );
-
-//         // Iterate over each signature for confirmation
-//         for (const signature of signatures) {
-//           // Wait for transaction confirmation
-//           await connection.confirmTransaction(signature, "confirmed");
-
-//           // Notify about the successful transaction
-//           notify({
-//             type: "info",
-//             message: `Transaction confirmed`,
-//             txid: signature,
-//           });
-//         }
 //       }
+
+//       const feePayer = publicKey;
+
+//       // Prepare the transaction with futures contract creation and priority fee
+//       const transaction = new Transaction({
+//         feePayer: feePayer, // Explicitly setting the fee payer
+//       })
+//         .add(createFutCont(args, accounts))
+//         .add(PRIORITY_FEE_IX);
+
+//       await simulateTransactionWithRetries(transaction, connection);
+
+//       signature = await sendTransaction(transaction, connection);
+//       notify({
+//         type: "info",
+//         message: `Opening Position`,
+//         txid: signature,
+//       });
+//       // Wait for transaction confirmation before showing the 'success' notification
+//       await connection.confirmTransaction(signature, "confirmed");
+//       setIsTransactionPending(false);
 //     } catch (error: any) {
 //       // In case of an error, show only the 'error' notification
 //       notify({
@@ -2086,6 +1706,7 @@ import { BN } from "@project-serum/anchor";
 //         description: error?.message,
 //         txid: signature,
 //       });
+//       setIsTransactionPending(false);
 //       return;
 //     }
 //   }, [
@@ -2111,7 +1732,7 @@ import { BN } from "@project-serum/anchor";
 //     availableLiquidity,
 //     selectedCurrency,
 //     isBackupOracle,
-//     wallet,
+//     isSocketConnectedRef,
 //   ]);
 
 //   const onClick1 = useCallback(async () => {
@@ -2448,6 +2069,50 @@ import { BN } from "@project-serum/anchor";
 //         : availableLiquidity / LAMPORTS_PER_SOL
 //     );
 //   }, [data, toggleState, selectedCryptos, LPdata, selectedCurrency]);
+
+//   const symbolMap = {
+//     BTC: "Crypto.BTC/USD",
+//     SOL: "Crypto.SOL/USD",
+//     PYTH: "Crypto.PYTH/USD",
+//     BONK: "Crypto.BONK/USD",
+//     JUP: "Crypto.JUP/USD",
+//     ETH: "Crypto.ETH/USD",
+//     TIA: "Crypto.TIA/USD",
+//     SUI: "Crypto.SUI/USD",
+
+//     // Add other mappings as necessary
+//   };
+
+//   const getActiveSymbol = () => {
+//     const activeKey = Object.keys(selectedCryptos).find(
+//       (key) => selectedCryptos[key]
+//     );
+//     console.log("Active key:", activeKey); // Outputs the key that is active
+
+//     const symbol = symbolMap[activeKey]; // Lookup the symbol in the map
+//     console.log("Mapped symbol:", symbol); // Outputs the corresponding symbol or undefined
+
+//     return symbol || "Crypto.SOL/USD"; // Fallback to "Crypto.SOL/USD" if symbol is undefined
+//   };
+
+//   const handleMouseEnter = () => {
+//     setSymbolSub(getActiveSymbol());
+//     setIsActive(true); // Set user as active when the mouse enters the button area
+//   };
+
+//   const handleButtonClick3 = async () => {
+//     setSymbolSub(getActiveSymbol());
+//     setIsActive(true); // Set user as active on any button click
+//     while (!isSocketConnectedRef.current) {
+//       await new Promise((resolve) => setTimeout(resolve, 50)); // Wait for 100 milliseconds before checking again
+//     }
+
+//     if (selectedOrder === "MARKET") {
+//       onClick();
+//     } else {
+//       FutOrder();
+//     }
+//   };
 
 //   const ModalDetails1 = (
 //     <Modal
@@ -2807,7 +2472,7 @@ import { BN } from "@project-serum/anchor";
 //         </div>
 //         <div className="self-stretch flex flex-col items-start justify-start  gap-[16px]">
 //           <Slider
-//             min={1}
+//             min={2}
 //             max={getMaxLeverage(selectedCryptos)}
 //             step={1}
 //             value={leverage}
@@ -3146,16 +2811,29 @@ import { BN } from "@project-serum/anchor";
 
 //       {wallet.connected ? (
 //         <button
-//           onClick={selectedOrder === "MARKET" ? onClick : FutOrder}
-//           className={`w-full rounded-lg h-[50PX] flex flex-row items-center justify-center box-border  text-black transition ease-in-out duration-300 ${
+//           // onMouseEnter={handleMouseEnter}
+//           onClick={handleButtonClick3}
+//           disabled={isTransactionPending}
+//           className={`w-full rounded-lg h-[50px] flex flex-row items-center justify-center box-border text-black transition ease-in-out duration-300 ${
 //             toggleState === "LONG"
 //               ? "bg-primary hover:bg-new-green-dark"
 //               : "bg-short hover:bg-new-red-dark"
 //           }`}
 //         >
-//           <div className="text-black text-lg transition ease-in-out duration-300">
-//             {selectedOrder === "MARKET" ? "OPEN POSITION" : "CREATE ORDER"}{" "}
-//           </div>
+//           {isTransactionPending ? (
+//             <div className="flex items-center justify-center">
+//               <div
+//                 className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full"
+//                 role="status"
+//               >
+//                 <span className="visually-hidden">.</span>
+//               </div>
+//             </div>
+//           ) : (
+//             <div className="text-black text-lg transition ease-in-out duration-300">
+//               {selectedOrder === "MARKET" ? "OPEN POSITION" : "CREATE ORDER"}{" "}
+//             </div>
+//           )}
 //         </button>
 //       ) : (
 //         <div

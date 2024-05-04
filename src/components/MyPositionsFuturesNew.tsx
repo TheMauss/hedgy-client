@@ -20,10 +20,9 @@ import {
 import Modal from "react-modal";
 import { BN } from "@project-serum/anchor";
 import {
-  ResolveFutContuserAccounts,
-  resolveFutContuser,
-  ResolveFutContuserArgs,
-} from "../out/instructions/resolveFutContuser";
+  CloseFutContAccounts,
+  closeFutCont,
+} from "../out/instructions/closeFutCont";
 import {
   CloseLimitOrderAccounts,
   closeLimitOrder,
@@ -151,10 +150,6 @@ interface MyPositionsProps {
   handleNewNotification: (notification: Notification) => void;
   positions: Position[];
   setPositions: React.Dispatch<React.SetStateAction<Position[]>>;
-  isActive: boolean;
-  setIsActive: (isActive: boolean) => void;
-  setSymbolSub: React.Dispatch<React.SetStateAction<string>>;
-  isSocketConnectedRef: React.RefObject<boolean>;
 }
 
 const LAMPORTS_PER_SOL = 1_000_000_000;
@@ -169,10 +164,6 @@ const MyPositions: FC<MyPositionsProps> = ({
   handleNewNotification,
   positions,
   setPositions,
-  isActive,
-  setIsActive,
-  setSymbolSub,
-  isSocketConnectedRef,
 }) => {
   async function usdcSplTokenAccountSync(walletAddress) {
     let mintAddress = USDCMINT;
@@ -1071,63 +1062,9 @@ const MyPositions: FC<MyPositionsProps> = ({
   const resolveFutCont = async (position: Position) => {
     setIsTransactionPending(true);
 
-    while (!isSocketConnectedRef) {
-      await new Promise((resolve) => setTimeout(resolve, 50)); // Wait for 100 milliseconds before checking again
-    }
-
-    const seedsUser = [Buffer.from(publicKey.toBytes())];
-
-    const [userAcc] = await PublicKey.findProgramAddress(seedsUser, PROGRAM_ID);
-    const usdcAcc = await usdcSplTokenAccountSync(publicKey);
-
-    let backOracle;
-    if (isBackupOracle) {
-      backOracle = 0;
-    } else {
-      backOracle = 1;
-    }
-    let oracleAccountAddress;
-
-    if (position.symbol === 0) {
-      oracleAccountAddress = SOLORACLE;
-    } else if (position.symbol === 1) {
-      oracleAccountAddress = BTCORACLE;
-    } else if (position.symbol === 2) {
-      oracleAccountAddress = PYTHORACLE;
-    } else if (position.symbol === 3) {
-      oracleAccountAddress = BONKORACLE;
-    } else if (position.symbol === 4) {
-      oracleAccountAddress = JUPORACLE;
-    } else if (position.symbol === 5) {
-      oracleAccountAddress = ETHORACLE;
-    } else if (position.symbol === 6) {
-      oracleAccountAddress = TIAORACLE;
-    } else if (position.symbol === 7) {
-      oracleAccountAddress = SUIORACLE;
-    } else {
-      // Handle other cases or provide a default value if needed
-    }
-
-    const accounts: ResolveFutContuserAccounts = {
+    const accounts: CloseFutContAccounts = {
       futCont: new PublicKey(position.futuresContract),
-      userAcc: userAcc,
-      ratioAcc: RATIOACC,
       playerAcc: new PublicKey(walletAddress),
-      oracleAccount: new PublicKey(oracleAccountAddress),
-      pdaHouseAcc: PDAHOUSEWALLET,
-      lpAcc: LPACC,
-      signerWalletAccount: SIGNERWALLET,
-      systemProgram: SystemProgram.programId,
-      houseAcc: HOUSEWALLET,
-      usdcMint: USDCMINT,
-      usdcPlayerAcc: usdcAcc,
-      usdcPdaHouseAcc: USDCPDAHOUSEWALLET,
-      tokenProgram: TOKENPROGRAM,
-      associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
-    };
-
-    const args: ResolveFutContuserArgs = {
-      backOracle: backOracle,
     };
 
     let PRIORITY_FEE_IX;
@@ -1145,7 +1082,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
     // Create the transaction
     const transaction = new Transaction()
-      .add(resolveFutContuser(args, accounts))
+      .add(closeFutCont(accounts))
       .add(PRIORITY_FEE_IX);
 
     await simulateTransactionWithRetries(transaction, connection);
@@ -1451,13 +1388,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     return symbol || "Crypto.SOL/USD"; // Fallback to "Crypto.SOL/USD" if symbol is undefined
   };
 
-  const handleMouseEnter = (item) => () => {
-    setSymbolSub(getActiveSymbol(item));
-    setIsActive(true); // Set user as active when the mouse enters the button area
-  };
   const handleButtonClick3 = (item) => {
-    setSymbolSub(getActiveSymbol(item));
-    setIsActive(true); // Set user as active on any button click
     resolveFutCont(item);
   };
 

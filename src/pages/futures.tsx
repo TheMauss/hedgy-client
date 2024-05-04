@@ -54,42 +54,6 @@ interface Position {
   order: boolean;
 }
 
-const getInitialCryptosState = (crypto) => {
-  const initialState = {
-    BTC: false,
-    SOL: false,
-    PYTH: false,
-    BONK: false,
-    JUP: false,
-    ETH: false,
-    TIA: false,
-    SUI: false,
-  };
-
-  if (crypto && initialState.hasOwnProperty(crypto.toUpperCase())) {
-    return { ...initialState, [crypto.toUpperCase()]: true };
-  }
-
-  return initialState;
-};
-
-const useUniqueSymbols = (positions, defaultSymbol) => {
-  return useMemo(() => {
-    const newSymbols = new Set([defaultSymbol]);
-
-    positions.forEach((position) => {
-      const mappedSymbol = symbolMap[position.symbol];
-      if (mappedSymbol) {
-        newSymbols.add(mappedSymbol);
-      }
-    });
-
-    return Array.from(newSymbols);
-  }, [positions.map((pos) => pos.symbol).join(","), defaultSymbol]); // Only recompute if the list of position symbols changes
-};
-
-const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT153;
-
 const Futures: FC = () => {
   const [symbol, setSymbol] = useState("Crypto.SOL/USD"); // default value
   const [latestOpenedPosition, setLatestOpenedPosition] = useState<
@@ -157,95 +121,6 @@ const Futures: FC = () => {
   let debounceTimer;
   const debounceDelay = 75;
   let lastNotificationTime = 0;
-
-  const [socket, setSocket] = useState(null);
-  const isVisiblePrice = usePageVisibility();
-  const { isActive, setIsActive } = useUserActivity(15000);
-  const [symbolSub, setSymbolSub] = useState("Crypto.SOL/USD"); // default value
-  const socketRef = useRef(socket);
-  const symbols = useUniqueSymbols(positions, symbolSub);
-  const isSocketConnectedRef = useRef(false);
-
-  const clientCurrentSymbol = useRef(null);
-
-  useEffect(() => {
-    console.log("Setting up socket connection for symbol:", symbolSub);
-    const symbol = symbolSub;
-
-    // Ensure the socket is connected and active
-    if (publicKey && isActive) {
-      if (!socketRef.current) {
-        console.log("Establishing new socket connection...");
-        const newSocket = socketIOClient(ENDPOINT, {
-          reconnectionAttempts: 5,
-          reconnectionDelay: 3000,
-        });
-
-        newSocket.on("connect", () => {
-          console.log("Connected to WebSocket server");
-          newSocket.emit("subscribe", { publicKey, symbol });
-          clientCurrentSymbol.current = symbol; // Set the current symbol on successful connection
-          isSocketConnectedRef.current = true;
-        });
-
-        newSocket.on("connect_error", (error) => {
-          console.log("Connection Error:", error);
-          isSocketConnectedRef.current = false;
-        });
-
-        newSocket.on("disconnect", () => {
-          console.log("Disconnected from WebSocket server");
-          isSocketConnectedRef.current = true;
-        });
-
-        socketRef.current = newSocket;
-      } else {
-        isSocketConnectedRef.current = false;
-        console.log("Updating subscription to new symbol:", symbol);
-        // Unsubscribe from previous symbol and subscribe to new symbol
-        if (clientCurrentSymbol.current) {
-          socketRef.current.emit("unsubscribe", {
-            publicKey,
-            symbol: clientCurrentSymbol.current,
-          });
-        }
-        socketRef.current.emit("subscribe", { publicKey, symbol });
-        clientCurrentSymbol.current = symbol; // Update the current symbol reference
-        isSocketConnectedRef.current = true;
-      }
-
-      // Cleanup on component unmount or conditions no longer met
-      return () => {
-        if (socketRef.current) {
-          console.log("Cleaning up: Unsubscribing and disconnecting.");
-          if (clientCurrentSymbol.current) {
-            socketRef.current.emit("unsubscribe", {
-              publicKey,
-              symbol: clientCurrentSymbol.current,
-            });
-          }
-          isSocketConnectedRef.current = false;
-          // socketRef.current.close();
-          // socketRef.current = null;
-        }
-      };
-    }
-  }, [publicKey, symbolSub, isActive]);
-
-  useEffect(() => {
-    const checkConnectionInterval = setInterval(() => {
-      if (socketRef.current) {
-        const isConnected = socketRef.current.connected;
-        if (!isConnected) {
-          // Attempt to reconnect or handle a disconnected socket
-          socketRef.current.connect();
-        } else {
-        }
-      }
-    }, 15000); // Check every 10 seconds
-
-    return () => clearInterval(checkConnectionInterval);
-  }, []);
 
   // Example adjustment for immediate deduplication
   const handleNewNotification = (newNotification) => {
@@ -562,10 +437,6 @@ const Futures: FC = () => {
               selectedCryptos={selectedCryptos}
               selectedCurrency={selectedCurrency}
               setSelectedCurrency={setSelectedCurrency}
-              isActive={isActive}
-              setIsActive={setIsActive}
-              setSymbolSub={setSymbolSub}
-              isSocketConnectedRef={isSocketConnectedRef}
             />{" "}
           </div>
         </div>
@@ -648,10 +519,6 @@ const Futures: FC = () => {
                             handleNewNotification={handleNewNotification}
                             setPositions={setPositions}
                             positions={positions}
-                            isActive={isActive}
-                            setIsActive={setIsActive}
-                            setSymbolSub={setSymbolSub}
-                            isSocketConnectedRef={isSocketConnectedRef}
                           />
                         </div>
                       </div>
@@ -678,10 +545,6 @@ const Futures: FC = () => {
                             selectedCryptos={selectedCryptos}
                             selectedCurrency={selectedCurrency}
                             setSelectedCurrency={setSelectedCurrency}
-                            isActive={isActive}
-                            setIsActive={setIsActive}
-                            setSymbolSub={setSymbolSub}
-                            isSocketConnectedRef={isSocketConnectedRef}
                           />
                         </div>
                       )}
@@ -713,10 +576,6 @@ const Futures: FC = () => {
                   handleNewNotification={handleNewNotification}
                   setPositions={setPositions}
                   positions={positions}
-                  isActive={isActive}
-                  setIsActive={setIsActive}
-                  setSymbolSub={setSymbolSub}
-                  isSocketConnectedRef={isSocketConnectedRef}
                 />
               </div>
               {/* <div className="flex flex-row md:py-2 md:gap-2">

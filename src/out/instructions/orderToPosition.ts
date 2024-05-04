@@ -19,6 +19,7 @@ export interface OrderToPositionAccounts {
   lpAcc: PublicKey;
   systemProgram: PublicKey;
   pdaHouseAcc: PublicKey;
+  affilAcc: PublicKey;
   usdcMint: PublicKey;
   usdcPlayerAcc: PublicKey;
   usdcPdaHouseAcc: PublicKey;
@@ -42,6 +43,7 @@ export function orderToPosition(
     { pubkey: accounts.lpAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
     { pubkey: accounts.pdaHouseAcc, isSigner: false, isWritable: true },
+    { pubkey: accounts.affilAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.usdcMint, isSigner: false, isWritable: true },
     { pubkey: accounts.usdcPlayerAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.usdcPdaHouseAcc, isSigner: false, isWritable: true },

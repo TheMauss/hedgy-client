@@ -16,8 +16,9 @@ export interface CreateLimitOrderArgs {
   slPrice: BN;
   tpPrice: BN;
   initialPrice: BN;
-  backOracle: number;
+  slippage: BN;
   usdc: number;
+  market: number;
 }
 
 export interface CreateLimitOrderAccounts {
@@ -28,7 +29,6 @@ export interface CreateLimitOrderAccounts {
   houseAcc: PublicKey;
   lpAcc: PublicKey;
   signerServer: PublicKey;
-  oracleAccount: PublicKey;
   pdaHouseAcc: PublicKey;
   systemProgram: PublicKey;
   usdcMint: PublicKey;
@@ -47,8 +47,9 @@ export const layout = borsh.struct([
   borsh.i64("slPrice"),
   borsh.i64("tpPrice"),
   borsh.i64("initialPrice"),
-  borsh.u8("backOracle"),
+  borsh.i64("slippage"),
   borsh.u8("usdc"),
+  borsh.u8("market"),
 ]);
 
 export function createLimitOrder(
@@ -64,7 +65,6 @@ export function createLimitOrder(
     { pubkey: accounts.houseAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.lpAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.signerServer, isSigner: false, isWritable: false },
-    { pubkey: accounts.oracleAccount, isSigner: false, isWritable: false },
     { pubkey: accounts.pdaHouseAcc, isSigner: false, isWritable: true },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
     { pubkey: accounts.usdcMint, isSigner: false, isWritable: true },
@@ -89,8 +89,9 @@ export function createLimitOrder(
       slPrice: args.slPrice,
       tpPrice: args.tpPrice,
       initialPrice: args.initialPrice,
-      backOracle: args.backOracle,
+      slippage: args.slippage,
       usdc: args.usdc,
+      market: args.market,
     },
     buffer
   );

@@ -20,6 +20,9 @@ export interface FuturesContractFields {
   resolved: boolean;
   order: boolean;
   usdc: number;
+  close: boolean;
+  market: number;
+  slippage: BN;
 }
 
 export interface FuturesContractJSON {
@@ -39,6 +42,9 @@ export interface FuturesContractJSON {
   resolved: boolean;
   order: boolean;
   usdc: number;
+  close: boolean;
+  market: number;
+  slippage: string;
 }
 
 export class FuturesContract {
@@ -58,6 +64,9 @@ export class FuturesContract {
   readonly resolved: boolean;
   readonly order: boolean;
   readonly usdc: number;
+  readonly close: boolean;
+  readonly market: number;
+  readonly slippage: BN;
 
   static readonly discriminator = Buffer.from([
     110, 62, 231, 185, 75, 195, 129, 70,
@@ -80,6 +89,9 @@ export class FuturesContract {
     borsh.bool("resolved"),
     borsh.bool("order"),
     borsh.u8("usdc"),
+    borsh.bool("close"),
+    borsh.u8("market"),
+    borsh.i64("slippage"),
   ]);
 
   constructor(fields: FuturesContractFields) {
@@ -99,6 +111,9 @@ export class FuturesContract {
     this.resolved = fields.resolved;
     this.order = fields.order;
     this.usdc = fields.usdc;
+    this.close = fields.close;
+    this.market = fields.market;
+    this.slippage = fields.slippage;
   }
 
   static async fetch(
@@ -161,6 +176,9 @@ export class FuturesContract {
       resolved: dec.resolved,
       order: dec.order,
       usdc: dec.usdc,
+      close: dec.close,
+      market: dec.market,
+      slippage: dec.slippage,
     });
   }
 
@@ -182,6 +200,9 @@ export class FuturesContract {
       resolved: this.resolved,
       order: this.order,
       usdc: this.usdc,
+      close: this.close,
+      market: this.market,
+      slippage: this.slippage.toString(),
     };
   }
 
@@ -203,6 +224,9 @@ export class FuturesContract {
       resolved: obj.resolved,
       order: obj.order,
       usdc: obj.usdc,
+      close: obj.close,
+      market: obj.market,
+      slippage: new BN(obj.slippage),
     });
   }
 }
