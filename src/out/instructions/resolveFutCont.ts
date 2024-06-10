@@ -23,6 +23,7 @@ export interface ResolveFutContAccounts {
   usdcPdaHouseAcc: PublicKey;
   tokenProgram: PublicKey;
   associatedTokenProgram: PublicKey;
+  solOracleAccount: PublicKey;
 }
 
 export function resolveFutCont(
@@ -49,6 +50,7 @@ export function resolveFutCont(
       isSigner: false,
       isWritable: false,
     },
+    { pubkey: accounts.solOracleAccount, isSigner: false, isWritable: false },
   ];
   const identifier = Buffer.from([186, 213, 121, 51, 18, 95, 36, 207]);
   const data = identifier;

@@ -7,10 +7,6 @@ export type {
   CreateLimitOrderArgs,
   CreateLimitOrderAccounts,
 } from "./createLimitOrder";
-export { updatePrice } from "./updatePrice";
-export type { UpdatePriceArgs, UpdatePriceAccounts } from "./updatePrice";
-export { confirmPriceUpdate } from "./confirmPriceUpdate";
-export type { ConfirmPriceUpdateAccounts } from "./confirmPriceUpdate";
 export { initializeUserAcc } from "./initializeUserAcc";
 export type {
   InitializeUserAccArgs,

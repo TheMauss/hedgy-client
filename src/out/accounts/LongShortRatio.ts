@@ -11,16 +11,6 @@ export interface LongShortRatioFields {
   usdcTotalCollateral: BN;
   usdcLongCollateral: BN;
   usdcShortCollateral: BN;
-  timestamp: BN;
-  confirmedPrice: boolean;
-  solPrice: BN;
-  btcPrice: BN;
-  bonkPrice: BN;
-  pythPrice: BN;
-  jupPrice: BN;
-  ethPrice: BN;
-  suiPrice: BN;
-  tiaPrice: BN;
   solLong: BN;
   solShort: BN;
   btcLong: BN;
@@ -65,16 +55,6 @@ export interface LongShortRatioJSON {
   usdcTotalCollateral: string;
   usdcLongCollateral: string;
   usdcShortCollateral: string;
-  timestamp: string;
-  confirmedPrice: boolean;
-  solPrice: string;
-  btcPrice: string;
-  bonkPrice: string;
-  pythPrice: string;
-  jupPrice: string;
-  ethPrice: string;
-  suiPrice: string;
-  tiaPrice: string;
   solLong: string;
   solShort: string;
   btcLong: string;
@@ -119,16 +99,6 @@ export class LongShortRatio {
   readonly usdcTotalCollateral: BN;
   readonly usdcLongCollateral: BN;
   readonly usdcShortCollateral: BN;
-  readonly timestamp: BN;
-  readonly confirmedPrice: boolean;
-  readonly solPrice: BN;
-  readonly btcPrice: BN;
-  readonly bonkPrice: BN;
-  readonly pythPrice: BN;
-  readonly jupPrice: BN;
-  readonly ethPrice: BN;
-  readonly suiPrice: BN;
-  readonly tiaPrice: BN;
   readonly solLong: BN;
   readonly solShort: BN;
   readonly btcLong: BN;
@@ -176,16 +146,6 @@ export class LongShortRatio {
     borsh.u64("usdcTotalCollateral"),
     borsh.u64("usdcLongCollateral"),
     borsh.u64("usdcShortCollateral"),
-    borsh.i64("timestamp"),
-    borsh.bool("confirmedPrice"),
-    borsh.i64("solPrice"),
-    borsh.i64("btcPrice"),
-    borsh.i64("bonkPrice"),
-    borsh.i64("pythPrice"),
-    borsh.i64("jupPrice"),
-    borsh.i64("ethPrice"),
-    borsh.i64("suiPrice"),
-    borsh.i64("tiaPrice"),
     borsh.u64("solLong"),
     borsh.u64("solShort"),
     borsh.u64("btcLong"),
@@ -230,16 +190,6 @@ export class LongShortRatio {
     this.usdcTotalCollateral = fields.usdcTotalCollateral;
     this.usdcLongCollateral = fields.usdcLongCollateral;
     this.usdcShortCollateral = fields.usdcShortCollateral;
-    this.timestamp = fields.timestamp;
-    this.confirmedPrice = fields.confirmedPrice;
-    this.solPrice = fields.solPrice;
-    this.btcPrice = fields.btcPrice;
-    this.bonkPrice = fields.bonkPrice;
-    this.pythPrice = fields.pythPrice;
-    this.jupPrice = fields.jupPrice;
-    this.ethPrice = fields.ethPrice;
-    this.suiPrice = fields.suiPrice;
-    this.tiaPrice = fields.tiaPrice;
     this.solLong = fields.solLong;
     this.solShort = fields.solShort;
     this.btcLong = fields.btcLong;
@@ -327,16 +277,6 @@ export class LongShortRatio {
       usdcTotalCollateral: dec.usdcTotalCollateral,
       usdcLongCollateral: dec.usdcLongCollateral,
       usdcShortCollateral: dec.usdcShortCollateral,
-      timestamp: dec.timestamp,
-      confirmedPrice: dec.confirmedPrice,
-      solPrice: dec.solPrice,
-      btcPrice: dec.btcPrice,
-      bonkPrice: dec.bonkPrice,
-      pythPrice: dec.pythPrice,
-      jupPrice: dec.jupPrice,
-      ethPrice: dec.ethPrice,
-      suiPrice: dec.suiPrice,
-      tiaPrice: dec.tiaPrice,
       solLong: dec.solLong,
       solShort: dec.solShort,
       btcLong: dec.btcLong,
@@ -383,16 +323,6 @@ export class LongShortRatio {
       usdcTotalCollateral: this.usdcTotalCollateral.toString(),
       usdcLongCollateral: this.usdcLongCollateral.toString(),
       usdcShortCollateral: this.usdcShortCollateral.toString(),
-      timestamp: this.timestamp.toString(),
-      confirmedPrice: this.confirmedPrice,
-      solPrice: this.solPrice.toString(),
-      btcPrice: this.btcPrice.toString(),
-      bonkPrice: this.bonkPrice.toString(),
-      pythPrice: this.pythPrice.toString(),
-      jupPrice: this.jupPrice.toString(),
-      ethPrice: this.ethPrice.toString(),
-      suiPrice: this.suiPrice.toString(),
-      tiaPrice: this.tiaPrice.toString(),
       solLong: this.solLong.toString(),
       solShort: this.solShort.toString(),
       btcLong: this.btcLong.toString(),
@@ -439,16 +369,6 @@ export class LongShortRatio {
       usdcTotalCollateral: new BN(obj.usdcTotalCollateral),
       usdcLongCollateral: new BN(obj.usdcLongCollateral),
       usdcShortCollateral: new BN(obj.usdcShortCollateral),
-      timestamp: new BN(obj.timestamp),
-      confirmedPrice: obj.confirmedPrice,
-      solPrice: new BN(obj.solPrice),
-      btcPrice: new BN(obj.btcPrice),
-      bonkPrice: new BN(obj.bonkPrice),
-      pythPrice: new BN(obj.pythPrice),
-      jupPrice: new BN(obj.jupPrice),
-      ethPrice: new BN(obj.ethPrice),
-      suiPrice: new BN(obj.suiPrice),
-      tiaPrice: new BN(obj.tiaPrice),
       solLong: new BN(obj.solLong),
       solShort: new BN(obj.solShort),
       btcLong: new BN(obj.btcLong),
