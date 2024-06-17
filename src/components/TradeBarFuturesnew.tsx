@@ -3145,7 +3145,7 @@ const TradeBar: React.FC<
               <input
                 type="checkbox"
                 checked={isPriorityFee}
-                // onChange={handleToggle}
+                onChange={handleToggle}
                 className="hidden"
               />
               <div
