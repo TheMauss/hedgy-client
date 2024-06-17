@@ -42,7 +42,7 @@ import { useBackupOracle } from "contexts/BackupOracle";
 
 const ENDPOINT1 = process.env.NEXT_PUBLIC_ENDPOINT1;
 const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
-const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT5;
+const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT13;
 
 const HOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_HOUSE_WALLET);
 const SIGNERWALLET = new PublicKey(process.env.NEXT_PUBLIC_SIGNER_WALLET);
@@ -373,49 +373,50 @@ const MyPositions: FC<MyPositionsProps> = ({
     fetchcheckuserdata();
   }, [publicKey, connection]);
 
+  const socketRef = useRef(null);
   const socket2Ref = useRef(null);
 
   useEffect(() => {
-    let socket;
-    let isMounted = true;
-
     const fetchPositionsByPage = (page) => {
-      socket.emit("registerWallet", walletAddress, page, pageSize);
+      socketRef.current.emit("registerWallet", walletAddress, page, pageSize);
     };
 
     function setupSocket1() {
-      socket = socketIOClient(ENDPOINT2);
+      socketRef.current = socketIOClient(ENDPOINT2);
       fetchPositionsByPage(currentPage);
 
-      socket.on("unresolvedfuturesPositions", (positions: Position[]) => {
-        setLatestOpenedPosition((prevPositions) => {
-          const updatedPositions: Record<string, Position | null> = {
-            ...prevPositions,
-          };
+      socketRef.current.on(
+        "unresolvedfuturesPositions",
+        (positions: Position[]) => {
+          setLatestOpenedPosition((prevPositions) => {
+            const updatedPositions: Record<string, Position | null> = {
+              ...prevPositions,
+            };
 
-          positions.forEach((position) => {
-            updatedPositions[position.symbol.toString()] = position;
+            positions.forEach((position) => {
+              updatedPositions[position.symbol.toString()] = position;
+            });
+
+            return updatedPositions;
           });
 
-          return updatedPositions;
-        });
+          setPositions(positions);
+          setIsLoading(false);
+        }
+      );
 
-        setPositions(positions);
-        setIsLoading(false);
-      });
-
-      socket.on("futuresPositions", ({ positions, totalPages }) => {
+      socketRef.current.on("futuresPositions", ({ positions, totalPages }) => {
         setTotalPages(totalPages);
 
         setResolvedPositions(positions);
         setIsLoading(false);
       });
 
-      socket.on("futuresOrders", (positions: Position[]) => {
+      socketRef.current.on("futuresOrders", (positions: Position[]) => {
         setOrders(positions);
       });
 
-      socket.on("connect_error", (err) => {
+      socketRef.current.on("connect_error", (err) => {
         setError(err.message);
         setIsLoading(false);
       });
@@ -650,7 +651,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
     function handleVisibilityChange() {
       if (document.visibilityState === "visible") {
-        if (!socket || !socket.connected) {
+        if (!socketRef.current || !socketRef.current.connected) {
           setupSocket1();
         }
         if (!socket2Ref.current || !socket2Ref.current.connected) {
@@ -667,8 +668,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
     // Cleanup on component unmount
     return () => {
-      isMounted = false; // Not sure where you're using this, but I've left it as is
-      if (socket) socket.disconnect();
+      if (socketRef.current) socketRef.current.disconnect();
       if (socket2Ref.current) {
         socket2Ref.current.disconnect();
         socket2Ref.current.off("futuresPosition");
@@ -1032,7 +1032,7 @@ const MyPositions: FC<MyPositionsProps> = ({
         method: "getPriorityFeeEstimate",
         params: [
           {
-            accountKeys: ["AfjPnJz75bJiMKYeManVmPVQEGNcSaj9KeF6c5tncQEa"],
+            accountKeys: ["PopFiDLVBg7MRoyzerAop6p85uxdM73nSFj35Zjn5Mt"],
             options: {
               includeAllPriorityFeeLevels: true,
             },
@@ -1090,6 +1090,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     let signature: TransactionSignature = "";
     try {
       // Send the transaction
+      sendSymbol(position.symbol);
       signature = await sendTransaction(transaction, connection);
       handleNewNotification({
         id: generateUniqueId(),
@@ -1117,6 +1118,56 @@ const MyPositions: FC<MyPositionsProps> = ({
         description: error?.message,
         txid: signature,
       });
+    }
+  };
+
+  const sendSymbol = (symbol) => {
+    let symbolCode;
+
+    const cryptoSettings = {
+      SOL: {
+        symbolCode: 0,
+        oracleAddy: SOLORACLE,
+      },
+      BTC: {
+        symbolCode: 1,
+        oracleAddy: BTCORACLE,
+      },
+      PYTH: {
+        symbolCode: 2,
+        oracleAddy: PYTHORACLE,
+      },
+      BONK: {
+        symbolCode: 3,
+        oracleAddy: BONKORACLE,
+      },
+      JUP: {
+        symbolCode: 4,
+        oracleAddy: JUPORACLE,
+      },
+      ETH: {
+        symbolCode: 5,
+        oracleAddy: ETHORACLE,
+      },
+      TIA: {
+        symbolCode: 6,
+        oracleAddy: TIAORACLE,
+      },
+      SUI: {
+        symbolCode: 7,
+        oracleAddy: SUIORACLE,
+      },
+      // Add more cryptocurrencies here in the same pattern
+    };
+
+    console.log(symbolCode);
+
+    if (socketRef.current && publicKey?.toString() !== "") {
+      const messageObject = {
+        symbol: symbol,
+        active: true,
+      };
+      socketRef.current.emit("symbolUpdate", messageObject);
     }
   };
 

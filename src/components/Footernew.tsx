@@ -89,27 +89,11 @@ export const Footer: FC = () => {
                 <input
                   type="checkbox"
                   checked={isPriorityFee}
-                  // onChange={handleToggle}
+                  onChange={handleToggle}
                   className=""
                 />
                 <div
                   className={`slider-bigger ${isPriorityFee ? "active" : ""}`}
-                ></div>
-              </label>
-            </div>
-          </div>
-          <div className="md:flex flex-row hidden font-poppins pl-2 text-[#ffffff60] self-stretch  items-center justify-center gap-2">
-            <div className="relative leading-[14px]">Backup Oracle</div>
-            <div className="relative leading-[14px] font-medium text-white">
-              <label className="toggle-switch-bigger">
-                <input
-                  type="checkbox"
-                  checked={isBackupOracle}
-                  onChange={handleToggleOracle}
-                  className=""
-                />
-                <div
-                  className={`slider-bigger ${isBackupOracle ? "active" : ""}`}
                 ></div>
               </label>
             </div>

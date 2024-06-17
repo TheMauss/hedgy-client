@@ -34,6 +34,12 @@ import {
   ClaimPointsAccounts,
   ClaimPointsArgs,
   claimPoints,
+  depositPolIntoLp,
+  DepositPolIntoLpAccounts,
+  DepositPolIntoLpArgs,
+  withdrawPolFromLp,
+  WithdrawPolFromLpAccounts,
+  WithdrawPolFromLpArgs,
 } from "../out/instructions/"; // Update with the correct path
 import { PROGRAM_ID } from "../out/programId";
 import { notify } from "utils/notifications";
@@ -647,11 +653,11 @@ const Earn: FC = () => {
           PROGRAM_ID
         );
 
-        const args: StakeAndMintTokensArgs = {
+        const args: DepositPolIntoLpArgs = {
           depositAmount: new BN(deposit),
           usdc: usdc,
         };
-        const accounts: StakeAndMintTokensAccounts = {
+        const accounts: DepositPolIntoLpAccounts = {
           liqProvider: LProviderAcc,
           providersWallet: publicKey,
           lpAcc: lpAcc,
@@ -668,8 +674,29 @@ const Earn: FC = () => {
           systemProgram: SystemProgram.programId,
         };
 
+        // const args: StakeAndMintTokensArgs = {
+        //   depositAmount: new BN(deposit),
+        //   usdc: usdc,
+        // };
+        // const accounts: StakeAndMintTokensAccounts = {
+        //   liqProvider: LProviderAcc,
+        //   providersWallet: publicKey,
+        //   lpAcc: lpAcc,
+        //   signerWalletAccount: SIGNERWALLET,
+        //   houseAcc: HOUSEWALLET,
+        //   pdaHouseAcc: PDAHOUSEWALLET,
+        //   mint: mintAddress,
+        //   usdcMint: USDCMINT,
+        //   providersSplTokenAccount: splTokenAccount,
+        //   usdcProvidersWallet: usdcSplTokenAccount,
+        //   usdcPdaHouseAcc: USDCPDAHOUSEWALLET,
+        //   associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
+        //   tokenProgram: TOKENPROGRAM,
+        //   systemProgram: SystemProgram.programId,
+        // };
+
         const initTransaction = new Transaction().add(
-          stakeAndMintTokens(args, accounts)
+          depositPolIntoLp(args, accounts)
         );
         const initSignature = await sendTransaction(
           initTransaction,
@@ -1236,12 +1263,35 @@ const Earn: FC = () => {
       notify({ type: "info", message: `Vault is locked.` });
     } else {
       try {
-        const args: WithdrawFromLiquidityPoolArgs = {
+        // const args: WithdrawFromLiquidityPoolArgs = {
+        //   withdrawAmount: new BN(withdraw),
+        //   usdc: usdc,
+        // };
+
+        // const accounts: WithdrawFromLiquidityPoolAccounts = {
+        //   liqProvider: LProviderAcc,
+        //   providersWallet: publicKey,
+        //   lpAcc: lpAcc,
+        //   signerWalletAccount: SIGNERWALLET,
+        //   houseAcc: HOUSEWALLET,
+        //   pdaHouseAcc: PDAHOUSEWALLET,
+        //   mint: mintAddress,
+        //   usdcMint: USDCMINT,
+        //   providersSplTokenAccount: splTokenAccount,
+        //   usdcProvidersWallet: usdcSplTokenAccount,
+        //   usdcPdaHouseAcc: USDCPDAHOUSEWALLET,
+        //   tokenProgram: TOKENPROGRAM,
+        //   ratioAcc: ratioAcc,
+        //   associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
+        //   systemProgram: SystemProgram.programId,
+        // };
+
+        const args: WithdrawPolFromLpArgs = {
           withdrawAmount: new BN(withdraw),
           usdc: usdc,
         };
 
-        const accounts: WithdrawFromLiquidityPoolAccounts = {
+        const accounts: WithdrawPolFromLpAccounts = {
           liqProvider: LProviderAcc,
           providersWallet: publicKey,
           lpAcc: lpAcc,
@@ -1260,7 +1310,7 @@ const Earn: FC = () => {
         };
 
         const initTransaction = new Transaction().add(
-          withdrawFromLiquidityPool(args, accounts)
+          withdrawPolFromLp(args, accounts)
         );
         const initSignature = await sendTransaction(
           initTransaction,

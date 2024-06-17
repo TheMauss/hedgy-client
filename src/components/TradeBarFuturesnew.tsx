@@ -127,39 +127,6 @@ function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function simulateTransactionWithRetries(
-  transaction,
-  connection,
-  maxRetries = 10,
-  delayDuration = 150
-) {
-  let lastError = null;
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      console.log(`Attempting simulation ${attempt}/${maxRetries}...`);
-      const simulationResult =
-        await connection.simulateTransaction(transaction);
-      if (simulationResult.value.err) {
-        lastError = simulationResult.value.err;
-        // Optionally, handle adjustments based on the error here
-        if (attempt < maxRetries) {
-          await delay(delayDuration);
-        }
-      } else {
-        console.log("Simulation successful");
-        return { success: true }; // Simulation succeeded
-      }
-    } catch (error) {
-      lastError = error;
-      if (attempt < maxRetries) {
-        console.log(`Waiting ${delayDuration}ms before retrying...`);
-        await delay(delayDuration);
-      }
-    }
-  }
-  return { success: false, error: lastError }; // All attempts failed
-}
-
 async function checkLPdata(
   lpAcc: PublicKey,
   connection: Connection
@@ -344,7 +311,7 @@ function getDynamicLeverage(longShortRatio, priceDirection) {
 const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT1;
 const ENDPOINT1 = "https://hermes.pyth.network";
 const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
-const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT5;
+const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT13;
 
 type SymbolPosition =
   | "btcLong"
@@ -888,10 +855,12 @@ const TradeBar: React.FC<
     setInitialPrice(parseFloat(newInitialPrice.toFixed(decimalPlaces)));
   }, [selectedCryptos, prices]);
 
-  useEffect(() => {
-    const socket = socketIOClient(ENDPOINT2);
+  const socketRef = useRef(null);
 
-    socket.on("openingprice", (openingPrices) => {
+  useEffect(() => {
+    socketRef.current = socketIOClient(ENDPOINT2);
+
+    socketRef.current.on("openingprice", (openingPrices) => {
       const openingPricess = { ...openPrices };
       openingPrices.forEach((openingPrices) => {
         openingPricess[openingPrices.symbol] = openingPrices.price;
@@ -902,9 +871,69 @@ const TradeBar: React.FC<
 
     // Disconnect the socket when the component unmounts
     return () => {
-      socket.disconnect();
+      socketRef.current.disconnect();
     };
   }, []);
+
+  const sendSymbol = () => {
+    let symbolCode;
+
+    const cryptoSettings = {
+      SOL: {
+        symbolCode: 0,
+        oracleAddy: SOLORACLE,
+      },
+      BTC: {
+        symbolCode: 1,
+        oracleAddy: BTCORACLE,
+      },
+      PYTH: {
+        symbolCode: 2,
+        oracleAddy: PYTHORACLE,
+      },
+      BONK: {
+        symbolCode: 3,
+        oracleAddy: BONKORACLE,
+      },
+      JUP: {
+        symbolCode: 4,
+        oracleAddy: JUPORACLE,
+      },
+      ETH: {
+        symbolCode: 5,
+        oracleAddy: ETHORACLE,
+      },
+      TIA: {
+        symbolCode: 6,
+        oracleAddy: TIAORACLE,
+      },
+      SUI: {
+        symbolCode: 7,
+        oracleAddy: SUIORACLE,
+      },
+      // Add more cryptocurrencies here in the same pattern
+    };
+
+    const selectedCrypto = Object.keys(selectedCryptos).find(
+      (key) => selectedCryptos[key]
+    );
+
+    if (selectedCrypto && cryptoSettings[selectedCrypto]) {
+      symbolCode = cryptoSettings[selectedCrypto].symbolCode;
+    } else {
+      throw new Error("Invalid or unsupported symbol");
+    }
+
+    console.log(symbolCode);
+
+    if (socketRef.current && publicKey?.toString() !== "") {
+      const messageObject = {
+        symbol: symbolCode,
+        active: true,
+      };
+      socketRef.current.emit("symbolUpdate", messageObject);
+    }
+  };
 
   useEffect(() => {
     const selectedCrypto = Object.keys(selectedCryptos).find(
@@ -1370,7 +1399,7 @@ const TradeBar: React.FC<
         method: "getPriorityFeeEstimate",
         params: [
           {
-            accountKeys: ["72GXz5HcGmnuU1M87MGRkb3cJZVTxatCjL56y1gdPRob"],
+            accountKeys: ["PopFiDLVBg7MRoyzerAop6p85uxdM73nSFj35Zjn5Mt"],
             options: {
               includeAllPriorityFeeLevels: true,
             },
@@ -1413,16 +1442,16 @@ const TradeBar: React.FC<
         ? ((((LPdata?.usdcTotalDeposits +
             LPdata?.usdcPnl +
             LPdata?.projectsDepositedUsdc) /
-            200) *
-            3) /
+            100) *
+            5) /
             5 /
             LAMPORTS_PER_SOL) *
           1000
         : (((LPdata?.totalDeposits +
             LPdata?.pnl +
             LPdata?.projectsDepositedSol) /
-            200) *
-            3) /
+            100) *
+            5) /
           5 /
           LAMPORTS_PER_SOL; // 0,3% maximálni pozice
 
@@ -1782,16 +1811,16 @@ const TradeBar: React.FC<
         ? ((((LPdata?.usdcTotalDeposits +
             LPdata?.usdcPnl +
             LPdata?.projectsDepositedUsdc) /
-            200) *
-            3) /
+            100) *
+            5) /
             5 /
             LAMPORTS_PER_SOL) *
           1000
         : (((LPdata?.totalDeposits +
             LPdata?.pnl +
             LPdata?.projectsDepositedSol) /
-            200) *
-            3) /
+            100) *
+            5) /
           5 /
           LAMPORTS_PER_SOL; // 0,3% maximálni pozice
 
@@ -2100,7 +2129,9 @@ const TradeBar: React.FC<
           .add(createLimitOrder(args, accounts))
           .add(PRIORITY_FEE_IX);
 
+        sendSymbol();
         signature = await sendTransaction(transaction, connection);
+        setIsTransactionPending(false);
         notify({
           type: "info",
           message: `Opening Position`,
@@ -2113,7 +2144,6 @@ const TradeBar: React.FC<
           message: `Market Order Created`,
           txid: signature,
         });
-        setIsTransactionPending(false);
       }
     } catch (error: any) {
       // In case of an error, show only the 'error' notification
@@ -3120,22 +3150,6 @@ const TradeBar: React.FC<
               />
               <div
                 className={`slider-bigger ${isPriorityFee ? "active" : ""}`}
-              ></div>
-            </label>
-          </div>
-        </div>
-        <div className="md:hidden self-stretch h-4 flex flex-row items-start justify-between">
-          <div className="relative leading-[14px]">Backup Oracle</div>
-          <div className="relative leading-[14px] font-medium text-white">
-            <label className="toggle-switch-bigger">
-              <input
-                type="checkbox"
-                checked={isBackupOracle}
-                onChange={handleToggleOracle}
-                className="hidden"
-              />
-              <div
-                className={`slider-bigger ${isBackupOracle ? "active" : ""}`}
               ></div>
             </label>
           </div>

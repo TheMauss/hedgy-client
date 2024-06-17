@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
 
 const BackupOracleContext = createContext({
-  isBackupOracle: true,
+  isBackupOracle: false,
   setBackupOracle: undefined, // Remove the default implementation
 });
 
