@@ -222,10 +222,13 @@ export const PairPicker: React.FC<PairPickerProps> = ({
         : 0;
 
       // Calculate the percentage change
-      const percentage = (
-        ((initialPrice - openingPrice) / openingPrice) *
-        100
-      ).toFixed(2);
+      let percentage = "0";
+      if (initialPrice && openingPrice) {
+        percentage = (
+          ((initialPrice - openingPrice) / openingPrice) *
+          100
+        ).toFixed(2);
+      }
       const newColor = Number(percentage) < 0 ? "text-red-500" : "text-primary";
       const newDisplayPercentage = isNaN(Number(percentage))
         ? "-"

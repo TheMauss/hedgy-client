@@ -94,10 +94,13 @@ const InterestBar: React.FC<InterestBarProps> = ({
     setInitialPrice(initialPrice);
   }, [selectedCryptos, prices]);
 
-  const percentage = (
-    ((initialPrice - openingPrice) / openingPrice) *
-    100
-  ).toFixed(2);
+  let percentage = "0";
+  if (initialPrice && openingPrice) {
+    percentage = (((initialPrice - openingPrice) / openingPrice) * 100).toFixed(
+      2
+    );
+  }
+
   const color = Number(percentage) < 0 ? "text-short" : "text-primary";
   const displayedPercentage = isNaN(Number(percentage))
     ? "-"
