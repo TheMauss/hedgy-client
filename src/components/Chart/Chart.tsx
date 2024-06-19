@@ -209,12 +209,12 @@ const useChartComponent = (
           toolbar_bg: "#080808",
           enabled_features: ["hide_left_toolbar_by_default"],
           overrides: {
-            "mainSeriesProperties.candleStyle.upColor": "#43e3ae",
-            "mainSeriesProperties.candleStyle.downColor": "#FF3E3E",
-            "mainSeriesProperties.candleStyle.borderUpColor": "#34C796",
-            "mainSeriesProperties.candleStyle.borderDownColor": "#C44141",
-            "mainSeriesProperties.candleStyle.wickUpColor": "#34C796",
-            "mainSeriesProperties.candleStyle.wickDownColor": "#C44141",
+            "mainSeriesProperties.candleStyle.upColor": "#39ca9a",
+            "mainSeriesProperties.candleStyle.downColor": "#e04456",
+            "mainSeriesProperties.candleStyle.borderUpColor": "#39ca9a",
+            "mainSeriesProperties.candleStyle.borderDownColor": "#e04456",
+            "mainSeriesProperties.candleStyle.wickUpColor": "#39ca9a",
+            "mainSeriesProperties.candleStyle.wickDownColor": "#e04456",
 
             "paneProperties.background": "#080808",
             "paneProperties.backgroundType": "solid",
@@ -265,12 +265,12 @@ const useChartComponent = (
               .applyStudyTemplate(JSON.parse(graphPreferences));
           }
           widget.applyOverrides({
-            "mainSeriesProperties.candleStyle.upColor": "#43e3ae",
-            "mainSeriesProperties.candleStyle.downColor": "#FF3E3E",
-            "mainSeriesProperties.candleStyle.borderUpColor": "#34C796",
-            "mainSeriesProperties.candleStyle.borderDownColor": "#C44141",
-            "mainSeriesProperties.candleStyle.wickUpColor": "#34C796",
-            "mainSeriesProperties.candleStyle.wickDownColor": "#C44141",
+            "mainSeriesProperties.candleStyle.upColor": "#39ca9a",
+            "mainSeriesProperties.candleStyle.downColor": "#e04456",
+            "mainSeriesProperties.candleStyle.borderUpColor": "#39ca9a",
+            "mainSeriesProperties.candleStyle.borderDownColor": "#e04456",
+            "mainSeriesProperties.candleStyle.wickUpColor": "#39ca9a",
+            "mainSeriesProperties.candleStyle.wickDownColor": "#e04456",
 
             "paneProperties.background": "#080808",
             "paneProperties.backgroundType": "solid",
