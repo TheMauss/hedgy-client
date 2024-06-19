@@ -77,7 +77,7 @@ const Notification = ({
   };
 
   const notificationClasses = `max-w-sm ${
-    isMobile ? "w-3/4 " : "w-[320px] h-auto "
+    isMobile ? "w-full " : "w-[320px] h-auto "
   } bg-bkg-1 rounded-md mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 p-2 mx-2 mb-2 overflow-hidden font-poppins ${
     exit ? "notification-exit" : "notification-enter"
   }`;
