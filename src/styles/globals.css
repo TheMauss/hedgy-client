@@ -21,6 +21,32 @@ body {
   background-image: #000000;
 }
 
+@keyframes progressBar {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.notification-enter {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.notification-exit {
+  animation: fadeOut 0.3s ease-out;
+}
+
 .pseudo-modal {
   position: fixed; /* Or 'absolute' if 'fixed' doesn't fit your use case */
   left: 0;

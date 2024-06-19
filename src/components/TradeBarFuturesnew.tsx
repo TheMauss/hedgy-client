@@ -44,6 +44,7 @@ import {
 import { PROGRAM_ID } from "../out/programId";
 import useUserSOLBalanceStore from "../stores/useUserSOLBalanceStore";
 import { notify } from "../utils/notifications";
+import { v4 as uuidv4 } from "uuid";
 
 const HOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_HOUSE_WALLET);
 const SIGNERWALLET = new PublicKey(process.env.NEXT_PUBLIC_SIGNER_WALLET);
@@ -1437,6 +1438,7 @@ const TradeBar: React.FC<
   };
 
   const FutOrder = useCallback(async () => {
+    const transactionId = uuidv4();
     const countmaxBet =
       selectedCurrency === "USDC"
         ? ((((LPdata?.usdcTotalDeposits +
@@ -1757,6 +1759,7 @@ const TradeBar: React.FC<
           type: "info",
           message: `Creating Order`,
           txid: signature,
+          id: transactionId,
         });
         // Wait for transaction confirmation before showing the 'success' notification
         await connection.confirmTransaction(signature, "confirmed");
@@ -1764,6 +1767,7 @@ const TradeBar: React.FC<
           type: "success",
           message: `Limit Order Created`,
           txid: signature,
+          id: transactionId,
         });
         setIsTransactionPending(false);
       }
@@ -1775,6 +1779,7 @@ const TradeBar: React.FC<
         message: `Position Reverted`,
         description: error?.message,
         txid: signature,
+        id: transactionId,
       });
       return;
     }
@@ -1806,6 +1811,7 @@ const TradeBar: React.FC<
   ]);
 
   const onClick = useCallback(async () => {
+    const transactionId = uuidv4();
     const countmaxBet =
       selectedCurrency === "USDC"
         ? ((((LPdata?.usdcTotalDeposits +
@@ -2136,6 +2142,7 @@ const TradeBar: React.FC<
           type: "info",
           message: `Opening Position`,
           txid: signature,
+          id: transactionId,
         });
         // Wait for transaction confirmation before showing the 'success' notification
         await connection.confirmTransaction(signature, "confirmed");
@@ -2143,6 +2150,7 @@ const TradeBar: React.FC<
           type: "success",
           message: `Market Order Created`,
           txid: signature,
+          id: transactionId,
         });
       }
     } catch (error: any) {
@@ -2152,6 +2160,7 @@ const TradeBar: React.FC<
         message: `Position Reverted`,
         description: error?.message,
         txid: signature,
+        id: transactionId,
       });
       setIsTransactionPending(false);
       return;

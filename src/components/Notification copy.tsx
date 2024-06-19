@@ -27,11 +27,7 @@ const NotificationList = () => {
 
   return (
     <div
-      className={`z-20 fixed ${
-        isMobile
-          ? "bottom-20 inset-x-0 justify-center items-center "
-          : "bottom-2 left-4 "
-      } flex flex-col items-end px-4 py-6 pointer-events-none sm:p-6`}
+      className={`z-20 fixed ${isMobile ? "bottom-20 inset-x-0 justify-center items-center " : "bottom-2 left-4 "} flex flex-col items-end px-4 py-6 pointer-events-none sm:p-6`}
     >
       {notifications.map((notification) => (
         <Notification
@@ -61,13 +57,24 @@ const Notification = ({
   const { connection } = useConnection();
   const { networkConfiguration } = useNetworkConfiguration();
 
+  const [progress, setProgress] = useState(100);
+
   const [exit, setExit] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => setExit(true), 6000);
-    setTimeout(() => onHide(id), 6300); // 300ms longer to match the fade-out animation
+    const interval = setInterval(() => {
+      setProgress((prevProgress) => {
+        const newProgress = Math.max(prevProgress - 100 / 150, 0);
+        if (newProgress === 0) {
+          setExit(true); // Start exit animation
+          clearInterval(interval);
+          setTimeout(() => onHide(id), 300);
+        }
+        return newProgress;
+      });
+    }, 40);
 
-    return () => {};
+    return () => clearInterval(interval);
   }, [onHide, id]);
 
   const gradientBackgrounds = {
@@ -97,11 +104,8 @@ const Notification = ({
         style={{ background: gradientBackgrounds[type] }}
       >
         <div
-          className={`pt-2 rounded-t-md ${className}`}
-          style={{
-            animation: `progressBar 6s linear`,
-            height: "2px",
-          }}
+          style={{ width: `${progress}%`, height: "2px", marginTop: "auto" }}
+          className={`${className} pt-2 rounded-t-md`}
         />
         <div
           className={`p-3 rounded-b-md bg-[#00000085] bg-opacity-90 flex items-center`}

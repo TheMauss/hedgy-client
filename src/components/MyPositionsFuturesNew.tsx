@@ -39,6 +39,8 @@ import axios from "axios";
 import { usePriorityFee } from "../contexts/PriorityFee";
 import { publicDecrypt } from "crypto";
 import { useBackupOracle } from "contexts/BackupOracle";
+import { v4 as uuidv4 } from "uuid";
+import { notify } from "../utils/notifications";
 
 const ENDPOINT1 = process.env.NEXT_PUBLIC_ENDPOINT1;
 const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
@@ -1061,6 +1063,7 @@ const MyPositions: FC<MyPositionsProps> = ({
 
   const resolveFutCont = async (position: Position) => {
     setIsTransactionPending(true);
+    const transactionId = uuidv4();
 
     const accounts: CloseFutContAccounts = {
       futCont: new PublicKey(position.futuresContract),
@@ -1092,8 +1095,8 @@ const MyPositions: FC<MyPositionsProps> = ({
       // Send the transaction
       sendSymbol(position.symbol);
       signature = await sendTransaction(transaction, connection);
-      handleNewNotification({
-        id: generateUniqueId(),
+      notify({
+        id: transactionId,
         type: "info",
         message: `Closing the Position`,
       });
@@ -1101,8 +1104,8 @@ const MyPositions: FC<MyPositionsProps> = ({
       // Wait for confirmation
       await connection.confirmTransaction(signature, "confirmed");
       setIsTransactionPending(false);
-      handleNewNotification({
-        id: generateUniqueId(),
+      notify({
+        id: transactionId,
         type: "success",
         message: `Closing Order Created`,
       });
@@ -1111,8 +1114,8 @@ const MyPositions: FC<MyPositionsProps> = ({
       console.error("Transaction failed:", error);
       setIsTransactionPending(false);
       // Optionally, show an error notification
-      handleNewNotification({
-        id: generateUniqueId(),
+      notify({
+        id: transactionId,
         type: "error",
         message: `Contract resolution failed`,
         description: error?.message,
@@ -1248,7 +1251,7 @@ const MyPositions: FC<MyPositionsProps> = ({
       handleNewNotification({
         id: generateUniqueId(),
         type: "info",
-        message: `Trying to update the Position`,
+        message: `Updating the Position`,
       });
 
       // Wait for confirmation
