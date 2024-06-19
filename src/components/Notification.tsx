@@ -64,8 +64,8 @@ const Notification = ({
   const [exit, setExit] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => setExit(true), 6000);
-    setTimeout(() => onHide(id), 6300); // 300ms longer to match the fade-out animation
+    setTimeout(() => setExit(true), 7000);
+    setTimeout(() => onHide(id), 7300); // 300ms longer to match the fade-out animation
 
     return () => {};
   }, [onHide, id]);
@@ -99,7 +99,7 @@ const Notification = ({
         <div
           className={`pt-1 rounded-t-md ${className}`}
           style={{
-            animation: `progressBar 6s linear`,
+            animation: `progressBar 7s linear`,
             height: "2px",
           }}
         />
