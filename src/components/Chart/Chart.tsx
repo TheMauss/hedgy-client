@@ -48,13 +48,22 @@ const useChartComponent = (
   ) => {
     const widget = widgetRef.current;
     if (!widget || !position) return;
-
+    const invalidPosition = {
+      betAmount: "not a number",
+      leverage: "not a number",
+    };
     const chart = widget.chart();
     const { initialPrice } = position;
     // Create lines for each price point - Binary Options and Future Contracts
     if (initialPrice) {
       const formattedPrice = initialPrice / 1e8;
-      createPositionLine(formattedPrice, "Entry Price", "#a9aab7", chart);
+      createPositionLine(
+        formattedPrice,
+        "Entry Price",
+        "#a9aab7",
+        chart,
+        position
+      );
     }
 
     // Only Future Contracts
@@ -67,31 +76,66 @@ const useChartComponent = (
           formattedPrice,
           "Liquidation Price",
           "#C44141",
-          chart
+          chart,
+          invalidPosition
         );
       } else if (stopLossPrice !== 0) {
         const formattedPrice = stopLossPrice / 1e8;
-        createPositionLine(formattedPrice, "Stop Loss", "#C44141", chart);
+        createPositionLine(
+          formattedPrice,
+          "Stop Loss",
+          "#C44141",
+          chart,
+          invalidPosition
+        );
       }
 
       // Create lines for each price point
       if (takeProfitPrice !== 0) {
         const formattedPrice = takeProfitPrice / 1e8;
-        createPositionLine(formattedPrice, "Take Profit", "#34C796", chart);
+        createPositionLine(
+          formattedPrice,
+          "Take Profit",
+          "#34C796",
+          chart,
+          invalidPosition
+        );
       }
     }
   };
 
-  // Update or create initial price line
-  const createPositionLine = (price, title, color, chart) => {
+  const createPositionLine = (price, title, color, chart, position) => {
     try {
       const line = chart
         .createPositionLine()
         .setPrice(Number(price))
         .setText(title)
         .setLineStyle(3)
-        .setQuantity("")
-        .setLineColor(color); // Set line color here// Adjust style as needed
+        .setLineColor(color);
+      // .getBodyBackgroundColor(color)
+      // .getBodyBorderColor(color);
+
+      // Set line color here
+
+      // Optionally set quantity if provided
+      if (
+        position &&
+        typeof position.betAmount === "number" &&
+        typeof position.leverage === "number" &&
+        !isNaN(position.betAmount) &&
+        !isNaN(position.leverage)
+      ) {
+        const quantity = (position.betAmount * position.leverage) / 1000000000;
+        const unit = position.usdc === 1 ? "USDC" : "SOL";
+        line.setQuantity(`${quantity.toFixed(2)} ${unit}`);
+        line.onClose("onClose called", function (text) {
+          this.setText(text);
+        });
+      } else {
+        console.log("Invalid or undefined position:", position);
+        line.setQuantity("");
+      }
+
       positionLinesRef.current.push(line);
     } catch (error) {
       console.error(`Error creating position line: ${error.message}`);
