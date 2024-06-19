@@ -1102,8 +1102,6 @@ const MyPositions: FC<MyPositionsProps> = ({
       .add(closeFutCont(accounts))
       .add(PRIORITY_FEE_IX);
 
-    await simulateTransactionWithRetries(transaction, connection);
-
     let signature: TransactionSignature = "";
     try {
       // Send the transaction

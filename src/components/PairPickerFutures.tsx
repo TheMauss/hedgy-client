@@ -231,7 +231,7 @@ export const PairPicker: React.FC<PairPickerProps> = ({
         ? "-"
         : Number(percentage) < 0
           ? percentage
-          : `+${percentage}`;
+          : `${percentage}`;
 
       return {
         displayPrice: newDisplayPrice,
@@ -259,7 +259,7 @@ export const PairPicker: React.FC<PairPickerProps> = ({
             ${displayPrice}
           </div>
           <div
-            className={`pb-1 md:hidden text-base leading-[16px] font-medium ${color}`}
+            className={`pb-1 md:hidden text-base leading-[16px] text-sm font-medium ${color}`}
           >
             {displayPercentage}%
           </div>
@@ -268,7 +268,7 @@ export const PairPicker: React.FC<PairPickerProps> = ({
               transition: "transform 0.3s",
               transform: `rotate(${props.selectProps.menuIsOpen ? "0deg" : "180deg"})`,
             }}
-            className="text-[#ffffff60]"
+            className="ml-1 mb-0.5 text-[#ffffff60]"
           >
             <FaAngleUp />
           </div>

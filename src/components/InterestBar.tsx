@@ -103,7 +103,7 @@ const InterestBar: React.FC<InterestBarProps> = ({
     ? "-"
     : Number(percentage) < 0
       ? percentage
-      : `+${percentage}`;
+      : `${percentage}`;
 
   const getOpenInterestValues = (sym, selectedCurrency) => {
     const capitalizeFirstLetter = (string) =>

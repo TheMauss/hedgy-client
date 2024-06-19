@@ -101,6 +101,23 @@ const PRICE_IDS = [
   "72b021217ca3fe68922a19aaf990109cb9d84e9ad004b4d2025ad6f529314419",
 ];
 
+const fetchHistoricalPriceUpdates = async (timestamp, ids) => {
+  const baseURL = "https://benchmarks.pyth.network/v1/updates/price/";
+  const url = `${baseURL}${timestamp}`;
+  const params = ids.map((id) => `ids=${id}`).join("&");
+  const fullUrl = `${url}?${params}`;
+
+  console.log(`Fetching data from URL: ${fullUrl}`);
+
+  try {
+    const response = await axios.get(fullUrl);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching historical price updates:", error);
+    return null;
+  }
+};
+
 interface TradeBarFuturesProps {
   setParentDivHeight: (height: string) => void;
   EMAprice: number;
@@ -858,24 +875,6 @@ const TradeBar: React.FC<
 
   const socketRef = useRef(null);
 
-  useEffect(() => {
-    socketRef.current = socketIOClient(ENDPOINT2);
-
-    socketRef.current.on("openingprice", (openingPrices) => {
-      const openingPricess = { ...openPrices };
-      openingPrices.forEach((openingPrices) => {
-        openingPricess[openingPrices.symbol] = openingPrices.price;
-      });
-
-      setopenPrices(openingPricess);
-    });
-
-    // Disconnect the socket when the component unmounts
-    return () => {
-      socketRef.current.disconnect();
-    };
-  }, []);
-
   const sendSymbol = () => {
     let symbolCode;
 
@@ -935,6 +934,37 @@ const TradeBar: React.FC<
       socketRef.current.emit("symbolUpdate", messageObject);
     }
   };
+
+  useEffect(() => {
+    const currentDate = new Date();
+    // Set the time to midnight UTC
+    currentDate.setUTCHours(0, 0, 0, 0);
+    // Convert to GMT+2 by adding 2 hours in milliseconds
+    const gmt2OffsetInMilliseconds = 0;
+    const gmt2Date = new Date(currentDate.getTime() + gmt2OffsetInMilliseconds);
+    const timestamp = Math.floor(gmt2Date.getTime() / 1000);
+
+    const ids = Object.keys(priceIdToSymbolMap);
+
+    const fetchPrices = async () => {
+      const priceUpdates = await fetchHistoricalPriceUpdates(timestamp, ids);
+
+      if (priceUpdates && priceUpdates.parsed) {
+        const updatedPrices = { ...openPrices };
+        priceUpdates.parsed.forEach((priceUpdate) => {
+          const symbol = priceIdToSymbolMap[priceUpdate.id];
+          if (symbol) {
+            updatedPrices[symbol] = priceUpdate.price.price;
+          }
+        });
+
+        setopenPrices(updatedPrices);
+        console.log("updatedPrices", updatedPrices);
+      }
+    };
+
+    fetchPrices();
+  }, []);
 
   useEffect(() => {
     const selectedCrypto = Object.keys(selectedCryptos).find(
