@@ -378,289 +378,303 @@ const MyPositions: FC<MyPositionsProps> = ({
   const socketRef = useRef(null);
   const socket2Ref = useRef(null);
 
+  function checkAndReconnectSocket(socketRef, setupSocketFn, socketName) {
+    if (!socketRef.current || !socketRef.current.connected) {
+      console.log(`${socketName} is disconnected. Attempting to reconnect...`);
+      setupSocketFn();
+    }
+  }
+
   useEffect(() => {
-    const fetchPositionsByPage = (page) => {
-      socketRef.current.emit("registerWallet", walletAddress, page, pageSize);
-    };
+    const interval = setInterval(() => {
+      checkAndReconnectSocket(socketRef, setupSocket1, "Socket 1");
+      checkAndReconnectSocket(socket2Ref, setupSocket2, "Socket 2");
+    }, 5000); // Check every 5 seconds
 
-    function setupSocket1() {
-      socketRef.current = socketIOClient(ENDPOINT2);
-      fetchPositionsByPage(currentPage);
+    return () => clearInterval(interval);
+  }, []);
 
-      socketRef.current.on(
-        "unresolvedfuturesPositions",
-        (positions: Position[]) => {
-          setLatestOpenedPosition((prevPositions) => {
-            const updatedPositions: Record<string, Position | null> = {
-              ...prevPositions,
-            };
+  function setupSocket1() {
+    socketRef.current = socketIOClient(ENDPOINT2);
+    fetchPositionsByPage(currentPage);
 
-            positions.forEach((position) => {
-              updatedPositions[position.symbol.toString()] = position;
+    socketRef.current.on(
+      "unresolvedfuturesPositions",
+      (positions: Position[]) => {
+        setLatestOpenedPosition((prevPositions) => {
+          const updatedPositions: Record<string, Position | null> = {
+            ...prevPositions,
+          };
+
+          positions.forEach((position) => {
+            updatedPositions[position.symbol.toString()] = position;
+          });
+
+          return updatedPositions;
+        });
+
+        setPositions(positions);
+        setIsLoading(false);
+      }
+    );
+
+    socketRef.current.on("futuresPositions", ({ positions, totalPages }) => {
+      setTotalPages(totalPages);
+
+      setResolvedPositions(positions);
+      setIsLoading(false);
+    });
+
+    socketRef.current.on("futuresOrders", (positions: Position[]) => {
+      setOrders(positions);
+    });
+
+    socketRef.current.on("connect_error", (err) => {
+      setError(err.message);
+      setIsLoading(false);
+    });
+  }
+
+  function setupSocket2() {
+    socket2Ref.current = socketIOClient(ENDPOINT1);
+
+    if (socket2Ref.current) {
+      socket2Ref.current.off("futuresPosition");
+      socket2Ref.current.off("connect_error");
+    }
+
+    socket2Ref.current.emit("registerWallet", walletAddress);
+
+    socket2Ref.current.on(
+      "futuresPosition",
+      (updatedPosition: Position, latestPrice: number) => {
+        setPreviousPrice(latestPrice);
+
+        setPositions((prevState) => {
+          const positionExists = prevState.some(
+            (position) => position._id === updatedPosition._id
+          );
+
+          if (positionExists) {
+            // Update the position
+            const updatedPositions = prevState.map((position) => {
+              if (position._id === updatedPosition._id) {
+                const updatedPos = {
+                  ...updatedPosition,
+                  currentPrice: latestPrice,
+                };
+
+                // If the position is not resolved and the stopLossPrice or takeProfitPrice has changed, update latestOpenedPosition
+                if (
+                  !updatedPos.resolved &&
+                  (updatedPos.stopLossPrice !== position.stopLossPrice ||
+                    updatedPos.takeProfitPrice !== position.takeProfitPrice ||
+                    updatedPos.liquidationPrice !== position.liquidationPrice)
+                ) {
+                  setLatestOpenedPosition((prevPositions) => {
+                    const updatedPositions = {
+                      ...prevPositions,
+                      [updatedPos.symbol.toString()]: updatedPos,
+                    };
+
+                    return updatedPositions;
+                  });
+                  if (
+                    updatedPos.stopLossPrice !== position.stopLossPrice ||
+                    updatedPos.takeProfitPrice !== position.takeProfitPrice
+                  ) {
+                    handleNewNotification({
+                      id: updatedPosition._id.toString(),
+                      type: "success",
+                      message: `Position updated`,
+                      description: `Take Profit is ${(updatedPosition.takeProfitPrice / 100000000).toFixed(2)}, Stop Loss is ${(updatedPosition.stopLossPrice / 100000000).toFixed(2)}`,
+                    });
+                  } else {
+                    handleNewNotification({
+                      id: updatedPosition._id.toString(),
+                      type: "success",
+                      message: `Borrowing fee paid`,
+                      description: `New Liquidation Price is  ${(updatedPosition.liquidationPrice / 100000000).toFixed(2)}`,
+                    });
+                  }
+                }
+                return updatedPos;
+              }
+
+              return position;
             });
 
             return updatedPositions;
-          });
-
-          setPositions(positions);
-          setIsLoading(false);
-        }
-      );
-
-      socketRef.current.on("futuresPositions", ({ positions, totalPages }) => {
-        setTotalPages(totalPages);
-
-        setResolvedPositions(positions);
-        setIsLoading(false);
-      });
-
-      socketRef.current.on("futuresOrders", (positions: Position[]) => {
-        setOrders(positions);
-      });
-
-      socketRef.current.on("connect_error", (err) => {
-        setError(err.message);
-        setIsLoading(false);
-      });
-    }
-
-    function setupSocket2() {
-      socket2Ref.current = socketIOClient(ENDPOINT1);
-
-      if (socket2Ref.current) {
-        socket2Ref.current.off("futuresPosition");
-        socket2Ref.current.off("connect_error");
-      }
-
-      socket2Ref.current.emit("registerWallet", walletAddress);
-
-      socket2Ref.current.on(
-        "futuresPosition",
-        (updatedPosition: Position, latestPrice: number) => {
-          setPreviousPrice(latestPrice);
-
-          setPositions((prevState) => {
-            const positionExists = prevState.some(
-              (position) => position._id === updatedPosition._id
-            );
-
-            if (positionExists) {
-              // Update the position
-              const updatedPositions = prevState.map((position) => {
-                if (position._id === updatedPosition._id) {
-                  const updatedPos = {
-                    ...updatedPosition,
-                    currentPrice: latestPrice,
-                  };
-
-                  // If the position is not resolved and the stopLossPrice or takeProfitPrice has changed, update latestOpenedPosition
-                  if (
-                    !updatedPos.resolved &&
-                    (updatedPos.stopLossPrice !== position.stopLossPrice ||
-                      updatedPos.takeProfitPrice !== position.takeProfitPrice ||
-                      updatedPos.liquidationPrice !== position.liquidationPrice)
-                  ) {
-                    setLatestOpenedPosition((prevPositions) => {
-                      const updatedPositions = {
-                        ...prevPositions,
-                        [updatedPos.symbol.toString()]: updatedPos,
-                      };
-
-                      return updatedPositions;
-                    });
-                    if (
-                      updatedPos.stopLossPrice !== position.stopLossPrice ||
-                      updatedPos.takeProfitPrice !== position.takeProfitPrice
-                    ) {
-                      handleNewNotification({
-                        id: updatedPosition._id.toString(),
-                        type: "success",
-                        message: `Position updated`,
-                        description: `Take Profit is ${(updatedPosition.takeProfitPrice / 100000000).toFixed(2)}, Stop Loss is ${(updatedPosition.stopLossPrice / 100000000).toFixed(2)}`,
-                      });
-                    } else {
-                      handleNewNotification({
-                        id: updatedPosition._id.toString(),
-                        type: "success",
-                        message: `Borrowing fee paid`,
-                        description: `New Liquidation Price is  ${(updatedPosition.liquidationPrice / 100000000).toFixed(2)}`,
-                      });
-                    }
-                  }
-                  return updatedPos;
-                }
-
-                return position;
+          } else {
+            if (!updatedPosition.resolved) {
+              // Add the new position to the array
+              handleNewNotification({
+                id: updatedPosition._id.toString(),
+                type: "success",
+                message: `Position opened`,
+                description: `Entry price: ${(updatedPosition.initialPrice / 100000000).toFixed(3)} USD`,
               });
-
-              return updatedPositions;
-            } else {
-              if (!updatedPosition.resolved) {
-                // Add the new position to the array
-                handleNewNotification({
-                  id: updatedPosition._id.toString(),
-                  type: "success",
-                  message: `Position opened`,
-                  description: `Entry price: ${(updatedPosition.initialPrice / 100000000).toFixed(3)} USD`,
-                });
-              }
-              setLatestOpenedPosition((prevPositions) => {
-                const updatedPositions = {
-                  ...prevPositions,
-                  [updatedPosition.symbol.toString()]: updatedPosition,
-                };
-                return updatedPositions;
-              });
-
-              return [
-                ...prevState,
-                { ...updatedPosition, currentPrice: latestPrice },
-              ];
             }
-          });
-
-          if (updatedPosition.resolved) {
-            // Add the resolved position
-            setResolvedPositions((prevState) => {
-              const exists = prevState.some(
-                (position) => position._id === updatedPosition._id
-              );
-              return exists ? prevState : [...prevState, updatedPosition];
+            setLatestOpenedPosition((prevPositions) => {
+              const updatedPositions = {
+                ...prevPositions,
+                [updatedPosition.symbol.toString()]: updatedPosition,
+              };
+              return updatedPositions;
             });
 
-            // Remove the resolved position from the main positions array
-            setPositions((prevState) => {
-              const updatedPositionIndex = prevState.findIndex(
-                (position) => position._id === updatedPosition._id
-              );
-              const remainingPositions = prevState.filter(
-                (position) => position._id !== updatedPosition._id
-              );
+            return [
+              ...prevState,
+              { ...updatedPosition, currentPrice: latestPrice },
+            ];
+          }
+        });
 
-              setLatestOpenedPosition((prevPositions) => {
-                // If the updated position was the last in the array
-                if (updatedPositionIndex === prevState.length - 1) {
-                  const nonResolvedSameSymbolPositions =
-                    remainingPositions.filter(
-                      (position) =>
-                        position.symbol === updatedPosition.symbol &&
-                        !position.resolved
-                    );
+        if (updatedPosition.resolved) {
+          // Add the resolved position
+          setResolvedPositions((prevState) => {
+            const exists = prevState.some(
+              (position) => position._id === updatedPosition._id
+            );
+            return exists ? prevState : [updatedPosition, ...prevState];
+          });
 
-                  const latestSameSymbolPosition =
-                    nonResolvedSameSymbolPositions.length
-                      ? nonResolvedSameSymbolPositions[
-                          nonResolvedSameSymbolPositions.length - 1
-                        ]
-                      : null;
+          // Remove the resolved position from the main positions array
+          setPositions((prevState) => {
+            const updatedPositionIndex = prevState.findIndex(
+              (position) => position._id === updatedPosition._id
+            );
+            const remainingPositions = prevState.filter(
+              (position) => position._id !== updatedPosition._id
+            );
 
-                  const updatedPrevPositions = {
-                    ...prevPositions,
-                    [updatedPosition.symbol.toString()]:
-                      latestSameSymbolPosition,
-                  };
-
-                  return updatedPrevPositions;
-                } else if (
-                  prevPositions[updatedPosition.symbol.toString()]._id ===
-                    updatedPosition._id &&
-                  updatedPositionIndex === prevState.length - 1
-                ) {
-                  // If the updated position was the current "latest"
-                  const subsequentPositions =
-                    remainingPositions.slice(updatedPositionIndex);
-                  const nextSameSymbolPositions = subsequentPositions.filter(
+            setLatestOpenedPosition((prevPositions) => {
+              // If the updated position was the last in the array
+              if (updatedPositionIndex === prevState.length - 1) {
+                const nonResolvedSameSymbolPositions =
+                  remainingPositions.filter(
                     (position) =>
                       position.symbol === updatedPosition.symbol &&
                       !position.resolved
                   );
 
-                  const latestSameSymbolPosition =
-                    nextSameSymbolPositions.length
-                      ? nextSameSymbolPositions[0]
-                      : null;
+                const latestSameSymbolPosition =
+                  nonResolvedSameSymbolPositions.length
+                    ? nonResolvedSameSymbolPositions[
+                        nonResolvedSameSymbolPositions.length - 1
+                      ]
+                    : null;
 
-                  const updatedPrevPositions = {
-                    ...prevPositions,
-                    [updatedPosition.symbol.toString()]:
-                      latestSameSymbolPosition,
-                  };
+                const updatedPrevPositions = {
+                  ...prevPositions,
+                  [updatedPosition.symbol.toString()]: latestSameSymbolPosition,
+                };
 
-                  return updatedPrevPositions;
-                }
+                return updatedPrevPositions;
+              } else if (
+                prevPositions[updatedPosition.symbol.toString()]._id ===
+                  updatedPosition._id &&
+                updatedPositionIndex === prevState.length - 1
+              ) {
+                // If the updated position was the current "latest"
+                const subsequentPositions =
+                  remainingPositions.slice(updatedPositionIndex);
+                const nextSameSymbolPositions = subsequentPositions.filter(
+                  (position) =>
+                    position.symbol === updatedPosition.symbol &&
+                    !position.resolved
+                );
 
-                // If neither of the above, return the current state
-                return prevPositions;
-              });
+                const latestSameSymbolPosition = nextSameSymbolPositions.length
+                  ? nextSameSymbolPositions[0]
+                  : null;
 
-              return remainingPositions;
+                const updatedPrevPositions = {
+                  ...prevPositions,
+                  [updatedPosition.symbol.toString()]: latestSameSymbolPosition,
+                };
+
+                return updatedPrevPositions;
+              }
+
+              // If neither of the above, return the current state
+              return prevPositions;
             });
 
-            // handleNewNotification the user of the resolved position
-            handleNewNotification({
-              id: updatedPosition._id.toString(),
-              type: "success",
-              message: `Position resolved`,
-              description: `PnL: ${(updatedPosition.pnl / LAMPORTS_PER_SOL).toFixed(2)} SOL.`,
-            });
-          }
-        }
-      );
+            return remainingPositions;
+          });
 
-      socket2Ref.current.on(
-        "futuresupdateOrders",
-        (updatedOrder: Position, latestPrice: number) => {
-          console.log(
-            "Received order update:",
-            updatedOrder,
-            "with latest price:",
-            latestPrice
-          );
-          setPreviousPrice(latestPrice);
-
-          // Handle the updated order here
-          // This might involve updating the state that holds your orders, similar to how positions are handled
-          setOrders((prevOrders) => {
-            // Example: Update the order in your state, or add it if it's new
-            const existingOrderIndex = prevOrders.findIndex(
-              (order) => order._id === updatedOrder._id
-            );
-            if (existingOrderIndex > -1) {
-              // Update existing order
-              const updatedOrders = [...prevOrders];
-              updatedOrders[existingOrderIndex] = {
-                ...updatedOrder,
-                currentPrice: latestPrice,
-              };
-              return updatedOrders;
-            } else {
-              // Add new order
-              return [
-                ...prevOrders,
-                { ...updatedOrder, currentPrice: latestPrice },
-              ];
-            }
+          // handleNewNotification the user of the resolved position
+          handleNewNotification({
+            id: updatedPosition._id.toString(),
+            type: "success",
+            message: `Position resolved`,
+            description: `PnL: ${(updatedPosition.pnl / LAMPORTS_PER_SOL).toFixed(2)} SOL.`,
           });
         }
-      );
-      console.log(orders, "neworders");
+      }
+    );
 
-      socket2Ref.current.on("connect_error", (err) => {
-        setError(err.message);
-        setIsLoading(false);
-      });
-    }
+    socket2Ref.current.on(
+      "futuresupdateOrders",
+      (updatedOrder: Position, latestPrice: number) => {
+        console.log(
+          "Received order update:",
+          updatedOrder,
+          "with latest price:",
+          latestPrice
+        );
+        setPreviousPrice(latestPrice);
 
-    function handleVisibilityChange() {
-      if (document.visibilityState === "visible") {
-        if (!socketRef.current || !socketRef.current.connected) {
-          setupSocket1();
-        }
-        if (!socket2Ref.current || !socket2Ref.current.connected) {
-          setupSocket2();
-        }
+        // Handle the updated order here
+        // This might involve updating the state that holds your orders, similar to how positions are handled
+        setOrders((prevOrders) => {
+          // Example: Update the order in your state, or add it if it's new
+          const existingOrderIndex = prevOrders.findIndex(
+            (order) => order._id === updatedOrder._id
+          );
+          if (existingOrderIndex > -1) {
+            // Update existing order
+            const updatedOrders = [...prevOrders];
+            updatedOrders[existingOrderIndex] = {
+              ...updatedOrder,
+              currentPrice: latestPrice,
+            };
+            return updatedOrders;
+          } else {
+            // Add new order
+            return [
+              ...prevOrders,
+              { ...updatedOrder, currentPrice: latestPrice },
+            ];
+          }
+        });
+      }
+    );
+    console.log(orders, "neworders");
+
+    socket2Ref.current.on("connect_error", (err) => {
+      setError(err.message);
+      setIsLoading(false);
+    });
+  }
+
+  const fetchPositionsByPage = (page) => {
+    socketRef.current.emit("registerWallet", walletAddress, page, pageSize);
+  };
+
+  function handleVisibilityChange() {
+    if (document.visibilityState === "visible") {
+      if (!socketRef.current || !socketRef.current.connected) {
+        setupSocket1();
+      }
+      if (!socket2Ref.current || !socket2Ref.current.connected) {
+        setupSocket2();
       }
     }
+  }
+
+  useEffect(() => {
     // Initial setup
     setupSocket1();
     setupSocket2();

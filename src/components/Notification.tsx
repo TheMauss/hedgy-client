@@ -78,7 +78,7 @@ const Notification = ({
 
   const notificationClasses = `max-w-sm ${
     isMobile ? "w-full " : "w-[320px] h-auto "
-  } bg-bkg-1 rounded-md mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 p-2 mx-2 mb-2 overflow-hidden font-poppins ${
+  } bg-bkg-1 rounded-md mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5  mx-2 mb-2 overflow-hidden font-poppins ${
     exit ? "notification-exit" : "notification-enter"
   }`;
 
@@ -119,7 +119,7 @@ const Notification = ({
             )}
           </div>
           <div className={`ml-2 flex-1`}>
-            <div className={`font-bold text-[0.9rem]`}>{message}</div>
+            <div className={`text-[1rem]`}>{message}</div>
             {description && (
               <p className={`mt-0.5 text-[0.8rem]`}>{description}</p>
             )}
