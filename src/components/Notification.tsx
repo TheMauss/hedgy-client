@@ -77,8 +77,8 @@ const Notification = ({
   };
 
   const notificationClasses = `max-w-sm ${
-    isMobile ? "w-full " : "w-[320px] h-auto "
-  } bg-bkg-1 rounded-md mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 p-2 mx-4 mb-4 overflow-hidden font-poppins ${
+    isMobile ? "w-3/4 " : "w-[320px] h-auto "
+  } bg-bkg-1 rounded-md mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 p-2 mx-2 mb-2 overflow-hidden font-poppins ${
     exit ? "notification-exit" : "notification-enter"
   }`;
 
@@ -97,31 +97,31 @@ const Notification = ({
         style={{ background: gradientBackgrounds[type] }}
       >
         <div
-          className={`pt-2 rounded-t-md ${className}`}
+          className={`pt-1 rounded-t-md ${className}`}
           style={{
             animation: `progressBar 6s linear`,
             height: "2px",
           }}
         />
         <div
-          className={`p-3 rounded-b-md bg-[#00000085] bg-opacity-90 flex items-center`}
+          className={`p-2.5 rounded-b-md bg-[#00000085] bg-opacity-90 flex items-center`}
         >
           {/* Icon and message layout */}
           <div className={`flex-shrink-0`}>
             {type === "success" && (
-              <CheckCircleIcon className={`h-8 w-8 mr-1 text-primary`} />
+              <CheckCircleIcon className={`h-7 w-7 mr-1 text-primary`} />
             )}
             {type === "info" && (
-              <InformationCircleIcon className={`h-8 w-8 mr-1 text-red`} />
+              <InformationCircleIcon className={`h-7 w-7 mr-1 text-red`} />
             )}
             {type === "error" && (
-              <XCircleIcon className={`h-8 w-8 mr-1 text-[#ff4c4c]`} />
+              <XCircleIcon className={`h-7 w-7 mr-1 text-[#ff4c4c]`} />
             )}
           </div>
           <div className={`ml-2 flex-1`}>
-            <div className={`font-bold text-fgd-1`}>{message}</div>
+            <div className={`font-bold text-[0.9rem]`}>{message}</div>
             {description && (
-              <p className={`mt-0.5 text-sm text-fgd-2`}>{description}</p>
+              <p className={`mt-0.5 text-[0.8rem]`}>{description}</p>
             )}
             {txid && (
               <div className="flex flex-row">
@@ -142,7 +142,7 @@ const Notification = ({
               className={`bg-bkg-2 default-transition rounded-md inline-flex text-fgd-3 hover:text-fgd-4 focus:outline-none`}
             >
               <span className={`sr-only`}>Close</span>
-              <XIcon className="h-5 w-5" />
+              <XIcon className="h-4 w-4" />
             </button>
           </div>
         </div>

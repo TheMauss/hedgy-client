@@ -44,7 +44,8 @@ import {
 import { PROGRAM_ID } from "../out/programId";
 import useUserSOLBalanceStore from "../stores/useUserSOLBalanceStore";
 import { notify } from "../utils/notifications";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from 'uuid';
+
 
 const HOUSEWALLET = new PublicKey(process.env.NEXT_PUBLIC_HOUSE_WALLET);
 const SIGNERWALLET = new PublicKey(process.env.NEXT_PUBLIC_SIGNER_WALLET);
@@ -1759,7 +1760,8 @@ const TradeBar: React.FC<
           type: "info",
           message: `Creating Order`,
           txid: signature,
-          id: transactionId,
+          id: transactionId
+
         });
         // Wait for transaction confirmation before showing the 'success' notification
         await connection.confirmTransaction(signature, "confirmed");
@@ -1767,7 +1769,8 @@ const TradeBar: React.FC<
           type: "success",
           message: `Limit Order Created`,
           txid: signature,
-          id: transactionId,
+          id: transactionId
+
         });
         setIsTransactionPending(false);
       }
@@ -1779,7 +1782,7 @@ const TradeBar: React.FC<
         message: `Position Reverted`,
         description: error?.message,
         txid: signature,
-        id: transactionId,
+        id: transactionId
       });
       return;
     }
@@ -1969,6 +1972,7 @@ const TradeBar: React.FC<
 
     let signature: TransactionSignature = "";
     try {
+
       // Get the current time and add 1 to the time number
       const now = Date.now();
       const timeNumber = (Math.floor(now / 1000) % 1000000) + 1;
@@ -2113,6 +2117,7 @@ const TradeBar: React.FC<
           associatedTokenProgram: ASSOCIATEDTOKENPROGRAM,
         };
 
+
         let PRIORITY_FEE_IX;
 
         if (isPriorityFee) {
@@ -2135,6 +2140,7 @@ const TradeBar: React.FC<
           .add(createLimitOrder(args, accounts))
           .add(PRIORITY_FEE_IX);
 
+
         sendSymbol();
         signature = await sendTransaction(transaction, connection);
         setIsTransactionPending(false);
@@ -2142,7 +2148,7 @@ const TradeBar: React.FC<
           type: "info",
           message: `Opening Position`,
           txid: signature,
-          id: transactionId,
+          id: transactionId
         });
         // Wait for transaction confirmation before showing the 'success' notification
         await connection.confirmTransaction(signature, "confirmed");
@@ -2150,7 +2156,7 @@ const TradeBar: React.FC<
           type: "success",
           message: `Market Order Created`,
           txid: signature,
-          id: transactionId,
+          id: transactionId
         });
       }
     } catch (error: any) {
@@ -2160,7 +2166,7 @@ const TradeBar: React.FC<
         message: `Position Reverted`,
         description: error?.message,
         txid: signature,
-        id: transactionId,
+        id: transactionId
       });
       setIsTransactionPending(false);
       return;
