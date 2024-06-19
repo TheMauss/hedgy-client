@@ -211,7 +211,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
   return (
     <div
       ref={navRef}
-      className={`flex items-center justify-center h-[55px] flex-row bg-[#ffffff08] text-[#E0E5EA] ${isVisible ? "blur-behind-modal" : ""}`}
+      className={`flex items-center justify-center md:h-[55px] h-[48px] flex-row bg-[#ffffff08] text-[#E0E5EA] ${isVisible ? "blur-behind-modal" : ""}`}
     >
       <div className="flex items-center justify-between w-[90%]">
         <div className="flex items-center">
@@ -231,7 +231,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
           {isMobile ? (
             // Code for Mobile
 
-            <div className="flex items-center bg-primary rounded-xl h-9 hover:bg-new-green-dark transition ease-in-out duration-300">
+            <div className="flex items-center bg-primary rounded-xl md:h-9 h-8 hover:bg-new-green-dark transition ease-in-out duration-300">
               <WalletMultiButtonDynamic
                 className="box-border flex flex-row items-center justify-center "
                 style={{
@@ -373,10 +373,10 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
                 className="btn-gh items-center justify-between md:hidden relative"
                 onClick={() => setIsNavOpen(!isNavOpen)}
               >
-                <div className="HAMBURGER-ICON space-y-2.5">
-                  <div className="h-0.5 w-8 bg-gradient-to-tr from-grey-text to-white" />
-                  <div className="h-0.5 w-8 bg-gradient-to-tr from-grey-text to-white" />
-                  <div className="h-0.5 w-8 bg-gradient-to-tr from-grey-text to-white" />
+                <div className="HAMBURGER-ICON space-y-1.5">
+                  <div className="h-0.5 w-6 bg-gradient-to-tr from-grey-text to-white" />
+                  <div className="h-0.5 w-6 bg-gradient-to-tr from-grey-text to-white" />
+                  <div className="h-0.5 w-6 bg-gradient-to-tr from-grey-text to-white" />
                 </div>
               </label>
             </>

@@ -67,7 +67,7 @@ const options = [
 
 const formatOptionLabel = ({ value, label, icon }) => (
   <div className="flex items-center">
-    <img src={icon} alt="Logo" width="30" height="30" />
+    <img src={icon} alt="Logo" width="27" height="27" />
     <span className="bankGothic px-2 text-[1.2rem] text-[#ffffff]">
       {label}
     </span>
@@ -112,7 +112,7 @@ const customStyles = {
     const isMdOrAbove = windowWidth >= 768;
     return {
       ...provided,
-      height: isMdOrAbove ? "53px" : "55px",
+      height: isMdOrAbove ? "53px" : "45px",
       backgroundColor: isMdOrAbove
         ? state.isFocused
           ? "transparent"

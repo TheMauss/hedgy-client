@@ -490,7 +490,7 @@ const Futures: FC = () => {
                           />
                         </div>
                         <div
-                          className={`w-full md:block flex-col  md:order-2 order-1 md:mt-2 md:h-[calc((100vh-6px)-(42vh))] h-[calc((100vh+2px)-(58vh))] ${
+                          className={`w-full md:block flex-col  md:order-2 order-1 md:mt-2 md:h-[calc((100vh-6px)-(42vh))] h-[calc((100vh+21px)-(58vh))] ${
                             showBottomPanel
                               ? "lg:h-[calc((100vh-6px)-(42vh))]"
                               : "lg:h-[calc(100vh-108px-44px)] "
@@ -563,7 +563,7 @@ const Futures: FC = () => {
               </div>
 
               <div
-                className={`rounded-xl md:px-0 md:mt-3 mt-1.5 bg-[#ffffff08] md:h-[calc((100vh-233px)-(58vh-81px))] mb-1 h-[calc((100vh-172px)-(42vh))] w-full flex lg:hidden  `}
+                className={`rounded-xl md:px-0 md:mt-3 mt-1.5 bg-[#ffffff08] md:h-[calc((100vh-233px)-(58vh-81px))] mb-1 h-[calc((100vh-169px)-(42vh))] w-full flex lg:hidden  `}
               >
                 <MyPositionsFutures
                   latestOpenedPosition={latestOpenedPosition}
@@ -601,7 +601,7 @@ const Futures: FC = () => {
 
           <div
             ref={bottomRef}
-            className={`bankGothic px-3 md:hidden h-[50px]  self-stretch bg-[#00000040] flex flex-row items-center justify-center py-0 text-center text-grey font-bankgothic-md-bt`}
+            className={`bankGothic px-3 md:hidden h-[45px]  self-stretch bg-[#00000040] flex flex-row items-center justify-center py-0 text-center text-grey font-bankgothic-md-bt`}
           >
             <button
               onClick={showTradeBarAndSetToLong}
