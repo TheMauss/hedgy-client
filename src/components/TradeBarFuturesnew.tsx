@@ -875,6 +875,28 @@ const TradeBar: React.FC<
 
   const socketRef = useRef(null);
 
+  useEffect(() => {
+    // Establish socket connection
+    socketRef.current = socketIOClient(ENDPOINT2);
+
+    // Define event listeners
+    socketRef.current.on("connect", () => {
+      console.log("Connected to socket server");
+    });
+
+    socketRef.current.on("disconnect", () => {
+      console.log("Disconnected from socket server");
+    });
+
+    // Cleanup connection on component unmount
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
+  }, []);
+
   const sendSymbol = () => {
     let symbolCode;
 

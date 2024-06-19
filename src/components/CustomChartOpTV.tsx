@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import { ResolutionString } from "../charting_library";
+import { ResolutionString } from "../charting_library/charting_library";
 import datafeed from "../../utils/datafeed";
 import { colors } from "@react-spring/shared";
 

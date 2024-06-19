@@ -7,6 +7,24 @@ import {
   BinaryOptionPosition,
   FutureContractPosition,
 } from "components/GraphNew";
+import {
+  CloseFutContAccounts,
+  closeFutCont,
+} from "../../out/instructions/closeFutCont";
+import { v4 as uuidv4 } from "uuid";
+import { notify } from "../../utils/notifications";
+import {
+  ComputeBudgetProgram,
+  Connection,
+  SystemProgram,
+  Transaction,
+  TransactionSignature,
+  PublicKey,
+} from "@solana/web3.js";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import axios from "axios";
+import { usePriorityFee } from "../../contexts/PriorityFee";
+import socketIOClient from "socket.io-client";
 
 interface Props {
   symbol: string;
@@ -29,6 +47,46 @@ const SYMBOL_MAPPING = {
   // Add more mappings if needed
 };
 
+const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT13;
+const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
+
+const getPriorityFeeEstimate = async () => {
+  try {
+    const rpcUrl = ENDPOINT5;
+
+    const requestData = {
+      jsonrpc: "2.0",
+      id: "1",
+      method: "getPriorityFeeEstimate",
+      params: [
+        {
+          accountKeys: ["PopFiDLVBg7MRoyzerAop6p85uxdM73nSFj35Zjn5Mt"],
+          options: {
+            includeAllPriorityFeeLevels: true,
+          },
+        },
+      ],
+    };
+
+    const response = await axios.post(rpcUrl, requestData);
+
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const responseData = response.data;
+    if (responseData.error) {
+      throw new Error(
+        `RPC error! Code: ${responseData.error.code}, Message: ${responseData.error.message}`
+      );
+    }
+
+    return (responseData.result.priorityFeeLevels.veryHigh + 300).toFixed(0);
+  } catch (error) {
+    console.error("Error fetching priority fee estimate:", error);
+  }
+};
+
 const useChartComponent = (
   symbol: string,
   latestOpenedPosition: Record<
@@ -42,6 +100,126 @@ const useChartComponent = (
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const widgetRef = useRef(null);
   const positionLinesRef = useRef([]);
+
+  const { connection } = useConnection();
+  const { sendTransaction } = useWallet();
+  const { publicKey, connected } = useWallet();
+  const walletAddress = publicKey?.toString() || "";
+  const { isPriorityFee } = usePriorityFee();
+
+  const socketRef = useRef(null);
+
+  useEffect(() => {
+    // Establish socket connection
+    socketRef.current = socketIOClient(ENDPOINT2);
+
+    // Define event listeners
+    socketRef.current.on("connect", () => {
+      console.log("Connected to socket server");
+    });
+
+    socketRef.current.on("disconnect", () => {
+      console.log("Disconnected from socket server");
+    });
+
+    // Handle reconnection logic
+    // socketRef.current.on('reconnect_attempt', () => {
+    //   console.log('Attempting to reconnect');
+    // });
+
+    // socketRef.current.on('reconnect', (attemptNumber) => {
+    //   console.log(`Reconnected after ${attemptNumber} attempts`);
+    // });
+
+    // socketRef.current.on('reconnect_error', (error) => {
+    //   console.error('Reconnection error:', error);
+    // });
+
+    // socketRef.current.on('reconnect_failed', () => {
+    //   console.error('Reconnection failed');
+    // });
+
+    // // Example: handle a custom event
+    // socketRef.current.on('your_event', (data) => {
+    //   console.log('Received data:', data);
+    // });
+
+    // Cleanup connection on component unmount
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
+  }, []);
+
+  const sendSymbol = (symbol) => {
+    if (socketRef.current && publicKey?.toString() !== "") {
+      const messageObject = {
+        symbol: symbol,
+        active: true,
+      };
+      socketRef.current.emit("symbolUpdate", messageObject);
+    }
+  };
+
+  const resolveFutCont = async (position: FutureContractPosition) => {
+    const transactionId = uuidv4();
+
+    const accounts: CloseFutContAccounts = {
+      futCont: new PublicKey(position.futuresContract),
+      playerAcc: new PublicKey(walletAddress),
+    };
+
+    let PRIORITY_FEE_IX;
+
+    if (isPriorityFee) {
+      const priorityfees = await getPriorityFeeEstimate();
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: priorityfees,
+      });
+    } else {
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: 0,
+      });
+    }
+
+    // Create the transaction
+    const transaction = new Transaction()
+      .add(closeFutCont(accounts))
+      .add(PRIORITY_FEE_IX);
+
+    let signature: TransactionSignature = "";
+    try {
+      // Send the transaction
+      sendSymbol(position.symbol);
+      signature = await sendTransaction(transaction, connection);
+      notify({
+        id: transactionId,
+        type: "info",
+        message: `Closing the Position`,
+      });
+
+      // Wait for confirmation
+      await connection.confirmTransaction(signature, "confirmed");
+      notify({
+        id: transactionId,
+        type: "success",
+        message: `Closing Order Created`,
+      });
+      // Optionally, show a success notification
+    } catch (error: any) {
+      console.error("Transaction failed:", error);
+      // Optionally, show an error notification
+      notify({
+        id: transactionId,
+        type: "error",
+        message: `Contract resolution failed`,
+        description: error?.message,
+        txid: signature,
+      });
+    }
+  };
 
   const updateChartLines = (
     position: FutureContractPosition | BinaryOptionPosition | null
@@ -57,11 +235,16 @@ const useChartComponent = (
     // Create lines for each price point - Binary Options and Future Contracts
     if (initialPrice) {
       const formattedPrice = initialPrice / 1e8;
+      const title = position.priceDirection === 0 ? "Long" : "Short";
+      const color = position.priceDirection === 0 ? "#39ca9a" : "#e04456";
+      const textcolor = position.priceDirection === 0 ? "#39ca9a" : "#e04456";
+
       createPositionLine(
         formattedPrice,
-        "Entry Price",
-        "#a9aab7",
+        title,
+        color,
         chart,
+        textcolor,
         position
       );
     }
@@ -75,8 +258,9 @@ const useChartComponent = (
         createPositionLine(
           formattedPrice,
           "Liquidation Price",
-          "#C44141",
+          "#e04456",
           chart,
+          "#e04456",
           invalidPosition
         );
       } else if (stopLossPrice !== 0) {
@@ -84,8 +268,9 @@ const useChartComponent = (
         createPositionLine(
           formattedPrice,
           "Stop Loss",
-          "#C44141",
+          "#e04456",
           chart,
+          "#e04456",
           invalidPosition
         );
       }
@@ -98,23 +283,31 @@ const useChartComponent = (
           "Take Profit",
           "#34C796",
           chart,
+          "#23EEA4",
           invalidPosition
         );
       }
     }
   };
 
-  const createPositionLine = (price, title, color, chart, position) => {
+  const createPositionLine = (
+    price,
+    title,
+    color,
+    chart,
+    bodycolor,
+    position
+  ) => {
     try {
       const line = chart
         .createPositionLine()
         .setPrice(Number(price))
         .setText(title)
-        .setLineStyle(3)
-        .setLineColor(color);
-      // .getBodyBackgroundColor(color)
-      // .getBodyBorderColor(color);
-
+        .setLineStyle(1)
+        .setLineColor(color)
+        .setBodyBackgroundColor("#222222")
+        .setBodyBorderColor("")
+        .setBodyTextColor(bodycolor);
       // Set line color here
 
       // Optionally set quantity if provided
@@ -129,8 +322,26 @@ const useChartComponent = (
         const unit = position.usdc === 1 ? "USDC" : "SOL";
         line.setQuantity(`${quantity.toFixed(2)} ${unit}`);
         line.onClose("onClose called", function (text) {
-          this.setText(text);
+          resolveFutCont(position);
         });
+
+        if (position.priceDirection === 0) {
+          line
+            .setCloseButtonBorderColor("")
+            .setCloseButtonBackgroundColor("#222222")
+            .setCloseButtonIconColor("#23EEA4")
+
+            .setQuantityBorderColor("")
+            .setQuantityBackgroundColor("#222222");
+        } else {
+          line
+            .setCloseButtonBorderColor("")
+            .setCloseButtonBackgroundColor("#222222")
+            .setCloseButtonIconColor("#e04456")
+
+            .setQuantityBorderColor("")
+            .setQuantityBackgroundColor("#222222");
+        }
       } else {
         console.log("Invalid or undefined position:", position);
         line.setQuantity("");

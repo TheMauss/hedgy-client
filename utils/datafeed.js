@@ -72,7 +72,7 @@ const datafeed = {
               type: "crypto",
               session: "24x7",
               timezone: timezone,
-              exchange: "PopFi",
+              exchange: "PYTH",
               minmov: 1,
               pricescale: pricescale,
               has_intraday: true,
