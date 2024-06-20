@@ -1732,10 +1732,10 @@ const TradeBar: React.FC<
             message: `Trading account created`,
           });
           // fetchcheckuserdata();
-          setisInit(prevState => ({
+          setisInit((prevState) => ({
             ...prevState,
             isInitialized: true,
-            usedAffiliate: new Uint8Array(0)
+            usedAffiliate: new Uint8Array(0),
           }));
         } catch (error) {
           notify({

@@ -451,10 +451,10 @@ const MyPositions: FC<MyPositionsProps> = ({
       console.log("received updated position", updatedPosition);
 
       if (updatedPrice) {
-      // Set the current price of the updated position
-      updatedPosition.currentPrice = updatedPrice.price;
+        // Set the current price of the updated position
+        updatedPosition.currentPrice = updatedPrice.price;
       }
-      
+
       setPositions((prevState) => {
         const positionExists = prevState.some(
           (position) => position._id === updatedPosition._id
