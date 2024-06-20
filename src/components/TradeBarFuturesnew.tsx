@@ -873,29 +873,29 @@ const TradeBar: React.FC<
     setInitialPrice(parseFloat(newInitialPrice.toFixed(decimalPlaces)));
   }, [selectedCryptos, prices]);
 
-  // const socketRef = useRef(null);
+  const socketRef = useRef(null);
 
-  // useEffect(() => {
-  //   // Establish socket connection
-  //   socketRef.current = socketIOClient(ENDPOINT2);
+  useEffect(() => {
+    // Establish socket connection
+    socketRef.current = socketIOClient(ENDPOINT2);
 
-  //   // Define event listeners
-  //   socketRef.current.on("connect", () => {
-  //     console.log("Connected to socket server");
-  //   });
+    // Define event listeners
+    socketRef.current.on("connect", () => {
+      console.log("Connected to socket server");
+    });
 
-  //   socketRef.current.on("disconnect", () => {
-  //     console.log("Disconnected from socket server");
-  //   });
+    socketRef.current.on("disconnect", () => {
+      console.log("Disconnected from socket server");
+    });
 
-  //   // Cleanup connection on component unmount
-  //   return () => {
-  //     if (socketRef.current) {
-  //       socketRef.current.disconnect();
-  //       socketRef.current = null;
-  //     }
-  //   };
-  // }, []);
+    // Cleanup connection on component unmount
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
+  }, []);
 
   const sendSymbol = () => {
     let symbolCode;
@@ -948,13 +948,13 @@ const TradeBar: React.FC<
 
     console.log(symbolCode);
 
-    // if (socketRef.current && publicKey?.toString() !== "") {
-    //   const messageObject = {
-    //     symbol: symbolCode,
-    //     active: true,
-    //   };
-    //   socketRef.current.emit("symbolUpdate", messageObject);
-    // }
+    if (socketRef.current && publicKey?.toString() !== "") {
+      const messageObject = {
+        symbol: symbolCode,
+        active: true,
+      };
+      socketRef.current.emit("symbolUpdate", messageObject);
+    }
   };
 
   useEffect(() => {

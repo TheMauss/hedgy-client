@@ -107,60 +107,60 @@ const useChartComponent = (
   const walletAddress = publicKey?.toString() || "";
   const { isPriorityFee } = usePriorityFee();
 
-  // const socketRef = useRef(null);
+  const socketRef = useRef(null);
 
-  // useEffect(() => {
-  //   // Establish socket connection
-  //   socketRef.current = socketIOClient(ENDPOINT2);
+  useEffect(() => {
+    // Establish socket connection
+    socketRef.current = socketIOClient(ENDPOINT2);
 
-  //   // Define event listeners
-  //   socketRef.current.on("connect", () => {
-  //     console.log("Connected to socket server");
-  //   });
+    // Define event listeners
+    socketRef.current.on("connect", () => {
+      console.log("Connected to socket server");
+    });
 
-  //   socketRef.current.on("disconnect", () => {
-  //     console.log("Disconnected from socket server");
-  //   });
+    socketRef.current.on("disconnect", () => {
+      console.log("Disconnected from socket server");
+    });
 
-  //   // Handle reconnection logic
-  //   // socketRef.current.on('reconnect_attempt', () => {
-  //   //   console.log('Attempting to reconnect');
-  //   // });
+    // Handle reconnection logic
+    // socketRef.current.on('reconnect_attempt', () => {
+    //   console.log('Attempting to reconnect');
+    // });
 
-  //   // socketRef.current.on('reconnect', (attemptNumber) => {
-  //   //   console.log(`Reconnected after ${attemptNumber} attempts`);
-  //   // });
+    // socketRef.current.on('reconnect', (attemptNumber) => {
+    //   console.log(`Reconnected after ${attemptNumber} attempts`);
+    // });
 
-  //   // socketRef.current.on('reconnect_error', (error) => {
-  //   //   console.error('Reconnection error:', error);
-  //   // });
+    // socketRef.current.on('reconnect_error', (error) => {
+    //   console.error('Reconnection error:', error);
+    // });
 
-  //   // socketRef.current.on('reconnect_failed', () => {
-  //   //   console.error('Reconnection failed');
-  //   // });
+    // socketRef.current.on('reconnect_failed', () => {
+    //   console.error('Reconnection failed');
+    // });
 
-  //   // // Example: handle a custom event
-  //   // socketRef.current.on('your_event', (data) => {
-  //   //   console.log('Received data:', data);
-  //   // });
+    // // Example: handle a custom event
+    // socketRef.current.on('your_event', (data) => {
+    //   console.log('Received data:', data);
+    // });
 
-  //   // Cleanup connection on component unmount
-  //   return () => {
-  //     if (socketRef.current) {
-  //       socketRef.current.disconnect();
-  //       socketRef.current = null;
-  //     }
-  //   };
-  // }, []);
+    // Cleanup connection on component unmount
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
+  }, []);
 
   const sendSymbol = (symbol) => {
-    // if (socketRef.current && publicKey?.toString() !== "") {
-    //   const messageObject = {
-    //     symbol: symbol,
-    //     active: true,
-    //   };
-    // socketRef.current.emit("symbolUpdate", messageObject);
-    // }
+    if (socketRef.current && publicKey?.toString() !== "") {
+      const messageObject = {
+        symbol: symbol,
+        active: true,
+      };
+      // socketRef.current.emit("symbolUpdate", messageObject);
+    }
   };
 
   const resolveFutCont = async (position: FutureContractPosition) => {
