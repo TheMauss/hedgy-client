@@ -1137,45 +1137,6 @@ const MyPositions: FC<MyPositionsProps> = ({
   };
 
   const sendSymbol = (symbol) => {
-    let symbolCode;
-
-    const cryptoSettings = {
-      SOL: {
-        symbolCode: 0,
-        oracleAddy: SOLORACLE,
-      },
-      BTC: {
-        symbolCode: 1,
-        oracleAddy: BTCORACLE,
-      },
-      PYTH: {
-        symbolCode: 2,
-        oracleAddy: PYTHORACLE,
-      },
-      BONK: {
-        symbolCode: 3,
-        oracleAddy: BONKORACLE,
-      },
-      JUP: {
-        symbolCode: 4,
-        oracleAddy: JUPORACLE,
-      },
-      ETH: {
-        symbolCode: 5,
-        oracleAddy: ETHORACLE,
-      },
-      TIA: {
-        symbolCode: 6,
-        oracleAddy: TIAORACLE,
-      },
-      SUI: {
-        symbolCode: 7,
-        oracleAddy: SUIORACLE,
-      },
-      // Add more cryptocurrencies here in the same pattern
-    };
-
-    console.log(symbolCode);
 
     if (socketRef.current && publicKey?.toString() !== "") {
       const messageObject = {
