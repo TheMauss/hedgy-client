@@ -41,6 +41,7 @@ import { publicDecrypt } from "crypto";
 import { useBackupOracle } from "contexts/BackupOracle";
 import { v4 as uuidv4 } from "uuid";
 import { notify } from "../utils/notifications";
+import { useRouter } from "next/router";
 
 const ENDPOINT1 = process.env.NEXT_PUBLIC_ENDPOINT1;
 const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
@@ -141,6 +142,10 @@ const generateUniqueId = () => {
 };
 
 interface MyPositionsProps {
+  onSymbolChange: (symbol: string) => void;
+  setSelectedCryptos: React.Dispatch<
+    React.SetStateAction<{ [key: string]: boolean }>
+  >;
   latestOpenedPosition: Record<string, Position | null>;
   setLatestOpenedPosition: React.Dispatch<
     React.SetStateAction<Record<string, Position | null>>
@@ -158,6 +163,8 @@ const LAMPORTS_PER_SOL = 1_000_000_000;
 const ITEMS_PER_PAGE = 10;
 
 const MyPositions: FC<MyPositionsProps> = ({
+  setSelectedCryptos,
+  onSymbolChange,
   prices,
   latestOpenedPosition,
   setLatestOpenedPosition,
@@ -1402,6 +1409,36 @@ const MyPositions: FC<MyPositionsProps> = ({
     }
   };
 
+  const router = useRouter();
+
+  const handleCryptoChange = (symbol) => {
+    // Update the selectedCryptos state
+    const symbolOption = symbolMap[symbol];
+    const cryptoIdentifier = symbolOption.split(".")[1].split("/")[0];
+
+    // Update the selectedCryptos state
+    setSelectedCryptos({ [cryptoIdentifier]: true });
+
+    // Update the selectedCrypto state if needed
+    // setSelectedCrypto(symbolOption);
+
+    onSymbolChange(symbolOption);
+    router.push(`/futures?crypto=${cryptoIdentifier}`, undefined, {
+      shallow: true,
+    });
+  };
+
+  const handleClick = (item) => {
+    setLatestOpenedPosition((prevPositions) => {
+      const updatedPositions = {
+        ...prevPositions,
+        [item.symbol.toString()]: item,
+      };
+      handleCryptoChange(item.symbol);
+      return updatedPositions;
+    });
+  };
+
   const getActiveSymbol = (item) => {
     const activeKey = item.symbol;
     console.log("Active key:", activeKey); // Outputs the key that is active
@@ -1910,7 +1947,8 @@ const MyPositions: FC<MyPositionsProps> = ({
           return !isMobile ? (
             <div
               key={item._id}
-              className="px-2 w-full  rounded-lg font-poppins custom scrollbar flex  flex-row text-start rounded"
+              className="cursor-pointer px-2 w-full  rounded-lg font-poppins custom scrollbar flex  flex-row text-start rounded hover:bg-[#ffffff10]"
+              onClick={() => handleClick(item)}
             >
               <div className=" w-[20%] flex items-center min-w-[140px] text-start text-sm text-[#ffffff60]  ">
                 <a

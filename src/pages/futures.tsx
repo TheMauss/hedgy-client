@@ -109,7 +109,7 @@ const Futures: FC = () => {
   const [positions, setPositions] = useState<Position[]>([]);
   const [selectedCryptos, setSelectedCryptos] = useState({
     BTC: false,
-    SOL: true,
+    SOL: false,
     PYTH: false,
     BONK: false,
     JUP: false,
@@ -163,12 +163,31 @@ const Futures: FC = () => {
 
   useEffect(() => {
     // Only proceed if the router is ready and the crypto parameter is present
-    if (!router.isReady || !crypto) {
-      console.log("Router or crypto query not ready.");
+    if (!router.isReady) {
+      console.log("Router is not ready.");
       return;
     }
 
-    const cryptoKey = crypto.toString().toUpperCase();
+    const validCryptos = [
+      "BTC",
+      "SOL",
+      "PYTH",
+      "BONK",
+      "JUP",
+      "ETH",
+      "TIA",
+      "SUI",
+    ];
+    let cryptoKey = (crypto || "SOL").toString().toUpperCase();
+
+    // If the cryptoKey is not valid, set crypto to default path '/futures' (leave it blank)
+    if (!validCryptos.includes(cryptoKey)) {
+      router.push("/futures");
+      console.log(
+        `Crypto key ${cryptoKey} is not recognized. Redirecting to /futures.`
+      );
+      return;
+    }
 
     // Update selectedCryptos state
     const newSelectedCryptos = { ...selectedCryptos, [cryptoKey]: true };
@@ -201,6 +220,8 @@ const Futures: FC = () => {
     } else {
       console.log(`No symbol found for ${cryptoKey}.`);
     }
+    console.log("selectedCrypto", newSelectedCryptos);
+    console.log("selectedCrypto", symbol);
   }, [crypto, router.isReady]);
 
   useEffect(() => {
@@ -537,6 +558,8 @@ const Futures: FC = () => {
                             handleNewNotification={handleNewNotification}
                             setPositions={setPositions}
                             positions={positions}
+                            onSymbolChange={handleSymbolChange}
+                            setSelectedCryptos={setSelectedCryptos}
                           />
                         </div>
                       </div>
@@ -594,6 +617,8 @@ const Futures: FC = () => {
                   handleNewNotification={handleNewNotification}
                   setPositions={setPositions}
                   positions={positions}
+                  onSymbolChange={handleSymbolChange}
+                  setSelectedCryptos={setSelectedCryptos}
                 />
               </div>
               {/* <div className="flex flex-row md:py-2 md:gap-2">
