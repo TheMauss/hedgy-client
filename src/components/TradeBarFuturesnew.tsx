@@ -348,7 +348,25 @@ type SymbolPosition =
   | "suiLong"
   | "suiShort"
   | "longCollateral"
-  | "shortCollateral";
+  | "shortCollateral"
+  | "usdcBtcLong"
+  | "usdcBtcShort"
+  | "usdcSolLong"
+  | "usdcSolShort"
+  | "usdcPythLong"
+  | "usdcPythShort"
+  | "usdcBonkLong"
+  | "usdcBonkShort"
+  | "usdcJupLong"
+  | "usdcJupShort"
+  | "usdcEthLong"
+  | "usdcEthShort"
+  | "usdcTiaLong"
+  | "usdcTiaShort"
+  | "usdcSuiLong"
+  | "usdcSuiShort"
+  | "usdcLongCollateral"
+  | "usdcShortCollateral";
 type TradeBarData = {
   [key in SymbolPosition]: string;
 };

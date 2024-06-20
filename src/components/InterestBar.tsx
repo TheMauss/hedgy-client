@@ -18,6 +18,22 @@ interface DataProps {
   tiaShort: string;
   suiLong: string;
   suiShort: string;
+  usdcSolLong: string;
+  usdcSolShort: string;
+  usdcBtcLong: string;
+  usdcBtcShort: string;
+  usdcBonkLong: string;
+  usdcBonkShort: string;
+  usdcPythLong: string;
+  usdcPythShort: string;
+  usdcJupLong: string;
+  usdcJupShort: string;
+  usdcEthLong: string;
+  usdcEthShort: string;
+  usdcSuiLong: string;
+  usdcSuiShort: string;
+  usdcTiaLong: string;
+  usdcTiaShort: string;
 }
 
 interface InterestBarProps {
@@ -130,12 +146,30 @@ const InterestBar: React.FC<InterestBarProps> = ({
         long: getCryptoPropertyName("sol", "Long"),
         short: getCryptoPropertyName("sol", "Short"),
       },
-      "Crypto.PYTH/USD": { long: "pythLong", short: "pythShort" },
-      "Crypto.BONK/USD": { long: "bonkLong", short: "bonkShort" },
-      "Crypto.JUP/USD": { long: "jupLong", short: "jupShort" },
-      "Crypto.ETH/USD": { long: "ethLong", short: "ethShort" },
-      "Crypto.TIA/USD": { long: "tiaLong", short: "tiaShort" },
-      "Crypto.SUI/USD": { long: "suiLong", short: "suiShort" },
+      "Crypto.PYTH/USD": {
+        long: getCryptoPropertyName("pyth", "Long"),
+        short: getCryptoPropertyName("pyth", "Short"),
+      },
+      "Crypto.BONK/USD": {
+        long: getCryptoPropertyName("bonk", "Long"),
+        short: getCryptoPropertyName("bonk", "Short"),
+      },
+      "Crypto.JUP/USD": {
+        long: getCryptoPropertyName("jup", "Long"),
+        short: getCryptoPropertyName("jup", "Short"),
+      },
+      "Crypto.ETH/USD": {
+        long: getCryptoPropertyName("eth", "Long"),
+        short: getCryptoPropertyName("eth", "Short"),
+      },
+      "Crypto.TIA/USD": {
+        long: getCryptoPropertyName("tia", "Long"),
+        short: getCryptoPropertyName("tia", "Short"),
+      },
+      "Crypto.SUI/USD": {
+        long: getCryptoPropertyName("sui", "Long"),
+        short: getCryptoPropertyName("sui", "Short"),
+      },
     };
 
     if (mapping[sym]) {
@@ -229,9 +263,30 @@ const InterestBar: React.FC<InterestBarProps> = ({
       tempBorrowingFeeShort = "0";
     }
 
+    const applyMultiplier = (fee, symbol) => {
+      if (symbol === "Crypto.BONK/USD") {
+        return (parseFloat(fee) * 2).toFixed(6);
+      }
+      if (
+        [
+          "Crypto.PYTH/USD",
+          "Crypto.JUP/USD",
+          "Crypto.TIA/USD",
+          "Crypto.SUI/USD",
+        ].includes(symbol)
+      ) {
+        return (parseFloat(fee) * 1.5).toFixed(6);
+      }
+      // No multiplier for BTC, SOL, ETH
+      return fee;
+    };
+
+    tempBorrowingFeeLong = applyMultiplier(tempBorrowingFeeLong, symbol);
+    tempBorrowingFeeShort = applyMultiplier(tempBorrowingFeeShort, symbol);
+
     setBorrowingFeeLong(tempBorrowingFeeLong);
     setBorrowingFeeShort(tempBorrowingFeeShort);
-  }, [long, short, totalMaxOpenInterest]);
+  }, [long, short, totalMaxOpenInterest, symbol]);
 
   return (
     <div className="md:flex hidden font-poppins custom-scrollbar rounded-lg  w-full h-[53px] flex flex-row items-center justify-start  text-xs  overflow-auto">
