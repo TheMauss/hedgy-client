@@ -9,10 +9,7 @@ import AppBar from "components/Firstbar";
 // At the top of your HomeView file
 import dynamic from "next/dynamic";
 import axios from "axios";
-import {
-  FaAngleDoubleRight,
-} from "react-icons/fa";
-
+import { FaAngleDoubleRight } from "react-icons/fa";
 
 // Dynamically import the StarfieldAnimationComponent with SSR disabled
 const StarfieldAnimationComponentWithNoSSR = dynamic(
@@ -39,7 +36,6 @@ const priceIdToSymbolMap = {
     "Crypto.BONK/USD",
   // Add more mappings as necessary
 };
-
 
 const fetchHistoricalPriceUpdates = async (timestamp, ids) => {
   const baseURL = "https://benchmarks.pyth.network/v1/updates/price/";
@@ -474,14 +470,17 @@ export const HomeView: FC = ({}) => {
                   TRADE FUTURES
                 </button>
               </Link>
-              <a href="https://popfi.gitbook.io/docs" target="_blank" rel="noopener noreferrer">
-      <div className="md:text-md text-sm flex flex-row items-center justify-center text-[#ffffff80] hover:text-[#ffffff98] transition-all duration-200 ease-in-out">
-        Read Docs
-        <FaAngleDoubleRight className="ml-1 mt-0.5 flex justify-center items-center text-md" />
-      </div>
-    </a>
+              <a
+                href="https://popfi.gitbook.io/docs"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <div className="md:text-md text-sm flex flex-row items-center justify-center text-[#ffffff80] hover:text-[#ffffff98] transition-all duration-200 ease-in-out">
+                  Read Docs
+                  <FaAngleDoubleRight className="ml-1 mt-0.5 flex justify-center items-center text-md" />
+                </div>
+              </a>
             </div>
-
           </div>
           <div className="font-bankgothicmdbt md:px-5 relative w-full pt-5 mb-16">
             <div className="absolute  flex md:flex-row flex-col gap-3.5 h-max inset-[0] items-start justify-between m-auto w-full">
@@ -489,7 +488,7 @@ export const HomeView: FC = ({}) => {
             </div>
             <div className="relative bottom-[10%] h-[718px] h-auto  inset-x-[0] mx-auto object-cover  md:w-[80%] w-[100%] max-w-[1600px] z-5  flex justify-center items-center">
               <img
-                className="w-[80%] rounded-xl border-[6px] border-[#ffffff15]"
+                className="w-[80%] rounded-xl md:border-[6px] border-[3px] border-[#ffffff15]"
                 src="popfipc.png"
                 alt="imageFive_One"
                 style={{
@@ -499,7 +498,7 @@ export const HomeView: FC = ({}) => {
                 }}
               />
               <img
-                className="w-[21%] rounded-xl border-[6px] border-[#ffffff15]"
+                className="w-[21%] rounded-xl md:border-[6px] border-[3px] border-[#ffffff15]"
                 src="popfiphones.png"
                 alt="abstractSeven"
                 style={{
