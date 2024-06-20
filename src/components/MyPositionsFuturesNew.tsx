@@ -531,6 +531,15 @@ const MyPositions: FC<MyPositionsProps> = ({
         });
 
         if (updatedPosition.resolved) {
+          const unit = updatedPosition.usdc === 1 ? "USDC" : "SOL";
+                    // handleNewNotification the user of the resolved position
+                    handleNewNotification({
+                      id: updatedPosition.futuresContract,
+                      type: "success",
+                      message: `Position resolved`,
+                      description: `PnL: ${(updatedPosition.pnl / LAMPORTS_PER_SOL).toFixed(2)} ${unit}`,
+                    });
+
           // Add the resolved position
           setResolvedPositions((prevState) => {
             const exists = prevState.some(
@@ -604,13 +613,6 @@ const MyPositions: FC<MyPositionsProps> = ({
             return remainingPositions;
           });
 
-          // handleNewNotification the user of the resolved position
-          handleNewNotification({
-            id: updatedPosition._id.toString(),
-            type: "success",
-            message: `Position resolved`,
-            description: `PnL: ${(updatedPosition.pnl / LAMPORTS_PER_SOL).toFixed(2)} SOL.`,
-          });
         }
       }
     );
@@ -1137,7 +1139,6 @@ const MyPositions: FC<MyPositionsProps> = ({
   };
 
   const sendSymbol = (symbol) => {
-
     if (socketRef.current && publicKey?.toString() !== "") {
       const messageObject = {
         symbol: symbol,
