@@ -8,6 +8,11 @@ import { useRouter } from "next/router";
 import AppBar from "components/Firstbar";
 // At the top of your HomeView file
 import dynamic from "next/dynamic";
+import axios from "axios";
+import {
+  FaAngleDoubleRight,
+} from "react-icons/fa";
+
 
 // Dynamically import the StarfieldAnimationComponent with SSR disabled
 const StarfieldAnimationComponentWithNoSSR = dynamic(
@@ -15,8 +20,43 @@ const StarfieldAnimationComponentWithNoSSR = dynamic(
   { ssr: false }
 );
 
-const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT1;
-const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
+const priceIdToSymbolMap = {
+  e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43:
+    "Crypto.BTC/USD",
+  ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d:
+    "Crypto.SOL/USD",
+  "0a0408d619e9380abad35060f9192039ed5042fa6f82301d0e48bb52be830996":
+    "Crypto.JUP/USD",
+  ff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace:
+    "Crypto.ETH/USD",
+  "09f7c1d7dfbb7df2b8fe3d3d87ee94a2259d212da4f30c1f0540d066dfa44723":
+    "Crypto.TIA/USD",
+  "23d7315113f5b1d3ba7a83604c44b94d79f4fd69af77f804fc7f920a6dc65744":
+    "Crypto.SUI/USD",
+  "0bbf28e9a841a1cc788f6a361b17ca072d0ea3098a1e5df1c3922d06719579ff":
+    "Crypto.PYTH/USD",
+  "72b021217ca3fe68922a19aaf990109cb9d84e9ad004b4d2025ad6f529314419":
+    "Crypto.BONK/USD",
+  // Add more mappings as necessary
+};
+
+
+const fetchHistoricalPriceUpdates = async (timestamp, ids) => {
+  const baseURL = "https://benchmarks.pyth.network/v1/updates/price/";
+  const url = `${baseURL}${timestamp}`;
+  const params = ids.map((id) => `ids=${id}`).join("&");
+  const fullUrl = `${url}?${params}`;
+
+  console.log(`Fetching data from URL: ${fullUrl}`);
+
+  try {
+    const response = await axios.get(fullUrl);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching historical price updates:", error);
+    return null;
+  }
+};
 
 export const HomeView: FC = ({}) => {
   const refSecondDiv = React.useRef(null);
@@ -148,35 +188,61 @@ export const HomeView: FC = ({}) => {
   }, [router.events]);
 
   useEffect(() => {
-    const socket = socketIOClient(ENDPOINT);
+    const currentDate = new Date();
+    const gmt2Date = new Date(currentDate.getTime() - 50000);
+    const timestamp = Math.floor(gmt2Date.getTime() / 1000);
 
-    socket.once("priceUpdate", (updatedPrices) => {
-      const newPrices = { ...prices };
-      updatedPrices.forEach((updatedPrice) => {
-        newPrices[updatedPrice.symbol] = updatedPrice.price;
-      });
+    const ids = Object.keys(priceIdToSymbolMap);
 
-      setPrices(newPrices);
-      // Disconnect from the socket after receiving the first update
-      socket.disconnect();
-    });
+    const fetchPrices = async () => {
+      const priceUpdates = await fetchHistoricalPriceUpdates(timestamp, ids);
+
+      if (priceUpdates && priceUpdates.parsed) {
+        const updatedPrices = { ...openPrices };
+        priceUpdates.parsed.forEach((priceUpdate) => {
+          const symbol = priceIdToSymbolMap[priceUpdate.id];
+          if (symbol) {
+            updatedPrices[symbol] = priceUpdate.price.price;
+          }
+        });
+
+        setPrices(updatedPrices);
+        console.log("updatedPrices", updatedPrices);
+      }
+    };
+
+    fetchPrices();
   }, []);
 
   useEffect(() => {
-    const socket = socketIOClient(ENDPOINT2);
+    const currentDate = new Date();
+    // Set the time to midnight UTC
+    currentDate.setUTCHours(0, 0, 0, 0);
+    // Convert to GMT+2 by adding 2 hours in milliseconds
+    const gmt2OffsetInMilliseconds = 0;
+    const gmt2Date = new Date(currentDate.getTime() + gmt2OffsetInMilliseconds);
+    const timestamp = Math.floor(gmt2Date.getTime() / 1000);
 
-    socket.on("openingprice", (openingPrices) => {
-      const openingPricess = { ...openPrices };
-      openingPrices.forEach((openingPrices) => {
-        openingPricess[openingPrices.symbol] = openingPrices.price;
-      });
-      setopenPrices(openingPricess);
-    });
+    const ids = Object.keys(priceIdToSymbolMap);
 
-    // Disconnect the socket when the component unmounts
-    return () => {
-      socket.disconnect();
+    const fetchPrices = async () => {
+      const priceUpdates = await fetchHistoricalPriceUpdates(timestamp, ids);
+
+      if (priceUpdates && priceUpdates.parsed) {
+        const updatedPrices = { ...openPrices };
+        priceUpdates.parsed.forEach((priceUpdate) => {
+          const symbol = priceIdToSymbolMap[priceUpdate.id];
+          if (symbol) {
+            updatedPrices[symbol] = priceUpdate.price.price;
+          }
+        });
+
+        setopenPrices(updatedPrices);
+        console.log("updatedPrices", updatedPrices);
+      }
     };
+
+    fetchPrices();
   }, []);
 
   const btcPrice =
@@ -320,28 +386,28 @@ export const HomeView: FC = ({}) => {
   const cryptoPairs1 = [
     {
       name: "Bitcoin",
-      price: `${btcPrice}`,
+      price: `${btcPrice} $`,
       ticker: "BTC-PERP",
       img: "coins/120x120/Btc.png",
       change: `${changeBtc.toFixed(2)}`,
     },
     {
       name: "Ethereum",
-      price: `${ethPrice}`,
+      price: `${ethPrice} $`,
       ticker: "ETH-PERP",
       img: "coins/120x120/Eth.png",
       change: `${changeEth.toFixed(2)}`,
     },
     {
       name: "Solana",
-      price: `${solPrice}`,
+      price: `${solPrice} $`,
       ticker: "SOL-PERP",
       img: "coins/120x120/Sol.png",
       change: `${changesol.toFixed(2)}`,
     },
     {
       name: "Bonk",
-      price: `${bonkPrice}`,
+      price: `${bonkPrice} $`,
       ticker: "BONK-PERP",
       img: "coins/120x120/Bonk.png",
       change: `${changeBonk.toFixed(2)}`,
@@ -352,28 +418,28 @@ export const HomeView: FC = ({}) => {
   const cryptoPairs2 = [
     {
       name: "Pyth",
-      price: `${pythPrice}`,
+      price: `${pythPrice} $`,
       ticker: "PYTH-PERP",
       img: "coins/120x120/Pyth.png",
       change: `${changePyth.toFixed(2)}`,
     },
     {
       name: "Jup",
-      price: `${jupPrice}`,
+      price: `${jupPrice} $`,
       ticker: "JUP-PERP",
       img: "coins/120x120/Jup.png",
       change: `${changeJup.toFixed(2)}`,
     },
     {
       name: "Sui",
-      price: `${suiPrice}`,
+      price: `${suiPrice} $`,
       ticker: "SUI-PERP",
       img: "coins/120x120/Sui.png",
       change: `${changeSui.toFixed(2)}`,
     },
     {
       name: "Tia",
-      price: `${tiaPrice}`,
+      price: `${tiaPrice} $`,
       ticker: "TIA-PERP",
       img: "coins/120x120/Tia.png",
       change: `${changeTia.toFixed(2)}`,
@@ -402,13 +468,20 @@ export const HomeView: FC = ({}) => {
               Trade Perpetual Futures{" "}
               <div className="pt-2 md:text-7xl text-3xl">on-chain.</div>
             </div>
-            <div className="flex sm:flex-row flex-col  gap-4 items-center justify-center w-auto sm:w-full">
+            <div className="flex sm:flex-col flex-col  gap-4 items-center justify-center w-auto sm:w-full">
               <Link href="/futures">
-                <button className="relative overflow-hidden py-3 rounded-lg bg-new-green hover:bg-new-green-dark cursor-pointer font-semibold leading-[normal] min-w-[189px] text-center text-lg text-black transition ease-in-out duration-300">
+                <button className="relative overflow-hidden py-3 rounded-lg bg-new-green hover:bg-new-green-dark cursor-pointer font-semibold leading-[normal] min-w-[189px] text-center text-lg text-black transition ease-in-out duration-300 ">
                   TRADE FUTURES
                 </button>
               </Link>
+              <a href="https://popfi.gitbook.io/docs" target="_blank" rel="noopener noreferrer">
+      <div className="md:text-md text-sm flex flex-row items-center justify-center text-[#ffffff80] hover:text-[#ffffff98] transition-all duration-200 ease-in-out">
+        Read Docs
+        <FaAngleDoubleRight className="ml-1 mt-0.5 flex justify-center items-center text-md" />
+      </div>
+    </a>
             </div>
+
           </div>
           <div className="font-bankgothicmdbt md:px-5 relative w-full pt-5 mb-16">
             <div className="absolute  flex md:flex-row flex-col gap-3.5 h-max inset-[0] items-start justify-between m-auto w-full">
@@ -416,8 +489,8 @@ export const HomeView: FC = ({}) => {
             </div>
             <div className="relative bottom-[10%] h-[718px] h-auto  inset-x-[0] mx-auto object-cover  md:w-[80%] w-[100%] max-w-[1600px] z-5  flex justify-center items-center">
               <img
-                className="w-[80%] "
-                src="trading.png"
+                className="w-[80%] rounded-xl border-[6px] border-[#ffffff15]"
+                src="popfipc.png"
                 alt="imageFive_One"
                 style={{
                   zIndex: 10,
@@ -426,8 +499,8 @@ export const HomeView: FC = ({}) => {
                 }}
               />
               <img
-                className="w-[20%]"
-                src="phoneph.png"
+                className="w-[21%] rounded-xl border-[6px] border-[#ffffff15]"
+                src="popfiphones.png"
                 alt="abstractSeven"
                 style={{
                   zIndex: 10,
