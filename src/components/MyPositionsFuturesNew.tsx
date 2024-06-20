@@ -448,6 +448,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     socket2Ref.current.on("futuresPosition", (updatedPosition: Position) => {
       const symbol = symbolMap[updatedPosition.symbol];
       const updatedPrice = prices[symbol];
+      console.log("received updated position", updatedPosition)
 
       // Set the current price of the updated position
       updatedPosition.currentPrice = updatedPrice.price;
@@ -664,7 +665,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     setupSocket2(walletAddress);
 
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
+      if (document.visibilityState === "visible") {
         if (!socketRef.current || !socketRef.current.connected) {
           setupSocket1();
         }
