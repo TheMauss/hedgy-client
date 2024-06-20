@@ -1947,7 +1947,7 @@ const MyPositions: FC<MyPositionsProps> = ({
           return !isMobile ? (
             <div
               key={item._id}
-              className="cursor-pointer px-2 w-full  rounded-lg font-poppins custom scrollbar flex  flex-row text-start rounded hover:bg-[#ffffff10]"
+              className="transition-all duration-100 ease-in-out cursor-pointer px-2 w-full  rounded-lg font-poppins custom scrollbar flex  flex-row text-start rounded hover:bg-[#ffffff10]"
               onClick={() => handleClick(item)}
             >
               <div className=" w-[20%] flex items-center min-w-[140px] text-start text-sm text-[#ffffff60]  ">
