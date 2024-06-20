@@ -448,12 +448,13 @@ const MyPositions: FC<MyPositionsProps> = ({
     socket2Ref.current.on("futuresPosition", (updatedPosition: Position) => {
       const symbol = symbolMap[updatedPosition.symbol];
       const updatedPrice = prices[symbol];
-      console.log("received updated position", updatedPosition)
+      console.log("received updated position", updatedPosition);
 
+      if (updatedPrice) {
       // Set the current price of the updated position
       updatedPosition.currentPrice = updatedPrice.price;
-      setPreviousPrice(updatedPrice.price);
-
+      }
+      
       setPositions((prevState) => {
         const positionExists = prevState.some(
           (position) => position._id === updatedPosition._id
@@ -707,12 +708,6 @@ const MyPositions: FC<MyPositionsProps> = ({
         }
       })
     );
-
-    setPreviousPrice((previousPrice) => {
-      const previousSymbol = symbolMap[previousPrice];
-      const updatedPrice = prices[previousSymbol];
-      return updatedPrice ? updatedPrice.price : previousPrice || 0;
-    });
   }, [prices]);
 
   const handleInputChangeProfit = (e: React.ChangeEvent<HTMLInputElement>) => {

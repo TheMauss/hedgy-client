@@ -326,7 +326,6 @@ function getDynamicLeverage(longShortRatio, priceDirection) {
   return Math.round(leverage);
 }
 
-const ENDPOINT = process.env.NEXT_PUBLIC_ENDPOINT1;
 const ENDPOINT1 = "https://hermes.pyth.network";
 const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
 const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT13;
@@ -1727,12 +1726,17 @@ const TradeBar: React.FC<
           // Wait for transaction confirmation
           notify({ type: "info", message: `Creating Trading Account` });
           await connection.confirmTransaction(initSignature, "confirmed");
-          fetchcheckuserdata();
           setModalIsOpen(false);
           notify({
             type: "success",
             message: `Trading account created`,
           });
+          // fetchcheckuserdata();
+          setisInit(prevState => ({
+            ...prevState,
+            isInitialized: true,
+            usedAffiliate: new Uint8Array(0)
+          }));
         } catch (error) {
           notify({
             type: "error",
