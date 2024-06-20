@@ -435,7 +435,7 @@ const MyPositions: FC<MyPositionsProps> = ({
     });
   }
 
-  function setupSocket2() {
+  function setupSocket2(walletAddress) {
     socket2Ref.current = socketIOClient(ENDPOINT1);
 
     if (socket2Ref.current) {
@@ -657,22 +657,22 @@ const MyPositions: FC<MyPositionsProps> = ({
     socketRef.current.emit("registerWallet", walletAddress, page, pageSize);
   };
 
-  function handleVisibilityChange() {
-    if (document.visibilityState === "visible") {
-      if (!socketRef.current || !socketRef.current.connected) {
-        setupSocket1();
-      }
-      if (!socket2Ref.current || !socket2Ref.current.connected) {
-        setupSocket2();
-      }
-    }
-  }
-
   useEffect(() => {
     if (!walletAddress) return;
     // Initial setup
     setupSocket1();
-    setupSocket2();
+    setupSocket2(walletAddress);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        if (!socketRef.current || !socketRef.current.connected) {
+          setupSocket1();
+        }
+        if (!socket2Ref.current || !socket2Ref.current.connected) {
+          setupSocket2(walletAddress);
+        }
+      }
+    };
 
     // Reconnect logic when the app comes back to the foreground
     document.addEventListener("visibilitychange", handleVisibilityChange);
