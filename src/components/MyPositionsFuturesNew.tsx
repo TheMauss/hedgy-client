@@ -669,6 +669,7 @@ const MyPositions: FC<MyPositionsProps> = ({
   }
 
   useEffect(() => {
+    if (!walletAddress) return;
     // Initial setup
     setupSocket1();
     setupSocket2();
@@ -686,7 +687,7 @@ const MyPositions: FC<MyPositionsProps> = ({
       }
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [walletAddress, currentPage, socketRef, socket2Ref]);
+  }, [walletAddress, currentPage]);
 
   useEffect(() => {
     setPositions((positions) =>
