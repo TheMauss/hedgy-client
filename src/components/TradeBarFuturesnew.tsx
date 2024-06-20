@@ -1473,7 +1473,9 @@ const TradeBar: React.FC<
         );
       }
 
-      return (responseData.result.priorityFeeLevels.veryHigh + 300).toFixed(0);
+      return (responseData.result.priorityFeeLevels.veryHigh + 30000).toFixed(
+        0
+      );
     } catch (error) {
       console.error("Error fetching priority fee estimate:", error);
     }

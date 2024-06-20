@@ -445,177 +445,173 @@ const MyPositions: FC<MyPositionsProps> = ({
 
     socket2Ref.current.emit("registerWallet", walletAddress);
 
-    socket2Ref.current.on(
-      "futuresPosition",
-      (updatedPosition: Position, latestPrice: number) => {
-        setPreviousPrice(latestPrice);
+    socket2Ref.current.on("futuresPosition", (updatedPosition: Position) => {
+      const symbol = symbolMap[updatedPosition.symbol];
+      const updatedPrice = prices[symbol];
 
-        setPositions((prevState) => {
-          const positionExists = prevState.some(
-            (position) => position._id === updatedPosition._id
-          );
+      // Set the current price of the updated position
+      updatedPosition.currentPrice = updatedPrice.price;
+      setPreviousPrice(updatedPrice.price);
 
-          if (positionExists) {
-            // Update the position
-            const updatedPositions = prevState.map((position) => {
-              if (position._id === updatedPosition._id) {
-                const updatedPos = {
-                  ...updatedPosition,
-                  currentPrice: latestPrice,
-                };
+      setPositions((prevState) => {
+        const positionExists = prevState.some(
+          (position) => position._id === updatedPosition._id
+        );
 
-                // If the position is not resolved and the stopLossPrice or takeProfitPrice has changed, update latestOpenedPosition
-                if (
-                  !updatedPos.resolved &&
-                  (updatedPos.stopLossPrice !== position.stopLossPrice ||
-                    updatedPos.takeProfitPrice !== position.takeProfitPrice ||
-                    updatedPos.liquidationPrice !== position.liquidationPrice)
-                ) {
-                  setLatestOpenedPosition((prevPositions) => {
-                    const updatedPositions = {
-                      ...prevPositions,
-                      [updatedPos.symbol.toString()]: updatedPos,
-                    };
-
-                    return updatedPositions;
-                  });
-                  if (
-                    updatedPos.stopLossPrice !== position.stopLossPrice ||
-                    updatedPos.takeProfitPrice !== position.takeProfitPrice
-                  ) {
-                    handleNewNotification({
-                      id: updatedPosition._id.toString(),
-                      type: "success",
-                      message: `Position updated`,
-                      description: `Take Profit is ${(updatedPosition.takeProfitPrice / 100000000).toFixed(2)}, Stop Loss is ${(updatedPosition.stopLossPrice / 100000000).toFixed(2)}`,
-                    });
-                  } else {
-                    handleNewNotification({
-                      id: updatedPosition._id.toString(),
-                      type: "success",
-                      message: `Borrowing fee paid`,
-                      description: `New Liquidation Price is  ${(updatedPosition.liquidationPrice / 100000000).toFixed(2)}`,
-                    });
-                  }
-                }
-                return updatedPos;
-              }
-
-              return position;
-            });
-
-            return updatedPositions;
-          } else {
-            if (!updatedPosition.resolved) {
-              // Add the new position to the array
-              handleNewNotification({
-                id: updatedPosition._id.toString(),
-                type: "success",
-                message: `Position opened`,
-                description: `Entry price: ${(updatedPosition.initialPrice / 100000000).toFixed(3)} USD`,
-              });
-            }
-            setLatestOpenedPosition((prevPositions) => {
-              const updatedPositions = {
-                ...prevPositions,
-                [updatedPosition.symbol.toString()]: updatedPosition,
+        if (positionExists) {
+          // Update the position
+          const updatedPositions = prevState.map((position) => {
+            if (position._id === updatedPosition._id) {
+              const updatedPos = {
+                ...updatedPosition,
               };
-              return updatedPositions;
-            });
 
-            return [
-              ...prevState,
-              { ...updatedPosition, currentPrice: latestPrice },
-            ];
+              // If the position is not resolved and the stopLossPrice or takeProfitPrice has changed, update latestOpenedPosition
+              if (
+                !updatedPos.resolved &&
+                (updatedPos.stopLossPrice !== position.stopLossPrice ||
+                  updatedPos.takeProfitPrice !== position.takeProfitPrice ||
+                  updatedPos.liquidationPrice !== position.liquidationPrice)
+              ) {
+                setLatestOpenedPosition((prevPositions) => {
+                  const updatedPositions = {
+                    ...prevPositions,
+                    [updatedPos.symbol.toString()]: updatedPos,
+                  };
+
+                  return updatedPositions;
+                });
+                if (
+                  updatedPos.stopLossPrice !== position.stopLossPrice ||
+                  updatedPos.takeProfitPrice !== position.takeProfitPrice
+                ) {
+                  handleNewNotification({
+                    id: updatedPosition._id.toString(),
+                    type: "success",
+                    message: `Position updated`,
+                    description: `Take Profit is ${(updatedPosition.takeProfitPrice / 100000000).toFixed(2)}, Stop Loss is ${(updatedPosition.stopLossPrice / 100000000).toFixed(2)}`,
+                  });
+                } else {
+                  handleNewNotification({
+                    id: updatedPosition._id.toString(),
+                    type: "success",
+                    message: `Borrowing fee paid`,
+                    description: `New Liquidation Price is  ${(updatedPosition.liquidationPrice / 100000000).toFixed(2)}`,
+                  });
+                }
+              }
+              return updatedPos;
+            }
+
+            return position;
+          });
+
+          return updatedPositions;
+        } else {
+          if (!updatedPosition.resolved) {
+            // Add the new position to the array
+            handleNewNotification({
+              id: updatedPosition._id.toString(),
+              type: "success",
+              message: `Position opened`,
+              description: `Entry price: ${(updatedPosition.initialPrice / 100000000).toFixed(3)} USD`,
+            });
           }
+          setLatestOpenedPosition((prevPositions) => {
+            const updatedPositions = {
+              ...prevPositions,
+              [updatedPosition.symbol.toString()]: updatedPosition,
+            };
+            return updatedPositions;
+          });
+
+          return [...prevState, { ...updatedPosition }];
+        }
+      });
+
+      if (updatedPosition.resolved) {
+        const unit = updatedPosition.usdc === 1 ? "USDC" : "SOL";
+        // handleNewNotification the user of the resolved position
+        handleNewNotification({
+          id: updatedPosition.futuresContract,
+          type: "success",
+          message: `Position resolved`,
+          description: `PnL: ${(updatedPosition.pnl / LAMPORTS_PER_SOL).toFixed(2)} ${unit}`,
         });
 
-        if (updatedPosition.resolved) {
-          const unit = updatedPosition.usdc === 1 ? "USDC" : "SOL";
-                    // handleNewNotification the user of the resolved position
-                    handleNewNotification({
-                      id: updatedPosition.futuresContract,
-                      type: "success",
-                      message: `Position resolved`,
-                      description: `PnL: ${(updatedPosition.pnl / LAMPORTS_PER_SOL).toFixed(2)} ${unit}`,
-                    });
+        // Add the resolved position
+        setResolvedPositions((prevState) => {
+          const exists = prevState.some(
+            (position) => position._id === updatedPosition._id
+          );
+          return exists ? prevState : [updatedPosition, ...prevState];
+        });
 
-          // Add the resolved position
-          setResolvedPositions((prevState) => {
-            const exists = prevState.some(
-              (position) => position._id === updatedPosition._id
-            );
-            return exists ? prevState : [updatedPosition, ...prevState];
-          });
+        // Remove the resolved position from the main positions array
+        setPositions((prevState) => {
+          const updatedPositionIndex = prevState.findIndex(
+            (position) => position._id === updatedPosition._id
+          );
+          const remainingPositions = prevState.filter(
+            (position) => position._id !== updatedPosition._id
+          );
 
-          // Remove the resolved position from the main positions array
-          setPositions((prevState) => {
-            const updatedPositionIndex = prevState.findIndex(
-              (position) => position._id === updatedPosition._id
-            );
-            const remainingPositions = prevState.filter(
-              (position) => position._id !== updatedPosition._id
-            );
+          setLatestOpenedPosition((prevPositions) => {
+            // If the updated position was the last in the array
+            if (updatedPositionIndex === prevState.length - 1) {
+              const nonResolvedSameSymbolPositions = remainingPositions.filter(
+                (position) =>
+                  position.symbol === updatedPosition.symbol &&
+                  !position.resolved
+              );
 
-            setLatestOpenedPosition((prevPositions) => {
-              // If the updated position was the last in the array
-              if (updatedPositionIndex === prevState.length - 1) {
-                const nonResolvedSameSymbolPositions =
-                  remainingPositions.filter(
-                    (position) =>
-                      position.symbol === updatedPosition.symbol &&
-                      !position.resolved
-                  );
-
-                const latestSameSymbolPosition =
-                  nonResolvedSameSymbolPositions.length
-                    ? nonResolvedSameSymbolPositions[
-                        nonResolvedSameSymbolPositions.length - 1
-                      ]
-                    : null;
-
-                const updatedPrevPositions = {
-                  ...prevPositions,
-                  [updatedPosition.symbol.toString()]: latestSameSymbolPosition,
-                };
-
-                return updatedPrevPositions;
-              } else if (
-                prevPositions[updatedPosition.symbol.toString()]._id ===
-                  updatedPosition._id &&
-                updatedPositionIndex === prevState.length - 1
-              ) {
-                // If the updated position was the current "latest"
-                const subsequentPositions =
-                  remainingPositions.slice(updatedPositionIndex);
-                const nextSameSymbolPositions = subsequentPositions.filter(
-                  (position) =>
-                    position.symbol === updatedPosition.symbol &&
-                    !position.resolved
-                );
-
-                const latestSameSymbolPosition = nextSameSymbolPositions.length
-                  ? nextSameSymbolPositions[0]
+              const latestSameSymbolPosition =
+                nonResolvedSameSymbolPositions.length
+                  ? nonResolvedSameSymbolPositions[
+                      nonResolvedSameSymbolPositions.length - 1
+                    ]
                   : null;
 
-                const updatedPrevPositions = {
-                  ...prevPositions,
-                  [updatedPosition.symbol.toString()]: latestSameSymbolPosition,
-                };
+              const updatedPrevPositions = {
+                ...prevPositions,
+                [updatedPosition.symbol.toString()]: latestSameSymbolPosition,
+              };
 
-                return updatedPrevPositions;
-              }
+              return updatedPrevPositions;
+            } else if (
+              prevPositions[updatedPosition.symbol.toString()]._id ===
+                updatedPosition._id &&
+              updatedPositionIndex === prevState.length - 1
+            ) {
+              // If the updated position was the current "latest"
+              const subsequentPositions =
+                remainingPositions.slice(updatedPositionIndex);
+              const nextSameSymbolPositions = subsequentPositions.filter(
+                (position) =>
+                  position.symbol === updatedPosition.symbol &&
+                  !position.resolved
+              );
 
-              // If neither of the above, return the current state
-              return prevPositions;
-            });
+              const latestSameSymbolPosition = nextSameSymbolPositions.length
+                ? nextSameSymbolPositions[0]
+                : null;
 
-            return remainingPositions;
+              const updatedPrevPositions = {
+                ...prevPositions,
+                [updatedPosition.symbol.toString()]: latestSameSymbolPosition,
+              };
+
+              return updatedPrevPositions;
+            }
+
+            // If neither of the above, return the current state
+            return prevPositions;
           });
 
-        }
+          return remainingPositions;
+        });
       }
-    );
+    });
 
     socket2Ref.current.on(
       "futuresupdateOrders",
@@ -640,15 +636,11 @@ const MyPositions: FC<MyPositionsProps> = ({
             const updatedOrders = [...prevOrders];
             updatedOrders[existingOrderIndex] = {
               ...updatedOrder,
-              currentPrice: latestPrice,
             };
             return updatedOrders;
           } else {
             // Add new order
-            return [
-              ...prevOrders,
-              { ...updatedOrder, currentPrice: latestPrice },
-            ];
+            return [...prevOrders, { ...updatedOrder }];
           }
         });
       }
@@ -1071,7 +1063,9 @@ const MyPositions: FC<MyPositionsProps> = ({
         );
       }
 
-      return (responseData.result.priorityFeeLevels.veryHigh + 300).toFixed(0);
+      return (responseData.result.priorityFeeLevels.veryHigh + 30000).toFixed(
+        0
+      );
     } catch (error) {
       console.error("Error fetching priority fee estimate:", error);
     }
