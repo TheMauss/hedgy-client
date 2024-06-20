@@ -1419,24 +1419,23 @@ const MyPositions: FC<MyPositionsProps> = ({
     // Update the selectedCryptos state
     setSelectedCryptos({ [cryptoIdentifier]: true });
 
-    // Update the selectedCrypto state if needed
-    // setSelectedCrypto(symbolOption);
-
     onSymbolChange(symbolOption);
     router.push(`/futures?crypto=${cryptoIdentifier}`, undefined, {
       shallow: true,
     });
   };
 
-  const handleClick = (item) => {
-    setLatestOpenedPosition((prevPositions) => {
-      const updatedPositions = {
-        ...prevPositions,
-        [item.symbol.toString()]: item,
-      };
-      handleCryptoChange(item.symbol);
-      return updatedPositions;
-    });
+  const handleClick = (item, shouldChangeCrypto = true) => {
+    if (shouldChangeCrypto) {
+      setLatestOpenedPosition((prevPositions) => {
+        const updatedPositions = {
+          ...prevPositions,
+          [item.symbol.toString()]: item,
+        };
+        handleCryptoChange(item.symbol);
+        return updatedPositions;
+      });
+    }
   };
 
   const getActiveSymbol = (item) => {
@@ -2168,7 +2167,8 @@ const MyPositions: FC<MyPositionsProps> = ({
                       <div className=" w-[100%]">
                         <button
                           className="flex justify-center items-center w-1/2 h-[26px] w-[100%] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.9rem]  py-1 px-1 rounded border-r border-[#1A1A25]"
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setCurrentItem(item);
                             setModalIsOpen(true);
                           }}
@@ -2179,7 +2179,8 @@ const MyPositions: FC<MyPositionsProps> = ({
                       <div className="justify-center w-[100%] h-[100%]">
                         <button
                           className="w-1/2 h-[26px] flex items-center justify-center w-[100%] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.9rem]  py-1 px-1 rounded"
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setCurrentItem(item);
                             setModalIsOpen1(true);
                           }}
@@ -2190,7 +2191,10 @@ const MyPositions: FC<MyPositionsProps> = ({
                     </div>
                     <button
                       className="flex justify-center items-center h-[26px] md:w-[45%] w-[95%] min:w-[100px] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.84rem] xl:text-[0.9rem]  py-0.5 px-4 rounded"
-                      onClick={() => handleButtonClick3(item)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleButtonClick3(item);
+                      }}
                       // onMouseEnter={handleMouseEnter(item)}
                     >
                       {isTransactionPending ? (
