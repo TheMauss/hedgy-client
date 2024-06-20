@@ -686,7 +686,7 @@ const MyPositions: FC<MyPositionsProps> = ({
       }
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [walletAddress, currentPage]);
+  }, [walletAddress, currentPage, socketRef, socket2Ref]);
 
   useEffect(() => {
     setPositions((positions) =>

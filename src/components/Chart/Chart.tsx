@@ -159,7 +159,7 @@ const useChartComponent = (
     //     symbol: symbol,
     //     active: true,
     //   };
-      // socketRef.current.emit("symbolUpdate", messageObject);
+    // socketRef.current.emit("symbolUpdate", messageObject);
     // }
   };
 
