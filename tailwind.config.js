@@ -41,7 +41,7 @@ module.exports = {
         "new-card-bg": "#14141465",
         "new-green": "#43e3ae",
         "new-green-dark": "#2b9974",
-        "new-red-dark": "#ff4bdb",
+        "new-red-dark": "#c83030",
       },
       fontSize: {
         "between-md-lg": "1.15rem",
