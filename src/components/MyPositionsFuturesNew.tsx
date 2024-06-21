@@ -18,6 +18,7 @@ import {
   FaCogs,
 } from "react-icons/fa";
 import Modal from "react-modal";
+import { GoGraph } from "react-icons/go";
 import { BN } from "@project-serum/anchor";
 import {
   CloseFutContAccounts,
@@ -2505,10 +2506,10 @@ const MyPositions: FC<MyPositionsProps> = ({
                 <div className="items-center w-full text-[0.9rem] text-[#ffffff60]   font-poppins">
                   <div className="items-center flex md:flex-row flex-col w-[100%]">
                     <div className="flex flex-row items-center justify-center w-[100%]">
-                      <div className="flex flex-row w-[30%]">
-                        <div className=" w-[100%] gap-2">
+                      <div className="flex flex-row w-[50%]">
+                        <div className=" w-[100%]">
                           <button
-                            className="flex justify-center items-center mr-1 w-1/2 h-[26px] w-[100%] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.9rem]  py-1 px-1 rounded border-r border-[#1A1A25]"
+                            className="flex justify-center items-center w-1/2 h-[26px] w-[100%] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.9rem]  py-1 px-1 rounded border-r border-[#1A1A25]"
                             onClick={() => {
                               setCurrentItem(item);
                               setModalIsOpen(true);
@@ -2517,9 +2518,19 @@ const MyPositions: FC<MyPositionsProps> = ({
                             <FaShareAlt size={15} />
                           </button>{" "}
                         </div>
-                        <div className="justify-center w-[100%] h-[100%]">
+
+                        <div className=" w-[100%] mx-2">
                           <button
-                            className="w-1/2 h-[26px] flex items-center ml-1 justify-center w-[100%] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.9rem]  py-1 px-1 rounded"
+                            className="flex justify-center items-center  w-1/2 h-[26px] w-[100%] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.9rem]  py-1 px-1 rounded border-r border-[#1A1A25]"
+                            onClick={() => handleClick(item)}
+                          >
+                            <GoGraph size={15} />
+                          </button>{" "}
+                        </div>
+
+                        <div className="justify-center w-[100%] h-[100%] ">
+                          <button
+                            className="w-1/2 h-[26px] flex items-center justify-center w-[100%] bg-[#ffffff12] hover:bg-[#ffffff24] transition-all duration-200 ease-in-out text-[0.9rem]  py-1 px-1 rounded"
                             onClick={() => {
                               setCurrentItem(item);
                               setModalIsOpen1(true);
