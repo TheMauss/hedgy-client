@@ -1489,7 +1489,7 @@ const Stats: FC = () => {
               <div className="md:mt-4 z-10 font-poppins w-full md:w-[350px] self-stretch rounded-lg bg-layer-1 box-border h-10 flex flex-row items-center justify-between py-0 px-2 text-base text-grey-text  hover:bg-[#ffffff24] transition-all duration-200 ease-in-out">
                 Your Volume
                 <span className="text-[#34C796]">
-                  {(totalVolumepast4Epoch / LAMPORTS_PER_SOL).toFixed(0)} SOL
+                  {(totalVolumepast4Epoch / LAMPORTS_PER_SOL).toFixed(0)}k USD
                 </span>
               </div>
             </div>

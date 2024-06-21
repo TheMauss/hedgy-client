@@ -319,8 +319,10 @@ const useChartComponent = (
         !isNaN(position.leverage)
       ) {
         const quantity = (position.betAmount * position.leverage) / 1000000000;
+        const quantitySOLorUSDC =
+          position.usdc === 1 ? quantity * 1000 : quantity;
         const unit = position.usdc === 1 ? "USDC" : "SOL";
-        line.setQuantity(`${quantity.toFixed(2)} ${unit}`);
+        line.setQuantity(`${quantitySOLorUSDC.toFixed(2)} ${unit}`);
         line.onClose("onClose called", function (text) {
           resolveFutCont(position);
         });
