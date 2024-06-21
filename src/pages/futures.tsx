@@ -394,7 +394,15 @@ const Futures: FC = () => {
   return (
     <div className="relative max-h-100vh overflow-hidden">
       <div
-        className="overflow-hidden absolute futures-circles4 w-full h-full"
+        className="hidden md:flex overflow-hidden absolute futures-circles4 w-4/5 h-full"
+        style={{
+          zIndex: 0,
+          transform: "translate(-66%, -33%)",
+          right: "0%",
+        }}
+      ></div>
+      <div
+        className="hidden overflow-hidden absolute futures-circles4 w-full h-full"
         style={{
           zIndex: 0,
           transform: "translate(-42%, -28%)",
@@ -402,10 +410,10 @@ const Futures: FC = () => {
         }}
       ></div>
       <div
-        className="overflow-hidden absolute futures-circles5 w-full h-full"
+        className="overflow-hidden absolute futures-circles5 w-3/4 h-full"
         style={{
           zIndex: 0,
-          transform: "translate(40%, -30%)",
+          transform: "translate(35%, -30%)",
           right: "0%",
         }}
       ></div>
@@ -420,7 +428,7 @@ const Futures: FC = () => {
         {" "}
       </div>
       <div
-        className="overflow-hidden absolute futures-circles2 w-full h-full"
+        className="overflow-hidden absolute futures-circles2 w-4/5 h-full"
         style={{
           zIndex: 0,
           transform: "translate(65%, 35%)",
@@ -429,13 +437,6 @@ const Futures: FC = () => {
       >
         {" "}
       </div>
-
-      {/* <div className="overflow-hidden absolute futures-circles w-full h-full"
-                              style={{
-                                zIndex: 10,
-                                transform: "translate(0%, -50%)",
-                                right: "0%",
-                              }}> </div> */}
 
       <Head>
         <title>
