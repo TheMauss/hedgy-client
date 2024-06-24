@@ -1192,7 +1192,7 @@ const Stats: FC = () => {
               <img
                 className="relative w-[60px] h-[60px]"
                 alt=""
-                src="/sheesh/icons21.svg"
+                src="/sheesh/profile.svg"
               />
               <div className="h-[60px] flex flex-col justify-center items-start md:items-center">
                 <div className="relative leading-[100%] font-medium text-center">
@@ -1208,7 +1208,7 @@ const Stats: FC = () => {
               <img
                 className="relative w-[60px] h-[60px]"
                 alt=""
-                src="/sheesh/icons22.svg"
+                src="/sheesh/totaltrades.svg"
               />
               <div className="h-[60px] flex flex-col justify-center items-start md:items-center">
                 <div className="relative leading-[100%] font-medium text-center">
@@ -1223,7 +1223,7 @@ const Stats: FC = () => {
               <img
                 className="relative w-[60px] h-[60px]"
                 alt=""
-                src="/sheesh/icons23.svg"
+                src="/sheesh/totalvolume.png"
               />
               <div className="h-[60px] flex flex-col justify-center items-start md:items-center">
                 <div className="relative leading-[100%] font-medium text-center">
@@ -1251,7 +1251,7 @@ const Stats: FC = () => {
               <img
                 className="relative w-[60px] h-[60px]"
                 alt=""
-                src="/sheesh/icons24.svg"
+                src="/sheesh/winratio.svg"
               />
               <div className="h-[60px] flex flex-col justify-center items-start md:items-center">
                 <div className="relative leading-[100%] font-medium text-center">
@@ -1272,7 +1272,7 @@ const Stats: FC = () => {
               <img
                 className="relative w-[60px] h-[60px]"
                 alt=""
-                src="/sheesh/icons25.svg"
+                src="/sheesh/pnl.png"
               />
               <div className="h-[60px] flex flex-col justify-center items-start md:items-center">
                 <div className="relative leading-[100%] font-medium text-center">
@@ -1499,7 +1499,7 @@ const Stats: FC = () => {
                 className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 0 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ${rebateTier === 0 ? "border-solid border-[#0F7F59]" : ""}`}
               >
                 <div
-                  className={`md:block hidden rounded-full ${rebateTier === 0 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
+                  className={`md:block hidden rounded-full ${rebateTier === 0 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-[#ffffff20]"} flex flex-row items-center justify-center py-2 px-4`}
                 >
                   <div className="relative leading-[100%] font-medium">
                     {rebateTier === 0 ? "Your Tier" : "Tier 1"}
@@ -1512,7 +1512,7 @@ const Stats: FC = () => {
                 />
                 <div className="flex flex-col md:items-center items-start justify-start gap-[8px] text-center text-xl font-poppins">
                   <div
-                    className={`md:hidden rounded-full ${rebateTier === 0 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
+                    className={`md:hidden rounded-full ${rebateTier === 0 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-[#ffffff20]"} flex flex-row items-center justify-center py-2 px-4`}
                   >
                     <div className="relative leading-[100%] font-medium">
                       {rebateTier === 0 ? "Your Tier" : "Tier 1"}
@@ -1530,7 +1530,7 @@ const Stats: FC = () => {
                 className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 5 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ${rebateTier === 5 ? "border-solid border-[#0F7F59]" : ""}`}
               >
                 <div
-                  className={`md:block hidden rounded-full ${rebateTier === 5 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
+                  className={`md:block hidden rounded-full ${rebateTier === 5 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-[#ffffff20]"} flex flex-row items-center justify-center py-2 px-4`}
                 >
                   <div className="relative leading-[100%] font-medium">
                     {rebateTier === 5 ? "Your Tier" : "Tier 2"}
@@ -1543,7 +1543,7 @@ const Stats: FC = () => {
                 />
                 <div className="flex flex-col md:items-center items-start justify-start gap-[8px] text-center text-xl font-poppins">
                   <div
-                    className={`md:hidden rounded-full ${rebateTier === 5 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
+                    className={`md:hidden rounded-full ${rebateTier === 5 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-[#ffffff20]"} flex flex-row items-center justify-center py-2 px-4`}
                   >
                     <div className="relative leading-[100%] font-medium">
                       {rebateTier === 5 ? "Your Tier" : "Tier 2"}
@@ -1561,7 +1561,7 @@ const Stats: FC = () => {
                 className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 10 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ${rebateTier === 10 ? "border-solid border-[#0F7F59]" : ""}`}
               >
                 <div
-                  className={`md:block hidden rounded-full ${rebateTier === 10 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
+                  className={`md:block hidden rounded-full ${rebateTier === 10 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-[#ffffff20]"} flex flex-row items-center justify-center py-2 px-4`}
                 >
                   <div className="relative leading-[100%] font-medium">
                     {rebateTier === 10 ? "Your Tier" : "Tier 3"}
@@ -1574,7 +1574,7 @@ const Stats: FC = () => {
                 />
                 <div className="flex flex-col md:items-center items-start justify-start gap-[8px] text-center text-xl font-poppins">
                   <div
-                    className={`md:hidden rounded-full ${rebateTier === 10 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
+                    className={`md:hidden rounded-full ${rebateTier === 10 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-[#ffffff20]"} flex flex-row items-center justify-center py-2 px-4`}
                   >
                     <div className="relative leading-[100%] font-medium">
                       {rebateTier === 10 ? "Your Tier" : "Tier 3"}
@@ -1592,7 +1592,7 @@ const Stats: FC = () => {
                 className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 15 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ${rebateTier === 15 ? "border-solid border-[#0F7F59]" : ""}`}
               >
                 <div
-                  className={`md:block hidden rounded-full ${rebateTier === 15 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
+                  className={`md:block hidden rounded-full ${rebateTier === 15 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-[#ffffff20]"} flex flex-row items-center justify-center py-2 px-4`}
                 >
                   <div className="relative leading-[100%] font-medium">
                     {rebateTier === 15 ? "Your Tier" : "Tier 4"}
@@ -1605,7 +1605,7 @@ const Stats: FC = () => {
                 />
                 <div className="flex flex-col md:items-center items-start justify-start gap-[8px] text-center text-xl font-poppins">
                   <div
-                    className={`md:hidden rounded-full ${rebateTier === 15 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
+                    className={`md:hidden rounded-full ${rebateTier === 15 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-[#ffffff20]"} flex flex-row items-center justify-center py-2 px-4`}
                   >
                     <div className="relative leading-[100%] font-medium">
                       {rebateTier === 15 ? "Your Tier" : "Tier 4"}
@@ -1626,7 +1626,7 @@ const Stats: FC = () => {
               className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 20 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ${rebateTier === 20 ? "border-solid border-[#0F7F59]" : ""}`}
             >
               <div
-                className={`md:block hidden rounded-full ${rebateTier === 20 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
+                className={`md:block hidden rounded-full ${rebateTier === 20 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-[#ffffff20]"} flex flex-row items-center justify-center py-2 px-4`}
               >
                 <div className="relative leading-[100%] font-medium">
                   {rebateTier === 20 ? "Your Tier" : "Tier 5"}
@@ -1639,7 +1639,7 @@ const Stats: FC = () => {
               />
               <div className="flex flex-col md:items-center items-start justify-start gap-[8px] text-center text-xl font-poppins">
                 <div
-                  className={`md:hidden rounded-full ${rebateTier === 20 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
+                  className={`md:hidden rounded-full ${rebateTier === 20 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-[#ffffff20]"} flex flex-row items-center justify-center py-2 px-4`}
                 >
                   <div className="relative leading-[100%] font-medium">
                     {rebateTier === 20 ? "Your Tier" : "Tier 5"}
@@ -1657,7 +1657,7 @@ const Stats: FC = () => {
               className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 25 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ${rebateTier === 25 ? "border-solid border-[#0F7F59]" : ""}`}
             >
               <div
-                className={`md:block hidden rounded-full ${rebateTier === 25 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
+                className={`md:block hidden rounded-full ${rebateTier === 25 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-[#ffffff20]"} flex flex-row items-center justify-center py-2 px-4`}
               >
                 <div className="relative leading-[100%] font-medium">
                   {rebateTier === 25 ? "Your Tier" : "Tier 6"}
@@ -1670,7 +1670,7 @@ const Stats: FC = () => {
               />
               <div className="flex flex-col md:items-center items-start justify-start gap-[8px] text-center text-xl font-poppins">
                 <div
-                  className={`md:hidden rounded-full ${rebateTier === 25 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
+                  className={`md:hidden rounded-full ${rebateTier === 25 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-[#ffffff20]"} flex flex-row items-center justify-center py-2 px-4`}
                 >
                   <div className="relative leading-[100%] font-medium">
                     {rebateTier === 25 ? "Your Tier" : "Tier 6"}
@@ -1688,7 +1688,7 @@ const Stats: FC = () => {
               className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 30 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ${rebateTier === 30 ? "border-solid border-[#0F7F59]" : ""}`}
             >
               <div
-                className={`md:block hidden rounded-full ${rebateTier === 30 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
+                className={`md:block hidden rounded-full ${rebateTier === 30 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-[#ffffff20]"} flex flex-row items-center justify-center py-2 px-4`}
               >
                 <div className="relative leading-[100%] font-medium">
                   {rebateTier === 30 ? "Your Tier" : "Tier 7"}
@@ -1701,7 +1701,7 @@ const Stats: FC = () => {
               />
               <div className="flex flex-col md:items-center items-start justify-start gap-[8px] text-center text-xl font-poppins">
                 <div
-                  className={`md:hidden rounded-full ${rebateTier === 30 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
+                  className={`md:hidden rounded-full ${rebateTier === 30 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-[#ffffff20]"} flex flex-row items-center justify-center py-2 px-4`}
                 >
                   <div className="relative leading-[100%] font-medium">
                     {rebateTier === 30 ? "Your Tier" : "Tier 7"}
@@ -1719,7 +1719,7 @@ const Stats: FC = () => {
               className={`md:1/4 w-full md:rounded-2xl rounded-lg ${rebateTier === 35 ? "[background:linear-gradient(180deg,_rgba(19,53,52,255),_rgba(12,37,39,255))]" : "bg-layer-1"} flex md:flex-col items-center justify-start md:justify-center md:p-6 p-4 gap-[8px]  ${rebateTier === 35 ? "border-solid border-[#0F7F59]" : ""}`}
             >
               <div
-                className={`md:block hidden rounded-full ${rebateTier === 35 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
+                className={`md:block hidden rounded-full ${rebateTier === 35 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-[#ffffff20]"} flex flex-row items-center justify-center py-2 px-4`}
               >
                 <div className="relative leading-[100%] font-medium">
                   {rebateTier === 35 ? "Your Tier" : "Tier 8"}
@@ -1732,7 +1732,7 @@ const Stats: FC = () => {
               />
               <div className="flex flex-col md:items-center items-start justify-start gap-[8px] text-center text-xl font-poppins">
                 <div
-                  className={`md:hidden rounded-full ${rebateTier === 35 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-layer-2"} flex flex-row items-center justify-center py-2 px-4`}
+                  className={`md:hidden rounded-full ${rebateTier === 35 ? "[background:linear-gradient(180deg,_#34c796,_#0b7a55)]" : "bg-[#ffffff20]"} flex flex-row items-center justify-center py-2 px-4`}
                 >
                   <div className="relative leading-[100%] font-medium">
                     {rebateTier === 35 ? "Your Tier" : "Tier 8"}
@@ -1824,7 +1824,7 @@ const Stats: FC = () => {
                     <img
                       className="relative rounded-lg w-[42px] h-[42px]"
                       alt=""
-                      src="/sheesh/icons12.svg"
+                      src="/sheesh/totalusers.png"
                     />
                     <div className="flex flex-col items-start justify-center gap-[4px]">
                       <div className="text-grey-text relative leading-[100%] ">
@@ -1839,7 +1839,7 @@ const Stats: FC = () => {
                     <img
                       className="relative rounded-lg w-[42px] h-[42px]"
                       alt=""
-                      src="/sheesh/icons2.svg"
+                      src="/sheesh/totalvolumeclaim.png"
                     />
                     <div className="flex flex-col items-start justify-center gap-[4px]">
                       <div className="text-grey-text text-grey-textrelative leading-[100%] ">
@@ -1859,7 +1859,7 @@ const Stats: FC = () => {
                     <img
                       className="relative rounded-lg w-[42px] h-[42px]"
                       alt=""
-                      src="/sheesh/icons13.svg"
+                      src="/sheesh/solclaim.svg"
                     />
                     <div className=" flex flex-col items-start justify-center gap-[4px]">
                       <div className="text-grey-text relative leading-[100%] ">
@@ -1887,7 +1887,7 @@ const Stats: FC = () => {
                     <img
                       className="relative rounded-lg w-[42px]"
                       alt=""
-                      src="/sheesh/icons1.svg"
+                      src="/sheesh/usdclaim.png"
                     />
                     <div className=" flex flex-col items-start justify-center gap-[4px]">
                       <div className="text-grey-text relative leading-[100%] ">

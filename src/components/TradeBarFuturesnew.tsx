@@ -326,7 +326,7 @@ function getDynamicLeverage(longShortRatio, priceDirection) {
   return Math.round(leverage);
 }
 
-const ENDPOINT1 = "https://hermes.pyth.network";
+const ENDPOINT1 = "https://popfiio-pythnet-2140.mainnet.pythnet.rpcpool.com";
 const ENDPOINT2 = process.env.NEXT_PUBLIC_ENDPOINT2;
 const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT13;
 

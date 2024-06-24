@@ -325,7 +325,7 @@ const Stats: FC = () => {
               <img
                 className="relative w-[60px] h-[60px]"
                 alt=""
-                src="/sheesh/icons18.svg"
+                src="/sheesh/totvol.png"
               />
               <div className="h-[60px] flex flex-col justify-center items-start md:items-center">
                 <div className="relative leading-[100%] text-[#ffffff80] md:text-center ">
@@ -341,7 +341,7 @@ const Stats: FC = () => {
               <img
                 className="relative w-[60px] h-[60px]"
                 alt=""
-                src="/sheesh/icons19.svg"
+                src="/sheesh/totfees.svg"
               />
               <div className="h-[60px] flex flex-col justify-center items-start md:items-center">
                 <div className="relative leading-[100%] text-[#ffffff80] md:text-center">
@@ -357,7 +357,7 @@ const Stats: FC = () => {
               <img
                 className="relative w-[60px] h-[60px]"
                 alt=""
-                src="/sheesh/icons20.svg"
+                src="/sheesh/tottrader.png"
               />
               <div className="h-[60px] flex flex-col justify-center items-start md:items-center">
                 <div className="relative leading-[100%] text-[#ffffff80] md:text-center">
