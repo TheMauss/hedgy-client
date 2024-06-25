@@ -1101,6 +1101,7 @@ const Stats: FC = () => {
           right: "0%",
         }}
       ></div>
+
       <Head>
         <title>PopFi | Personal Stats</title>
         <meta name="description" content="PopFi" />
@@ -1294,7 +1295,6 @@ const Stats: FC = () => {
               </div>
             </div>
           </div>
-
           <div
             style={{ position: "relative", zIndex: 100 }}
             className="z-100 mt-2 md:rounded-2xl rounded-lg bg-layer-1 box-border w-full flex flex-col items-start justify-center md:p-8 p-4 gap-[16px] text-sm  "

@@ -70,6 +70,7 @@
     "react-icons": "^4.10.1",
     "react-intersection-observer": "^9.5.2",
     "react-parallax": "^3.5.1",
+    "react-progressbar.js": "^0.1.2",
     "react-reconciler": "^0.29.0",
     "react-resize-detector": "^9.1.0",
     "react-responsive": "^9.0.2",
