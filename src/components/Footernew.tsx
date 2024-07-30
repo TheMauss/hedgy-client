@@ -3,22 +3,15 @@ import Link from "next/link";
 import SolanaTPS from "./SolanaTPS"; // import your SolanaTPS component
 import React, { useState, useEffect } from "react";
 import { IoIosDocument } from "react-icons/io";
-import { useBackupOracle } from "../contexts/BackupOracle";
 import { usePriorityFee } from "../contexts/PriorityFee";
 
 export const Footer: FC = () => {
   const [slogan, setSlogan] = useState("");
   const { isPriorityFee, setPriorityFee } = usePriorityFee();
-  const { isBackupOracle, setBackupOracle } = useBackupOracle();
 
   const handleToggle = () => {
     // Update the isPriorityFee state when the toggle button is clicked
     setPriorityFee(!isPriorityFee);
-  };
-
-  const handleToggleOracle = () => {
-    // Update the isPriorityFee state when the toggle button is clicked
-    setBackupOracle(!isBackupOracle);
   };
 
   useEffect(() => {

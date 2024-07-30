@@ -2,8 +2,6 @@ import { FC, useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useAutoConnect } from "../contexts/AutoConnectProvider";
-import NetworkSwitcher from "./NetworkSwitcher";
-import { useFastTrade } from "../contexts/FastTradeContext";
 import NavElement from "./nav-element";
 import useUserSOLBalanceStore from "../../src/stores/useUserSOLBalanceStore";
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
@@ -12,7 +10,7 @@ import { cn } from "../utils";
 import { useRouter } from "next/router";
 import { FaPaste, FaCoins, FaUsers, FaUser } from "react-icons/fa";
 import { FaVault } from "react-icons/fa6";
-import { useVisibility } from "components/VisibilityContext";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -35,8 +33,6 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
   const dropdownRef = useRef(null);
   const navRef = useRef(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const { fastTradeActivated, setFastTradeActivated } = useFastTrade();
-  const { isVisible, setIsVisible } = useVisibility();
 
   useEffect(() => {
     const handleResize = () => {
@@ -83,61 +79,6 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
   const balance = useUserSOLBalanceStore((s) => s.solBalance);
   const { getUserSOLBalance, subscribeToBalanceChanges } =
     useUserSOLBalanceStore();
-  const [closeTimeout, setCloseTimeout] = useState(null);
-  const modalRef = useRef(null);
-  const [mouseInsideButton, setMouseInsideButton] = useState(false);
-  const buttonRef = useRef(null);
-
-  const handleMouseLeave = (event) => {
-    // We will delay the evaluation and then check
-    setTimeout(() => {
-      const relatedTarget = event.relatedTarget;
-
-      // If relatedTarget is not a Node, close the modal
-      if (!(relatedTarget instanceof Node)) {
-        setModalIsOpen(false);
-        return;
-      }
-
-      // If the relatedTarget is the modal, then do not close the modal
-      if (modalRef.current && modalRef.current.contains(relatedTarget)) {
-        return;
-      }
-
-      // If the relatedTarget is outside both the button and the modal, close the modal
-      if (
-        modalRef.current &&
-        buttonRef.current &&
-        !modalRef.current.contains(relatedTarget) &&
-        !buttonRef.current.contains(relatedTarget)
-      ) {
-        setModalIsOpen(false);
-      }
-    }, 50); // Small delay to let the relatedTarget update if moving to the modal
-  };
-
-  const handleMouseEnterModal = () => {
-    // Clear the timeout to keep the modal open.
-    if (closeTimeout) {
-      clearTimeout(closeTimeout);
-      setCloseTimeout(null);
-    }
-  };
-
-  const handleMouseEnterButton = () => {
-    const rect = buttonRef.current.getBoundingClientRect();
-
-    setPosition({
-      top: `${rect.bottom}px`,
-      left: `${rect.left}px`,
-    });
-    // If the mouse re-enters the modal or button before the delay, we clear the timeout
-    if (closeTimeout) {
-      clearTimeout(closeTimeout);
-    }
-    // Assuming you want the modal to stay open when the mouse re-enters
-    setModalIsOpen(true);
-  };
 
   useEffect(() => {
     if (wallet.publicKey) {
@@ -154,271 +95,54 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
 
   const [position, setPosition] = useState({ top: "0px", left: "0px" });
 
-  const ModalDetails1 = (
-    <Modal
-      className="custom-scrollbar"
-      isOpen={modalIsOpen}
-      onMouseLeave={handleMouseLeave}
-      onRequestClose={() => setModalIsOpen(false)}
-      style={{
-        overlay: {
-          backgroundColor: "transparent",
-        },
-        content: {
-          backgroundSize: "cover",
-          width: "160px",
-          height: "90px",
-          position: "fixed",
-          top: position.top,
-          left: position.left,
-          transform: "translateY(0)",
-          border: "none",
-          outline: "none",
-        },
-      }}
-    >
-      <div
-        ref={modalRef}
-        onMouseEnter={handleMouseEnterModal}
-        onMouseLeave={handleMouseLeave}
-      >
-        <div className="w-[160px] h-[90px] bg-[#080808] text-slate-300 p-2 gap-y-2 rounded">
-          <div className="h-[50%] w-full flex flex-row justify-start items-left">
-            <div className="h-[100%] w-[100%]">
-              <NavElement
-                icon={<FaUsers size="1.5rem" className="mr-1" />}
-                label="Referral"
-                href="/referral"
-                navigationStarts={() => setIsNavOpen(false)}
-              />
-            </div>
-          </div>
-          <div className="h-[50%] w-full flex flex-row justify-start items-left text-start">
-            <div className="h-[100%] w-[100%]">
-              <NavElement
-                icon={<FaVault size="1.3rem" className="" />}
-                label="Vault"
-                href="/vault"
-                navigationStarts={() => setIsNavOpen(false)}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </Modal>
-  );
-
   return (
-    <div
-      ref={navRef}
-      className={`flex items-center justify-center md:h-[55px] h-[48px] flex-row bg-[#ffffff08] text-[#E0E5EA] ${isVisible ? "blur-behind-modal" : ""}`}
-    >
-      <div className="flex items-center justify-between w-[90%]">
-        <div className="flex items-center">
-          {!isMobile && (
-            <div className="flex justify-center items-center">
-              <Link href="/">
-                <div>
-                  <img
-                    src="/popfismall.png"
-                    alt="Logo"
-                    className="w-[48px] h-[48px]"
-                  />
-                </div>
-              </Link>
-            </div>
-          )}
-          {isMobile ? (
-            // Code for Mobile
-
-            <div className="flex items-center bg-primary rounded-xl md:h-9 h-8 hover:bg-new-green-dark transition ease-in-out duration-300">
-              <WalletMultiButtonDynamic
-                className="box-border flex flex-row items-center justify-center "
-                style={{
-                  width: "100%",
-                  height: 40,
-                  backgroundColor: "transparent",
-                  color: "black",
-                }}
-              >
-                {" "}
-                {connected ? (
-                  <div className="text-black w-full flex flex-col h-full items-center justify-center text-[16px]">
-                    <div className="h-1/3 text-[10px] w-full">
-                      {wallet.publicKey.toBase58().slice(0, 3)}...
-                      {wallet.publicKey.toBase58().slice(-3)}
-                    </div>
-                    <div className=" text-[13px]">
-                      {(balance || 0).toLocaleString("en-US", {
-                        useGrouping: false,
-                      })}{" "}
-                      SOL
-                    </div>
+    <div className="Gilroy-Semibold py-8 flex justify-center bg-layer-1">
+      <div className="h-9.5 flex flex-row justify-between items-center w-[95%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:min-w-[95%]">
+        <div className="flex flex-row items-center justify-start gap-[7.4px]">
+          <img
+            className="ml-1 w-[27.2px] relative h-[29.2px]"
+            alt=""
+            src="/group-1.svg"
+          />
+          <div className="text-[22px] text-white justify-center items-start tracking-[-0.01em] leading-[120.41%] inline-block shrink-0 pt-0.5">
+            Stakera
+          </div>
+        </div>
+        <div className="rounded-lg bg-bg h-[38px] overflow-hidden flex flex-row items-center justify-center box-border gap-[8px] text-base font-gilroy-semibold">
+          <div className="flex items-center rounded-xl md:h-9 h-8 hover:bg-new-green-dark transition ease-in-out duration-300">
+            <WalletMultiButtonDynamic
+              className="box-border flex flex-row items-center justify-center "
+              style={{
+                width: "100%",
+                height: 40,
+                backgroundColor: "transparent",
+                color: "black",
+              }}
+            >
+              {" "}
+              {connected ? (
+                <div className="Gilroy-Medium text-white w-full flex flex-col h-full items-center justify-center text-[16px]">
+                  <div className="h-1/3 text-[10px] w-full">
+                    {wallet.publicKey.toBase58().slice(0, 3)}...
+                    {wallet.publicKey.toBase58().slice(-3)}
                   </div>
-                ) : (
-                  <div className="text-black">CONNECT</div>
-                )}
-              </WalletMultiButtonDynamic>
-            </div>
-          ) : (
-            <>
-              {!isMediumScreen && (
-                // Code for Large Screens
-                <>
-                  <span className=" mx-0.5 z-10"></span>
-                  {/* <NavElement
-                    label="Options"
-                    href="/trade"
-                    navigationStarts={() => setIsNavOpen(false)}
-                  /> */}
-                  <span className="mx-0.5 z-10"></span>
-                  <NavElement
-                    label="Futures"
-                    href="/futures"
-                    navigationStarts={() => setIsNavOpen(false)}
-                  />
-                  <span className="mx-0.5 z-10"></span>
-                  <NavElement
-                    label="Stats"
-                    href="/stats"
-                    navigationStarts={() => setIsNavOpen(false)}
-                  />
-                  <span className="mx-0.5 z-10"></span>
-
-                  <NavElement
-                    label="Vault"
-                    href="/vault"
-                    navigationStarts={() => setIsNavOpen(false)}
-                  />
-                </>
-              )}
-              {isMediumScreen && (
-                // Code for Regular Screens (not Medium)
-                <div className="flex items-center ">
-                  <>
-                    <span className=" mx-0.5 z-10"></span>
-                    {/* <NavElement
-                      label="Options"
-                      href="/trade"
-                      navigationStarts={() => setIsNavOpen(false)}
-                    /> */}
-                    <span className="mx-0.5 z-10"></span>
-                    <NavElement
-                      label="Futures"
-                      href="/futures"
-                      navigationStarts={() => setIsNavOpen(false)}
-                    />
-                    <span className="mx-0.5 z-10"></span>
-                    <NavElement
-                      label="Stats"
-                      href="/stats"
-                      navigationStarts={() => setIsNavOpen(false)}
-                    />
-                    <span className="mx-0.5 z-10"></span>
-
-                    <NavElement
-                      label="Vault"
-                      href="/vault"
-                      navigationStarts={() => setIsNavOpen(false)}
-                    />
-                  </>
+                  <div className=" text-[13px]">
+                    {(balance || 0).toLocaleString("en-US", {
+                      useGrouping: false,
+                    })}{" "}
+                    SOL
+                  </div>
                 </div>
+              ) : (
+                <div className="text-white">CONNECT</div>
               )}
-            </>
-          )}
+            </WalletMultiButtonDynamic>
+          </div>
+          {/* <div className=" ">
+        r34...231
+      </div> */}
         </div>
-
-        <div className=" -end flex items-center">
-          {!isMobile && !isMediumScreen && (
-            <div className="hidden md:inline-flex align-items-center justify-items relative items-center text-lg">
-              <Link href="/profile">
-                <FaUser className="mr-2 text-[#ffffff24] hover:text-[#23EAA4] text-xl transition-all duration-200 ease-in-out" />
-              </Link>
-              <div className="flex items-center bg-primary rounded-xl h-9 hover:bg-new-green-dark transition ease-in-out duration-300">
-                <WalletMultiButtonDynamic
-                  className="box-border flex flex-row items-center justify-center "
-                  style={{
-                    width: "100%",
-                    height: 40,
-                    backgroundColor: "transparent",
-                    color: "black",
-                  }}
-                >
-                  {connected ? (
-                    <div className="text-black w-full flex flex-col h-full items-center justify-center text-[16px]">
-                      <div className="h-1/3 text-[10px] w-full">
-                        {wallet.publicKey.toBase58().slice(0, 3)}...
-                        {wallet.publicKey.toBase58().slice(-3)}
-                      </div>
-                      <div className=" text-[13px] w-full">
-                        {(balance || 0).toLocaleString("en-US", {
-                          useGrouping: false,
-                        })}{" "}
-                        SOL
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-black flex items-center justify-center w-full h-full">
-                      CONNECT
-                    </div>
-                  )}
-                </WalletMultiButtonDynamic>{" "}
-              </div>
-            </div>
-          )}
-          {isMobile && (
-            <>
-              <label
-                htmlFor="my-drawer"
-                className="btn-gh items-center justify-between md:hidden relative"
-                onClick={() => setIsNavOpen(!isNavOpen)}
-              >
-                <div className="HAMBURGER-ICON space-y-1.5">
-                  <div className="h-0.5 w-6 bg-gradient-to-tr from-grey-text to-white" />
-                  <div className="h-0.5 w-6 bg-gradient-to-tr from-grey-text to-white" />
-                  <div className="h-0.5 w-6 bg-gradient-to-tr from-grey-text to-white" />
-                </div>
-              </label>
-            </>
-          )}
-          {isMediumScreen && (
-            <div className=" flex items-center ml-auto">
-              <Link href="/profile">
-                <FaUser className="mr-2 text-[#ffffff24] hover:text-[#23EAA4] text-xl transition-all duration-200 ease-in-out" />
-              </Link>
-              <div className="flex items-center bg-primary rounded-xl h-9 hover:bg-new-green-dark transition ease-in-out duration-300">
-                <WalletMultiButtonDynamic
-                  className="box-border flex flex-row items-center justify-center "
-                  style={{
-                    width: "100%",
-                    height: 40,
-                    backgroundColor: "transparent",
-                    color: "black",
-                  }}
-                >
-                  {" "}
-                  {connected ? (
-                    <div className="text-black w-full flex flex-col h-full items-start justify-center text-[15px]">
-                      <div className="h-1/2 text-[10px]">
-                        {wallet.publicKey.toBase58().slice(0, 3)}...
-                        {wallet.publicKey.toBase58().slice(-3)}
-                      </div>
-                      <div className=" text-[13px]">
-                        {(balance || 0).toLocaleString("en-US", {
-                          useGrouping: false,
-                        })}{" "}
-                        SOL
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-black">CONNECT</div>
-                  )}
-                </WalletMultiButtonDynamic>{" "}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+      </div>{" "}
     </div>
   );
 };

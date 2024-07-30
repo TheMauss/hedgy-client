@@ -3,7 +3,6 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useAutoConnect } from "../contexts/AutoConnectProvider";
 import NetworkSwitcher from "./NetworkSwitcher";
-import { useFastTrade } from "../contexts/FastTradeContext";
 import NavElement from "./nav-element";
 import useUserSOLBalanceStore from "../../src/stores/useUserSOLBalanceStore";
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
@@ -28,7 +27,6 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
   const dropdownRef = useRef(null);
   const navRef = useRef(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const { fastTradeActivated, setFastTradeActivated } = useFastTrade();
 
   useEffect(() => {
     const handleResize = () => {
@@ -146,60 +144,6 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
 
   const [position, setPosition] = useState({ top: "0px", left: "0px" });
 
-  const ModalDetails1 = (
-    <Modal
-      className="custom-scrollbar"
-      isOpen={modalIsOpen}
-      onMouseLeave={handleMouseLeave}
-      onRequestClose={() => setModalIsOpen(false)}
-      style={{
-        overlay: {
-          backgroundColor: "transparent",
-        },
-        content: {
-          backgroundSize: "cover",
-          width: "160px",
-          height: "90px",
-          position: "fixed",
-          top: position.top,
-          left: position.left,
-          transform: "translateY(0)",
-          border: "none",
-          outline: "none",
-        },
-      }}
-    >
-      <div
-        ref={modalRef}
-        onMouseEnter={handleMouseEnterModal}
-        onMouseLeave={handleMouseLeave}
-      >
-        <div className="w-[160px] h-[90px] bg-[#080808] text-slate-300 p-2 gap-y-2 rounded">
-          <div className="h-[50%] w-full flex flex-row justify-start items-left">
-            <div className="h-[100%] w-[100%]">
-              <NavElement
-                icon={<FaUsers size="1.5rem" className="mr-1" />}
-                label="Referral"
-                href="/referral"
-                navigationStarts={() => setIsNavOpen(false)}
-              />
-            </div>
-          </div>
-          <div className="h-[50%] w-full flex flex-row justify-start items-left text-start">
-            <div className="h-[100%] w-[100%]">
-              <NavElement
-                icon={<FaVault size="1.3rem" className="" />}
-                label="Vault"
-                href="/vault"
-                navigationStarts={() => setIsNavOpen(false)}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </Modal>
-  );
-
   return (
     <div
       ref={navRef}
@@ -223,7 +167,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
           {isMobile ? (
             // Code for Mobile
 
-            <Link href="/futures">
+            <Link href="/lottery">
               <button className="relative overflow-hidden py-1.5 rounded-lg bg-new-green hover:bg-new-green-dark cursor-pointer font-semibold leading-[normal] min-w-[160px] text-center text-lg text-black transition ease-in-out duration-300">
                 OPEN APP
               </button>
@@ -234,27 +178,9 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
                 // Code for Large Screens
                 <>
                   <span className=" mx-0.5 z-10"></span>
-                  {/* <NavElement
-                    label="Options"
-                    href="/trade"
-                    navigationStarts={() => setIsNavOpen(false)}
-                  /> */}
-                  <span className="mx-0.5 z-10"></span>
                   <NavElement
-                    label="Futures"
-                    href="/futures"
-                    navigationStarts={() => setIsNavOpen(false)}
-                  />
-                  <span className="mx-0.5 z-10"></span>
-                  <NavElement
-                    label="Stats"
-                    href="/stats"
-                    navigationStarts={() => setIsNavOpen(false)}
-                  />
-                  <span className="mx-0.5 z-10"></span>
-                  <NavElement
-                    label="Vault"
-                    href="/vault"
+                    label="Lottery"
+                    href="/lottery"
                     navigationStarts={() => setIsNavOpen(false)}
                   />
                 </>
@@ -271,22 +197,11 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
                     /> */}
                     <span className="mx-0.5 z-10"></span>
                     <NavElement
-                      label="Futures"
-                      href="/futures"
+                      label="Lottery"
+                      href="/lottery"
                       navigationStarts={() => setIsNavOpen(false)}
                     />
                     <span className="mx-0.5 z-10"></span>
-                    <NavElement
-                      label="Stats"
-                      href="/stats"
-                      navigationStarts={() => setIsNavOpen(false)}
-                    />
-                    <span className="mx-0.5 z-10"></span>
-                    <NavElement
-                      label="Vault"
-                      href="/vault"
-                      navigationStarts={() => setIsNavOpen(false)}
-                    />
                   </>
                 </div>
               )}
@@ -298,7 +213,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
           {!isMobile && !isMediumScreen && (
             <div className="hidden md:inline-flex align-items-center justify-items relative items-center text-lg">
               <div className="flex items-center">
-                <Link href="/futures">
+                <Link href="/lottery">
                   <button className="relative overflow-hidden py-1.5 rounded-lg bg-new-green hover:bg-new-green-dark cursor-pointer font-semibold leading-[normal] min-w-[160px] text-center text-lg text-black transition ease-in-out duration-300">
                     OPEN APP
                   </button>
@@ -323,7 +238,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
           )}
           {isMediumScreen && (
             <div className=" flex items-center ml-auto">
-              <Link href="/futures">
+              <Link href="/lottery">
                 <button className="relative overflow-hidden py-1.5 rounded-lg bg-new-green hover:bg-new-green-dark cursor-pointer font-semibold leading-[normal] min-w-[160px] text-center text-lg text-black transition ease-in-out duration-300">
                   OPEN APP
                 </button>

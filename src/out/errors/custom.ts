@@ -1,315 +1,122 @@
 export type CustomError =
-  | ArithmeticError
-  | MaxDepositsReached
-  | NoLiquidityInPool
-  | TradeAmountReached
-  | InvalidInstructions
-  | InvalidAccounts
-  | InvalidArguments
-  | InvalidAccountData
-  | ContractResolved
-  | OrderResolved
-  | OrderunResolved
-  | HaltedTrading
-  | NotInitAccount
+  | InsufficientBalance
   | InitAccount
-  | UserHasCode
-  | UserHasNoCode
-  | RefCodesDoNotMatch
-  | AccountIsOld
-  | WithdrawThreshold
-  | InsufficientAmount
-  | LockedPool
-  | TooEarlyToClose;
+  | InvalidArguments
+  | InvalidAccounts
+  | ArithmeticError
+  | StalePrice
+  | InvalidOracle
+  | DeppegedPair;
 
-export class ArithmeticError extends Error {
+export class InsufficientBalance extends Error {
   static readonly code = 6000;
   readonly code = 6000;
-  readonly name = "ArithmeticError";
-  readonly msg = "Arithmetic Error within Calculation";
+  readonly name = "InsufficientBalance";
+  readonly msg = "Insufficient balance";
 
   constructor(readonly logs?: string[]) {
-    super("6000: Arithmetic Error within Calculation");
-  }
-}
-
-export class MaxDepositsReached extends Error {
-  static readonly code = 6001;
-  readonly code = 6001;
-  readonly name = "MaxDepositsReached";
-  readonly msg = "Max Deposits Reached";
-
-  constructor(readonly logs?: string[]) {
-    super("6001: Max Deposits Reached");
-  }
-}
-
-export class NoLiquidityInPool extends Error {
-  static readonly code = 6002;
-  readonly code = 6002;
-  readonly name = "NoLiquidityInPool";
-  readonly msg = "Pool is out for Liquidity for this Pool";
-
-  constructor(readonly logs?: string[]) {
-    super("6002: Pool is out for Liquidity for this Pool");
-  }
-}
-
-export class TradeAmountReached extends Error {
-  static readonly code = 6003;
-  readonly code = 6003;
-  readonly name = "TradeAmountReached";
-  readonly msg = "User reached max Position Size";
-
-  constructor(readonly logs?: string[]) {
-    super("6003: User reached max Position Size");
-  }
-}
-
-export class InvalidInstructions extends Error {
-  static readonly code = 6004;
-  readonly code = 6004;
-  readonly name = "InvalidInstructions";
-  readonly msg = "Invalid Instructions Supplied To the Program";
-
-  constructor(readonly logs?: string[]) {
-    super("6004: Invalid Instructions Supplied To the Program");
-  }
-}
-
-export class InvalidAccounts extends Error {
-  static readonly code = 6005;
-  readonly code = 6005;
-  readonly name = "InvalidAccounts";
-  readonly msg = "Invalid Accounts Supplied To the Program";
-
-  constructor(readonly logs?: string[]) {
-    super("6005: Invalid Accounts Supplied To the Program");
-  }
-}
-
-export class InvalidArguments extends Error {
-  static readonly code = 6006;
-  readonly code = 6006;
-  readonly name = "InvalidArguments";
-  readonly msg = "Invalid Argument Supplied To the Program";
-
-  constructor(readonly logs?: string[]) {
-    super("6006: Invalid Argument Supplied To the Program");
-  }
-}
-
-export class InvalidAccountData extends Error {
-  static readonly code = 6007;
-  readonly code = 6007;
-  readonly name = "InvalidAccountData";
-  readonly msg = "Invalid Account Data within the Program";
-
-  constructor(readonly logs?: string[]) {
-    super("6007: Invalid Account Data within the Program");
-  }
-}
-
-export class ContractResolved extends Error {
-  static readonly code = 6008;
-  readonly code = 6008;
-  readonly name = "ContractResolved";
-  readonly msg = "Position has been already Closed";
-
-  constructor(readonly logs?: string[]) {
-    super("6008: Position has been already Closed");
-  }
-}
-
-export class OrderResolved extends Error {
-  static readonly code = 6009;
-  readonly code = 6009;
-  readonly name = "OrderResolved";
-  readonly msg = "Position is no longer Order";
-
-  constructor(readonly logs?: string[]) {
-    super("6009: Position is no longer Order");
-  }
-}
-
-export class OrderunResolved extends Error {
-  static readonly code = 6010;
-  readonly code = 6010;
-  readonly name = "OrderunResolved";
-  readonly msg = "Position is still only Order";
-
-  constructor(readonly logs?: string[]) {
-    super("6010: Position is still only Order");
-  }
-}
-
-export class HaltedTrading extends Error {
-  static readonly code = 6011;
-  readonly code = 6011;
-  readonly name = "HaltedTrading";
-  readonly msg = "Trading is Halted";
-
-  constructor(readonly logs?: string[]) {
-    super("6011: Trading is Halted");
-  }
-}
-
-export class NotInitAccount extends Error {
-  static readonly code = 6012;
-  readonly code = 6012;
-  readonly name = "NotInitAccount";
-  readonly msg = "Account is not Initialized";
-
-  constructor(readonly logs?: string[]) {
-    super("6012: Account is not Initialized");
+    super("6000: Insufficient balance");
   }
 }
 
 export class InitAccount extends Error {
-  static readonly code = 6013;
-  readonly code = 6013;
+  static readonly code = 6001;
+  readonly code = 6001;
   readonly name = "InitAccount";
-  readonly msg = "Account is  Initialized";
+  readonly msg = "Account is Initialized";
 
   constructor(readonly logs?: string[]) {
-    super("6013: Account is  Initialized");
+    super("6001: Account is Initialized");
   }
 }
 
-export class UserHasCode extends Error {
-  static readonly code = 6014;
-  readonly code = 6014;
-  readonly name = "UserHasCode";
-  readonly msg = "Account has already Ref Code";
+export class InvalidArguments extends Error {
+  static readonly code = 6002;
+  readonly code = 6002;
+  readonly name = "InvalidArguments";
+  readonly msg = "Invalid Argument Supplied To the Program";
 
   constructor(readonly logs?: string[]) {
-    super("6014: Account has already Ref Code");
+    super("6002: Invalid Argument Supplied To the Program");
   }
 }
 
-export class UserHasNoCode extends Error {
-  static readonly code = 6015;
-  readonly code = 6015;
-  readonly name = "UserHasNoCode";
-  readonly msg = "Account has no Ref Code";
+export class InvalidAccounts extends Error {
+  static readonly code = 6003;
+  readonly code = 6003;
+  readonly name = "InvalidAccounts";
+  readonly msg = "Invalid Accounts Supplied To the Program";
 
   constructor(readonly logs?: string[]) {
-    super("6015: Account has no Ref Code");
+    super("6003: Invalid Accounts Supplied To the Program");
   }
 }
 
-export class RefCodesDoNotMatch extends Error {
-  static readonly code = 6016;
-  readonly code = 6016;
-  readonly name = "RefCodesDoNotMatch";
-  readonly msg = "The Codes Do not Match";
+export class ArithmeticError extends Error {
+  static readonly code = 6004;
+  readonly code = 6004;
+  readonly name = "ArithmeticError";
+  readonly msg = "Arithmetic Error";
 
   constructor(readonly logs?: string[]) {
-    super("6016: The Codes Do not Match");
+    super("6004: Arithmetic Error");
   }
 }
 
-export class AccountIsOld extends Error {
-  static readonly code = 6017;
-  readonly code = 6017;
-  readonly name = "AccountIsOld";
-  readonly msg = "Can not use Ref Code on Accounts older than 24 hours";
+export class StalePrice extends Error {
+  static readonly code = 6005;
+  readonly code = 6005;
+  readonly name = "StalePrice";
+  readonly msg =
+    "Pyth Price is Stale or there was an error fetching the price.";
 
   constructor(readonly logs?: string[]) {
-    super("6017: Can not use Ref Code on Accounts older than 24 hours");
+    super(
+      "6005: Pyth Price is Stale or there was an error fetching the price."
+    );
   }
 }
 
-export class WithdrawThreshold extends Error {
-  static readonly code = 6018;
-  readonly code = 6018;
-  readonly name = "WithdrawThreshold";
-  readonly msg = "You can claim minimum of 0.1 SOL";
+export class InvalidOracle extends Error {
+  static readonly code = 6006;
+  readonly code = 6006;
+  readonly name = "InvalidOracle";
+  readonly msg = "Only SOL and INF are supported.";
 
   constructor(readonly logs?: string[]) {
-    super("6018: You can claim minimum of 0.1 SOL");
+    super("6006: Only SOL and INF are supported.");
   }
 }
 
-export class InsufficientAmount extends Error {
-  static readonly code = 6019;
-  readonly code = 6019;
-  readonly name = "InsufficientAmount";
-  readonly msg = "Insufficient Amount of SPL token";
+export class DeppegedPair extends Error {
+  static readonly code = 6007;
+  readonly code = 6007;
+  readonly name = "DeppegedPair";
+  readonly msg = "Pairs are deppeged.";
 
   constructor(readonly logs?: string[]) {
-    super("6019: Insufficient Amount of SPL token");
-  }
-}
-
-export class LockedPool extends Error {
-  static readonly code = 6020;
-  readonly code = 6020;
-  readonly name = "LockedPool";
-  readonly msg = "Liquidity Pool is Locked";
-
-  constructor(readonly logs?: string[]) {
-    super("6020: Liquidity Pool is Locked");
-  }
-}
-
-export class TooEarlyToClose extends Error {
-  static readonly code = 6021;
-  readonly code = 6021;
-  readonly name = "TooEarlyToClose";
-  readonly msg = "Can not close position within 7 seconds of Opening";
-
-  constructor(readonly logs?: string[]) {
-    super("6021: Can not close position within 7 seconds of Opening");
+    super("6007: Pairs are deppeged.");
   }
 }
 
 export function fromCode(code: number, logs?: string[]): CustomError | null {
   switch (code) {
     case 6000:
-      return new ArithmeticError(logs);
+      return new InsufficientBalance(logs);
     case 6001:
-      return new MaxDepositsReached(logs);
-    case 6002:
-      return new NoLiquidityInPool(logs);
-    case 6003:
-      return new TradeAmountReached(logs);
-    case 6004:
-      return new InvalidInstructions(logs);
-    case 6005:
-      return new InvalidAccounts(logs);
-    case 6006:
-      return new InvalidArguments(logs);
-    case 6007:
-      return new InvalidAccountData(logs);
-    case 6008:
-      return new ContractResolved(logs);
-    case 6009:
-      return new OrderResolved(logs);
-    case 6010:
-      return new OrderunResolved(logs);
-    case 6011:
-      return new HaltedTrading(logs);
-    case 6012:
-      return new NotInitAccount(logs);
-    case 6013:
       return new InitAccount(logs);
-    case 6014:
-      return new UserHasCode(logs);
-    case 6015:
-      return new UserHasNoCode(logs);
-    case 6016:
-      return new RefCodesDoNotMatch(logs);
-    case 6017:
-      return new AccountIsOld(logs);
-    case 6018:
-      return new WithdrawThreshold(logs);
-    case 6019:
-      return new InsufficientAmount(logs);
-    case 6020:
-      return new LockedPool(logs);
-    case 6021:
-      return new TooEarlyToClose(logs);
+    case 6002:
+      return new InvalidArguments(logs);
+    case 6003:
+      return new InvalidAccounts(logs);
+    case 6004:
+      return new ArithmeticError(logs);
+    case 6005:
+      return new StalePrice(logs);
+    case 6006:
+      return new InvalidOracle(logs);
+    case 6007:
+      return new DeppegedPair(logs);
   }
 
   return null;

@@ -20,54 +20,32 @@ export const Footer: FC = () => {
   }, []);
 
   return (
-    <div className="h-[30px] flex flex-row  text-[#ffffff60]  ">
-      <div className="flex items-center flex-row gap-y-5 justify-between w-full md:px-10">
-        <div className="justify-start w-full lg:w-auto flex items-center md:px-7 pl-10">
-          <Link
-            href="https://solana.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            passHref
-            className="text-secondary hover:text-white"
-          >
-            <img src="/solana.png" alt="Logo" width="14" height="6" />
-          </Link>
-          <SolanaTPS />
+    <div className="flex justify-center bg-layer-1 ">
+      <div className="h-9.5 py-7 text-gray-200 flex items-center justify-between  w-[95%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:min-w-[95%] flex flex-row items-center justify-between text-mini-7">
+        <div className="flex flex-row items-center justify-start gap-[5px]">
+          <img
+            className="ml-1 w-[18.1px] relative h-[19.5px]"
+            alt=""
+            src="/group-11.svg"
+          />
+          <div className="font-gilroy-semibold text-white w-[50.2px] relative tracking-[-0.03em] leading-[120.41%] inline-block h-[14.6px] shrink-0">
+            Stakera
+          </div>
         </div>
-        <div className="justify-end flex w-full lg:w-auto items-center space-x-5 md:px-7 pr-10">
-          <Link
-            href="https://popfi.gitbook.io/"
-            target="_blank"
-            rel="noopener noreferrer"
-            passHref
-            className="text-secondary "
-          >
-            <IoIosDocument width="16" height="8" className="text-[#dde1e7]" />
-          </Link>
-          <Link
-            href="https://discord.gg/popfiio"
-            target="_blank"
-            rel="noopener noreferrer"
-            passHref
-            className="text-secondary hover:text-white"
-          >
-            <img src="/discord.png" alt="Logo" width="16" height="6" />
-          </Link>
-          <Link
-            href="https://twitter.com/PopFi_io"
-            target="_blank"
-            rel="noopener noreferrer"
-            passHref
-            className="text-secondary hover:text-white"
-          >
-            <img
-              src="/twitter.png"
-              alt="Logo"
-              width="16"
-              height="6"
-              className=""
-            />
-          </Link>
+        {/* <div className="relative text-sm leading-[150%] font-gilroy-regular opacity-[0.5]">
+      © 2024 Stakera. All rights reserved.
+    </div> */}
+        <div className="flex flex-row items-center justify-start gap-[13px] opacity-[0.5]">
+          <img
+            className="w-6 relative h-6 overflow-hidden shrink-0 object-cover"
+            alt=""
+            src="/icon--youtube@2x.png"
+          />
+          <img
+            className="w-6 relative h-6 overflow-hidden shrink-0"
+            alt=""
+            src="/icon--x.svg"
+          />
         </div>
       </div>
     </div>
