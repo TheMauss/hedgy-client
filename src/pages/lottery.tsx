@@ -960,7 +960,7 @@ const Lottery: FC = () => {
         <meta name="description" content="PopFi" />
       </Head>
 
-      <div className="flex justify-center items-top min-h-[calc(100vh-145px)] z-100 bg-layer-1 ">
+      <div className="flex justify-center items-top min-h-[calc(100vh-172px)] z-100 bg-layer-1 ">
         <div className="w-[95%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:min-w-[95%] ">
           <div className="w-full  bg-layer-1 overflow-hidden text-left text-base text-neutral-06 font-gilroy-bold">
             <div
@@ -1314,7 +1314,7 @@ const Lottery: FC = () => {
                   <span className="text-mini tracking-[-0.03em] leading-[130%] font-gilroy-regular text-gray-300 inline-block">
                     For each friend you refer you will increase your winnings
                   </span>
-                  <div className="font-gilroy-semibold flex xk:flex-row flex-col gap-4">
+                  <div className="font-gilroy-semibold flex xl:flex-row flex-col gap-4">
                     <div className="[backdrop-filter:blur(4px)] rounded-lg bg-gray-500 w-[213px] flex flex-row items-center justify-start p-2 box-border gap-[8px]">
                       <div className="tracking-[-0.03em] leading-[130%] z-[0]">
                         Soon™
@@ -1355,9 +1355,9 @@ const Lottery: FC = () => {
 
               <div className="w-full lg:w-[66%] md:w-[56%] flex flex-col lg:flex-row lg:gap-6">
                 <div
-                  className={`cursor-pointer flex-1 rounded-2xl bg-bg flex flex-col items-start justify-start p-5 md:p-6 gap-[24px] text-neutral-06 ${currentLottery === "SMALL" ? "block" : "hidden"} lg:flex`}
+                  className={` flex-1 rounded-2xl bg-bg flex flex-col items-start justify-start p-5 md:p-6 gap-[24px] text-neutral-06 ${currentLottery === "SMALL" ? "block" : "hidden"} lg:flex`}
                 >
-                  <div className="lg:hidden flex font-gilroy-semibold self-stretch flex flex-row items-start justify-start text-lg text-primary ">
+                  <div className="cursor-pointer lg:hidden flex font-gilroy-semibold self-stretch flex flex-row items-start justify-start text-lg text-primary ">
                     <div
                       onClick={() => toggleLottery("SMALL")}
                       className={` flex-1   h-10 flex flex-row items-center justify-center  px-2 transition-all duration-200 ease-in-out  ${
@@ -1508,9 +1508,9 @@ const Lottery: FC = () => {
                   </div>
                 </div>
                 <div
-                  className={`cursor-pointer flex-1 rounded-2xl bg-bg flex flex-col items-start justify-start p-5 md:p-6 gap-[24px] text-neutral-06 ${currentLottery === "BIG" ? "block" : "hidden"} lg:flex`}
+                  className={` flex-1 rounded-2xl bg-bg flex flex-col items-start justify-start p-5 md:p-6 gap-[24px] text-neutral-06 ${currentLottery === "BIG" ? "block" : "hidden"} lg:flex`}
                 >
-                  <div className="lg:hidden flex font-gilroy-semibold self-stretch flex flex-row items-start justify-start text-lg text-primary ">
+                  <div className="cursor-pointer lg:hidden flex font-gilroy-semibold self-stretch flex flex-row items-start justify-start text-lg text-primary ">
                     <div
                       onClick={() => toggleLottery("SMALL")}
                       className={`flex-1   h-10 flex flex-row items-center justify-center  px-2 transition-all duration-200 ease-in-out  ${
