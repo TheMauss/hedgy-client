@@ -984,7 +984,7 @@ const Lottery: FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className="w-full md:w-4/5 py-2 px-4 rounded-2xl flex flex-col items-center justify-center  box-border text-base font-gilroy-medium backdrop-blur-md ">
+                <div className="w-full md:w-4/5 py-2 px-4 rounded-2xl flex flex-col items-center justify-center  box-border text-base font-gilroy-medium ">
                   <div className="self-stretch flex md:flex-row flex-col items-start justify-center gap-[32px] ">
                     <div className="w-1/3 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
                       <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
@@ -992,9 +992,14 @@ const Lottery: FC = () => {
                       </div>
                       <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
                         <span>
-                          {(
+                          {isNaN(
                             Number(participantData?.deposit) / LAMPORTS_PER_SOL
-                          ).toFixed(2)}{" "}
+                          )
+                            ? 0
+                            : (
+                                Number(participantData?.deposit) /
+                                LAMPORTS_PER_SOL
+                              ).toFixed(2)}{" "}
                         </span>
                         <span className="text-lg">SOL</span>
                       </div>
@@ -1055,9 +1060,14 @@ const Lottery: FC = () => {
                     </div>
                     <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
                       <span>
-                        {(
+                        {isNaN(
                           Number(participantData?.deposit) / LAMPORTS_PER_SOL
-                        ).toFixed(2)}{" "}
+                        )
+                          ? 0
+                          : (
+                              Number(participantData?.deposit) /
+                              LAMPORTS_PER_SOL
+                            ).toFixed(2)}{" "}
                       </span>
                       <span className="text-lg">SOL</span>
                     </div>

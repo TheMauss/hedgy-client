@@ -110,7 +110,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
         </div>
         <div className="rounded-lg bg-bg h-[38px] overflow-hidden flex flex-row items-center justify-center box-border gap-[8px] text-base font-gilroy-semibold">
           <div className="flex items-center rounded-xl md:h-9 h-8 hover:bg-new-green-dark transition ease-in-out duration-300">
-            <WalletMultiButtonDynamic
+            <WalletMultiButton
               className="box-border flex flex-row items-center justify-center "
               style={{
                 width: "100%",
@@ -136,7 +136,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
               ) : (
                 <div className="text-white">CONNECT</div>
               )}
-            </WalletMultiButtonDynamic>
+            </WalletMultiButton>
           </div>
           {/* <div className=" ">
         r34...231
