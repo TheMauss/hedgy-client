@@ -21,7 +21,7 @@ export const Footer: FC = () => {
 
   return (
     <div className="flex justify-center bg-layer-1 ">
-      <div className="h-9.5 py-7 text-gray-200 flex items-center justify-between  w-[95%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:min-w-[95%] flex flex-row items-center justify-between text-mini-7">
+      <div className="h-9.5 py-[13.5px] text-gray-200 flex items-center justify-between  w-[95%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:min-w-[95%] flex flex-row items-center justify-between text-mini-7">
         <div className="flex flex-row items-center justify-start gap-[5px]">
           <img
             className="ml-1 w-[18.1px] relative h-[19.5px]"

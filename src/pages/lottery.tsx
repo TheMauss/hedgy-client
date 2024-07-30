@@ -952,11 +952,11 @@ const Lottery: FC = () => {
   return (
     <div className=" overflow-hidden">
       <Head>
-        <title>PopFi | Lottery</title>
+        <title>Stakera | Lottery</title>
         <meta name="description" content="PopFi" />
       </Head>
 
-      <div className="flex justify-center items-top min-h-[calc(100vh-182px)] z-100 bg-layer-1 ">
+      <div className="flex justify-center items-top min-h-[calc(100vh-145px)] z-100 bg-layer-1 ">
         <div className="w-[95%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:min-w-[95%] ">
           <div className="w-full  bg-layer-1 overflow-hidden text-left text-base text-neutral-06 font-gilroy-bold">
             <div
@@ -1029,7 +1029,7 @@ const Lottery: FC = () => {
               </div>
             </div>
             <div
-              className="hidden lg:flex rounded-2xl w-full flex lg:flex-row flex-col lg:gap-0 md:gap-4 items-center justify-between p-4 box-border text-13xl font-gilroy-semibold"
+              className="hidden lg:flex rounded-2xl w-full flex lg:flex-row flex-col lg:gap-0 md:gap-4 items-center justify-between py-2 px-6 box-border text-13xl font-gilroy-semibold"
               style={{
                 backgroundImage: "url('/frame-2085660298@3x.png')",
                 backgroundSize: "cover",
@@ -1037,7 +1037,7 @@ const Lottery: FC = () => {
                 backgroundPosition: "top",
               }}
             >
-              <div className="flex flex-row items-center justify-start lg:p-6 py-6 px-8 gap-[16px] md:rounded-2xl  lg:[backdrop-filter:blur(0px)] md:[backdrop-filter:blur(20px)] rounded-2xl">
+              <div className="flex flex-row items-center justify-start py-6 px-2 gap-[16px] md:rounded-2xl  lg:[backdrop-filter:blur(0px)] md:[backdrop-filter:blur(20px)] rounded-2xl">
                 <img
                   className="w-16  rounded-[50%] h-16 object-cover"
                   alt=""
@@ -1095,7 +1095,7 @@ const Lottery: FC = () => {
             </div>
             <div className=" flex md:flex-row flex-col gap-6 mt-6">
               <div className="flex flex-col gap-6 lg:w-[34%] md:w-[44%]">
-                <div className="md:min-h-[510px] flex-1 rounded-2xl bg-bg flex flex-col items-between justify-start py-6 px-5 md:p-6 box-border gap-[16px] text-gray-200 font-gilroy-regular">
+                <div className=" flex-1 rounded-2xl bg-bg flex flex-col items-between justify-start py-6 px-5 md:p-6 box-border gap-[16px] text-gray-200 font-gilroy-regular">
                   <div className="self-stretch flex flex-row items-center justify-between text-5xl text-neutral-06 font-gilroy-semibold">
                     <div className="tracking-[-0.03em] leading-[120.41%]">
                       Enter Draw
@@ -1500,21 +1500,6 @@ const Lottery: FC = () => {
                           src="/vuesaxlinearlink.svg"
                         />
                       </div>
-                      <div className="self-stretch flex flex-row items-start justify-start gap-[4px]">
-                        <div className="flex-1 flex flex-col items-start justify-start gap-[4px]">
-                          <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
-                            7/22/24
-                          </div>
-                          <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
-                            jonny boy won 1.2342 SOL with 0.2% chance
-                          </div>
-                        </div>
-                        <img
-                          className="w-4 h-4"
-                          alt=""
-                          src="/vuesaxlinearlink.svg"
-                        />
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -1600,21 +1585,6 @@ const Lottery: FC = () => {
                           </div>
                           <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
                             alex won 1.2342 SOL with 0.2% chance
-                          </div>
-                        </div>
-                        <img
-                          className="w-4 h-4"
-                          alt=""
-                          src="/vuesaxlinearlink.svg"
-                        />
-                      </div>
-                      <div className="self-stretch flex flex-row items-start justify-start gap-[4px]">
-                        <div className="flex-1 flex flex-col items-start justify-start gap-[4px]">
-                          <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
-                            7/22/24
-                          </div>
-                          <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
-                            jonny boy won 1.2342 SOL with 0.2% chance
                           </div>
                         </div>
                         <img
