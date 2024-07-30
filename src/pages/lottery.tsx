@@ -888,16 +888,18 @@ const Lottery: FC = () => {
     ) {
       return "0.00%";
     }
+
     const totalDeposits =
       Number(lotteryAccountData.totalDeposits) / LAMPORTS_PER_SOL;
+    const participantDeposit = Number(participantData?.deposit) || 0;
     const newTotal =
       selectedStake === "DEPOSIT"
         ? totalDeposits + parsedAmount
         : totalDeposits - parsedAmount;
     const newPerson =
       selectedStake === "DEPOSIT"
-        ? Number(participantData?.deposit) / LAMPORTS_PER_SOL + parsedAmount
-        : Number(participantData?.deposit) / LAMPORTS_PER_SOL - parsedAmount;
+        ? participantDeposit / LAMPORTS_PER_SOL + parsedAmount
+        : participantDeposit / LAMPORTS_PER_SOL - parsedAmount;
     const chance = (newPerson / newTotal) * 100;
     return `${chance.toFixed(2)}%`;
   };
@@ -906,10 +908,12 @@ const Lottery: FC = () => {
     if (!lotteryAccountData || Number(lotteryAccountData.totalDeposits) === 0) {
       return "0.00%";
     }
+
     const totalDeposits =
       Number(lotteryAccountData.totalDeposits) / LAMPORTS_PER_SOL;
-    const Person = Number(participantData?.deposit) / LAMPORTS_PER_SOL;
-    const chance = (Person / totalDeposits) * 100;
+    const participantDeposit = Number(participantData?.deposit) || 0;
+    const person = participantDeposit / LAMPORTS_PER_SOL;
+    const chance = (person / totalDeposits) * 100;
     return `${chance.toFixed(2)}%`;
   };
 
