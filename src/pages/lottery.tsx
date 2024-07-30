@@ -8,6 +8,8 @@ import {
   ComputeBudgetProgram,
   LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
+import { FaCheckCircle } from "react-icons/fa";
+import { ClipLoader } from "react-spinners";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { BN } from "@project-serum/anchor";
 import { deposit as depositInstruction } from "../out/instructions"; // Update with the correct path
@@ -130,6 +132,7 @@ const Lottery: FC = () => {
     "DEPOSIT"
   );
   const [showAdditionalDiv1, setShowAdditionalDiv1] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [remainingTimeSmallLottery, setRemainingTimeSmallLottery] = useState<
     number | null
@@ -414,13 +417,15 @@ const Lottery: FC = () => {
     const whirlpoolAddress = new PublicKey(
       "DxD41srN8Xk9QfYjdNXF9tTnP6qQxeF2bZF8s1eN62Pe"
     );
+
     const fetchWhirlpoolData = async () => {
+      setLoading(true);
       try {
         const { whirlpool, price } = await getWhirlpoolData(whirlpoolAddress);
         setWhirlpool(whirlpool);
         setCurrentPrice(price);
 
-        const amountIn = new Decimal(amount); // Example amount, update as needed
+        const amountIn = new Decimal(amount);
         const PriceN = new Decimal(price);
         const amountOut = amountIn.times(PriceN);
         const amountOutQuote = new Decimal(amountOut);
@@ -455,6 +460,8 @@ const Lottery: FC = () => {
         console.log("Formatted Swap Quote Out Loss:", formattedQuoteOutLoss);
       } catch (error) {
         console.error("Failed to fetch whirlpool data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -1161,59 +1168,69 @@ const Lottery: FC = () => {
                       />
                     </div>
                   </div>
-                  {!publicKey ? (
-                    <div className="flex justify-center items-center w-full h-[50px] rounded-lg bg-primary cursor-pointer font-semibold text-center text-lg text-black transition ease-in-out duration-300">
-                      <WalletMultiButtonDynamic
-                        style={{
-                          width: "100%",
-                          backgroundColor: "transparent",
-                          color: "black",
-                        }}
-                        className="w-[100%]"
-                      >
-                        CONNECT WALLET
-                      </WalletMultiButtonDynamic>
-                    </div>
-                  ) : (
-                    <>
-                      {isAmountValid && selectedStake === "DEPOSIT" ? (
-                        <button
-                          className="cursor-pointer self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
-                          onClick={handleDeposit}
+                  <>
+                    {!publicKey ? (
+                      <div className="flex justify-center items-center w-full h-[50px] rounded-lg bg-primary cursor-pointer font-semibold text-center text-lg text-black transition ease-in-out duration-300">
+                        <WalletMultiButtonDynamic
+                          style={{
+                            width: "100%",
+                            backgroundColor: "transparent",
+                            color: "black",
+                          }}
+                          className="w-[100%]"
                         >
-                          <div className="tracking-[-0.03em] leading-[120.41%]">
-                            Deposit
+                          CONNECT WALLET
+                        </WalletMultiButtonDynamic>
+                      </div>
+                    ) : (
+                      <>
+                        {loading ? (
+                          <div className="flex justify-center items-center w-full h-[50px] rounded-lg opacity-[0.5]  bg-primary cursor-not-allowed font-semibold text-center text-lg text-black transition ease-in-out duration-300">
+                            <ClipLoader size={20} color={"#000000"} />
                           </div>
-                        </button>
-                      ) : (
-                        selectedStake === "DEPOSIT" && (
-                          <div className="self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-[0.5] text-lg text-bg font-gilroy-semibold">
-                            <div className="tracking-[-0.03em] leading-[120.41%]">
-                              Deposit
-                            </div>
-                          </div>
-                        )
-                      )}
-                      {isAmountValid && selectedStake === "WITHDRAW" ? (
-                        <button
-                          className="cursor-pointer self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
-                          onClick={handleWithdrawDecision}
-                        >
-                          <div className="tracking-[-0.03em] leading-[120.41%]">
-                            Withdraw
-                          </div>
-                        </button>
-                      ) : (
-                        selectedStake === "WITHDRAW" && (
-                          <div className="self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-[0.5] text-lg text-bg font-gilroy-semibold">
-                            <div className="tracking-[-0.03em] leading-[120.41%]">
-                              Withdraw
-                            </div>
-                          </div>
-                        )
-                      )}
-                    </>
-                  )}
+                        ) : (
+                          <>
+                            {isAmountValid && selectedStake === "DEPOSIT" ? (
+                              <button
+                                className="transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
+                                onClick={handleDeposit}
+                              >
+                                <div className="tracking-[-0.03em] leading-[120.41%]">
+                                  Deposit
+                                </div>
+                              </button>
+                            ) : (
+                              selectedStake === "DEPOSIT" && (
+                                <div className="transition ease-in-out duration-300 self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-[0.5] text-lg text-bg font-gilroy-semibold">
+                                  <div className="tracking-[-0.03em] leading-[120.41%]">
+                                    Deposit
+                                  </div>
+                                </div>
+                              )
+                            )}
+                            {isAmountValid && selectedStake === "WITHDRAW" ? (
+                              <button
+                                className="transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
+                                onClick={handleWithdrawDecision}
+                              >
+                                <div className="tracking-[-0.03em] leading-[120.41%]">
+                                  Withdraw
+                                </div>
+                              </button>
+                            ) : (
+                              selectedStake === "WITHDRAW" && (
+                                <div className="transition ease-in-out duration-300 self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-[0.5] text-lg text-bg font-gilroy-semibold">
+                                  <div className="tracking-[-0.03em] leading-[120.41%]">
+                                    Withdraw
+                                  </div>
+                                </div>
+                              )
+                            )}
+                          </>
+                        )}
+                      </>
+                    )}
+                  </>
                   <div className="self-stretch flex flex-row items-center justify-between">
                     <div className="w-[74px] tracking-[-0.03em] leading-[100%] flex items-end h-5 shrink-0">
                       Balance
