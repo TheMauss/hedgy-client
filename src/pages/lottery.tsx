@@ -988,20 +988,24 @@ const Lottery: FC = () => {
 
   const handleAmountClick = (type) => {
     let tokenBalance;
-    if (selectedStake === "DEPOSIT") {
-      tokenBalance =
-        type === "HALF" ? (balance - 1 / 100) / 2 : balance - 1 / 100;
+    if (type === "HALF" && !isNaN(Number(amount)) && Number(amount) > 0) {
+      tokenBalance = Number(amount) / 2;
     } else {
-      const participantDeposit = isNaN(
-        Number(participantData?.deposit) / LAMPORTS_PER_SOL
-      )
-        ? 0
-        : Number(participantData?.deposit) / LAMPORTS_PER_SOL;
-      tokenBalance =
-        type === "HALF" ? participantDeposit / 2 : participantDeposit;
+      if (selectedStake === "DEPOSIT") {
+        tokenBalance =
+          type === "HALF" ? (balance - 1 / 100) / 2 : balance - 1 / 100;
+      } else {
+        const participantDeposit = isNaN(
+          Number(participantData?.deposit) / LAMPORTS_PER_SOL
+        )
+          ? 0
+          : Number(participantData?.deposit) / LAMPORTS_PER_SOL;
+        tokenBalance =
+          type === "HALF" ? participantDeposit / 2 : participantDeposit;
+      }
     }
-    const maxValue = Number(tokenBalance).toFixed(2).toString();
-    setAmount(maxValue); // Update the state, which will update the input value reactively
+    const maxValue = Math.max(Number(tokenBalance), 0).toFixed(2);
+    setAmount(maxValue.toString()); // Update the state, which will update the input value reactively
   };
 
   return (
