@@ -1184,7 +1184,7 @@ const Lottery: FC = () => {
                     </div>
                   </div>
                   <div className="self-stretch flex flex-col items-start justify-start text-sm">
-                    <div className="self-stretch rounded-2xl bg-gray-100 h-[111px] flex flex-row items-center justify-between gap-[2] p-4 box-border">
+                    <div className="self-stretch rounded-2xl bg-gray-100 flex flex-row items-center justify-between gap-[2] p-4 box-border">
                       <div className="flex flex-col items-start justify-center gap-[8px]">
                         <div className="tracking-[-0.03em] leading-[120.41%]">
                           You are{" "}
