@@ -1016,7 +1016,7 @@ const Lottery: FC = () => {
       </Head>
 
       <div className="flex justify-center items-top min-h-[calc(100vh-172px)] z-100 bg-layer-1 ">
-        <div className="w-[95%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:min-w-[95%] ">
+        <div className="w-[95%] max-w-[1700px]">
           <div className="w-full  bg-layer-1 overflow-hidden text-left text-base text-neutral-06 font-gilroy-bold">
             <div
               className="lg:hidden flex rounded-2xl w-full flex lg:flex-row flex-col lg:gap-0 md:gap-4 items-center justify-between p-4 box-border text-13xl  font-gilroy-semibold"

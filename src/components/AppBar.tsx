@@ -97,7 +97,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
 
   return (
     <div className="Gilroy-Semibold py-[29px] flex justify-center bg-layer-1">
-      <div className="h-9.5 flex flex-row justify-between items-center w-[95%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:min-w-[95%]">
+      <div className="h-9.5 flex flex-row justify-between items-center w-[95%] max-w-[1700px]">
         <div className="flex flex-row items-center justify-start gap-[7.4px]">
           <img
             className="ml-1 w-[27.2px] relative h-[29.2px]"
