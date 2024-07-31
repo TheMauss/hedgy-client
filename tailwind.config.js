@@ -17,6 +17,7 @@ module.exports = {
         mediumslateblue: "rgba(115, 99, 243, 0.5)",
         secondary: "#7363f3",
         mediumspringgreen: {
+          50: "rgba(111, 255, 144, 0.06)",
           100: "rgba(111, 255, 144, 0.12)",
           200: "rgba(111, 255, 144, 0.5)",
         },

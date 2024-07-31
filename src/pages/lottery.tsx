@@ -125,7 +125,7 @@ const Lottery: FC = () => {
   const [aToB, setAToB] = useState(true);
   const wallet = useWallet();
   const [slippageTolerance, setSlippageTolerance] = useState(30); // Default to 0.1%
-  const [activeButton, setActiveButton] = useState(3);
+  const [activeButton, setActiveButton] = useState(2);
   const [customSlippage, setCustomSlippage] = useState("");
   const { isPriorityFee, setPriorityFee } = usePriorityFee();
   const [selectedStake, setSelectedStake] = useState<"DEPOSIT" | "WITHDRAW">(
@@ -286,7 +286,9 @@ const Lottery: FC = () => {
 
   useEffect(() => {
     if (publicKey) {
-      fetchLotteryAccountData();
+      setTimeout(() => {
+        fetchLotteryAccountData();
+      }, 150);
     }
   }, [publicKey, connection]);
 
@@ -300,7 +302,10 @@ const Lottery: FC = () => {
         method: "getPriorityFeeEstimate",
         params: [
           {
-            accountKeys: ["5jbj67vN9obgTPa4oGJ28pZGnCM8VHutmdH8S7yxho1V"],
+            accountKeys: [
+              "5jbj67vN9obgTPa4oGJ28pZGnCM8VHutmdH8S7yxho1V",
+              "DxD41srN8Xk9QfYjdNXF9tTnP6qQxeF2bZF8s1eN62Pe",
+            ],
             options: {
               includeAllPriorityFeeLevels: true,
             },
@@ -321,7 +326,7 @@ const Lottery: FC = () => {
         );
       }
 
-      return responseData.result.priorityFeeLevels.high.toFixed(0);
+      return responseData.result.priorityFeeLevels.veryHigh.toFixed(0);
     } catch (error) {
       console.error("Error fetching priority fee estimate:", error);
     }
@@ -565,13 +570,20 @@ const Lottery: FC = () => {
       const ix = depositInstruction(depositArgs, depositAccounts);
       const tx = new Transaction().add(ix).add(PRIORITY_FEE_IX);
       const signature = await sendTransaction(tx, connection);
+      notify({
+        type: "info",
+        message: "Deposit transaction sent!",
+        txid: signature,
+      });
       await connection.confirmTransaction(signature, "processed");
       notify({
         type: "success",
         message: "Deposit transaction successful!",
         txid: signature,
       });
-      fetchLotteryAccountData();
+      setTimeout(() => {
+        fetchLotteryAccountData();
+      }, 150);
     } catch (error) {
       console.error(error);
       notify({
@@ -642,13 +654,20 @@ const Lottery: FC = () => {
       const ix = withdrawInstruction(withdrawArgs, withdrawAccounts);
       const tx = new Transaction().add(ix).add(PRIORITY_FEE_IX);
       const signature = await sendTransaction(tx, connection);
+      notify({
+        type: "info",
+        message: "Withdraw transaction sent!",
+        txid: signature,
+      });
       await connection.confirmTransaction(signature, "processed");
       notify({
         type: "success",
         message: "Withdraw transaction successful!",
         txid: signature,
       });
-      fetchLotteryAccountData();
+      setTimeout(() => {
+        fetchLotteryAccountData();
+      }, 150);
     } catch (error) {
       console.error(error);
       notify({
@@ -719,13 +738,20 @@ const Lottery: FC = () => {
       const ix = withdrawwithLossInstruction(withdrawArgs, withdrawAccounts);
       const tx = new Transaction().add(ix).add(PRIORITY_FEE_IX);
       const signature = await sendTransaction(tx, connection);
+      notify({
+        type: "info",
+        message: "Withdraw transaction sent!",
+        txid: signature,
+      });
       await connection.confirmTransaction(signature, "processed");
       notify({
         type: "success",
         message: "Withdraw transaction successful!",
         txid: signature,
       });
-      fetchLotteryAccountData();
+      setTimeout(() => {
+        fetchLotteryAccountData();
+      }, 150);
     } catch (error) {
       console.error(error);
       notify({
@@ -908,7 +934,7 @@ const Lottery: FC = () => {
         ? participantDeposit / LAMPORTS_PER_SOL + parsedAmount
         : participantDeposit / LAMPORTS_PER_SOL - parsedAmount;
     const chance = (newPerson / newTotal) * 100;
-    return `${chance.toFixed(2)}%`;
+    return `${Math.max(chance, 0).toFixed(2)}%`;
   };
 
   const calculateWinningChance = () => {
@@ -958,6 +984,24 @@ const Lottery: FC = () => {
 
   const toggleLottery = (lottery: string) => {
     setCurrentLottery(lottery);
+  };
+
+  const handleAmountClick = (type) => {
+    let tokenBalance;
+    if (selectedStake === "DEPOSIT") {
+      tokenBalance =
+        type === "HALF" ? (balance - 1 / 100) / 2 : balance - 1 / 100;
+    } else {
+      const participantDeposit = isNaN(
+        Number(participantData?.deposit) / LAMPORTS_PER_SOL
+      )
+        ? 0
+        : Number(participantData?.deposit) / LAMPORTS_PER_SOL;
+      tokenBalance =
+        type === "HALF" ? participantDeposit / 2 : participantDeposit;
+    }
+    const maxValue = Number(tokenBalance).toFixed(2).toString();
+    setAmount(maxValue); // Update the state, which will update the input value reactively
   };
 
   return (
@@ -1157,15 +1201,36 @@ const Lottery: FC = () => {
                           <div className="tracking-[-0.21px]">SOL</div>
                         </div>
                       </div>
-                      <input
-                        type="text"
-                        className="w-1/3 input-capsule__input text-13xl tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold bg-black"
-                        placeholder="0.00"
-                        value={amount}
-                        onChange={handleInputChange}
-                        min={0.05}
-                        step={0.05}
-                      />
+
+                      <div className="flex flex-col items-end justify-end">
+                        <div className="flex flew-row gap-2">
+                          <div className="cursor-pointer rounded-lg bg-mediumspringgreen-50 flex flex-row items-center justify-center py-1 px-2 text-sm text-primary">
+                            <div
+                              onClick={() => handleAmountClick("HALF")}
+                              className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center"
+                            >
+                              HALF
+                            </div>
+                          </div>
+                          <div className="cursor-pointer rounded-lg bg-mediumspringgreen-50 flex flex-row items-center justify-center py-1 px-2 text-sm text-primary">
+                            <div
+                              onClick={() => handleAmountClick("MAX")}
+                              className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center"
+                            >
+                              MAX
+                            </div>
+                          </div>
+                        </div>
+                        <input
+                          type="text"
+                          className="w-1/3 input-capsule__input text-13xl tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold bg-black"
+                          placeholder="0.00"
+                          value={amount}
+                          onChange={handleInputChange}
+                          min={0.05}
+                          step={0.05}
+                        />
+                      </div>
                     </div>
                   </div>
                   <>
@@ -1177,7 +1242,7 @@ const Lottery: FC = () => {
                             backgroundColor: "transparent",
                             color: "black",
                           }}
-                          className="w-[100%]"
+                          className="mt-0.5 w-[100%]"
                         >
                           CONNECT WALLET
                         </WalletMultiButtonDynamic>
@@ -1195,14 +1260,14 @@ const Lottery: FC = () => {
                                 className="transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
                                 onClick={handleDeposit}
                               >
-                                <div className="tracking-[-0.03em] leading-[120.41%]">
+                                <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
                                   Deposit
                                 </div>
                               </button>
                             ) : (
                               selectedStake === "DEPOSIT" && (
                                 <div className="transition ease-in-out duration-300 self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-[0.5] text-lg text-bg font-gilroy-semibold">
-                                  <div className="tracking-[-0.03em] leading-[120.41%]">
+                                  <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
                                     Deposit
                                   </div>
                                 </div>
@@ -1213,14 +1278,14 @@ const Lottery: FC = () => {
                                 className="transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
                                 onClick={handleWithdrawDecision}
                               >
-                                <div className="tracking-[-0.03em] leading-[120.41%]">
+                                <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
                                   Withdraw
                                 </div>
                               </button>
                             ) : (
                               selectedStake === "WITHDRAW" && (
                                 <div className="transition ease-in-out duration-300 self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-[0.5] text-lg text-bg font-gilroy-semibold">
-                                  <div className="tracking-[-0.03em] leading-[120.41%]">
+                                  <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
                                     Withdraw
                                   </div>
                                 </div>
