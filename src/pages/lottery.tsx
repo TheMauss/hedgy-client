@@ -1202,7 +1202,7 @@ const Lottery: FC = () => {
                         </div>
                       </div>
 
-                      <div className="flex flex-col items-end justify-end">
+                      <div className="flex flex-col items-end justify-end gap-1">
                         <div className="flex flew-row gap-2">
                           <div className="cursor-pointer rounded-lg bg-mediumspringgreen-50 flex flex-row items-center justify-center py-1 px-2 text-sm text-primary">
                             <div

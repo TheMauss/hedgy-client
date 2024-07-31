@@ -121,7 +121,9 @@ const Notification = ({
           <div className={`ml-2 flex-1`}>
             <div className={`Gilroy-Regular text-[1rem]`}>{message}</div>
             {description && (
-              <p className={`Gilroy-Regular mt-0.5 text-[0.8rem]`}>{description}</p>
+              <p className={`Gilroy-Regular mt-0.5 text-[0.8rem]`}>
+                {description}
+              </p>
             )}
             {txid && (
               <div className="flex flex-row">
