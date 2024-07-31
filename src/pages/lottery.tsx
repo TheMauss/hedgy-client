@@ -566,9 +566,16 @@ const Lottery: FC = () => {
       });
     }
 
+    const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 250000,
+    });
+
     try {
       const ix = depositInstruction(depositArgs, depositAccounts);
-      const tx = new Transaction().add(ix).add(PRIORITY_FEE_IX);
+      const tx = new Transaction()
+        .add(COMPUTE_BUDGET_IX)
+        .add(ix)
+        .add(PRIORITY_FEE_IX);
       const signature = await sendTransaction(tx, connection);
       notify({
         type: "info",
@@ -650,9 +657,16 @@ const Lottery: FC = () => {
       });
     }
 
+    const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 250000,
+    });
+
     try {
       const ix = withdrawInstruction(withdrawArgs, withdrawAccounts);
-      const tx = new Transaction().add(ix).add(PRIORITY_FEE_IX);
+      const tx = new Transaction()
+        .add(COMPUTE_BUDGET_IX)
+        .add(ix)
+        .add(PRIORITY_FEE_IX);
       const signature = await sendTransaction(tx, connection);
       notify({
         type: "info",
@@ -734,9 +748,16 @@ const Lottery: FC = () => {
       });
     }
 
+    const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 250000,
+    });
+
     try {
       const ix = withdrawwithLossInstruction(withdrawArgs, withdrawAccounts);
-      const tx = new Transaction().add(ix).add(PRIORITY_FEE_IX);
+      const tx = new Transaction()
+        .add(COMPUTE_BUDGET_IX)
+        .add(ix)
+        .add(PRIORITY_FEE_IX);
       const signature = await sendTransaction(tx, connection);
       notify({
         type: "info",
