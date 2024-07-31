@@ -104,7 +104,7 @@ const Notification = ({
           }}
         />
         <div
-          className={`p-2.5 rounded-b-md bg-[#00000085] bg-opacity-90 flex items-center`}
+          className={`text-white p-2.5 rounded-b-md bg-[#00000085] bg-opacity-90 flex items-center`}
         >
           {/* Icon and message layout */}
           <div className={`flex-shrink-0`}>
@@ -119,9 +119,9 @@ const Notification = ({
             )}
           </div>
           <div className={`ml-2 flex-1`}>
-            <div className={`text-[1rem]`}>{message}</div>
+            <div className={`Gilroy-Regular text-[1rem]`}>{message}</div>
             {description && (
-              <p className={`mt-0.5 text-[0.8rem]`}>{description}</p>
+              <p className={`Gilroy-Regular mt-0.5 text-[0.8rem]`}>{description}</p>
             )}
             {txid && (
               <div className="flex flex-row">
