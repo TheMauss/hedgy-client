@@ -220,19 +220,19 @@ export const HomeView: FC = ({}) => {
           <FrameComponent
             vuesaxbulkimport="/vuesaxbulkimport.svg"
             deposit="Deposit"
-            depositYourTokensAndStart="Deposit your tokens and start earning rewards immediately with Revshare."
+            depositYourTokensAndStart="Deposit your SOL into Stakera and start winning rewards, Immediately."
           />
           <FrameComponent
             propMinHeight="unset"
             vuesaxbulkimport="/vuesaxbulklikeshapes.svg"
             deposit="Win Solana"
-            depositYourTokensAndStart="Win the rewards from Collective staking with no Risk."
+            depositYourTokensAndStart="Win rewards from collective staking, Risklessly."
           />
           <FrameComponent
             propMinHeight="230px"
             vuesaxbulkimport="/vuesaxbulkexport.svg"
             deposit="Withdraw"
-            depositYourTokensAndStart="Withdraw your tokens anytime, instantly."
+            depositYourTokensAndStart="Withdraw your tokens anytime, Instantly."
           />
         </div>
         <FrameComponent8 />
