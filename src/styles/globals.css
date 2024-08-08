@@ -27,6 +27,11 @@
   font-family: "Gilroy-SemiBold";
 }
 
+/* Add this CSS to your stylesheet */
+.no-underline {
+  text-decoration: none;
+}
+
 .Gilroy-Regular {
   font-family: "Gilroy-Regular";
 }

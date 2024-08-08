@@ -19,7 +19,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
   const [isNavOpen, setIsNavOpen] = useState(false);
 
   const router = useRouter();
-  const hideFooterFor = ["/", "/futures", "/trade", "/stats", "/vault"]; // Add paths where you don't want to show the footer
+  const hideFooterFor = ["/futures", "/trade", "/stats", "/vault"]; // Add paths where you don't want to show the footer
   const hideCss = ["/"]; // Add paths where you don't want to show the footer
   const showCss = !hideCss.includes(router.pathname);
   const showFooter = !hideFooterFor.includes(router.pathname);

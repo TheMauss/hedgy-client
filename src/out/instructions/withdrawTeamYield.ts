@@ -8,7 +8,7 @@ import * as borsh from "@coral-xyz/borsh"; // eslint-disable-line @typescript-es
 import * as types from "../types"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId";
 
-export interface WithdrawWithRatioLossArgs {
+export interface WithdrawTeamYieldArgs {
   amount: BN;
   otherAmountThreshold: BN;
   sqrtPriceLimit: BN;
@@ -17,7 +17,7 @@ export interface WithdrawWithRatioLossArgs {
   slippage: BN;
 }
 
-export interface WithdrawWithRatioLossAccounts {
+export interface WithdrawTeamYieldAccounts {
   lotteryAccount: PublicKey;
   user: PublicKey;
   pdaHouseAcc: PublicKey;
@@ -50,9 +50,9 @@ export const layout = borsh.struct([
   borsh.u64("slippage"),
 ]);
 
-export function withdrawWithRatioLoss(
-  args: WithdrawWithRatioLossArgs,
-  accounts: WithdrawWithRatioLossAccounts,
+export function withdrawTeamYield(
+  args: WithdrawTeamYieldArgs,
+  accounts: WithdrawTeamYieldAccounts,
   programId: PublicKey = PROGRAM_ID
 ) {
   const keys: Array<AccountMeta> = [
@@ -82,7 +82,7 @@ export function withdrawWithRatioLoss(
     { pubkey: accounts.infMint, isSigner: false, isWritable: true },
     { pubkey: accounts.poolState, isSigner: false, isWritable: false },
   ];
-  const identifier = Buffer.from([219, 159, 147, 238, 225, 250, 101, 26]);
+  const identifier = Buffer.from([176, 48, 118, 185, 242, 247, 94, 53]);
   const buffer = Buffer.alloc(1000);
   const len = layout.encode(
     {

@@ -7,23 +7,27 @@ export interface ParticipantFields {
   pubkey: PublicKey;
   deposit: BN;
   lstDeposits: BN;
+  pendingDeposit: BN;
 }
 
 export interface ParticipantJSON {
   pubkey: string;
   deposit: string;
   lstDeposits: string;
+  pendingDeposit: string;
 }
 
 export class Participant {
   readonly pubkey: PublicKey;
   readonly deposit: BN;
   readonly lstDeposits: BN;
+  readonly pendingDeposit: BN;
 
   constructor(fields: ParticipantFields) {
     this.pubkey = fields.pubkey;
     this.deposit = fields.deposit;
     this.lstDeposits = fields.lstDeposits;
+    this.pendingDeposit = fields.pendingDeposit;
   }
 
   static layout(property?: string) {
@@ -32,6 +36,7 @@ export class Participant {
         borsh.publicKey("pubkey"),
         borsh.u64("deposit"),
         borsh.u64("lstDeposits"),
+        borsh.u64("pendingDeposit"),
       ],
       property
     );
@@ -43,6 +48,7 @@ export class Participant {
       pubkey: obj.pubkey,
       deposit: obj.deposit,
       lstDeposits: obj.lstDeposits,
+      pendingDeposit: obj.pendingDeposit,
     });
   }
 
@@ -51,6 +57,7 @@ export class Participant {
       pubkey: fields.pubkey,
       deposit: fields.deposit,
       lstDeposits: fields.lstDeposits,
+      pendingDeposit: fields.pendingDeposit,
     };
   }
 
@@ -59,6 +66,7 @@ export class Participant {
       pubkey: this.pubkey.toString(),
       deposit: this.deposit.toString(),
       lstDeposits: this.lstDeposits.toString(),
+      pendingDeposit: this.pendingDeposit.toString(),
     };
   }
 
@@ -67,6 +75,7 @@ export class Participant {
       pubkey: new PublicKey(obj.pubkey),
       deposit: new BN(obj.deposit),
       lstDeposits: new BN(obj.lstDeposits),
+      pendingDeposit: new BN(obj.pendingDeposit),
     });
   }
 

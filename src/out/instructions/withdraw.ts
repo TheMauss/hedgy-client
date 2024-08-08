@@ -37,6 +37,8 @@ export interface WithdrawAccounts {
   associatedTokenProgram: PublicKey;
   solOracleAccount: PublicKey;
   infOracleAccount: PublicKey;
+  infMint: PublicKey;
+  poolState: PublicKey;
 }
 
 export const layout = borsh.struct([
@@ -77,6 +79,8 @@ export function withdraw(
     },
     { pubkey: accounts.solOracleAccount, isSigner: false, isWritable: false },
     { pubkey: accounts.infOracleAccount, isSigner: false, isWritable: false },
+    { pubkey: accounts.infMint, isSigner: false, isWritable: true },
+    { pubkey: accounts.poolState, isSigner: false, isWritable: false },
   ];
   const identifier = Buffer.from([183, 18, 70, 156, 148, 109, 161, 34]);
   const buffer = Buffer.alloc(1000);

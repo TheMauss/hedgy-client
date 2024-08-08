@@ -9,8 +9,17 @@ export type {
   WithdrawWithRatioLossArgs,
   WithdrawWithRatioLossAccounts,
 } from "./withdrawWithRatioLoss";
-export { distributeYield } from "./distributeYield";
+export { withdrawTeamYield } from "./withdrawTeamYield";
 export type {
-  DistributeYieldArgs,
-  DistributeYieldAccounts,
-} from "./distributeYield";
+  WithdrawTeamYieldArgs,
+  WithdrawTeamYieldAccounts,
+} from "./withdrawTeamYield";
+export { commitRandomness } from "./commitRandomness";
+export type {
+  CommitRandomnessArgs,
+  CommitRandomnessAccounts,
+} from "./commitRandomness";
+export { distributeBigLotteryYield } from "./distributeBigLotteryYield";
+export type { DistributeBigLotteryYieldAccounts } from "./distributeBigLotteryYield";
+export { distributeSmallLotteryYield } from "./distributeSmallLotteryYield";
+export type { DistributeSmallLotteryYieldAccounts } from "./distributeSmallLotteryYield";

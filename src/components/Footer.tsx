@@ -36,16 +36,20 @@ export const Footer: FC = () => {
       © 2024 Stakera. All rights reserved.
     </div> */}
         <div className="flex flex-row items-center justify-start gap-[13px] opacity-[0.5]">
-          <img
-            className="w-6 relative h-6 overflow-hidden shrink-0 object-cover"
-            alt=""
-            src="/icon--youtube@2x.png"
-          />
-          <img
-            className="w-6 relative h-6 overflow-hidden shrink-0"
-            alt=""
-            src="/icon--x.svg"
-          />
+          <Link href="https://discord.gg/q93pQdyYvs" target="_blank">
+            <img
+              className="w-[20px] relative h-[20px] overflow-hidden shrink-0 object-cover"
+              alt=""
+              src="/icon--youtube@2x.png"
+            />
+          </Link>
+          <Link href="https://x.com/stakera_io" target="_blank">
+            <img
+              className="w-[20px] relative h-[20px] overflow-hidden shrink-0"
+              alt=""
+              src="/icon--x.svg"
+            />
+          </Link>
         </div>
       </div>
     </div>

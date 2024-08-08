@@ -6,8 +6,8 @@ const Home: NextPage = () => {
   return (
     <div>
       <Head>
-        <title>PopFi</title>
-        <meta name="description" content="PopFi" />
+        <title>Stakera</title>
+        <meta name="description" content="Stakera" />
       </Head>
       <HomeView />
     </div>

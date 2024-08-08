@@ -6,7 +6,17 @@ export type CustomError =
   | ArithmeticError
   | StalePrice
   | InvalidOracle
-  | DeppegedPair;
+  | DeppegedPair
+  | WrongWithdrawFunction
+  | NotEnoughParticipants
+  | RandomnessSlotMismatch
+  | InsufficientRandomness
+  | RandomnessAlreadyRevealed
+  | LotteryDidNotHappen
+  | LotteryTimeIsnotUp
+  | DeserializationError
+  | DepegError
+  | NegativeYieldError;
 
 export class InsufficientBalance extends Error {
   static readonly code = 6000;
@@ -99,6 +109,116 @@ export class DeppegedPair extends Error {
   }
 }
 
+export class WrongWithdrawFunction extends Error {
+  static readonly code = 6008;
+  readonly code = 6008;
+  readonly name = "WrongWithdrawFunction";
+  readonly msg = "Wrong Withdraw Function.";
+
+  constructor(readonly logs?: string[]) {
+    super("6008: Wrong Withdraw Function.");
+  }
+}
+
+export class NotEnoughParticipants extends Error {
+  static readonly code = 6009;
+  readonly code = 6009;
+  readonly name = "NotEnoughParticipants";
+  readonly msg = "Not enough participants for lottery";
+
+  constructor(readonly logs?: string[]) {
+    super("6009: Not enough participants for lottery");
+  }
+}
+
+export class RandomnessSlotMismatch extends Error {
+  static readonly code = 6010;
+  readonly code = 6010;
+  readonly name = "RandomnessSlotMismatch";
+  readonly msg = "Randomness slot mismatch";
+
+  constructor(readonly logs?: string[]) {
+    super("6010: Randomness slot mismatch");
+  }
+}
+
+export class InsufficientRandomness extends Error {
+  static readonly code = 6011;
+  readonly code = 6011;
+  readonly name = "InsufficientRandomness";
+  readonly msg = "InsufficientRandomness";
+
+  constructor(readonly logs?: string[]) {
+    super("6011: InsufficientRandomness");
+  }
+}
+
+export class RandomnessAlreadyRevealed extends Error {
+  static readonly code = 6012;
+  readonly code = 6012;
+  readonly name = "RandomnessAlreadyRevealed";
+  readonly msg = "This slot has been already used";
+
+  constructor(readonly logs?: string[]) {
+    super("6012: This slot has been already used");
+  }
+}
+
+export class LotteryDidNotHappen extends Error {
+  static readonly code = 6013;
+  readonly code = 6013;
+  readonly name = "LotteryDidNotHappen";
+  readonly msg = "Lottery did not happen yet";
+
+  constructor(readonly logs?: string[]) {
+    super("6013: Lottery did not happen yet");
+  }
+}
+
+export class LotteryTimeIsnotUp extends Error {
+  static readonly code = 6014;
+  readonly code = 6014;
+  readonly name = "LotteryTimeIsnotUp";
+  readonly msg = "Lottery is happening in future";
+
+  constructor(readonly logs?: string[]) {
+    super("6014: Lottery is happening in future");
+  }
+}
+
+export class DeserializationError extends Error {
+  static readonly code = 6015;
+  readonly code = 6015;
+  readonly name = "DeserializationError";
+  readonly msg = "Deserialization Error";
+
+  constructor(readonly logs?: string[]) {
+    super("6015: Deserialization Error");
+  }
+}
+
+export class DepegError extends Error {
+  static readonly code = 6016;
+  readonly code = 6016;
+  readonly name = "DepegError";
+  readonly msg = "INF to SOL pair are depegged";
+
+  constructor(readonly logs?: string[]) {
+    super("6016: INF to SOL pair are depegged");
+  }
+}
+
+export class NegativeYieldError extends Error {
+  static readonly code = 6017;
+  readonly code = 6017;
+  readonly name = "NegativeYieldError";
+  readonly msg = "Lottery Yield can not be negative";
+
+  constructor(readonly logs?: string[]) {
+    super("6017: Lottery Yield can not be negative");
+  }
+}
+
 export function fromCode(code: number, logs?: string[]): CustomError | null {
   switch (code) {
     case 6000:
@@ -117,6 +237,26 @@ export function fromCode(code: number, logs?: string[]): CustomError | null {
       return new InvalidOracle(logs);
     case 6007:
       return new DeppegedPair(logs);
+    case 6008:
+      return new WrongWithdrawFunction(logs);
+    case 6009:
+      return new NotEnoughParticipants(logs);
+    case 6010:
+      return new RandomnessSlotMismatch(logs);
+    case 6011:
+      return new InsufficientRandomness(logs);
+    case 6012:
+      return new RandomnessAlreadyRevealed(logs);
+    case 6013:
+      return new LotteryDidNotHappen(logs);
+    case 6014:
+      return new LotteryTimeIsnotUp(logs);
+    case 6015:
+      return new DeserializationError(logs);
+    case 6016:
+      return new DepegError(logs);
+    case 6017:
+      return new NegativeYieldError(logs);
   }
 
   return null;

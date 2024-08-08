@@ -49,23 +49,23 @@ const WalletMultiButtonDynamic = dynamic(
 );
 
 const lotteryAccount = new PublicKey(
-  "9tmVNiV4fPhnydBeF4Bt1vVr7LcT4KXVfBSrNNyMb64y"
+  "5aB2uyiesNo28v2g6CsfdcXVNs2feN74TNsexPHZih1Q"
 ); // Replace with actual account
 const pdaHouseAcc = new PublicKey(
-  "2LzexAXyFHdW24XiQdYKNfZhPPkdts5r2zuVMvYNf1op"
+  "8BNj24amVQUWxgAjPNDNZ8ScCYS4sPTTvhTY9Ly2fMRb"
 ); // Replace with actual account
 const whirlpoolProgram = new PublicKey(ORCA_WHIRLPOOL_PROGRAM_ID);
 const tokenProgram = new PublicKey(
   "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
 ); // Replace with actual account
 const tokenOwnerAccountA = new PublicKey(
-  "EvLPNR55B2NUjkTKux3RLSAm2grUNJQTwrtmz2T2wrAW"
+  "GyYkRUbn8y9ANd5QS6e2ti6LRscWVm6t2DWad9YWiu1z"
 ); // Replace with actual account
 const tokenVaultA = new PublicKey(
   "9sxSBQ3bS35VgV736MaSJRX11MfZHXxTdU4Pc1JfA5ML"
 ); // Replace with actual account
 const tokenOwnerAccountB = new PublicKey(
-  "Hoo63hqHPXKUSYdcKiKCRDG95zDBwpPhip4oT6GbEbB3"
+  "21ZL647m6bNY6tLtY9AM7SQh6tJUZvx1nG1SFCLiBFt3"
 ); // Replace with actual account
 const tokenVaultB = new PublicKey(
   "FZKgBhFkwNwsJLx3GXHHW8XPi8NMiJX791wweHBKaPcP"
@@ -84,7 +84,7 @@ async function checkLotteryAccount(
   connection: Connection
 ): Promise<LotteryAccountJSON> {
   const lotteryAcc = new PublicKey(
-    "9tmVNiV4fPhnydBeF4Bt1vVr7LcT4KXVfBSrNNyMb64y"
+    "5aB2uyiesNo28v2g6CsfdcXVNs2feN74TNsexPHZih1Q"
   ); // Replace with actual account
   const lotteryAccount = await LotteryAccount.fetch(connection, lotteryAcc);
 
@@ -94,6 +94,17 @@ async function checkLotteryAccount(
       totalDeposits: "0",
       lstTotalDeposits: "0",
       participants: [],
+      smallCommitSlot: "0",
+      smallRandomnessAccount: "0",
+      bigLotteryTime: "0",
+      bigLotteryHappened: false,
+      smallLotteryTime: "0",
+      smallLotteryHappened: false,
+      bigCommitSlot: "0",
+      bigRandomnessAccount: "0",
+      teamYield: "0",
+      bigLotteryYield: "0",
+      smallLotteryToBig: 0,
     };
   }
 
@@ -552,6 +563,8 @@ const Lottery: FC = () => {
       infOracleAccount: new PublicKey(
         "Ceg5oePJv1a6RR541qKeQaTepvERA3i8SvyueX9tT8Sq"
       ),
+      infMint: new PublicKey("5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm"),
+      poolState: new PublicKey("AYhux5gJzCoeoc1PoJ1VxwPDe22RwcvpHviLDD1oCGvW"),
     };
     let PRIORITY_FEE_IX;
 
@@ -642,6 +655,8 @@ const Lottery: FC = () => {
       infOracleAccount: new PublicKey(
         "Ceg5oePJv1a6RR541qKeQaTepvERA3i8SvyueX9tT8Sq"
       ),
+      infMint: new PublicKey("5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm"),
+      poolState: new PublicKey("AYhux5gJzCoeoc1PoJ1VxwPDe22RwcvpHviLDD1oCGvW"),
     };
 
     let PRIORITY_FEE_IX;
@@ -733,6 +748,8 @@ const Lottery: FC = () => {
       infOracleAccount: new PublicKey(
         "Ceg5oePJv1a6RR541qKeQaTepvERA3i8SvyueX9tT8Sq"
       ),
+      infMint: new PublicKey("5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm"),
+      poolState: new PublicKey("AYhux5gJzCoeoc1PoJ1VxwPDe22RwcvpHviLDD1oCGvW"),
     };
 
     let PRIORITY_FEE_IX;
@@ -839,7 +856,9 @@ const Lottery: FC = () => {
 
   const handleWithdrawDecision = async () => {
     if (participantData && currentPrice && whirlpool) {
-      const depositAmount = new BN(participantData.deposit);
+      const depositAmount = new BN(
+        participantData.deposit + participantData?.pendingDeposit
+      );
       const lstDepositAmount = new BN(participantData.lstDeposits);
       const { whirlpool, price } = await getWhirlpoolData(whirlpoolAddress);
       const swapRatio = 1 / price.toNumber(); // Example calculation, update as needed
@@ -847,7 +866,9 @@ const Lottery: FC = () => {
       let amountIn;
 
       const amountInLamports = parseFloat(amount) * LAMPORTS_PER_SOL;
-      const participantDeposit = Number(participantData?.deposit) || 0;
+      const participantDeposit =
+        Number(participantData?.deposit) +
+          Number(participantData?.pendingDeposit) || 0;
 
       const difference = Math.abs(amountInLamports - participantDeposit);
       const percentageDifference = difference / participantDeposit;
@@ -945,7 +966,9 @@ const Lottery: FC = () => {
 
     const totalDeposits =
       Number(lotteryAccountData.totalDeposits) / LAMPORTS_PER_SOL;
-    const participantDeposit = Number(participantData?.deposit) || 0;
+    const participantDeposit =
+      Number(participantData?.deposit) +
+        Number(participantData?.pendingDeposit) || 0;
     const newTotal =
       selectedStake === "DEPOSIT"
         ? totalDeposits + parsedAmount
@@ -1017,10 +1040,14 @@ const Lottery: FC = () => {
           type === "HALF" ? (balance - 1 / 100) / 2 : balance - 1 / 100;
       } else {
         const participantDeposit = isNaN(
-          Number(participantData?.deposit) / LAMPORTS_PER_SOL
+          (Number(participantData?.deposit) +
+            Number(participantData?.pendingDeposit)) /
+            LAMPORTS_PER_SOL
         )
           ? 0
-          : Number(participantData?.deposit) / LAMPORTS_PER_SOL;
+          : (Number(participantData?.deposit) +
+              Number(participantData?.pendingDeposit)) /
+            LAMPORTS_PER_SOL;
         tokenBalance =
           type === "HALF" ? participantDeposit / 2 : participantDeposit;
       }
@@ -1073,11 +1100,14 @@ const Lottery: FC = () => {
                       <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
                         <span>
                           {isNaN(
-                            Number(participantData?.deposit) / LAMPORTS_PER_SOL
+                            (Number(participantData?.deposit) +
+                              Number(participantData?.pendingDeposit)) /
+                              LAMPORTS_PER_SOL
                           )
                             ? 0
                             : (
-                                Number(participantData?.deposit) /
+                                (Number(participantData?.deposit) +
+                                  Number(participantData?.pendingDeposit)) /
                                 LAMPORTS_PER_SOL
                               ).toFixed(2)}{" "}
                         </span>
@@ -1141,11 +1171,14 @@ const Lottery: FC = () => {
                     <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
                       <span>
                         {isNaN(
-                          Number(participantData?.deposit) / LAMPORTS_PER_SOL
+                          (Number(participantData?.deposit) +
+                            Number(participantData?.pendingDeposit)) /
+                            LAMPORTS_PER_SOL
                         )
                           ? 0
                           : (
-                              Number(participantData?.deposit) /
+                              (Number(participantData?.deposit) +
+                                Number(participantData?.pendingDeposit)) /
                               LAMPORTS_PER_SOL
                             ).toFixed(2)}{" "}
                       </span>
