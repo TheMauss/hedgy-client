@@ -80,8 +80,8 @@ export const HomeView: FC = ({}) => {
   };
 
   return (
-    <div className=" w-full relative bg-layer-1 overflow-hidden flex flex-col items-center justify-start box-border  leading-[normal] tracking-[normal] text-left text-sm text-gray-200 font-gilroy-regular">
-      <header className="h-9.5 flex flex-row justify-between items-center w-[95%] max-w-[1700px] py-[29px] ">
+    <div className="w-full relative bg-layer-1 overflow-hidden flex flex-col items-center justify-center box-border  leading-[normal] tracking-[normal] text-left text-sm text-gray-200 font-gilroy-regular">
+      <header className="h-9.5 flex flex-row justify-between items-center max-w-[1700px] w-[95%] py-[29px] ">
         {" "}
         <div className="flex flex-col items-start justify-start  px-0 pb-0">
           <FrameComponent9
@@ -109,9 +109,9 @@ export const HomeView: FC = ({}) => {
           </button>{" "}
         </Link>
       </header>
-      <main className="min-h-[calc(100vh-172px)] w-[95%] max-w-[1700px] flex flex-col items-start justify-start pt-0 px-0 pb-[29px] box-border gap-8 max-w-full ">
+      <main className="min-h-[calc(100vh-172px)]  max-w-[1700px] w-[95%] flex flex-col items-start justify-start pt-0 px-0 pb-[29px] box-border gap-8 ">
         <section
-          className={`self-stretch rounded-3xl flex flex-row items-end justify-start pt-[99px] pb-[52px] px-12 box-border   text-left text-base text-neutral-06 font-gilroy-semibold lg:flex-wrap  lg:box-border`}
+          className={` self-stretch rounded-3xl flex flex-row items-end justify-start pt-[99px] pb-[52px] px-12 box-border   text-left text-base text-neutral-06 font-gilroy-semibold lg:flex-wrap  lg:box-border`}
           style={{
             backgroundImage: "url('/rectangle-17@2x.png')",
             backgroundSize: "cover",
@@ -155,7 +155,7 @@ export const HomeView: FC = ({}) => {
                   </Link>
                 </div>
               </div>
-              <div className="xl:pt-30 lg:pt-36 lg:w-1/2 w-full flex flex-col md:flex-row items-end justify-end gap-4">
+              <div className=" xl:pt-30 lg:pt-36 lg:w-1/2 w-full flex flex-col md:flex-row items-end justify-end gap-4">
                 <div className="w-full md:w-1/3 lg:w-1/2 h-full flex">
                   <Frame1
                     frameDivFlex="0.8939"
@@ -216,7 +216,7 @@ export const HomeView: FC = ({}) => {
             </div>
           </div>
         </section>
-        <div className="flex flex-col lg:flex-row w-full items-start justify-start gap-[32px]">
+        <div className=" flex flex-col lg:flex-row w-full items-start justify-start gap-[32px]">
           <FrameComponent
             vuesaxbulkimport="/vuesaxbulkimport.svg"
             deposit="Deposit"
