@@ -111,7 +111,7 @@ export const HomeView: FC = ({}) => {
       </header>
       <main className="min-h-[calc(100vh-172px)]  max-w-[1700px] w-[95%] flex flex-col items-start justify-start pt-0 px-0 pb-[29px] box-border gap-8 ">
         <section
-          className={` self-stretch rounded-3xl flex flex-row items-end justify-start pt-[99px] pb-[52px] px-12 box-border   text-left text-base text-neutral-06 font-gilroy-semibold lg:flex-wrap  lg:box-border`}
+          className={` self-stretch rounded-3xl flex flex-row items-end justify-start md:pt-[99px] md:pb-[52px] md:px-12 pl-8 pr-4 pt-16 pb-8 box-border   text-left text-base text-neutral-06 font-gilroy-semibold lg:flex-wrap  lg:box-border`}
           style={{
             backgroundImage: "url('/rectangle-17@2x.png')",
             backgroundSize: "cover",
@@ -119,13 +119,13 @@ export const HomeView: FC = ({}) => {
             backgroundPosition: "top",
           }}
         >
-          <div className="flex-1 flex flex-col items-start justify-start pt-0 px-0  box-border min-w-[424px] max-w-full ">
+          <div className="flex-1 flex flex-col items-start justify-start pt-0 px-0  box-border max-w-full ">
             <div className="self-stretch flex lg:flex-row flex-col items-start justify-start gap-[30px] z-[1]">
               <div className="w-full lg:w-1/2 self-stretch flex flex-col items-start justify-start gap-4">
                 <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%] text-primary">
                   Stake Together, Win Individually
                 </div>
-                <h1 className="m-0 self-stretch relative xl:text-[60px] text-[50px] tracking-[-0.03em] leading-[120.41%] font-normal font-[inherit] ">
+                <h1 className="m-0 self-stretch relative xl:text-[60px] md:text-[50px] text-[45px] tracking-[-0.03em] leading-[120.41%] font-normal font-[inherit] ">
                   A lossless lottery platform built on top of Liquidity Staking.
                 </h1>
 
@@ -156,7 +156,7 @@ export const HomeView: FC = ({}) => {
                 </div>
               </div>
               <div className=" xl:pt-30 lg:pt-36 lg:w-1/2 w-full flex flex-col md:flex-row items-end justify-end gap-4">
-                <div className="w-full md:w-1/3 lg:w-1/2 h-full flex">
+                <div className="flex lg:flex-col md:flex-row flex-col items-start justify-start md:w-1/3 lg:w-1/2 w-full">
                   <Frame1
                     frameDivFlex="0.8939"
                     frameDivPosition="unset"
@@ -172,10 +172,10 @@ export const HomeView: FC = ({}) => {
                     prop={`$${(Number(lotteryAccountData?.totalDeposits) / LAMPORTS_PER_SOL).toFixed(2)}`}
                     divFontSize="32px"
                     divColor="#fff"
-                    className="flex-1"
-                  />
+                    className="w-full"
+                  />{" "}
                 </div>
-                <div className="flex-1 flex lg:flex-col md:flex-row flex-col items-start justify-start gap-4 w-full">
+                <div className="flex lg:flex-col md:flex-row flex-col items-start justify-start gap-4 w-full lg:w-1/2">
                   <Frame1
                     frameDivFlex="unset"
                     frameDivPosition="unset"
@@ -191,7 +191,6 @@ export const HomeView: FC = ({}) => {
                     prop={totalParticipants?.toString()}
                     divFontSize="32px"
                     divColor="#fff"
-                    className="flex-1"
                   />
 
                   <Frame1
@@ -209,7 +208,6 @@ export const HomeView: FC = ({}) => {
                     prop="$6,443.21"
                     divFontSize="32px"
                     divColor="#fff"
-                    className="flex-1"
                   />
                 </div>
               </div>{" "}
@@ -223,13 +221,11 @@ export const HomeView: FC = ({}) => {
             depositYourTokensAndStart="Deposit your SOL into Stakera and start winning rewards, Immediately."
           />
           <FrameComponent
-            propMinHeight="unset"
             vuesaxbulkimport="/vuesaxbulklikeshapes.svg"
             deposit="Win Solana"
             depositYourTokensAndStart="Win rewards from collective staking, Risklessly."
           />
           <FrameComponent
-            propMinHeight="230px"
             vuesaxbulkimport="/vuesaxbulkexport.svg"
             deposit="Withdraw"
             depositYourTokensAndStart="Withdraw your tokens anytime, Instantly."

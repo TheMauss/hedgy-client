@@ -25,19 +25,21 @@ const FrameComponent: FunctionComponent<FrameComponentType> = ({
 
   return (
     <div
-      className={`self-stretch w-full flex-1 rounded-3xl bg-bg flex flex-col items-start justify-start py-6 px-12 box-border min-w-[313px] max-w-full text-left xl:text-[40px] text-[35px] text-neutral-06 font-gilroy-bold mq450:gap-5 mq450:pl-5 mq450:pr-5 mq450:box-border ${className}`}
+      className={`self-stretch w-full flex-1 rounded-3xl bg-bg flex flex-col items-start justify-start py-6 md:px-12 px-6 box-border max-w-full text-left xl:text-[40px] md:text-[35px] text-[30px] text-neutral-06 font-gilroy-bold  ${className}`}
       style={frameDiv3Style}
     >
       <div className="self-stretch flex flex-col items-start justify-start gap-2">
-        <img
-          className="w-16 h-16 relative"
-          loading="lazy"
-          alt=""
-          src={vuesaxbulkimport}
-        />
-        <h1 className="m-0 self-stretch relative text-inherit tracking-[-0.03em] leading-[58px] font-normal font-[inherit] mq450:text-10xl mq450:leading-[35px] mq1050:text-19xl mq1050:leading-[46px]">
-          {deposit}
-        </h1>
+        <div className="flex flex-row md:flex-col items-start justify-start gap-2 md:gap-0">
+          <img
+            className="w-16 h-16 relative flex justify-center items-center"
+            loading="lazy"
+            alt=""
+            src={vuesaxbulkimport}
+          />
+          <h1 className="flex justify-center items-center m-0 self-stretch relative text-inherit tracking-[-0.03em] leading-[58px] font-normal font-[inherit]">
+            {deposit}
+          </h1>
+        </div>
         <div className="self-stretch relative text-lg tracking-[-0.03em] leading-[120.41%] font-gilroy-regular text-gray-300">
           {depositYourTokensAndStart}
         </div>

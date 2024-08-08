@@ -10,7 +10,7 @@ const FrameComponent8: FunctionComponent<FrameComponent8Type> = ({
 }) => {
   return (
     <section
-      className={`self-stretch rounded-3xl overflow-hidden flex flex-col items-start justify-start pt-12 pb-[104px] pl-12 pr-5 box-border gap-[18px] bg-[url('/public/frame-2085660334@3x.png')] bg-cover bg-no-repeat bg-[top] max-w-full text-left text-13xl text-neutral-06 font-gilroy-semibold mq750:pl-6 mq750:box-border ${className}`}
+      className={`self-stretch rounded-3xl overflow-hidden flex flex-col items-start justify-start pt-12 md:pb-[104px] pb-12 px-6 md:px-12 box-border gap-[18px] bg-[url('/public/frame-2085660334@3x.png')] bg-cover bg-no-repeat bg-[top] max-w-full text-left text-13xl text-neutral-06 font-gilroy-semibold mq750:pl-6 mq750:box-border ${className}`}
       style={{
         backgroundImage: "url('/frame-2085660334@3x.png')",
         backgroundSize: "cover",
@@ -18,7 +18,7 @@ const FrameComponent8: FunctionComponent<FrameComponent8Type> = ({
         backgroundPosition: "top",
       }}
     >
-      <h1 className="m-0 w-[401px] relative text-inherit tracking-[-0.03em] leading-[120.41%] font-normal font-[inherit] inline-block max-w-full mq450:text-lgi mq450:leading-[23px] mq1050:text-7xl mq1050:leading-[31px]">
+      <h1 className="m-0 w-[401px] relative text-inherit tracking-[-0.03em] leading-[120.41%] font-normal font-[inherit] inline-block max-w-full ">
         Start Winning on top of your Solana now.
       </h1>
       <Link href="/lottery" className="no-underline">
