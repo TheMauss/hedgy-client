@@ -1,6 +1,7 @@
 import { AppProps } from "next/app";
 import React, { useEffect, useState } from "react";
 import Head from "next/head";
+import Script from "next/script";
 import { FC } from "react";
 import { ContextProvider } from "../contexts/ContextProvider";
 import { AppBar } from "../components/AppBar";
@@ -66,22 +67,25 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
       <Head>
         <title>Stakera</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <script
-          async
-          src="https://www.googletagmanager.com/gtag/js?id=G-N43CYRYXY9"
-        ></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-
-              gtag('config', 'G-N43CYRYXY9');
-            `,
-          }}
-        />
       </Head>
+      <Script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-N43CYRYXY9"
+        strategy="afterInteractive"
+      />
+      <Script
+        id="gtag-init"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-N43CYRYXY9');
+        `,
+        }}
+      />
       <ContextProvider>
         <PriorityFeeProvider>
           <div className="flex flex-col min-h-screen overflow-hidden">

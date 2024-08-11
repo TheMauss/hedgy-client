@@ -48,6 +48,15 @@ const WalletMultiButtonDynamic = dynamic(
   { ssr: false }
 );
 
+interface UserWinnings {
+  _id: string;
+  user: string;
+  smallWinnings: number;
+  bigWinnings: number;
+
+  // Add other properties if they exist
+}
+
 const lotteryAccount = new PublicKey(
   "5aB2uyiesNo28v2g6CsfdcXVNs2feN74TNsexPHZih1Q"
 ); // Replace with actual account
@@ -158,52 +167,62 @@ const Lottery: FC = () => {
     null
   );
 
-  // Function to calculate the next Friday at 12 AM +1 UTC
-  const getNextFriday = (currentDate: Date) => {
-    const nextFriday = new Date(currentDate);
-    nextFriday.setUTCHours(1, 0, 0, 0); // Set to 12 AM +1 UTC
-    nextFriday.setDate(
-      nextFriday.getDate() + ((5 - nextFriday.getUTCDay() + 7) % 7)
-    );
-    return nextFriday;
-  };
+  const [smallLotteryWinners, setSmallLotteryWinners] = useState([]);
+  const [bigLotteryWinners, setBigLotteryWinners] = useState([]);
+  const [userWinnings, setUserWinnings] = useState<UserWinnings | null>(null);
 
-  // Function to calculate the next 4th Friday at 12 AM +1 UTC
-  const getNext4thFriday = (currentDate: Date) => {
-    const next4thFriday = new Date(currentDate);
-    next4thFriday.setUTCHours(1, 0, 0, 0); // Set to 12 AM +1 UTC
-    let fridayCount = 0;
-    while (fridayCount < 4) {
-      next4thFriday.setDate(next4thFriday.getDate() + 1);
-      if (next4thFriday.getUTCDay() === 5) {
-        fridayCount++;
-      }
-    }
-    return next4thFriday;
+  const formatPublicKey = (pubKey) => {
+    if (!pubKey) return "";
+    return `${pubKey.slice(0, 3)}...${pubKey.slice(-3)}`;
   };
 
   useEffect(() => {
-    const now = new Date();
+    if (!lotteryAccountData) {
+      console.log("Waiting for lotteryAccountData...");
+      return; // Exit early if lotteryAccountData is not yet available
+    }
 
-    const smallLotteryEndTime = getNextFriday(now).getTime() / 1000;
-    const smallLotteryStartTime = smallLotteryEndTime - 7 * 24 * 60 * 60 + 60; // Starts one minute after the previous end time
+    const smallLotteryEndTime = Number(lotteryAccountData?.smallLotteryTime);
+    const smallLotteryStartTime = smallLotteryEndTime - 60 * 60 * 4; // Adjust based on your requirements
 
-    const bigLotteryEndTime = getNext4thFriday(now).getTime() / 1000;
-    const bigLotteryStartTime = bigLotteryEndTime - 4 * 7 * 24 * 60 * 60 + 60; // Starts one minute after the previous end time
+    const bigLotteryEndTime = Number(lotteryAccountData?.bigLotteryTime);
+    const bigLotteryStartTime = bigLotteryEndTime - 4 * 60 * 60 * 4; // Adjust based on your requirements
 
-    const updateRemainingTimes = () => {
-      const now = Math.floor(Date.now() / 1000); // Current time in Unix timestamp
-      setRemainingTimeSmallLottery(smallLotteryEndTime - now);
-      setRemainingTimeBigLottery(bigLotteryEndTime - now);
-      setTotalTimeSmallLottery(smallLotteryEndTime - smallLotteryStartTime);
-      setTotalTimeBigLottery(bigLotteryEndTime - bigLotteryStartTime);
+    console.log("smallLotteryEndTime:", smallLotteryEndTime);
+    console.log("smallLotteryStartTime:", smallLotteryStartTime);
+    console.log("bigLotteryEndTime:", bigLotteryEndTime);
+    console.log("bigLotteryStartTime:", bigLotteryStartTime);
+
+    const updateRemainingTimes = async () => {
+      try {
+        let currentTime = new Date().getTime() / 1000;
+
+        if (currentTime !== null) {
+          const now = Math.floor(currentTime); // Use Solana time as Unix timestamp
+
+          const remainingTimeSmallLottery = smallLotteryEndTime - now;
+          const remainingTimeBigLottery = bigLotteryEndTime - now;
+          const totalTimeSmallLottery =
+            smallLotteryEndTime - smallLotteryStartTime;
+          const totalTimeBigLottery = bigLotteryEndTime - bigLotteryStartTime;
+
+          setRemainingTimeSmallLottery(remainingTimeSmallLottery);
+          setRemainingTimeBigLottery(remainingTimeBigLottery);
+          setTotalTimeSmallLottery(totalTimeSmallLottery);
+          setTotalTimeBigLottery(totalTimeBigLottery);
+        } else {
+          console.error("Failed to retrieve Solana block time.");
+        }
+      } catch (error) {
+        console.error("Error fetching Solana time:", error);
+      }
     };
 
     updateRemainingTimes();
     const interval = setInterval(updateRemainingTimes, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [lotteryAccountData]);
 
   const getPercentage = (
     remainingTime: number | null,
@@ -244,6 +263,10 @@ const Lottery: FC = () => {
   ); // Adjust colors as needed
 
   const formatRemainingTime = (seconds: number) => {
+    if (seconds < 0) {
+      return `0D 0H 0M 0S`;
+    }
+
     const days = Math.floor(seconds / (24 * 60 * 60));
     const hours = Math.floor((seconds % (24 * 60 * 60)) / (60 * 60));
     const minutes = Math.floor((seconds % (60 * 60)) / 60);
@@ -957,9 +980,10 @@ const Lottery: FC = () => {
     const parsedAmount = parseFloat(amount);
     if (
       !lotteryAccountData ||
-      Number(lotteryAccountData.totalDeposits) === 0 ||
-      isNaN(parsedAmount) ||
-      parsedAmount <= 0
+      Number(lotteryAccountData.totalDeposits) === 0
+      // ||
+      // isNaN(parsedAmount) ||
+      // parsedAmount <= 0
     ) {
       return "0.00%";
     }
@@ -1055,6 +1079,48 @@ const Lottery: FC = () => {
     const maxValue = Math.max(Number(tokenBalance), 0).toFixed(2);
     setAmount(maxValue.toString()); // Update the state, which will update the input value reactively
   };
+
+  useEffect(() => {
+    const fetchLotteryResults = async () => {
+      try {
+        const response = await axios.get(
+          "https://stakera-socket-1-969a3dd5a532.herokuapp.com/lottery-results"
+        );
+        const { smallResults, bigResults } = response.data;
+
+        // Set the state with the fetched results
+        setSmallLotteryWinners(smallResults);
+        setBigLotteryWinners(bigResults);
+      } catch (error) {
+        console.error("Error fetching lottery results:", error);
+      }
+    };
+
+    fetchLotteryResults();
+  }, []);
+
+  useEffect(() => {
+    const fetchUserResults = async () => {
+      try {
+        if (!publicKey) {
+          console.error("Public key is not available");
+          return;
+        }
+
+        const response = await axios.get(
+          `https://stakera-socket-1-969a3dd5a532.herokuapp.com/user-winnings/${publicKey}`
+        );
+        const userWinn = response.data;
+
+        // Set the state with the fetched results
+        setUserWinnings(userWinn);
+      } catch (error) {
+        console.error("Error fetching lottery results:", error);
+      }
+    };
+
+    fetchUserResults();
+  }, [publicKey]);
 
   return (
     <div className=" overflow-hidden">
@@ -1190,8 +1256,16 @@ const Lottery: FC = () => {
                       Your Small Winnings
                     </div>
                     <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
-                      <span>{`0.143 `}</span>
-                      <span className="text-lg">SOL</span>
+                      <span>
+                        {userWinnings?.smallWinnings
+                          ? isNaN(userWinnings.smallWinnings)
+                            ? 0
+                            : (
+                                userWinnings.smallWinnings / LAMPORTS_PER_SOL
+                              ).toFixed(3)
+                          : 0}
+                      </span>
+                      <span className="text-lg"> SOL</span>
                     </div>
                   </div>
                   <div className="flex-1 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
@@ -1199,8 +1273,16 @@ const Lottery: FC = () => {
                       Your Big Winnings
                     </div>
                     <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
-                      <span>{`1.235 `}</span>
-                      <span className="text-lg">SOL</span>
+                      <span>
+                        {userWinnings?.bigWinnings
+                          ? isNaN(userWinnings.bigWinnings)
+                            ? 0
+                            : (
+                                userWinnings.bigWinnings / LAMPORTS_PER_SOL
+                              ).toFixed(3)
+                          : 0}
+                      </span>{" "}
+                      <span className="text-lg"> SOL</span>
                     </div>
                   </div>
                 </div>
@@ -1455,11 +1537,9 @@ const Lottery: FC = () => {
                     For each friend you refer you will increase your winnings
                   </span>
                   <div className="font-gilroy-semibold flex xl:flex-row flex-col gap-4">
-                    <div className="[backdrop-filter:blur(4px)] rounded-lg bg-gray-500 w-[213px] flex flex-row items-center justify-start p-2 box-border gap-[8px]">
-                      <div className="tracking-[-0.03em] leading-[130%] z-[0]">
-                        Soon™
-                      </div>
-                      <div className="absolute w-9 !m-[0] top-[0px] right-[0px] rounded-tl-none rounded-tr-lg rounded-br-lg rounded-bl-none bg-gray-400 h-[37px] flex flex-row items-center justify-center z-[1]">
+                    <div className="h-9 [backdrop-filter:blur(4px)] rounded-lg bg-gray-500 w-full flex flex-row items-center justify-between pl-2 box-border gap-[8px]">
+                      <div className="z-[0]">Soon™</div>
+                      <div className="h-full w-9 justify-end items-end rounded-tl-none rounded-tr-lg rounded-br-lg rounded-bl-none bg-gray-400 flex flex-row items-center justify-center z-[1]">
                         <img
                           className="w-6 h-6"
                           alt=""
@@ -1554,96 +1634,38 @@ const Lottery: FC = () => {
                       Previous Winners
                     </div>
                     <div className="self-stretch flex flex-col items-start justify-start gap-[24px] text-sm text-gray-200 font-gilroy-medium">
-                      <div className="self-stretch flex flex-row items-start justify-start gap-[4px]">
-                        <div className="flex-1 flex flex-col items-start justify-start gap-[4px]">
-                          <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
-                            7/22/24
+                      {smallLotteryWinners.map((winner, index) => (
+                        <div
+                          key={index}
+                          className="self-stretch flex flex-row items-start justify-start gap-[4px]"
+                        >
+                          <div className="flex-1 flex flex-col items-start justify-start gap-[4px]">
+                            <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
+                              {new Date(winner.timestamp).toLocaleDateString()}
+                            </div>
+                            <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
+                              {formatPublicKey(winner.winner)} won{" "}
+                              {(winner.yieldAmount / LAMPORTS_PER_SOL).toFixed(
+                                2
+                              )}{" "}
+                              SOL with {Number(winner.winningChance).toFixed(1)}
+                              % chance
+                            </div>
                           </div>
-                          <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
-                            maus won 1.2342 sSOL with 0.2% chance
-                          </div>
+                          <a
+                            href={`https://solscan.io/tx/${winner.transactionSignature}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="hover:underline"
+                          >
+                            <img
+                              className="w-4 h-4"
+                              alt=""
+                              src="/vuesaxlinearlink.svg"
+                            />
+                          </a>{" "}
                         </div>
-                        <img
-                          className="w-4 h-4"
-                          alt=""
-                          src="/vuesaxlinearlink.svg"
-                        />
-                      </div>
-                      <div className="self-stretch flex flex-row items-start justify-start gap-[4px]">
-                        <div className="flex-1 flex flex-col items-start justify-start gap-[4px]">
-                          <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
-                            7/22/24
-                          </div>
-                          <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
-                            alex won 1.2342 SOL with 0.2% chance
-                          </div>
-                        </div>
-                        <img
-                          className="w-4 h-4"
-                          alt=""
-                          src="/vuesaxlinearlink.svg"
-                        />
-                      </div>
-                      <div className="self-stretch flex flex-row items-start justify-start gap-[4px]">
-                        <div className="flex-1 flex flex-col items-start justify-start gap-[4px]">
-                          <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
-                            7/22/24
-                          </div>
-                          <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
-                            jonny boy won 1.2342 SOL with 0.2% chance
-                          </div>
-                        </div>
-                        <img
-                          className="w-4 h-4"
-                          alt=""
-                          src="/vuesaxlinearlink.svg"
-                        />
-                      </div>
-                      <div className="self-stretch flex flex-row items-start justify-start gap-[4px]">
-                        <div className="flex-1 flex flex-col items-start justify-start gap-[4px]">
-                          <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
-                            7/22/24
-                          </div>
-                          <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
-                            jonny boy won 1.2342 SOL with 0.2% chance
-                          </div>
-                        </div>
-                        <img
-                          className="w-4 h-4"
-                          alt=""
-                          src="/vuesaxlinearlink.svg"
-                        />
-                      </div>
-                      <div className="self-stretch flex flex-row items-start justify-start gap-[4px]">
-                        <div className="flex-1 flex flex-col items-start justify-start gap-[4px]">
-                          <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
-                            7/22/24
-                          </div>
-                          <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
-                            jonny boy won 1.2342 SOL with 0.2% chance
-                          </div>
-                        </div>
-                        <img
-                          className="w-4 h-4"
-                          alt=""
-                          src="/vuesaxlinearlink.svg"
-                        />
-                      </div>
-                      <div className="self-stretch flex flex-row items-start justify-start gap-[4px]">
-                        <div className="flex-1 flex flex-col items-start justify-start gap-[4px]">
-                          <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
-                            7/22/24
-                          </div>
-                          <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
-                            jonny boy won 1.2342 SOL with 0.2% chance
-                          </div>
-                        </div>
-                        <img
-                          className="w-4 h-4"
-                          alt=""
-                          src="/vuesaxlinearlink.svg"
-                        />
-                      </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -1707,96 +1729,38 @@ const Lottery: FC = () => {
                       Previous Winners
                     </div>
                     <div className="self-stretch flex flex-col items-start justify-start gap-[24px] text-sm text-gray-200 font-gilroy-medium">
-                      <div className="self-stretch flex flex-row items-start justify-start gap-[4px]">
-                        <div className="flex-1 flex flex-col items-start justify-start gap-[4px]">
-                          <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
-                            7/22/24
+                      {bigLotteryWinners.map((winner, index) => (
+                        <div
+                          key={index}
+                          className="self-stretch flex flex-row items-start justify-start gap-[4px]"
+                        >
+                          <div className="flex-1 flex flex-col items-start justify-start gap-[4px]">
+                            <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
+                              {new Date(winner.timestamp).toLocaleDateString()}
+                            </div>
+                            <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
+                              {formatPublicKey(winner.winner)} won{" "}
+                              {(winner.yieldAmount / LAMPORTS_PER_SOL).toFixed(
+                                2
+                              )}{" "}
+                              SOL with {Number(winner.winningChance).toFixed(1)}
+                              % chance
+                            </div>
                           </div>
-                          <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
-                            jonny boy won 1.2342 SOL with 0.2% chance
-                          </div>
+                          <a
+                            href={`https://solscan.io/tx/${winner.transactionSignature}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="hover:underline"
+                          >
+                            <img
+                              className="w-4 h-4"
+                              alt=""
+                              src="/vuesaxlinearlink.svg"
+                            />
+                          </a>
                         </div>
-                        <img
-                          className="w-4 h-4"
-                          alt=""
-                          src="/vuesaxlinearlink.svg"
-                        />
-                      </div>
-                      <div className="self-stretch flex flex-row items-start justify-start gap-[4px]">
-                        <div className="flex-1 flex flex-col items-start justify-start gap-[4px]">
-                          <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
-                            7/22/24
-                          </div>
-                          <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
-                            alex won 1.2342 SOL with 0.2% chance
-                          </div>
-                        </div>
-                        <img
-                          className="w-4 h-4"
-                          alt=""
-                          src="/vuesaxlinearlink.svg"
-                        />
-                      </div>
-                      <div className="self-stretch flex flex-row items-start justify-start gap-[4px]">
-                        <div className="flex-1 flex flex-col items-start justify-start gap-[4px]">
-                          <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
-                            7/22/24
-                          </div>
-                          <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
-                            jonny boy won 1.2342 SOL with 0.2% chance
-                          </div>
-                        </div>
-                        <img
-                          className="w-4 h-4"
-                          alt=""
-                          src="/vuesaxlinearlink.svg"
-                        />
-                      </div>
-                      <div className="self-stretch flex flex-row items-start justify-start gap-[4px]">
-                        <div className="flex-1 flex flex-col items-start justify-start gap-[4px]">
-                          <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
-                            7/22/24
-                          </div>
-                          <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
-                            jonny boy won 1.2342 SOL with 0.2% chance
-                          </div>
-                        </div>
-                        <img
-                          className="w-4 h-4"
-                          alt=""
-                          src="/vuesaxlinearlink.svg"
-                        />
-                      </div>
-                      <div className="self-stretch flex flex-row items-start justify-start gap-[4px]">
-                        <div className="flex-1 flex flex-col items-start justify-start gap-[4px]">
-                          <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
-                            7/22/24
-                          </div>
-                          <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
-                            jonny boy won 1.2342 SOL with 0.2% chance
-                          </div>
-                        </div>
-                        <img
-                          className="w-4 h-4"
-                          alt=""
-                          src="/vuesaxlinearlink.svg"
-                        />
-                      </div>
-                      <div className="self-stretch flex flex-row items-start justify-start gap-[4px]">
-                        <div className="flex-1 flex flex-col items-start justify-start gap-[4px]">
-                          <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
-                            7/22/24
-                          </div>
-                          <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
-                            jonny boy won 1.2342 SOL with 0.2% chance
-                          </div>
-                        </div>
-                        <img
-                          className="w-4 h-4"
-                          alt=""
-                          src="/vuesaxlinearlink.svg"
-                        />
-                      </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -1817,7 +1781,7 @@ const Lottery: FC = () => {
                   For each friend you refer you will increase your winnings
                 </span>
                 <div className="font-gilroy-semibold flex xk:flex-row flex-col gap-4">
-                  <div className="[backdrop-filter:blur(4px)] rounded-lg bg-gray-500 w-[213px] flex flex-row items-center justify-start p-2 box-border gap-[8px]">
+                  <div className=" [backdrop-filter:blur(4px)] rounded-lg bg-gray-500 w-[213px] flex flex-row items-center justify-start p-2 box-border gap-[8px]">
                     <div className="tracking-[-0.03em] leading-[130%] z-[0]">
                       Soon™
                     </div>
