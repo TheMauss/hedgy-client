@@ -309,6 +309,14 @@ const Lottery: FC = () => {
       const data = await checkLotteryAccount(connection);
       console.log("rawdata", data);
       setLotteryAccountData(data);
+    } catch (error) {
+      console.error("Error fetching lottery account data:", error);
+    }
+  };
+
+  const fetchParticipantData = async () => {
+    try {
+      const data = await checkLotteryAccount(connection);
       const participant = data.participants.find(
         (participant) => participant.pubkey === publicKey.toString()
       );
@@ -318,10 +326,16 @@ const Lottery: FC = () => {
     }
   };
 
+  // myslet na to!
+  useEffect(() => {
+    fetchLotteryAccountData();
+  }, [connection]);
+
+  // myslet na to!
   useEffect(() => {
     if (publicKey) {
       setTimeout(() => {
-        fetchLotteryAccountData();
+        fetchParticipantData();
       }, 150);
     }
   }, [publicKey, connection]);
@@ -572,9 +586,9 @@ const Lottery: FC = () => {
       tokenVaultA,
       tokenOwnerAccountB,
       tokenVaultB,
-      tickArray0: new PublicKey("AwxPowdzKrseoM263eYKkDxqdcogJRZT1PqzUuPFcmig"),
-      tickArray1: new PublicKey("4hn4fZA5CsHEoK9ZL3sagUbawNNXPtwtsPyPSPeUq5Hn"),
-      tickArray2: new PublicKey("ASiDWqYZknwWEyeuBsug7VaDYB1K8MoNmbmRznEYyK97"),
+      tickArray0: new PublicKey(swapQuote.tickArray0),
+      tickArray1: new PublicKey(swapQuote.tickArray1),
+      tickArray2: new PublicKey(swapQuote.tickArray2),
       oracle: oraclePDA.publicKey,
       wsolMint: new PublicKey("So11111111111111111111111111111111111111112"),
       associatedTokenProgram: new PublicKey(
@@ -626,7 +640,7 @@ const Lottery: FC = () => {
       });
       setTimeout(() => {
         fetchLotteryAccountData();
-      }, 150);
+      }, 1000);
     } catch (error) {
       console.error(error);
       notify({
@@ -664,9 +678,9 @@ const Lottery: FC = () => {
       tokenVaultA,
       tokenOwnerAccountB,
       tokenVaultB,
-      tickArray0: new PublicKey("AwxPowdzKrseoM263eYKkDxqdcogJRZT1PqzUuPFcmig"),
-      tickArray1: new PublicKey("4hn4fZA5CsHEoK9ZL3sagUbawNNXPtwtsPyPSPeUq5Hn"),
-      tickArray2: new PublicKey("ASiDWqYZknwWEyeuBsug7VaDYB1K8MoNmbmRznEYyK97"),
+      tickArray0: new PublicKey(swapQuoteOut.tickArray0),
+      tickArray1: new PublicKey(swapQuoteOut.tickArray1),
+      tickArray2: new PublicKey(swapQuoteOut.tickArray2),
       oracle: oraclePDA.publicKey,
       wsolMint: new PublicKey("So11111111111111111111111111111111111111112"),
       associatedTokenProgram: new PublicKey(
@@ -719,7 +733,7 @@ const Lottery: FC = () => {
       });
       setTimeout(() => {
         fetchLotteryAccountData();
-      }, 150);
+      }, 1000);
     } catch (error) {
       console.error(error);
       notify({
@@ -757,9 +771,9 @@ const Lottery: FC = () => {
       tokenVaultA,
       tokenOwnerAccountB,
       tokenVaultB,
-      tickArray0: new PublicKey("AwxPowdzKrseoM263eYKkDxqdcogJRZT1PqzUuPFcmig"),
-      tickArray1: new PublicKey("4hn4fZA5CsHEoK9ZL3sagUbawNNXPtwtsPyPSPeUq5Hn"),
-      tickArray2: new PublicKey("ASiDWqYZknwWEyeuBsug7VaDYB1K8MoNmbmRznEYyK97"),
+      tickArray0: new PublicKey(swapQuoteOutLoss.tickArray0),
+      tickArray1: new PublicKey(swapQuoteOutLoss.tickArray1),
+      tickArray2: new PublicKey(swapQuoteOutLoss.tickArray2),
       oracle: oraclePDA.publicKey,
       wsolMint: new PublicKey("So11111111111111111111111111111111111111112"),
       associatedTokenProgram: new PublicKey(
@@ -812,7 +826,7 @@ const Lottery: FC = () => {
       });
       setTimeout(() => {
         fetchLotteryAccountData();
-      }, 150);
+      }, 1000);
     } catch (error) {
       console.error(error);
       notify({
@@ -977,13 +991,21 @@ const Lottery: FC = () => {
   const isAmountValid = amount && parseFloat(amount) > 0;
 
   const calculateWinningNewChance = () => {
-    const parsedAmount = parseFloat(amount);
+    let parsedAmount = parseFloat(amount);
+
+    // Set parsedAmount to 0 if it's NaN or less than or equal to 0
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      parsedAmount = 0;
+    }
+
     if (
       !lotteryAccountData ||
-      Number(lotteryAccountData.totalDeposits) === 0
-      // ||
-      // isNaN(parsedAmount) ||
-      // parsedAmount <= 0
+      Number(lotteryAccountData.totalDeposits) === 0 ||
+      (parsedAmount === 0 &&
+        (!participantData ||
+          Number(participantData?.deposit) +
+            Number(participantData?.pendingDeposit) ===
+            0))
     ) {
       return "0.00%";
     }
