@@ -1656,38 +1656,43 @@ const Lottery: FC = () => {
                       Previous Winners
                     </div>
                     <div className="self-stretch flex flex-col items-start justify-start gap-[24px] text-sm text-gray-200 font-gilroy-medium">
-                      {smallLotteryWinners.map((winner, index) => (
-                        <div
-                          key={index}
-                          className="self-stretch flex flex-row items-start justify-start gap-[4px]"
-                        >
-                          <div className="flex-1 flex flex-col items-start justify-start gap-[4px]">
-                            <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
-                              {new Date(winner.timestamp).toLocaleDateString()}
-                            </div>
-                            <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
-                              {formatPublicKey(winner.winner)} won{" "}
-                              {(winner.yieldAmount / LAMPORTS_PER_SOL).toFixed(
-                                2
-                              )}{" "}
-                              SOL with {Number(winner.winningChance).toFixed(1)}
-                              % chance
-                            </div>
-                          </div>
-                          <a
-                            href={`https://solscan.io/tx/${winner.transactionSignature}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="hover:underline"
+                      {smallLotteryWinners
+                        .slice(0, 6) // Take only the latest 6 entries
+                        .map((winner, index) => (
+                          <div
+                            key={index}
+                            className="self-stretch flex flex-row items-start justify-start gap-[4px]"
                           >
-                            <img
-                              className="w-4 h-4"
-                              alt=""
-                              src="/vuesaxlinearlink.svg"
-                            />
-                          </a>{" "}
-                        </div>
-                      ))}
+                            <div className="flex-1 flex flex-col items-start justify-start gap-[4px]">
+                              <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
+                                {new Date(
+                                  winner.timestamp
+                                ).toLocaleDateString()}
+                              </div>
+                              <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
+                                {formatPublicKey(winner.winner)} won{" "}
+                                {(
+                                  winner.yieldAmount / LAMPORTS_PER_SOL
+                                ).toFixed(2)}{" "}
+                                SOL with{" "}
+                                {Number(winner.winningChance).toFixed(1)}%
+                                chance
+                              </div>
+                            </div>
+                            <a
+                              href={`https://solscan.io/tx/${winner.transactionSignature}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="hover:underline"
+                            >
+                              <img
+                                className="w-4 h-4"
+                                alt=""
+                                src="/vuesaxlinearlink.svg"
+                              />
+                            </a>{" "}
+                          </div>
+                        ))}
                     </div>
                   </div>
                 </div>
@@ -1751,38 +1756,44 @@ const Lottery: FC = () => {
                       Previous Winners
                     </div>
                     <div className="self-stretch flex flex-col items-start justify-start gap-[24px] text-sm text-gray-200 font-gilroy-medium">
-                      {bigLotteryWinners.map((winner, index) => (
-                        <div
-                          key={index}
-                          className="self-stretch flex flex-row items-start justify-start gap-[4px]"
-                        >
-                          <div className="flex-1 flex flex-col items-start justify-start gap-[4px]">
-                            <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
-                              {new Date(winner.timestamp).toLocaleDateString()}
-                            </div>
-                            <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
-                              {formatPublicKey(winner.winner)} won{" "}
-                              {(winner.yieldAmount / LAMPORTS_PER_SOL).toFixed(
-                                2
-                              )}{" "}
-                              SOL with {Number(winner.winningChance).toFixed(1)}
-                              % chance
-                            </div>
-                          </div>
-                          <a
-                            href={`https://solscan.io/tx/${winner.transactionSignature}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="hover:underline"
+                      {bigLotteryWinners
+
+                        .slice(0, 6) // Take only the latest 6 entries
+                        .map((winner, index) => (
+                          <div
+                            key={index}
+                            className="self-stretch flex flex-row items-start justify-start gap-[4px]"
                           >
-                            <img
-                              className="w-4 h-4"
-                              alt=""
-                              src="/vuesaxlinearlink.svg"
-                            />
-                          </a>
-                        </div>
-                      ))}
+                            <div className="flex-1 flex flex-col items-start justify-start gap-[4px]">
+                              <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
+                                {new Date(
+                                  winner.timestamp
+                                ).toLocaleDateString()}
+                              </div>
+                              <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
+                                {formatPublicKey(winner.winner)} won{" "}
+                                {(
+                                  winner.yieldAmount / LAMPORTS_PER_SOL
+                                ).toFixed(2)}{" "}
+                                SOL with{" "}
+                                {Number(winner.winningChance).toFixed(1)}%
+                                chance
+                              </div>
+                            </div>
+                            <a
+                              href={`https://solscan.io/tx/${winner.transactionSignature}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="hover:underline"
+                            >
+                              <img
+                                className="w-4 h-4"
+                                alt=""
+                                src="/vuesaxlinearlink.svg"
+                              />
+                            </a>
+                          </div>
+                        ))}
                     </div>
                   </div>
                 </div>
