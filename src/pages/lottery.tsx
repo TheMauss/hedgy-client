@@ -1208,7 +1208,16 @@ const Lottery: FC = () => {
                           Your Small Winnings
                         </div>
                         <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
-                          <span>{`0.143 `}</span>
+                          <span>
+                            {userWinnings?.smallWinnings
+                              ? isNaN(userWinnings.smallWinnings)
+                                ? 0
+                                : (
+                                    userWinnings.smallWinnings /
+                                    LAMPORTS_PER_SOL
+                                  ).toFixed(3)
+                              : 0}
+                          </span>{" "}
                           <span className="text-lg">SOL</span>
                         </div>
                       </div>
@@ -1217,7 +1226,15 @@ const Lottery: FC = () => {
                           Your Big Winnings
                         </div>
                         <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
-                          <span>{`1.235 `}</span>
+                          <span>
+                            {userWinnings?.bigWinnings
+                              ? isNaN(userWinnings.bigWinnings)
+                                ? 0
+                                : (
+                                    userWinnings.bigWinnings / LAMPORTS_PER_SOL
+                                  ).toFixed(3)
+                              : 0}
+                          </span>{" "}
                           <span className="text-lg">SOL</span>
                         </div>
                       </div>
