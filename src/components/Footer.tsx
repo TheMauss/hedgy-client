@@ -21,8 +21,8 @@ export const Footer: FC = () => {
 
   return (
     <div className="flex justify-center bg-layer-1 ">
-      <div className="h-9.5 py-[26px] text-gray-200 flex items-center justify-between  w-[95%] max-w-[1700px] flex flex-row items-center justify-between text-mini-7">
-        <Link href="/" className="no-underline">
+      <div className="h-20 text-gray-200 flex items-center justify-between  w-[95%] max-w-[1700px] flex flex-row items-center justify-between text-mini-7">
+        <a href="/" className="no-underline">
           <div className="flex flex-row items-center justify-start gap-[5px]">
             <img
               className="ml-1 w-[18.1px] relative h-[19.5px]"
@@ -33,25 +33,35 @@ export const Footer: FC = () => {
               Stakera
             </div>
           </div>
-        </Link>
+        </a>
         {/* <div className="relative text-sm leading-[150%] font-gilroy-regular opacity-[0.5]">
       © 2024 Stakera. All rights reserved.
     </div> */}
         <div className="flex flex-row items-center justify-start gap-[13px] opacity-[0.5]">
-          <Link href="https://discord.gg/q93pQdyYvs" target="_blank">
+          <a
+            href={`https://discord.gg/cpJ2GF6Skc`}
+            target="_blank"
+            rel="noreferrer"
+            className="hover:underline"
+          >
             <img
               className="w-[20px] relative h-[20px] overflow-hidden shrink-0 object-cover"
               alt=""
               src="/icon--youtube@2x.png"
             />
-          </Link>
-          <Link href="https://x.com/stakera_io" target="_blank">
+          </a>
+          <a
+            href="https://x.com/stakera_io"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:underline"
+          >
             <img
               className="w-[20px] relative h-[20px] overflow-hidden shrink-0"
               alt=""
               src="/icon--x.svg"
             />
-          </Link>
+          </a>
         </div>
       </div>
     </div>

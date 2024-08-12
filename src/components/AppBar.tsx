@@ -96,20 +96,20 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
   const [position, setPosition] = useState({ top: "0px", left: "0px" });
 
   return (
-    <div className="Gilroy-Semibold py-[29px] flex justify-center bg-layer-1">
-      <div className="h-9.5 flex flex-row justify-between items-center w-[95%] max-w-[1700px]">
-        <Link href="/lottery" className="no-underline">
-          <div className="flex flex-row items-center justify-start gap-[7.4px]">
-            <img
-              className="ml-1 w-[27.2px] relative h-[29.2px]"
-              alt=""
-              src="/group-1.svg"
-            />
-            <div className="text-[22px] text-white justify-center items-start tracking-[-0.01em] leading-[120.41%] inline-block shrink-0 pt-0.5">
-              Stakera
-            </div>
+    <div className="Gilroy-Semibold flex justify-center bg-layer-1">
+      <div className="h-24 flex flex-row justify-between items-center w-[95%] max-w-[1700px]">
+        {/* <Link href="/lottery" className="no-underline"> */}
+        <div className="flex flex-row items-center justify-start gap-[7.4px]">
+          <img
+            className="ml-1 w-[27.2px] relative h-[29.2px]"
+            alt=""
+            src="/group-1.svg"
+          />
+          <div className="text-[22px] text-white justify-center items-start tracking-[-0.01em] leading-[120.41%] inline-block shrink-0 pt-0.5">
+            Stakera
           </div>
-        </Link>
+        </div>
+        {/* </Link> */}
         <WalletMultiButtonDynamic
           className="bg-primary box-border flex flex-row items-center justify-center btn-ghost"
           style={{

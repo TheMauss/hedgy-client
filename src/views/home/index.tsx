@@ -187,15 +187,15 @@ export const HomeView: FC = ({}) => {
                 </h1>
 
                 <div className="flex flex-col gap-[8px] ">
-                  <div className="flex flex-row items-center justify-start gap-2 opacity-[0.5] text-mini font-gilroy-regular ">
+                  <div className="flex flex-row items-center justify-start gap-0 opacity-[0.5] text-mini font-gilroy-regular ">
                     <div className="relative tracking-[-0.03em] leading-[120.41%] inline-block min-w-[77px]">
                       Powered by
                     </div>
                     <img
-                      className="h-[21.1px] w-[62px] relative overflow-hidden shrink-0"
+                      className="h-[21.1px] relative overflow-hidden shrink-0"
                       loading="lazy"
                       alt=""
-                      src="/pyth-logotype-light.svg"
+                      src="/logo-left-white.svg"
                     />
                   </div>
                   <Link href="/lottery" className="no-underline">

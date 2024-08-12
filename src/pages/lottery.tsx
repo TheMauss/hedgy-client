@@ -1198,7 +1198,7 @@ const Lottery: FC = () => {
         <meta name="description" content="PopFi" />
       </Head>
 
-      <div className="flex justify-center items-top min-h-[calc(100vh-171.5px)] z-100 bg-layer-1 ">
+      <div className="flex justify-center items-top min-h-[calc(100vh-176px)] z-100 bg-layer-1 ">
         <div className="w-[95%] max-w-[1700px]">
           <div className="w-full  bg-layer-1 overflow-hidden text-left text-base text-neutral-06 font-gilroy-bold">
             <div
