@@ -640,7 +640,7 @@ const Lottery: FC = () => {
       });
       setTimeout(() => {
         fetchLotteryAccountData();
-      }, 1000);
+      }, 2000);
     } catch (error) {
       console.error(error);
       notify({
@@ -733,7 +733,7 @@ const Lottery: FC = () => {
       });
       setTimeout(() => {
         fetchLotteryAccountData();
-      }, 1000);
+      }, 2000);
     } catch (error) {
       console.error(error);
       notify({
@@ -826,7 +826,7 @@ const Lottery: FC = () => {
       });
       setTimeout(() => {
         fetchLotteryAccountData();
-      }, 1000);
+      }, 2000);
     } catch (error) {
       console.error(error);
       notify({
@@ -1034,7 +1034,9 @@ const Lottery: FC = () => {
 
     const totalDeposits =
       Number(lotteryAccountData.totalDeposits) / LAMPORTS_PER_SOL;
-    const participantDeposit = Number(participantData?.deposit) || 0;
+    const participantDeposit =
+      Number(participantData?.deposit) +
+        Number(participantData?.pendingDeposit) || 0;
     const person = participantDeposit / LAMPORTS_PER_SOL;
     const chance = (person / totalDeposits) * 100;
     return `${chance.toFixed(2)}%`;
