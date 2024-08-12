@@ -22,7 +22,7 @@ const FrameComponent8: FunctionComponent<FrameComponent8Type> = ({
         Start Winning on top of your Solana now.
       </h1>
       <Link href="/lottery" className="no-underline">
-        <button className="cursor-pointer [border:none] py-[7px] pl-4 pr-3 bg-primary rounded-lg overflow-hidden flex flex-row items-start justify-start gap-1">
+        <button className="hover:opacity-50 transition ease-in-out duration-300 cursor-pointer [border:none] py-[7px] pl-4 pr-3 bg-primary rounded-lg overflow-hidden flex flex-row items-start justify-start gap-1">
           <div className="flex flex-col items-start justify-start pt-[2.5px] px-0 pb-0">
             <div className="relative text-base tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-bg text-left inline-block min-w-[84px]">
               Launch App

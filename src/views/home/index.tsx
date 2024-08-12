@@ -95,7 +95,7 @@ export const HomeView: FC = ({}) => {
           />
         </div>
         <Link href="/lottery" className="no-underline">
-          <button className="cursor-pointer [border:none] py-[7px] pl-4 pr-3 bg-primary rounded-lg overflow-hidden flex flex-row items-start justify-start gap-1 shrink-0">
+          <button className="hover:opacity-50 transition ease-in-out duration-300 cursor-pointer [border:none] py-[7px] pl-4 pr-3 bg-primary rounded-lg overflow-hidden flex flex-row items-start justify-start gap-1 shrink-0">
             <div className="flex flex-col items-start justify-start pt-[2.5px] px-0 pb-0">
               <div className="relative text-base tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-bg text-left inline-block min-w-[84px] whitespace-nowrap">
                 Launch App
@@ -142,7 +142,7 @@ export const HomeView: FC = ({}) => {
                     />
                   </div>
                   <Link href="/lottery" className="no-underline">
-                    <button className="cursor-pointer [border:none] py-[7px] pl-4 pr-3 bg-primary rounded-lg overflow-hidden flex flex-row items-center justify-center gap-1 whitespace-nowrap hover:bg-limegreen">
+                    <button className="hover:opacity-50 transition ease-in-out duration-300 cursor-pointer [border:none] py-[7px] pl-4 pr-3 bg-primary rounded-lg overflow-hidden flex flex-row items-center justify-center gap-1 whitespace-nowrap hover:bg-limegreen">
                       <div className="relative text-base tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-bg text-left inline-block min-w-[84px]">
                         Launch App
                       </div>
@@ -169,7 +169,7 @@ export const HomeView: FC = ({}) => {
                     frameDivMinWidth="159px"
                     users="TVL"
                     usersColor="rgba(255, 255, 255, 0.75)"
-                    prop={`$${(Number(lotteryAccountData?.totalDeposits) / LAMPORTS_PER_SOL).toFixed(2)}`}
+                    prop={`$${isNaN(Number(lotteryAccountData?.totalDeposits) / LAMPORTS_PER_SOL) ? "0.00" : (Number(lotteryAccountData?.totalDeposits) / LAMPORTS_PER_SOL).toFixed(2)}`}
                     divFontSize="32px"
                     divColor="#fff"
                     className="w-full"
@@ -205,7 +205,7 @@ export const HomeView: FC = ({}) => {
                     frameDivMinWidth="unset"
                     users="Total Winnings"
                     usersColor="rgba(255, 255, 255, 0.75)"
-                    prop="$6,443.21"
+                    prop="$100"
                     divFontSize="32px"
                     divColor="#fff"
                   />
