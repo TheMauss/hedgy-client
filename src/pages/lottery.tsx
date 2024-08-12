@@ -559,7 +559,28 @@ const Lottery: FC = () => {
   // //   true
   // // );
 
-  const handleDeposit = async () => {
+  const handleDeposit = async (e) => {
+    const button = e.currentTarget;
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(button.clientWidth, button.clientHeight);
+    const x = e.clientX - rect.left - size / 2;
+    const y = e.clientY - rect.top - size / 2;
+
+    const newWave = {
+      x,
+      y,
+      size,
+      key: Date.now(), // Use a unique key for each wave
+    };
+
+    setWaves((prevWaves) => [...prevWaves, newWave]);
+
+    // Remove the wave after animation ends
+    setTimeout(() => {
+      setWaves((prevWaves) =>
+        prevWaves.filter((wave) => wave.key !== newWave.key)
+      );
+    }, 600);
     if (!publicKey) {
       notify({ type: "error", message: "Wallet not connected!" });
       return;
@@ -891,7 +912,31 @@ const Lottery: FC = () => {
     setAmount(sanitizedValue);
   };
 
-  const handleWithdrawDecision = async () => {
+  const [waves, setWaves] = useState([]);
+
+  const handleWithdrawDecision = async (e) => {
+    const button = e.currentTarget;
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(button.clientWidth, button.clientHeight);
+    const x = e.clientX - rect.left - size / 2;
+    const y = e.clientY - rect.top - size / 2;
+
+    const newWave = {
+      x,
+      y,
+      size,
+      key: Date.now(), // Use a unique key for each wave
+    };
+
+    setWaves((prevWaves) => [...prevWaves, newWave]);
+
+    // Remove the wave after animation ends
+    setTimeout(() => {
+      setWaves((prevWaves) =>
+        prevWaves.filter((wave) => wave.key !== newWave.key)
+      );
+    }, 600);
+
     if (participantData && currentPrice && whirlpool) {
       const depositAmount = new BN(
         participantData.deposit + participantData?.pendingDeposit
@@ -1347,7 +1392,7 @@ const Lottery: FC = () => {
                       className={`cursor-pointer flex-1 rounded-lg overflow-hidden flex flex-row items-center justify-center p-2 transition-background ${
                         selectedStake === "DEPOSIT"
                           ? "bg-bg text-white"
-                          : "bg-gray-100 text-gray-200"
+                          : "bg-gray-100 text-gray-200 hover:text-white transition-all duration-200"
                       }`}
                       onClick={() => setSelectedStake("DEPOSIT")}
                     >
@@ -1357,7 +1402,7 @@ const Lottery: FC = () => {
                       className={`cursor-pointer flex-1 rounded-lg flex flex-row items-center justify-center p-2 transition-background ${
                         selectedStake === "WITHDRAW"
                           ? "bg-bg text-white"
-                          : "bg-gray-100 text-gray-200"
+                          : "bg-gray-100 text-gray-200 hover:text-white transition-all duration-200"
                       }`}
                       onClick={() => setSelectedStake("WITHDRAW")}
                     >
@@ -1385,7 +1430,7 @@ const Lottery: FC = () => {
 
                       <div className="flex flex-col items-end justify-end gap-1">
                         <div className="flex flew-row gap-2">
-                          <div className="cursor-pointer rounded-lg bg-mediumspringgreen-50 flex flex-row items-center justify-center py-1 px-2 text-sm text-primary">
+                          <div className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-50 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary">
                             <div
                               onClick={() => handleAmountClick("HALF")}
                               className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center"
@@ -1393,7 +1438,7 @@ const Lottery: FC = () => {
                               HALF
                             </div>
                           </div>
-                          <div className="cursor-pointer rounded-lg bg-mediumspringgreen-50 flex flex-row items-center justify-center py-1 px-2 text-sm text-primary">
+                          <div className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-50 transition-all duration-200 ease-in-out  flex flex-row items-center justify-center py-1 px-2 text-sm text-primary">
                             <div
                               onClick={() => handleAmountClick("MAX")}
                               className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center"
@@ -1438,12 +1483,24 @@ const Lottery: FC = () => {
                           <>
                             {isAmountValid && selectedStake === "DEPOSIT" ? (
                               <button
-                                className="transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
+                                className="button-wrapper hover:opacity-70 transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
                                 onClick={handleDeposit}
                               >
                                 <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
                                   Deposit
                                 </div>
+                                {waves.map((wave) => (
+                                  <span
+                                    key={wave.key}
+                                    className="wave-effect"
+                                    style={{
+                                      width: wave.size,
+                                      height: wave.size,
+                                      top: wave.y,
+                                      left: wave.x,
+                                    }}
+                                  />
+                                ))}
                               </button>
                             ) : (
                               selectedStake === "DEPOSIT" && (
@@ -1456,12 +1513,24 @@ const Lottery: FC = () => {
                             )}
                             {isAmountValid && selectedStake === "WITHDRAW" ? (
                               <button
-                                className="transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
+                                className="button-wrapper hover:opacity-70 transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
                                 onClick={handleWithdrawDecision}
                               >
                                 <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
                                   Withdraw
                                 </div>
+                                {waves.map((wave) => (
+                                  <span
+                                    key={wave.key}
+                                    className="wave-effect"
+                                    style={{
+                                      width: wave.size,
+                                      height: wave.size,
+                                      top: wave.y,
+                                      left: wave.x,
+                                    }}
+                                  />
+                                ))}
                               </button>
                             ) : (
                               selectedStake === "WITHDRAW" && (
