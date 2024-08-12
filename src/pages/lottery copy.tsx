@@ -183,10 +183,15 @@ const Lottery: FC = () => {
     }
 
     const smallLotteryEndTime = Number(lotteryAccountData?.smallLotteryTime);
-    const smallLotteryStartTime = smallLotteryEndTime - 60 * 60 * 12; // Adjust based on your requirements
+    const smallLotteryStartTime = smallLotteryEndTime - 60 * 60 * 4; // Adjust based on your requirements
 
     const bigLotteryEndTime = Number(lotteryAccountData?.bigLotteryTime);
-    const bigLotteryStartTime = bigLotteryEndTime - 4 * 60 * 60 * 12; // Adjust based on your requirements
+    const bigLotteryStartTime = bigLotteryEndTime - 4 * 60 * 60 * 4; // Adjust based on your requirements
+
+    console.log("smallLotteryEndTime:", smallLotteryEndTime);
+    console.log("smallLotteryStartTime:", smallLotteryStartTime);
+    console.log("bigLotteryEndTime:", bigLotteryEndTime);
+    console.log("bigLotteryStartTime:", bigLotteryStartTime);
 
     const updateRemainingTimes = async () => {
       try {
@@ -235,8 +240,6 @@ const Lottery: FC = () => {
     remainingTimeBigLottery,
     totalTimeBigLottery
   );
-
-  console.log(smallLotteryPercentage, bigLotteryPercentage);
 
   const getBackgroundStyle = (
     percentage: number,
