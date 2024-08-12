@@ -19,8 +19,31 @@ import {
   LotteryAccountJSON,
 } from "../../out/accounts/LotteryAccount";
 import Frame1 from "./components/Frame1";
+import axios from "axios";
 
 // Dynamically import the StarfieldAnimationComponent with SSR disabled
+const fetchHistoricalPriceUpdates = async (timestamp, ids) => {
+  const baseURL = "https://benchmarks.pyth.network/v1/updates/price/";
+  const url = `${baseURL}${timestamp}`;
+  const params = ids.map((id) => `ids=${id}`).join("&");
+  const fullUrl = `${url}?${params}`;
+
+  console.log(`Fetching data from URL: ${fullUrl}`);
+
+  try {
+    const response = await axios.get(fullUrl);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching historical price updates:", error);
+    return null;
+  }
+};
+
+const priceIdToSymbolMap = {
+  ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d:
+    "Crypto.SOL/USD",
+  // Add more mappings as necessary
+};
 
 export const HomeView: FC = ({}) => {
   const { connection } = useConnection();
@@ -30,6 +53,38 @@ export const HomeView: FC = ({}) => {
   const [totalParticipants, setTotalParticipants] = useState(0);
 
   const [windowWidth, setWindowWidth] = useState(0);
+  const [openPrices, setopenPrices] = useState({});
+  const [prices, setPrices] = useState({});
+
+  useEffect(() => {
+    const currentDate = new Date();
+    const gmt2Date = new Date(currentDate.getTime() - 50000);
+    const timestamp = Math.floor(gmt2Date.getTime() / 1000);
+
+    const ids = Object.keys(priceIdToSymbolMap);
+
+    const fetchPrices = async () => {
+      const priceUpdates = await fetchHistoricalPriceUpdates(timestamp, ids);
+
+      if (priceUpdates && priceUpdates.parsed) {
+        const updatedPrices = { ...openPrices };
+        priceUpdates.parsed.forEach((priceUpdate) => {
+          const symbol = priceIdToSymbolMap[priceUpdate.id];
+          if (symbol) {
+            updatedPrices[symbol] = priceUpdate.price.price;
+          }
+        });
+
+        setPrices(updatedPrices);
+        console.log("updatedPrices", updatedPrices);
+      }
+    };
+
+    fetchPrices();
+  }, []);
+
+  const solPrice =
+    Number((prices["Crypto.SOL/USD"] / 100000000).toFixed(2)) || 34.35;
 
   async function checkLotteryAccount(
     connection: Connection
@@ -169,7 +224,7 @@ export const HomeView: FC = ({}) => {
                     frameDivMinWidth="159px"
                     users="TVL"
                     usersColor="rgba(255, 255, 255, 0.75)"
-                    prop={`$${isNaN(Number(lotteryAccountData?.totalDeposits) / LAMPORTS_PER_SOL) ? "0.00" : (Number(lotteryAccountData?.totalDeposits) / LAMPORTS_PER_SOL).toFixed(2)}`}
+                    prop={`$${isNaN(Number(lotteryAccountData?.totalDeposits) / LAMPORTS_PER_SOL) ? "0.00" : ((solPrice * Number(lotteryAccountData?.totalDeposits)) / LAMPORTS_PER_SOL).toFixed(2)}`}
                     divFontSize="32px"
                     divColor="#fff"
                     className="w-full"
