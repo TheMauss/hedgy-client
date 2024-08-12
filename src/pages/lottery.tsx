@@ -251,16 +251,8 @@ const Lottery: FC = () => {
     };
   };
 
-  const smallLotteryBgStyle = getBackgroundStyle(
-    smallLotteryPercentage,
-    "#6fff90",
-    "#255146"
-  ); // Adjust colors as needed
-  const bigLotteryBgStyle = getBackgroundStyle(
-    bigLotteryPercentage,
-    "#7363f3",
-    "#255146"
-  ); // Adjust colors as needed
+  const smallLotteryBgStyle = getBackgroundStyle(80, "#6fff90", "#255146"); // Adjust colors as needed
+  const bigLotteryBgStyle = getBackgroundStyle(20, "#7363f3", "#255146"); // Adjust colors as needed
 
   const formatRemainingTime = (seconds: number) => {
     if (seconds < 0) {
