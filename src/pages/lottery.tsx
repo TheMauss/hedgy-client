@@ -1726,7 +1726,7 @@ const Lottery: FC = () => {
                     </div>
                     <div className="flex flex-col items-start justify-start gap-[8px] z-[2] text-35xl font-gilroy-bold">
                       <div className="self-stretch tracking-[-0.03em] leading-[120.41%] inline-block h-[47px] shrink-0">
-                        <span>{`1.288 `}</span>
+                        <span>{`4.288 `}</span>
                         <span className="text-13xl">SOL</span>
                       </div>
                       <div className="self-stretch text-mid tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold">
@@ -1826,7 +1826,7 @@ const Lottery: FC = () => {
                     </div>
                     <div className="flex flex-col items-start justify-start gap-[8px] z-[2] text-35xl font-gilroy-bold">
                       <div className="tracking-[-0.03em] leading-[120.41%] inline-block h-[47px] shrink-0">
-                        <span>{`14.432 `}</span>
+                        <span>{`16.432 `}</span>
                         <span className="text-13xl">SOL</span>
                       </div>
                       <div className="self-stretch text-mid tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold">
