@@ -138,17 +138,19 @@ export const HomeView: FC = ({}) => {
     <div className="w-full relative bg-layer-1 overflow-hidden flex flex-col items-center justify-center box-border  leading-[normal] tracking-[normal] text-left text-sm text-gray-200 font-gilroy-regular">
       <header className="h-9.5 flex flex-row justify-between items-center max-w-[1700px] w-[95%] py-[29px] ">
         {" "}
-        <div className="flex flex-col items-start justify-start  px-0 pb-0">
-          <FrameComponent9
-            group1="/group-1.svg"
-            propHeight="29.2px"
-            propWidth="27.2px"
-            propMinHeight="unset"
-            propHeight1="21.9px"
-            propFontSize="22.1px"
-            propMinWidth="75.3px"
-          />
-        </div>
+        <Link href="/lottery" className="no-underline">
+          <div className="flex flex-col items-start justify-start  px-0 pb-0">
+            <FrameComponent9
+              group1="/group-1.svg"
+              propHeight="29.2px"
+              propWidth="27.2px"
+              propMinHeight="unset"
+              propHeight1="21.9px"
+              propFontSize="22.1px"
+              propMinWidth="75.3px"
+            />
+          </div>{" "}
+        </Link>
         <Link href="/lottery" className="no-underline">
           <button className="hover:opacity-50 transition ease-in-out duration-300 cursor-pointer [border:none] py-[7px] pl-4 pr-3 bg-primary rounded-lg overflow-hidden flex flex-row items-start justify-start gap-1 shrink-0">
             <div className="flex flex-col items-start justify-start pt-[2.5px] px-0 pb-0">

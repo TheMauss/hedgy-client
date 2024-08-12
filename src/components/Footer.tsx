@@ -22,16 +22,18 @@ export const Footer: FC = () => {
   return (
     <div className="flex justify-center bg-layer-1 ">
       <div className="h-9.5 py-[26px] text-gray-200 flex items-center justify-between  w-[95%] max-w-[1700px] flex flex-row items-center justify-between text-mini-7">
-        <div className="flex flex-row items-center justify-start gap-[5px]">
-          <img
-            className="ml-1 w-[18.1px] relative h-[19.5px]"
-            alt=""
-            src="/group-11.svg"
-          />
-          <div className="font-gilroy-semibold text-white w-[50.2px] relative tracking-[-0.03em] leading-[120.41%] inline-block h-[14.6px] shrink-0">
-            Stakera
+        <Link href="/" className="no-underline">
+          <div className="flex flex-row items-center justify-start gap-[5px]">
+            <img
+              className="ml-1 w-[18.1px] relative h-[19.5px]"
+              alt=""
+              src="/group-11.svg"
+            />
+            <div className="font-gilroy-semibold text-white w-[50.2px] relative tracking-[-0.03em] leading-[120.41%] inline-block h-[14.6px] shrink-0">
+              Stakera
+            </div>
           </div>
-        </div>
+        </Link>
         {/* <div className="relative text-sm leading-[150%] font-gilroy-regular opacity-[0.5]">
       © 2024 Stakera. All rights reserved.
     </div> */}
