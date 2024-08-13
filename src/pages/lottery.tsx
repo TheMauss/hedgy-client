@@ -15,6 +15,7 @@ import { BN } from "@project-serum/anchor";
 import { deposit as depositInstruction } from "../out/instructions"; // Update with the correct path
 import { withdraw as withdrawInstruction } from "../out/instructions"; // Update with the correct path
 import { withdrawWithRatioLoss as withdrawwithLossInstruction } from "../out/instructions"; // Update with the correct path
+import { withdrawTeamYield as withdrawTeamYield } from "../out/instructions"; // Update with the correct path
 import Decimal from "decimal.js";
 import { usePriorityFee } from "../contexts/PriorityFee";
 import { PROGRAM_ID } from "../out/programId";
@@ -41,6 +42,7 @@ import {
 } from "../out/accounts/LotteryAccount";
 import { ParticipantJSON } from "../out/types/Participant";
 import dynamic from "next/dynamic";
+import holderList from "./holders.json";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -176,6 +178,30 @@ const Lottery: FC = () => {
     return `${pubKey.slice(0, 3)}...${pubKey.slice(-3)}`;
   };
 
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+  // Load the list of holders
+  const [allowedHolders, setAllowedHolders] = useState<string[]>([]);
+
+  useEffect(() => {
+    const loadHolders = async () => {
+      // Simulate loading JSON from uploaded file
+      const holders = holderList; // Replace this with the actual method to load the JSON file
+      setAllowedHolders(holders);
+    };
+
+    loadHolders();
+  }, []);
+
+  // Check if the connected wallet is in the list
+  useEffect(() => {
+    if (publicKey && allowedHolders.length > 0) {
+      const publicKeyString = publicKey.toString();
+      const isAllowed = allowedHolders.includes(publicKeyString);
+      setHasAccess(isAllowed);
+    }
+  }, [publicKey, allowedHolders]);
+
   useEffect(() => {
     if (!lotteryAccountData) {
       console.log("Waiting for lotteryAccountData...");
@@ -235,8 +261,6 @@ const Lottery: FC = () => {
     remainingTimeBigLottery,
     totalTimeBigLottery
   );
-
-  console.log(smallLotteryPercentage, bigLotteryPercentage);
 
   const getBackgroundStyle = (
     percentage: number,
@@ -764,6 +788,109 @@ const Lottery: FC = () => {
     }
   };
 
+  const handleTeamWithdraw = async () => {
+    if (!publicKey) {
+      notify({ type: "error", message: "Wallet not connected!" });
+      return;
+    }
+
+    console.log(new Decimal(lotteryAccountData?.teamYield));
+    console.log(lotteryAccountData.teamYield);
+
+    const quoteOut = await getSwapQuoteOutput(
+      whirlpool,
+      new Decimal(Number(lotteryAccountData.teamYield) / LAMPORTS_PER_SOL),
+      slippageTolerance
+    );
+
+    const withdrawArgs = {
+      amount: new BN(quoteOut.estimatedAmountOut),
+      otherAmountThreshold: new BN(quoteOut.otherAmountThreshold),
+      sqrtPriceLimit: new BN(quoteOut.sqrtPriceLimit),
+      amountSpecifiedIsInput: false,
+      aToB: false,
+      slippage: new BN(slippageTolerance),
+    };
+
+    const withdrawAccounts = {
+      lotteryAccount,
+      user: publicKey,
+      pdaHouseAcc,
+      systemProgram: SystemProgram.programId,
+      whirlpoolProgram,
+      tokenProgram,
+      whirlpool: whirlpoolAddress,
+      tokenOwnerAccountA,
+      tokenVaultA,
+      tokenOwnerAccountB,
+      tokenVaultB,
+      tickArray0: new PublicKey(quoteOut.tickArray0),
+      tickArray1: new PublicKey(quoteOut.tickArray1),
+      tickArray2: new PublicKey(quoteOut.tickArray2),
+      oracle: oraclePDA.publicKey,
+      wsolMint: new PublicKey("So11111111111111111111111111111111111111112"),
+      associatedTokenProgram: new PublicKey(
+        "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+      ),
+      solOracleAccount: new PublicKey(
+        "7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE"
+      ),
+      infOracleAccount: new PublicKey(
+        "Ceg5oePJv1a6RR541qKeQaTepvERA3i8SvyueX9tT8Sq"
+      ),
+      infMint: new PublicKey("5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm"),
+      poolState: new PublicKey("AYhux5gJzCoeoc1PoJ1VxwPDe22RwcvpHviLDD1oCGvW"),
+    };
+
+    let PRIORITY_FEE_IX;
+
+    if (isPriorityFee) {
+      const priorityfees = await getPriorityFeeEstimate();
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: priorityfees,
+      });
+    } else {
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: 0,
+      });
+    }
+
+    const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 2500000,
+    });
+
+    try {
+      const ix = withdrawTeamYield(withdrawArgs, withdrawAccounts);
+      const tx = new Transaction()
+        .add(COMPUTE_BUDGET_IX)
+        .add(ix)
+        .add(PRIORITY_FEE_IX);
+      const signature = await sendTransaction(tx, connection);
+      notify({
+        type: "info",
+        message: "Withdraw transaction sent!",
+        txid: signature,
+      });
+      await connection.confirmTransaction(signature, "processed");
+      notify({
+        type: "success",
+        message: "Withdraw transaction successful!",
+        txid: signature,
+      });
+      setTimeout(() => {
+        fetchLotteryAccountData();
+        fetchParticipantData();
+      }, 1000);
+    } catch (error) {
+      console.error(error);
+      notify({
+        type: "error",
+        message: "Withdraw transaction failed!",
+        description: error.message,
+      });
+    }
+  };
+
   const handleWithdrawWithLoss = async (amount) => {
     if (!publicKey) {
       notify({ type: "error", message: "Wallet not connected!" });
@@ -1145,7 +1272,7 @@ const Lottery: FC = () => {
           type === "HALF" ? participantDeposit / 2 : participantDeposit;
       }
     }
-    const maxValue = Math.max(Number(tokenBalance), 0).toFixed(2);
+    const maxValue = Math.max(Number(tokenBalance), 0).toFixed(6);
     setAmount(maxValue.toString()); // Update the state, which will update the input value reactively
   };
 
@@ -1191,6 +1318,63 @@ const Lottery: FC = () => {
     fetchUserResults();
   }, [publicKey]);
 
+  if (hasAccess === null) {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-[calc(100vh-172px)] z-100 bg-layer-1 font-gilroy-semibold">
+        <div
+          className="rounded-3xl"
+          style={{
+            backgroundImage: "url('/rectangle-17@2x.png')",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "top",
+          }}
+        >
+          <div className="flex justify-center items-center flex-col p-12">
+            <p className="text-xl text-white">
+              Prove that you are Pophead holder.
+            </p>
+
+            <div className="flex justify-center items-center w-[250px] h-[50px] rounded-lg bg-primary cursor-pointer font-semibold text-center text-lg text-black transition ease-in-out duration-300">
+              <WalletMultiButtonDynamic
+                style={{
+                  width: "100%",
+                  backgroundColor: "transparent",
+                  color: "black",
+                }}
+                className="mt-0.5 w-[100%]"
+              >
+                CONNECT WALLET
+              </WalletMultiButtonDynamic>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasAccess) {
+    return (
+      <div className="flex justify-center items-center min-h-[calc(100vh-172px)] z-100 bg-layer-1 font-gilroy-semibold">
+        <div
+          className="rounded-3xl"
+          style={{
+            backgroundImage: "url('/rectangle-17@2x.png')",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "top",
+          }}
+        >
+          <div className="flex justify-center items-center flex-col p-12">
+            <p className="text-xl text-white">
+              Access Denied: Your wallet is not on the list.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className=" overflow-hidden">
       <Head>
@@ -1198,7 +1382,7 @@ const Lottery: FC = () => {
         <meta name="description" content="PopFi" />
       </Head>
 
-      <div className="flex justify-center items-top min-h-[calc(100vh-176px)] z-100 bg-layer-1 ">
+      <div className="flex justify-center items-top min-h-[calc(100vh-172px)] z-100 bg-layer-1 ">
         <div className="w-[95%] max-w-[1700px]">
           <div className="w-full  bg-layer-1 overflow-hidden text-left text-base text-neutral-06 font-gilroy-bold">
             <div
@@ -1451,7 +1635,7 @@ const Lottery: FC = () => {
                         </div>
                         <input
                           type="text"
-                          className="w-1/3 input-capsule__input text-13xl tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold bg-black"
+                          className="w-full input-capsule__input text-13xl tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold bg-black"
                           placeholder="0.00"
                           value={amount}
                           onChange={handleInputChange}
@@ -1517,6 +1701,7 @@ const Lottery: FC = () => {
                               <button
                                 className="button-wrapper hover:opacity-70 transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
                                 onClick={handleWithdrawDecision}
+                                // onClick={handleTeamWithdraw}
                               >
                                 <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
                                   Withdraw
