@@ -1332,7 +1332,7 @@ const Lottery: FC = () => {
         >
           <div className="flex justify-center items-center flex-col p-12">
             <p className="text-xl text-white">
-              Prove that you are Pophead holder.
+              Prove that you are a Pophead holder.
             </p>
 
             <div className="flex justify-center items-center w-[250px] h-[50px] rounded-lg bg-primary cursor-pointer font-semibold text-center text-lg text-black transition ease-in-out duration-300">
