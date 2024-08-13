@@ -91,6 +91,27 @@ const oraclePDA = PDAUtil.getOracle(
 
 const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT5;
 
+const fetchAPY = async () => {
+  try {
+    const response = await axios.get(
+      "https://sanctum-extra-api.ngrok.dev/v1/apy/latest?lst=INF"
+    );
+    if (response.status === 200 && response.data && response.data.apys) {
+      return response.data.apys.INF; // Assuming you need the APY for "INF"
+    } else {
+      console.error("APY data is not available or API request failed");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching APY:", error);
+    return null;
+  }
+};
+
+const calculateValue = (value, multiplier) => {
+  return value * multiplier;
+};
+
 async function checkLotteryAccount(
   connection: Connection
 ): Promise<LotteryAccountJSON> {
@@ -173,10 +194,19 @@ const Lottery: FC = () => {
   const [bigLotteryWinners, setBigLotteryWinners] = useState([]);
   const [userWinnings, setUserWinnings] = useState<UserWinnings | null>(null);
 
+  const [apyValue, setApyValue] = useState(null);
+  const [smallLotteryAPY, setSmallLotteryAPY] = useState(null);
+  const [bigLotteryAPY, setBigLotteryAPY] = useState(null);
+  const multiplier = 0.9;
+  const result =
+    apyValue !== null ? calculateValue(apyValue * 100, multiplier) : null; // Convert to percentage
+
   const formatPublicKey = (pubKey) => {
     if (!pubKey) return "";
     return `${pubKey.slice(0, 3)}...${pubKey.slice(-3)}`;
   };
+
+  // start
 
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
 
@@ -201,6 +231,8 @@ const Lottery: FC = () => {
       setHasAccess(isAllowed);
     }
   }, [publicKey, allowedHolders]);
+
+  // end
 
   useEffect(() => {
     if (!lotteryAccountData) {
@@ -1152,13 +1184,36 @@ const Lottery: FC = () => {
     }
   };
 
-  const calculateValue = (value, multiplier) => {
-    return value * multiplier;
+  const calculateLotteryAPY = (apy, totalTime) => {
+    // Assuming the APY is given for a year, convert it to the period of the lottery.
+    const secondsInAYear = 365 * 24 * 60 * 60;
+    return (apy * totalTime) / secondsInAYear;
   };
 
-  const value = 8.53;
-  const multiplier = 0.9;
-  const result = calculateValue(value, multiplier);
+  useEffect(() => {
+    const getAPY = async () => {
+      const apy = await fetchAPY();
+      if (apy !== null) {
+        setApyValue(apy);
+
+        // Once APY is fetched, calculate the small and big lottery APYs
+        if (totalTimeSmallLottery) {
+          const smallAPY = calculateLotteryAPY(apy, totalTimeSmallLottery);
+          const smallLotteryYield =
+            smallAPY * Number(lotteryAccountData.totalDeposits);
+          setSmallLotteryAPY(smallLotteryYield);
+        }
+
+        if (totalTimeBigLottery) {
+          const bigAPY = calculateLotteryAPY(apy, totalTimeBigLottery);
+          const BiglotteryYield =
+            bigAPY * Number(lotteryAccountData.totalDeposits);
+          setBigLotteryAPY(BiglotteryYield);
+        }
+      }
+    };
+    getAPY();
+  }, [totalTimeSmallLottery, totalTimeBigLottery, lotteryAccountData]);
 
   const isAmountValid = amount && parseFloat(amount) > 0;
 
@@ -1569,7 +1624,7 @@ const Lottery: FC = () => {
                     </div>
                     <div className="rounded-981xl bg-mediumspringgreen-100 flex flex-row items-center justify-center py-2 px-3 text-sm text-primary">
                       <div className="w-[100px] leading-[120%] inline-block h-3.5 flex justify-center items-center">
-                        Est. APY {result.toFixed(2)}%
+                        Est. APY {result?.toFixed(2)}%
                       </div>
                     </div>
                   </div>
@@ -1918,7 +1973,14 @@ const Lottery: FC = () => {
                     </div>
                     <div className="flex flex-col items-start justify-start gap-[8px] z-[2] text-35xl font-gilroy-bold">
                       <div className="self-stretch tracking-[-0.03em] leading-[120.41%] inline-block h-[47px] shrink-0">
-                        <span>{`4.288 `}</span>
+                        <span>
+                          {smallLotteryAPY !== null
+                            ? (
+                                smallLotteryAPY.toFixed(0) / LAMPORTS_PER_SOL
+                              ).toFixed(4)
+                            : "0"}
+                        </span>{" "}
+                        {/* Small Lottery APY */}{" "}
                         <span className="text-13xl">SOL</span>
                       </div>
                       <div className="self-stretch text-mid tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold">
@@ -2017,8 +2079,15 @@ const Lottery: FC = () => {
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-[8px] z-[2] text-35xl font-gilroy-bold">
-                      <div className="tracking-[-0.03em] leading-[120.41%] inline-block h-[47px] shrink-0">
-                        <span>{`16.432 `}</span>
+                      <div className="self-stretch tracking-[-0.03em] leading-[120.41%] inline-block h-[47px] shrink-0">
+                        <span>
+                          {bigLotteryAPY !== null
+                            ? (
+                                bigLotteryAPY.toFixed(0) / LAMPORTS_PER_SOL
+                              ).toFixed(4)
+                            : "0"}
+                        </span>{" "}
+                        {/* Small Lottery APY */}{" "}
                         <span className="text-13xl">SOL</span>
                       </div>
                       <div className="self-stretch text-mid tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold">
