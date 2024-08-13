@@ -15,6 +15,7 @@ import { BN } from "@project-serum/anchor";
 import { deposit as depositInstruction } from "../out/instructions"; // Update with the correct path
 import { withdraw as withdrawInstruction } from "../out/instructions"; // Update with the correct path
 import { withdrawWithRatioLoss as withdrawwithLossInstruction } from "../out/instructions"; // Update with the correct path
+import { withdrawTeamYield as withdrawTeamYield } from "../out/instructions"; // Update with the correct path
 import Decimal from "decimal.js";
 import { usePriorityFee } from "../contexts/PriorityFee";
 import { PROGRAM_ID } from "../out/programId";
@@ -41,6 +42,7 @@ import {
 } from "../out/accounts/LotteryAccount";
 import { ParticipantJSON } from "../out/types/Participant";
 import dynamic from "next/dynamic";
+import holderList from "./holders.json";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -88,6 +90,42 @@ const oraclePDA = PDAUtil.getOracle(
 );
 
 const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT5;
+
+const fetchAPY = async () => {
+  try {
+    const response = await axios.get(
+      "https://sanctum-extra-api.ngrok.dev/v1/apy/latest?lst=INF"
+    );
+    if (response.status === 200 && response.data && response.data.apys) {
+      return response.data.apys.INF; // Assuming you need the APY for "INF"
+    } else {
+      console.error("APY data is not available or API request failed");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching APY:", error);
+    return null;
+  }
+};
+
+const fetchCurrentValue = async () => {
+  try {
+    const response = await axios.get(
+      "https://sanctum-extra-api.ngrok.dev/v1/sol-value/current",
+      {
+        params: { lst: ["INF"] },
+      }
+    );
+    return response.data.value || null;
+  } catch (error) {
+    console.error("Error fetching INF to SOL value:", error);
+    return null;
+  }
+};
+
+const calculateValue = (value, multiplier) => {
+  return value * multiplier;
+};
 
 async function checkLotteryAccount(
   connection: Connection
@@ -171,10 +209,45 @@ const Lottery: FC = () => {
   const [bigLotteryWinners, setBigLotteryWinners] = useState([]);
   const [userWinnings, setUserWinnings] = useState<UserWinnings | null>(null);
 
+  const [apyValue, setApyValue] = useState(null);
+  const [smallLotteryAPY, setSmallLotteryAPY] = useState(null);
+  const [bigLotteryAPY, setBigLotteryAPY] = useState(null);
+  const multiplier = 0.9;
+  const result =
+    apyValue !== null ? calculateValue(apyValue * 100, multiplier) : null; // Convert to percentage
+
   const formatPublicKey = (pubKey) => {
     if (!pubKey) return "";
     return `${pubKey.slice(0, 3)}...${pubKey.slice(-3)}`;
   };
+
+  // start
+
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+  // Load the list of holders
+  const [allowedHolders, setAllowedHolders] = useState<string[]>([]);
+
+  useEffect(() => {
+    const loadHolders = async () => {
+      // Simulate loading JSON from uploaded file
+      const holders = holderList; // Replace this with the actual method to load the JSON file
+      setAllowedHolders(holders);
+    };
+
+    loadHolders();
+  }, []);
+
+  // Check if the connected wallet is in the list
+  useEffect(() => {
+    if (publicKey && allowedHolders.length > 0) {
+      const publicKeyString = publicKey.toString();
+      const isAllowed = allowedHolders.includes(publicKeyString);
+      setHasAccess(isAllowed);
+    }
+  }, [publicKey, allowedHolders]);
+
+  // end
 
   useEffect(() => {
     if (!lotteryAccountData) {
@@ -183,15 +256,10 @@ const Lottery: FC = () => {
     }
 
     const smallLotteryEndTime = Number(lotteryAccountData?.smallLotteryTime);
-    const smallLotteryStartTime = smallLotteryEndTime - 60 * 60 * 4; // Adjust based on your requirements
+    const smallLotteryStartTime = smallLotteryEndTime - 60 * 60 * 12; // Adjust based on your requirements
 
     const bigLotteryEndTime = Number(lotteryAccountData?.bigLotteryTime);
-    const bigLotteryStartTime = bigLotteryEndTime - 4 * 60 * 60 * 4; // Adjust based on your requirements
-
-    console.log("smallLotteryEndTime:", smallLotteryEndTime);
-    console.log("smallLotteryStartTime:", smallLotteryStartTime);
-    console.log("bigLotteryEndTime:", bigLotteryEndTime);
-    console.log("bigLotteryStartTime:", bigLotteryStartTime);
+    const bigLotteryStartTime = bigLotteryEndTime - 4 * 60 * 60 * 12; // Adjust based on your requirements
 
     const updateRemainingTimes = async () => {
       try {
@@ -767,6 +835,109 @@ const Lottery: FC = () => {
     }
   };
 
+  const handleTeamWithdraw = async () => {
+    if (!publicKey) {
+      notify({ type: "error", message: "Wallet not connected!" });
+      return;
+    }
+
+    console.log(new Decimal(lotteryAccountData?.teamYield));
+    console.log(lotteryAccountData.teamYield);
+
+    const quoteOut = await getSwapQuoteOutput(
+      whirlpool,
+      new Decimal(Number(lotteryAccountData.teamYield) / LAMPORTS_PER_SOL),
+      slippageTolerance
+    );
+
+    const withdrawArgs = {
+      amount: new BN(quoteOut.estimatedAmountOut),
+      otherAmountThreshold: new BN(quoteOut.otherAmountThreshold),
+      sqrtPriceLimit: new BN(quoteOut.sqrtPriceLimit),
+      amountSpecifiedIsInput: false,
+      aToB: false,
+      slippage: new BN(slippageTolerance),
+    };
+
+    const withdrawAccounts = {
+      lotteryAccount,
+      user: publicKey,
+      pdaHouseAcc,
+      systemProgram: SystemProgram.programId,
+      whirlpoolProgram,
+      tokenProgram,
+      whirlpool: whirlpoolAddress,
+      tokenOwnerAccountA,
+      tokenVaultA,
+      tokenOwnerAccountB,
+      tokenVaultB,
+      tickArray0: new PublicKey(quoteOut.tickArray0),
+      tickArray1: new PublicKey(quoteOut.tickArray1),
+      tickArray2: new PublicKey(quoteOut.tickArray2),
+      oracle: oraclePDA.publicKey,
+      wsolMint: new PublicKey("So11111111111111111111111111111111111111112"),
+      associatedTokenProgram: new PublicKey(
+        "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+      ),
+      solOracleAccount: new PublicKey(
+        "7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE"
+      ),
+      infOracleAccount: new PublicKey(
+        "Ceg5oePJv1a6RR541qKeQaTepvERA3i8SvyueX9tT8Sq"
+      ),
+      infMint: new PublicKey("5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm"),
+      poolState: new PublicKey("AYhux5gJzCoeoc1PoJ1VxwPDe22RwcvpHviLDD1oCGvW"),
+    };
+
+    let PRIORITY_FEE_IX;
+
+    if (isPriorityFee) {
+      const priorityfees = await getPriorityFeeEstimate();
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: priorityfees,
+      });
+    } else {
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: 0,
+      });
+    }
+
+    const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 2500000,
+    });
+
+    try {
+      const ix = withdrawTeamYield(withdrawArgs, withdrawAccounts);
+      const tx = new Transaction()
+        .add(COMPUTE_BUDGET_IX)
+        .add(ix)
+        .add(PRIORITY_FEE_IX);
+      const signature = await sendTransaction(tx, connection);
+      notify({
+        type: "info",
+        message: "Withdraw transaction sent!",
+        txid: signature,
+      });
+      await connection.confirmTransaction(signature, "processed");
+      notify({
+        type: "success",
+        message: "Withdraw transaction successful!",
+        txid: signature,
+      });
+      setTimeout(() => {
+        fetchLotteryAccountData();
+        fetchParticipantData();
+      }, 1000);
+    } catch (error) {
+      console.error(error);
+      notify({
+        type: "error",
+        message: "Withdraw transaction failed!",
+        description: error.message,
+      });
+    }
+  };
+
   const handleWithdrawWithLoss = async (amount) => {
     if (!publicKey) {
       notify({ type: "error", message: "Wallet not connected!" });
@@ -1028,13 +1199,36 @@ const Lottery: FC = () => {
     }
   };
 
-  const calculateValue = (value, multiplier) => {
-    return value * multiplier;
+  const calculateLotteryAPY = (apy, totalTime) => {
+    // Assuming the APY is given for a year, convert it to the period of the lottery.
+    const secondsInAYear = 365 * 24 * 60 * 60;
+    return (apy * totalTime) / secondsInAYear;
   };
 
-  const value = 8.53;
-  const multiplier = 0.9;
-  const result = calculateValue(value, multiplier);
+  useEffect(() => {
+    const getAPY = async () => {
+      const apy = await fetchAPY();
+      if (apy !== null) {
+        setApyValue(apy);
+
+        // Once APY is fetched, calculate the small and big lottery APYs
+        if (totalTimeSmallLottery) {
+          const smallAPY = calculateLotteryAPY(apy, totalTimeSmallLottery);
+          const smallLotteryYield =
+            smallAPY * Number(lotteryAccountData.totalDeposits);
+          setSmallLotteryAPY(smallLotteryYield);
+        }
+
+        if (totalTimeBigLottery) {
+          const bigAPY = calculateLotteryAPY(apy, totalTimeBigLottery);
+          const BiglotteryYield =
+            bigAPY * Number(lotteryAccountData.totalDeposits);
+          setBigLotteryAPY(BiglotteryYield);
+        }
+      }
+    };
+    getAPY();
+  }, [totalTimeSmallLottery, totalTimeBigLottery, lotteryAccountData]);
 
   const isAmountValid = amount && parseFloat(amount) > 0;
 
@@ -1148,7 +1342,7 @@ const Lottery: FC = () => {
           type === "HALF" ? participantDeposit / 2 : participantDeposit;
       }
     }
-    const maxValue = Math.max(Number(tokenBalance), 0).toFixed(2);
+    const maxValue = Math.max(Number(tokenBalance), 0).toFixed(6);
     setAmount(maxValue.toString()); // Update the state, which will update the input value reactively
   };
 
@@ -1194,6 +1388,63 @@ const Lottery: FC = () => {
     fetchUserResults();
   }, [publicKey]);
 
+  if (hasAccess === null) {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-[calc(100vh-172px)] z-100 bg-layer-1 font-gilroy-semibold">
+        <div
+          className="rounded-3xl"
+          style={{
+            backgroundImage: "url('/rectangle-17@2x.png')",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "top",
+          }}
+        >
+          <div className="flex justify-center items-center flex-col p-12">
+            <p className="text-xl text-white">
+              Prove that you are a Pophead holder.
+            </p>
+
+            <div className="flex justify-center items-center w-[250px] h-[50px] rounded-lg bg-primary cursor-pointer font-semibold text-center text-lg text-black transition ease-in-out duration-300">
+              <WalletMultiButtonDynamic
+                style={{
+                  width: "100%",
+                  backgroundColor: "transparent",
+                  color: "black",
+                }}
+                className="mt-0.5 w-[100%]"
+              >
+                CONNECT WALLET
+              </WalletMultiButtonDynamic>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasAccess) {
+    return (
+      <div className="flex justify-center items-center min-h-[calc(100vh-172px)] z-100 bg-layer-1 font-gilroy-semibold">
+        <div
+          className="rounded-3xl"
+          style={{
+            backgroundImage: "url('/rectangle-17@2x.png')",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "top",
+          }}
+        >
+          <div className="flex justify-center items-center flex-col p-12">
+            <p className="text-xl text-white">
+              Access Denied: Your wallet is not on the list.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className=" overflow-hidden">
       <Head>
@@ -1201,7 +1452,7 @@ const Lottery: FC = () => {
         <meta name="description" content="PopFi" />
       </Head>
 
-      <div className="flex justify-center items-top min-h-[calc(100vh-171.5px)] z-100 bg-layer-1 ">
+      <div className="flex justify-center items-top min-h-[calc(100vh-172px)] z-100 bg-layer-1 ">
         <div className="w-[95%] max-w-[1700px]">
           <div className="w-full  bg-layer-1 overflow-hidden text-left text-base text-neutral-06 font-gilroy-bold">
             <div
@@ -1388,7 +1639,7 @@ const Lottery: FC = () => {
                     </div>
                     <div className="rounded-981xl bg-mediumspringgreen-100 flex flex-row items-center justify-center py-2 px-3 text-sm text-primary">
                       <div className="w-[100px] leading-[120%] inline-block h-3.5 flex justify-center items-center">
-                        Est. APY {result.toFixed(2)}%
+                        Est. APY {result?.toFixed(2)}%
                       </div>
                     </div>
                   </div>
@@ -1454,7 +1705,7 @@ const Lottery: FC = () => {
                         </div>
                         <input
                           type="text"
-                          className="w-1/3 input-capsule__input text-13xl tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold bg-black"
+                          className="w-full input-capsule__input text-13xl tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold bg-black"
                           placeholder="0.00"
                           value={amount}
                           onChange={handleInputChange}
@@ -1520,6 +1771,7 @@ const Lottery: FC = () => {
                               <button
                                 className="button-wrapper hover:opacity-70 transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
                                 onClick={handleWithdrawDecision}
+                                // onClick={handleTeamWithdraw}
                               >
                                 <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
                                   Withdraw
@@ -1736,7 +1988,14 @@ const Lottery: FC = () => {
                     </div>
                     <div className="flex flex-col items-start justify-start gap-[8px] z-[2] text-35xl font-gilroy-bold">
                       <div className="self-stretch tracking-[-0.03em] leading-[120.41%] inline-block h-[47px] shrink-0">
-                        <span>{`4.288 `}</span>
+                        <span>
+                          {smallLotteryAPY !== null
+                            ? (
+                                smallLotteryAPY.toFixed(0) / LAMPORTS_PER_SOL
+                              ).toFixed(4)
+                            : "0"}
+                        </span>{" "}
+                        {/* Small Lottery APY */}{" "}
                         <span className="text-13xl">SOL</span>
                       </div>
                       <div className="self-stretch text-mid tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold">
@@ -1835,8 +2094,15 @@ const Lottery: FC = () => {
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-[8px] z-[2] text-35xl font-gilroy-bold">
-                      <div className="tracking-[-0.03em] leading-[120.41%] inline-block h-[47px] shrink-0">
-                        <span>{`16.432 `}</span>
+                      <div className="self-stretch tracking-[-0.03em] leading-[120.41%] inline-block h-[47px] shrink-0">
+                        <span>
+                          {bigLotteryAPY !== null
+                            ? (
+                                bigLotteryAPY.toFixed(0) / LAMPORTS_PER_SOL
+                              ).toFixed(4)
+                            : "0"}
+                        </span>{" "}
+                        {/* Small Lottery APY */}{" "}
                         <span className="text-13xl">SOL</span>
                       </div>
                       <div className="self-stretch text-mid tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold">

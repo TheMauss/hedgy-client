@@ -108,6 +108,23 @@ const fetchAPY = async () => {
   }
 };
 
+const fetchCurrentValue = async () => {
+  try {
+    const response = await axios.get(
+      "https://sanctum-extra-api.ngrok.dev/v1/sol-value/current?lst=INF"
+    );
+    if (response.status === 200 && response.data && response.data.solValues) {
+      return response.data.solValues.INF; // Returning the value for "INF"
+    } else {
+      console.error("SOL value data is not available or API request failed");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching SOL value:", error);
+    return null;
+  }
+};
+
 const calculateValue = (value, multiplier) => {
   return value * multiplier;
 };
@@ -194,6 +211,8 @@ const Lottery: FC = () => {
   const [bigLotteryWinners, setBigLotteryWinners] = useState([]);
   const [userWinnings, setUserWinnings] = useState<UserWinnings | null>(null);
 
+  const [smallLotteryYield, setSmallLotteryYield] = useState(null);
+  const [bigLotteryYield, setBigLotteryYield] = useState(null);
   const [apyValue, setApyValue] = useState(null);
   const [smallLotteryAPY, setSmallLotteryAPY] = useState(null);
   const [bigLotteryAPY, setBigLotteryAPY] = useState(null);
@@ -205,6 +224,61 @@ const Lottery: FC = () => {
     if (!pubKey) return "";
     return `${pubKey.slice(0, 3)}...${pubKey.slice(-3)}`;
   };
+
+  useEffect(() => {
+    const getAPY = async () => {
+      const apy = await fetchAPY();
+      if (apy !== null) {
+        setApyValue(apy);
+      }
+    };
+    getAPY();
+  }, []);
+
+  const calculateYield = async () => {
+    const apy_raw = await fetchAPY();
+    const apy = apy_raw * 0.9;
+    const infToSolValue = await fetchCurrentValue();
+    console.log(apy);
+
+    console.log(infToSolValue);
+
+    if (apy !== null && infToSolValue !== null && lotteryAccountData) {
+      const lstDeposits = Number(lotteryAccountData.lstTotalDeposits);
+      const totalDeposits = Number(lotteryAccountData.totalDeposits);
+      const infsol = infToSolValue / 1000000000;
+      console.log("infsol", (infsol * 999) / 1000);
+
+      console.log("lst/total", totalDeposits / lstDeposits);
+
+      // Calculate the difference and the INF to SOL value
+      const adjustedValue =
+        (((infToSolValue / 1000000000) * 999) / 1000) * lstDeposits -
+        totalDeposits;
+
+      // Calculate small lottery yield using remaining time
+      if (remainingTimeSmallLottery) {
+        const smallAPY = calculateLotteryAPY(apy, remainingTimeSmallLottery);
+        let smallYield = (smallAPY * totalDeposits + adjustedValue) / 2;
+        smallYield = smallYield < 0 ? 0 : smallYield; // Set to 0 if below 0
+        console.log("Small Lottery Yield:", smallYield);
+        setSmallLotteryYield(smallYield);
+      }
+
+      // Calculate big lottery yield using remaining time
+      if (remainingTimeBigLottery) {
+        const bigAPY = calculateLotteryAPY(apy, remainingTimeBigLottery);
+        let bigYield = bigAPY * totalDeposits + adjustedValue;
+        bigYield = bigYield < 0 ? 0 : bigYield; // Set to 0 if below 0
+        console.log("Big Lottery Yield:", bigYield);
+        setBigLotteryYield(bigYield);
+      }
+    }
+  };
+
+  useEffect(() => {
+    calculateYield();
+  }, [lotteryAccountData]);
 
   // start
 
@@ -1190,31 +1264,6 @@ const Lottery: FC = () => {
     return (apy * totalTime) / secondsInAYear;
   };
 
-  useEffect(() => {
-    const getAPY = async () => {
-      const apy = await fetchAPY();
-      if (apy !== null) {
-        setApyValue(apy);
-
-        // Once APY is fetched, calculate the small and big lottery APYs
-        if (totalTimeSmallLottery) {
-          const smallAPY = calculateLotteryAPY(apy, totalTimeSmallLottery);
-          const smallLotteryYield =
-            smallAPY * Number(lotteryAccountData.totalDeposits);
-          setSmallLotteryAPY(smallLotteryYield);
-        }
-
-        if (totalTimeBigLottery) {
-          const bigAPY = calculateLotteryAPY(apy, totalTimeBigLottery);
-          const BiglotteryYield =
-            bigAPY * Number(lotteryAccountData.totalDeposits);
-          setBigLotteryAPY(BiglotteryYield);
-        }
-      }
-    };
-    getAPY();
-  }, [totalTimeSmallLottery, totalTimeBigLottery, lotteryAccountData]);
-
   const isAmountValid = amount && parseFloat(amount) > 0;
 
   const calculateWinningNewChance = () => {
@@ -1974,9 +2023,9 @@ const Lottery: FC = () => {
                     <div className="flex flex-col items-start justify-start gap-[8px] z-[2] text-35xl font-gilroy-bold">
                       <div className="self-stretch tracking-[-0.03em] leading-[120.41%] inline-block h-[47px] shrink-0">
                         <span>
-                          {smallLotteryAPY !== null
+                          {smallLotteryYield !== null
                             ? (
-                                smallLotteryAPY.toFixed(0) / LAMPORTS_PER_SOL
+                                smallLotteryYield.toFixed(0) / LAMPORTS_PER_SOL
                               ).toFixed(4)
                             : "0"}
                         </span>{" "}
@@ -2081,9 +2130,9 @@ const Lottery: FC = () => {
                     <div className="flex flex-col items-start justify-start gap-[8px] z-[2] text-35xl font-gilroy-bold">
                       <div className="self-stretch tracking-[-0.03em] leading-[120.41%] inline-block h-[47px] shrink-0">
                         <span>
-                          {bigLotteryAPY !== null
+                          {bigLotteryYield !== null
                             ? (
-                                bigLotteryAPY.toFixed(0) / LAMPORTS_PER_SOL
+                                bigLotteryYield.toFixed(0) / LAMPORTS_PER_SOL
                               ).toFixed(4)
                             : "0"}
                         </span>{" "}
