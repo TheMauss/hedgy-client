@@ -247,13 +247,13 @@ const Lottery: FC = () => {
       const lstDeposits = Number(lotteryAccountData.lstTotalDeposits);
       const totalDeposits = Number(lotteryAccountData.totalDeposits);
       const infsol = infToSolValue / 1000000000;
-      console.log("infsol", (infsol * 999) / 1000);
+      console.log("infsol", (infsol * 9990) / 10000);
 
       console.log("lst/total", totalDeposits / lstDeposits);
 
       // Calculate the difference and the INF to SOL value
       const adjustedValue =
-        (((infToSolValue / 1000000000) * 999) / 1000) * lstDeposits -
+        (infToSolValue / 1000000000) * (9990 / 10000) * lstDeposits -
         totalDeposits;
 
       // Calculate small lottery yield using remaining time
@@ -268,7 +268,7 @@ const Lottery: FC = () => {
       // Calculate big lottery yield using remaining time
       if (remainingTimeBigLottery) {
         const bigAPY = calculateLotteryAPY(apy, remainingTimeBigLottery);
-        let bigYield = bigAPY * totalDeposits + adjustedValue;
+        let bigYield = (bigAPY * totalDeposits + adjustedValue) / 2;
         bigYield = bigYield < 0 ? 0 : bigYield; // Set to 0 if below 0
         console.log("Big Lottery Yield:", bigYield);
         setBigLotteryYield(bigYield);
