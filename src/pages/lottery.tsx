@@ -214,8 +214,7 @@ const Lottery: FC = () => {
   const [smallLotteryYield, setSmallLotteryYield] = useState(null);
   const [bigLotteryYield, setBigLotteryYield] = useState(null);
   const [apyValue, setApyValue] = useState(null);
-  const [smallLotteryAPY, setSmallLotteryAPY] = useState(null);
-  const [bigLotteryAPY, setBigLotteryAPY] = useState(null);
+
   const multiplier = 0.9;
   const result =
     apyValue !== null ? calculateValue(apyValue * 100, multiplier) : null; // Convert to percentage
@@ -235,32 +234,50 @@ const Lottery: FC = () => {
     getAPY();
   }, []);
 
+  function calculateAdjustedValue(
+    infsol: number,
+    lstDeposits: number,
+    totalDeposits: number
+  ): number {
+    // Calculate the difference and the INF to SOL value
+    const adjustedValue = infsol * lstDeposits - totalDeposits;
+
+    if (adjustedValue > 0) {
+      // Multiply by 0.9 if adjustedValue is greater than 0
+      return adjustedValue * 0.9;
+    } else {
+      // Return the adjustedValue as is
+      return adjustedValue;
+    }
+  }
+
   const calculateYield = async () => {
     const apy_raw = await fetchAPY();
     const apy = apy_raw * 0.9;
-    const infToSolValue = await fetchCurrentValue();
-    console.log(apy);
+    const { whirlpool, price } = await getWhirlpoolData(whirlpoolAddress);
 
-    console.log(infToSolValue);
-
-    if (apy !== null && infToSolValue !== null && lotteryAccountData) {
+    if (apy !== null && price !== null && lotteryAccountData) {
       const lstDeposits = Number(lotteryAccountData.lstTotalDeposits);
       const totalDeposits = Number(lotteryAccountData.totalDeposits);
-      const infsol = infToSolValue / 1000000000;
-      console.log("infsol", (infsol * 9990) / 10000);
+      const infsol = ((1 / price.toNumber()) * 9999) / 10000;
 
+      console.log("orca price", infsol);
       console.log("lst/total", totalDeposits / lstDeposits);
 
       // Calculate the difference and the INF to SOL value
-      const adjustedValue =
-        (infToSolValue / 1000000000) * (9990 / 10000) * lstDeposits -
-        totalDeposits;
+      const adjustedValue = calculateAdjustedValue(
+        infsol,
+        lstDeposits,
+        totalDeposits
+      );
+
+      console.log("adj value", adjustedValue);
 
       // Calculate small lottery yield using remaining time
       if (remainingTimeSmallLottery) {
         const smallAPY = calculateLotteryAPY(apy, remainingTimeSmallLottery);
         let smallYield = (smallAPY * totalDeposits + adjustedValue) / 2;
-        smallYield = smallYield < 0 ? 0 : smallYield; // Set to 0 if below 0
+        // smallYield = smallYield < 0 ? 0 : smallYield; // Set to 0 if below 0
         console.log("Small Lottery Yield:", smallYield);
         setSmallLotteryYield(smallYield);
       }
@@ -269,7 +286,7 @@ const Lottery: FC = () => {
       if (remainingTimeBigLottery) {
         const bigAPY = calculateLotteryAPY(apy, remainingTimeBigLottery);
         let bigYield = (bigAPY * totalDeposits + adjustedValue) / 2;
-        bigYield = bigYield < 0 ? 0 : bigYield; // Set to 0 if below 0
+        // bigYield = bigYield < 0 ? 0 : bigYield; // Set to 0 if below 0
         console.log("Big Lottery Yield:", bigYield);
         setBigLotteryYield(bigYield);
       }
@@ -1422,62 +1439,62 @@ const Lottery: FC = () => {
     fetchUserResults();
   }, [publicKey]);
 
-  if (hasAccess === null) {
-    return (
-      <div className="flex flex-col justify-center items-center min-h-[calc(100vh-172px)] z-100 bg-layer-1 font-gilroy-semibold">
-        <div
-          className="rounded-3xl"
-          style={{
-            backgroundImage: "url('/rectangle-17@2x.png')",
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "top",
-          }}
-        >
-          <div className="flex justify-center items-center flex-col p-12">
-            <p className="text-xl text-white">
-              Prove that you are a Pophead holder.
-            </p>
+  // if (hasAccess === null) {
+  //   return (
+  //     <div className="flex flex-col justify-center items-center min-h-[calc(100vh-172px)] z-100 bg-layer-1 font-gilroy-semibold">
+  //       <div
+  //         className="rounded-3xl"
+  //         style={{
+  //           backgroundImage: "url('/rectangle-17@2x.png')",
+  //           backgroundSize: "cover",
+  //           backgroundRepeat: "no-repeat",
+  //           backgroundPosition: "top",
+  //         }}
+  //       >
+  //         <div className="flex justify-center items-center flex-col p-12">
+  //           <p className="text-xl text-white">
+  //             Prove that you are a Pophead holder.
+  //           </p>
 
-            <div className="flex justify-center items-center w-[250px] h-[50px] rounded-lg bg-primary cursor-pointer font-semibold text-center text-lg text-black transition ease-in-out duration-300">
-              <WalletMultiButtonDynamic
-                style={{
-                  width: "100%",
-                  backgroundColor: "transparent",
-                  color: "black",
-                }}
-                className="mt-0.5 w-[100%]"
-              >
-                CONNECT WALLET
-              </WalletMultiButtonDynamic>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  //           <div className="flex justify-center items-center w-[250px] h-[50px] rounded-lg bg-primary cursor-pointer font-semibold text-center text-lg text-black transition ease-in-out duration-300">
+  //             <WalletMultiButtonDynamic
+  //               style={{
+  //                 width: "100%",
+  //                 backgroundColor: "transparent",
+  //                 color: "black",
+  //               }}
+  //               className="mt-0.5 w-[100%]"
+  //             >
+  //               CONNECT WALLET
+  //             </WalletMultiButtonDynamic>
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
-  if (!hasAccess) {
-    return (
-      <div className="flex justify-center items-center min-h-[calc(100vh-172px)] z-100 bg-layer-1 font-gilroy-semibold">
-        <div
-          className="rounded-3xl"
-          style={{
-            backgroundImage: "url('/rectangle-17@2x.png')",
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "top",
-          }}
-        >
-          <div className="flex justify-center items-center flex-col p-12">
-            <p className="text-xl text-white">
-              Access Denied: Your wallet is not on the list.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // if (!hasAccess) {
+  //   return (
+  //     <div className="flex justify-center items-center min-h-[calc(100vh-172px)] z-100 bg-layer-1 font-gilroy-semibold">
+  //       <div
+  //         className="rounded-3xl"
+  //         style={{
+  //           backgroundImage: "url('/rectangle-17@2x.png')",
+  //           backgroundSize: "cover",
+  //           backgroundRepeat: "no-repeat",
+  //           backgroundPosition: "top",
+  //         }}
+  //       >
+  //         <div className="flex justify-center items-center flex-col p-12">
+  //           <p className="text-xl text-white">
+  //             Access Denied: Your wallet is not on the list.
+  //           </p>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className=" overflow-hidden">
