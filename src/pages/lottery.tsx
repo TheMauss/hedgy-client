@@ -169,6 +169,8 @@ const Lottery: FC = () => {
   const usdcbalance = useUserSOLBalanceStore((s) => s.usdcBalance);
   const { getUserSOLBalance, getUserUSDCBalance } = useUserSOLBalanceStore();
   const [amount, setAmount] = useState("");
+  const [displeyAmount, setDispleyAmount] = useState("");
+
   const [otherAmountThreshold, setOtherAmountThreshold] = useState(0);
   const [sqrtPriceLimit, setSqrtPriceLimit] = useState(0);
   const [amountSpecifiedIsInput, setAmountSpecifiedIsInput] = useState(true);
@@ -332,10 +334,10 @@ const Lottery: FC = () => {
     }
 
     const smallLotteryEndTime = Number(lotteryAccountData?.smallLotteryTime);
-    const smallLotteryStartTime = smallLotteryEndTime - 60 * 60 * 12; // Adjust based on your requirements
+    const smallLotteryStartTime = smallLotteryEndTime - 60 * 60 * 24 * 7; // Adjust based on your requirements
 
     const bigLotteryEndTime = Number(lotteryAccountData?.bigLotteryTime);
-    const bigLotteryStartTime = bigLotteryEndTime - 4 * 60 * 60 * 12; // Adjust based on your requirements
+    const bigLotteryStartTime = bigLotteryEndTime - 4 * 60 * 60 * 24 * 7; // Adjust based on your requirements
 
     const updateRemainingTimes = async () => {
       try {
@@ -1375,10 +1377,12 @@ const Lottery: FC = () => {
     let tokenBalance;
     if (type === "HALF" && !isNaN(Number(amount)) && Number(amount) > 0) {
       tokenBalance = Number(amount) / 2;
+      tokenBalance = tokenBalance.toFixed(3);
     } else {
       if (selectedStake === "DEPOSIT") {
         tokenBalance =
-          type === "HALF" ? (balance - 1 / 100) / 2 : balance - 1 / 100;
+          type === "HALF" ? (balance - 2 / 100) / 2 : balance - 2 / 100;
+        tokenBalance = tokenBalance.toFixed(3);
       } else {
         const participantDeposit = isNaN(
           (Number(participantData?.deposit) +
@@ -1393,8 +1397,11 @@ const Lottery: FC = () => {
           type === "HALF" ? participantDeposit / 2 : participantDeposit;
       }
     }
-    const maxValue = Math.max(Number(tokenBalance), 0).toFixed(6);
+    const maxValue = Math.max(Number(tokenBalance), 0).toFixed(15);
+    const displayMax = Math.max(Number(tokenBalance), 0).toFixed(3);
+
     setAmount(maxValue.toString()); // Update the state, which will update the input value reactively
+    setDispleyAmount(displayMax.toString()); // Update the state, which will update the input value reactively
   };
 
   useEffect(() => {
@@ -1758,7 +1765,7 @@ const Lottery: FC = () => {
                           type="text"
                           className="w-full input-capsule__input text-13xl tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold bg-black"
                           placeholder="0.00"
-                          value={amount}
+                          value={displeyAmount}
                           onChange={handleInputChange}
                           min={0.05}
                           step={0.05}
