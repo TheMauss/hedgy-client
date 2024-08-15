@@ -296,7 +296,16 @@ const Lottery: FC = () => {
   };
 
   useEffect(() => {
-    calculateYield();
+    if (lotteryAccountData) {
+      const delay = 1000; // Delay in milliseconds (e.g., 500ms)
+
+      const timer = setTimeout(() => {
+        calculateYield();
+      }, delay);
+
+      // Cleanup function to clear the timeout if the component unmounts or if the effect re-runs
+      return () => clearTimeout(timer);
+    }
   }, [lotteryAccountData]);
 
   // start
@@ -1162,6 +1171,7 @@ const Lottery: FC = () => {
 
     // Set the sanitized value as the amount value
     setAmount(sanitizedValue);
+    setDispleyAmount(sanitizedValue);
   };
 
   const [waves, setWaves] = useState([]);
