@@ -34,6 +34,7 @@ import {
   swapQuoteByOutputToken,
   IGNORE_CACHE,
 } from "@orca-so/whirlpools-sdk";
+import { debounce } from "lodash";
 import { DecimalUtil, Percentage } from "@orca-so/common-sdk";
 import axios from "axios";
 import {
@@ -216,6 +217,7 @@ const Lottery: FC = () => {
   const [smallLotteryYield, setSmallLotteryYield] = useState(null);
   const [bigLotteryYield, setBigLotteryYield] = useState(null);
   const [apyValue, setApyValue] = useState(null);
+  const [isYieldCalculated, setIsYieldCalculated] = useState(false);
 
   const multiplier = 0.9;
   const result =
@@ -256,6 +258,15 @@ const Lottery: FC = () => {
   const calculateYield = async () => {
     const apy_raw = await fetchAPY();
     const apy = apy_raw * 0.9;
+    if (
+      !apy_raw ||
+      !remainingTimeSmallLottery ||
+      !remainingTimeBigLottery ||
+      isYieldCalculated
+    ) {
+      return;
+    }
+
     const { whirlpool, price } = await getWhirlpoolData(whirlpoolAddress);
 
     if (apy !== null && price !== null && lotteryAccountData) {
@@ -292,21 +303,22 @@ const Lottery: FC = () => {
         console.log("Big Lottery Yield:", bigYield);
         setBigLotteryYield(bigYield);
       }
+      setIsYieldCalculated(true);
     }
   };
 
   useEffect(() => {
     if (lotteryAccountData) {
-      const delay = 1000; // Delay in milliseconds (e.g., 500ms)
-
-      const timer = setTimeout(() => {
-        calculateYield();
-      }, delay);
-
-      // Cleanup function to clear the timeout if the component unmounts or if the effect re-runs
-      return () => clearTimeout(timer);
+      calculateYield();
     }
-  }, [lotteryAccountData]);
+
+    // Reset isYieldCalculated to false every X milliseconds
+    const resetYieldCalculation = setInterval(() => {
+      setIsYieldCalculated(false);
+    }, 600000); // Reset every 60 seconds
+
+    return () => clearInterval(resetYieldCalculation);
+  }, [lotteryAccountData, remainingTimeSmallLottery, remainingTimeBigLottery]);
 
   // start
 
