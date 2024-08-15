@@ -355,10 +355,10 @@ const Lottery: FC = () => {
     }
 
     const smallLotteryEndTime = Number(lotteryAccountData?.smallLotteryTime);
-    const smallLotteryStartTime = smallLotteryEndTime - 60 * 60 * 24 * 7; // Adjust based on your requirements
+    const smallLotteryStartTime = smallLotteryEndTime - 60 * 60 * 4; // Adjust based on your requirements
 
     const bigLotteryEndTime = Number(lotteryAccountData?.bigLotteryTime);
-    const bigLotteryStartTime = bigLotteryEndTime - 4 * 60 * 60 * 24 * 7; // Adjust based on your requirements
+    const bigLotteryStartTime = bigLotteryEndTime - 4 * 60 * 60 * 4; // Adjust based on your requirements
 
     const updateRemainingTimes = async () => {
       try {
@@ -740,6 +740,17 @@ const Lottery: FC = () => {
       key: Date.now(), // Use a unique key for each wave
     };
 
+    const { whirlpool, price } = await getWhirlpoolData(whirlpoolAddress);
+
+    const quote = await getSwapQuote(
+      whirlpool,
+      new Decimal(amount),
+      slippageTolerance
+    );
+
+    const formattedQuote = decodeSwapQuote(quote);
+    setSwapQuote(formattedQuote);
+
     setWaves((prevWaves) => [...prevWaves, newWave]);
 
     // Remove the wave after animation ends
@@ -805,7 +816,7 @@ const Lottery: FC = () => {
     }
 
     const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 250000,
+      units: 300000,
     });
 
     try {
@@ -829,7 +840,7 @@ const Lottery: FC = () => {
       setTimeout(() => {
         fetchLotteryAccountData();
         fetchParticipantData();
-      }, 1000);
+      }, 1500);
     } catch (error) {
       console.error(error);
       notify({
@@ -899,7 +910,7 @@ const Lottery: FC = () => {
     }
 
     const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 250000,
+      units: 300000,
     });
 
     try {
@@ -923,7 +934,7 @@ const Lottery: FC = () => {
       setTimeout(() => {
         fetchLotteryAccountData();
         fetchParticipantData();
-      }, 1000);
+      }, 1500);
     } catch (error) {
       console.error(error);
       notify({
@@ -1002,7 +1013,7 @@ const Lottery: FC = () => {
     }
 
     const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 2500000,
+      units: 3000000,
     });
 
     try {
@@ -1026,7 +1037,7 @@ const Lottery: FC = () => {
       setTimeout(() => {
         fetchLotteryAccountData();
         fetchParticipantData();
-      }, 1000);
+      }, 1500);
     } catch (error) {
       console.error(error);
       notify({
@@ -1120,7 +1131,7 @@ const Lottery: FC = () => {
       setTimeout(() => {
         fetchLotteryAccountData();
         fetchParticipantData();
-      }, 1000);
+      }, 1500);
     } catch (error) {
       console.error(error);
       notify({
