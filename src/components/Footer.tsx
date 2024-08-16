@@ -36,9 +36,13 @@ export const Footer: FC = () => {
             </div>
           </div>
         </a>
-        {/* <div className="relative text-sm leading-[150%] font-gilroy-regular opacity-[0.5]">
-      © 2024 Stakera. All rights reserved.
-    </div> */}
+        <div className="hidden sm:flex px-2 relative justify-center items-center text-center text-sm leading-[150%] font-gilroy-regular opacity-[0.5]">
+          Stakera is currently in beta. Please proceed with caution and be aware
+          of potential risks.
+        </div>
+        <div className="sm:hidden px-2 relative flex justify-center items-center text-center text-sm leading-[150%] font-gilroy-regular opacity-[0.5]">
+          Stakera is currently in beta.
+        </div>
         <div className="flex flex-row items-center justify-start gap-[13px] opacity-[0.5]">
           <a
             href={`https://docs.stakera.io`}
