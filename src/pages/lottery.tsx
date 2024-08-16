@@ -2083,7 +2083,7 @@ const Lottery: FC = () => {
                           {smallLotteryYield !== null
                             ? (
                                 smallLotteryYield.toFixed(0) / LAMPORTS_PER_SOL
-                              ).toFixed(4)
+                              ).toFixed(3)
                             : "0"}
                         </span>{" "}
                         {/* Small Lottery APY */}{" "}
@@ -2190,7 +2190,7 @@ const Lottery: FC = () => {
                           {bigLotteryYield !== null
                             ? (
                                 bigLotteryYield.toFixed(0) / LAMPORTS_PER_SOL
-                              ).toFixed(4)
+                              ).toFixed(3)
                             : "0"}
                         </span>{" "}
                         {/* Small Lottery APY */}{" "}
