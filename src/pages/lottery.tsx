@@ -290,7 +290,7 @@ const Lottery: FC = () => {
       if (remainingTimeSmallLottery) {
         const smallAPY = calculateLotteryAPY(apy, remainingTimeSmallLottery);
         let smallYield = (smallAPY * totalDeposits + adjustedValue) / 2;
-        // smallYield = smallYield < 0 ? 0 : smallYield; // Set to 0 if below 0
+        smallYield = smallYield < 0 ? 0 : smallYield; // Set to 0 if below 0
         console.log("Small Lottery Yield:", smallYield);
         setSmallLotteryYield(smallYield);
       }
@@ -299,7 +299,7 @@ const Lottery: FC = () => {
       if (remainingTimeBigLottery) {
         const bigAPY = calculateLotteryAPY(apy, remainingTimeBigLottery);
         let bigYield = (bigAPY * totalDeposits + adjustedValue) / 2;
-        // bigYield = bigYield < 0 ? 0 : bigYield; // Set to 0 if below 0
+        bigYield = bigYield < 0 ? 0 : bigYield; // Set to 0 if below 0
         console.log("Big Lottery Yield:", bigYield);
         setBigLotteryYield(bigYield);
       }
