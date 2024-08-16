@@ -3,6 +3,8 @@ import Link from "next/link";
 import SolanaTPS from "./SolanaTPS"; // import your SolanaTPS component
 import React, { useState, useEffect } from "react";
 import { IoIosDocument } from "react-icons/io";
+import { FaBook } from "react-icons/fa";
+import { IoDocumentText } from "react-icons/io5";
 
 export const Footer: FC = () => {
   const [slogan, setSlogan] = useState("");
@@ -39,13 +41,22 @@ export const Footer: FC = () => {
     </div> */}
         <div className="flex flex-row items-center justify-start gap-[13px] opacity-[0.5]">
           <a
+            href={`https://docs.stakera.io`}
+            target="_blank"
+            rel="noreferrer"
+            className="hover:underline"
+          >
+            <IoDocumentText className="cursor-pointer text-[#97a4a0] w-[20px] relative h-[17px] overflow-hidden shrink-0 object-cover"></IoDocumentText>
+          </a>
+
+          <a
             href={`https://discord.gg/cpJ2GF6Skc`}
             target="_blank"
             rel="noreferrer"
             className="hover:underline"
           >
             <img
-              className="w-[20px] relative h-[20px] overflow-hidden shrink-0 object-cover"
+              className="cursor-pointer w-[20px] relative h-[20px] overflow-hidden shrink-0 object-cover"
               alt=""
               src="/icon--youtube@2x.png"
             />
@@ -57,7 +68,7 @@ export const Footer: FC = () => {
             className="hover:underline"
           >
             <img
-              className="w-[20px] relative h-[20px] overflow-hidden shrink-0"
+              className="cursor-pointer w-[20px] relative h-[20px] overflow-hidden shrink-0"
               alt=""
               src="/icon--x.svg"
             />
