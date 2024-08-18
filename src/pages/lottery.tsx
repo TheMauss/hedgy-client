@@ -8,6 +8,7 @@ import {
   ComputeBudgetProgram,
   LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
+import debounce from "lodash.debounce";
 import { FaCheckCircle } from "react-icons/fa";
 import { ClipLoader } from "react-spinners";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
@@ -34,7 +35,6 @@ import {
   swapQuoteByOutputToken,
   IGNORE_CACHE,
 } from "@orca-so/whirlpools-sdk";
-import { debounce } from "lodash";
 import { DecimalUtil, Percentage } from "@orca-so/common-sdk";
 import axios from "axios";
 import {
@@ -61,23 +61,23 @@ interface UserWinnings {
 }
 
 const lotteryAccount = new PublicKey(
-  "5aB2uyiesNo28v2g6CsfdcXVNs2feN74TNsexPHZih1Q"
+  "9aFmbWZuMbCQzMyNqsTB4umen9mpnqL6Z6a4ypis3XzW"
 ); // Replace with actual account
 const pdaHouseAcc = new PublicKey(
-  "8BNj24amVQUWxgAjPNDNZ8ScCYS4sPTTvhTY9Ly2fMRb"
+  "FnxstpbQKMYW3Jw7SY5outhEiHGDkg7GUpoCVt9nVuHJ"
 ); // Replace with actual account
 const whirlpoolProgram = new PublicKey(ORCA_WHIRLPOOL_PROGRAM_ID);
 const tokenProgram = new PublicKey(
   "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
 ); // Replace with actual account
 const tokenOwnerAccountA = new PublicKey(
-  "GyYkRUbn8y9ANd5QS6e2ti6LRscWVm6t2DWad9YWiu1z"
+  "5UwRe6CoRZLJYJSd8GcbaXKrFCHbjYeRUdKSRpqRtkMH"
 ); // Replace with actual account
 const tokenVaultA = new PublicKey(
   "9sxSBQ3bS35VgV736MaSJRX11MfZHXxTdU4Pc1JfA5ML"
 ); // Replace with actual account
 const tokenOwnerAccountB = new PublicKey(
-  "21ZL647m6bNY6tLtY9AM7SQh6tJUZvx1nG1SFCLiBFt3"
+  "ESXQ1jcH2CzchJR3oqYfsxJU9evGM14Fg5gaJPFXSvoX"
 ); // Replace with actual account
 const tokenVaultB = new PublicKey(
   "FZKgBhFkwNwsJLx3GXHHW8XPi8NMiJX791wweHBKaPcP"
@@ -134,7 +134,7 @@ async function checkLotteryAccount(
   connection: Connection
 ): Promise<LotteryAccountJSON> {
   const lotteryAcc = new PublicKey(
-    "5aB2uyiesNo28v2g6CsfdcXVNs2feN74TNsexPHZih1Q"
+    "9aFmbWZuMbCQzMyNqsTB4umen9mpnqL6Z6a4ypis3XzW"
   ); // Replace with actual account
   const lotteryAccount = await LotteryAccount.fetch(connection, lotteryAcc);
 
@@ -521,7 +521,7 @@ const Lottery: FC = () => {
         params: [
           {
             accountKeys: [
-              "5jbj67vN9obgTPa4oGJ28pZGnCM8VHutmdH8S7yxho1V",
+              "StkraNY8rELLLoDHmVg8Di8DKTLbE8yAWZqRR9w413n",
               "DxD41srN8Xk9QfYjdNXF9tTnP6qQxeF2bZF8s1eN62Pe",
             ],
             options: {
@@ -641,60 +641,63 @@ const Lottery: FC = () => {
     [connection, wallet]
   );
 
+  const fetchWhirlpoolData = async () => {
+    setLoading(true);
+    try {
+      const { whirlpool, price } = await getWhirlpoolData(whirlpoolAddress);
+      setWhirlpool(whirlpool);
+      setCurrentPrice(price);
+
+      const amountIn = new Decimal(amount);
+      const PriceN = new Decimal(price);
+      const amountOut = amountIn.times(PriceN);
+      const amountOutQuote = new Decimal(amountOut);
+
+      const quote = await getSwapQuote(whirlpool, amountIn, slippageTolerance);
+      const quoteOut = await getSwapQuoteOutput(
+        whirlpool,
+        amountIn,
+        slippageTolerance
+      );
+      const quoteOutLoss = await getSwapQuoteOutputLoss(
+        whirlpool,
+        amountOutQuote,
+        slippageTolerance
+      );
+
+      const formattedQuote = decodeSwapQuote(quote);
+      const formattedQuoteOut = decodeSwapQuote(quoteOut);
+      const formattedQuoteOutLoss = decodeSwapQuote(quoteOutLoss);
+
+      setSwapQuote(formattedQuote);
+      setSwapQuoteOut(formattedQuoteOut);
+      setSwapQuoteOutLoss(formattedQuoteOutLoss);
+
+      console.log("Current Pool Price:", price.toFixed(9));
+      console.log("Formatted Swap Quote:", formattedQuote);
+      console.log("Formatted Swap Quote Out:", formattedQuoteOut);
+      console.log("Formatted Swap Quote Out Loss:", formattedQuoteOutLoss);
+    } catch (error) {
+      console.error("Failed to fetch whirlpool data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Debounced version of fetchWhirlpoolData
+  const debouncedFetchWhirlpoolData = useCallback(
+    debounce(fetchWhirlpoolData, 400), // 500ms debounce
+    [amount, slippageTolerance, whirlpoolAddress]
+  );
+
   useEffect(() => {
-    const whirlpoolAddress = new PublicKey(
-      "DxD41srN8Xk9QfYjdNXF9tTnP6qQxeF2bZF8s1eN62Pe"
-    );
+    debouncedFetchWhirlpoolData();
 
-    const fetchWhirlpoolData = async () => {
-      setLoading(true);
-      try {
-        const { whirlpool, price } = await getWhirlpoolData(whirlpoolAddress);
-        setWhirlpool(whirlpool);
-        setCurrentPrice(price);
-
-        const amountIn = new Decimal(amount);
-        const PriceN = new Decimal(price);
-        const amountOut = amountIn.times(PriceN);
-        const amountOutQuote = new Decimal(amountOut);
-
-        const quote = await getSwapQuote(
-          whirlpool,
-          amountIn,
-          slippageTolerance
-        );
-        const quoteOut = await getSwapQuoteOutput(
-          whirlpool,
-          amountIn,
-          slippageTolerance
-        );
-        const quoteOutLoss = await getSwapQuoteOutputLoss(
-          whirlpool,
-          amountOutQuote,
-          slippageTolerance
-        );
-
-        const formattedQuote = decodeSwapQuote(quote);
-        const formattedQuoteOut = decodeSwapQuote(quoteOut);
-        const formattedQuoteOutLoss = decodeSwapQuote(quoteOutLoss);
-
-        setSwapQuote(formattedQuote);
-        setSwapQuoteOut(formattedQuoteOut);
-        setSwapQuoteOutLoss(formattedQuoteOutLoss);
-
-        console.log("Current Pool Price:", price.toFixed(9));
-        console.log("Formatted Swap Quote:", formattedQuote);
-        console.log("Formatted Swap Quote Out:", formattedQuoteOut);
-        console.log("Formatted Swap Quote Out Loss:", formattedQuoteOutLoss);
-      } catch (error) {
-        console.error("Failed to fetch whirlpool data:", error);
-      } finally {
-        setLoading(false);
-      }
+    // Cleanup debounce on unmount
+    return () => {
+      debouncedFetchWhirlpoolData.cancel();
     };
-
-    fetchWhirlpoolData();
-  }, [connection, slippageTolerance, amount]);
+  }, [debouncedFetchWhirlpoolData]);
 
   const decodeSwapQuote = (quote) => {
     return {
@@ -813,6 +816,9 @@ const Lottery: FC = () => {
     };
     let PRIORITY_FEE_IX;
 
+    console.log("depositAcc", JSON.stringify(depositArgs, null, 2));
+    console.log("depositAcc", JSON.stringify(depositAccounts, null, 2));
+
     if (isPriorityFee) {
       const priorityfees = await getPriorityFeeEstimate();
       PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
@@ -875,6 +881,8 @@ const Lottery: FC = () => {
       slippage: new BN(slippageTolerance),
       depegProtection: depegProtectionState,
     };
+
+    console.log("args", withdrawArgs);
 
     const withdrawAccounts = {
       lotteryAccount,
@@ -1073,6 +1081,8 @@ const Lottery: FC = () => {
       slippage: new BN(slippageTolerance),
       depegProtection: depegProtectionState,
     };
+
+    console.log("args", withdrawArgs);
 
     const withdrawAccounts = {
       lotteryAccount,
@@ -1906,28 +1916,10 @@ const Lottery: FC = () => {
                     )}
                   </>
                   <div className="self-stretch flex flex-row items-center justify-between">
-                    <div className="w-[74px] tracking-[-0.03em] leading-[100%] flex items-end h-5 shrink-0">
-                      Balance
-                    </div>
-                    <div className="flex flex-row items-center justify-start gap-[8px]">
-                      <div className="tracking-[-0.03em] leading-[120.41%] inline-block h-[18px] shrink-0">
-                        {balance.toFixed(1)} SOL
-                      </div>
-                      <img
-                        className="w-4 h-4"
-                        alt=""
-                        src="/vuesaxboldwallet2.svg"
-                      />
-                    </div>
-                  </div>
-                  <div className="self-stretch h-6 flex flex-row items-center justify-between">
                     <div className="tracking-[-0.03em] leading-[120.41%]">
                       Settings
                     </div>
                     <div className="rounded-981xl flex flex-row items-center justify-start py-0.5 px-0 gap-[4px]">
-                      {/* <div className="tracking-[-0.03em] leading-[120.41%] inline-block h-[18px] shrink-0">
-                        {slippageTolerance / 100}%
-                      </div> */}
                       <img
                         className="cursor-pointer w-full h-full"
                         onClick={toggleAdditionalDiv1}
@@ -1937,7 +1929,7 @@ const Lottery: FC = () => {
                     </div>
                   </div>
                   <div
-                    className={`w-full flex flex-row items-center justify-between gap-[8px] ${showAdditionalDiv1 ? "" : "hidden"}`}
+                    className={`w-full flex flex-row items-center justify-between gap-[8px]  ${showAdditionalDiv1 ? "" : "hidden"}`}
                   >
                     <div className="tracking-[-0.03em] leading-[120.41%]">
                       Slippage
@@ -1999,6 +1991,22 @@ const Lottery: FC = () => {
                       </div>
                     </div>
                   </div>
+                  <div className="self-stretch flex flex-row items-center justify-between">
+                    <div className="w-[74px] tracking-[-0.03em] leading-[100%] flex items-end h-5 shrink-0">
+                      Balance
+                    </div>
+                    <div className="flex flex-row items-center justify-start gap-[8px]">
+                      <div className="tracking-[-0.03em] leading-[120.41%] inline-block h-[18px] shrink-0">
+                        {balance.toFixed(1)} SOL
+                      </div>
+                      <img
+                        className="w-4 h-4"
+                        alt=""
+                        src="/vuesaxboldwallet2.svg"
+                      />
+                    </div>
+                  </div>
+
                   <div className="self-stretch h-6 flex flex-row items-center justify-between">
                     <div className="tracking-[-0.03em] leading-[120.41%]">
                       Winning Chance
