@@ -15,6 +15,7 @@ export interface WithdrawArgs {
   amountSpecifiedIsInput: boolean;
   aToB: boolean;
   slippage: BN;
+  depegProtection: boolean;
 }
 
 export interface WithdrawAccounts {
@@ -48,6 +49,7 @@ export const layout = borsh.struct([
   borsh.bool("amountSpecifiedIsInput"),
   borsh.bool("aToB"),
   borsh.u64("slippage"),
+  borsh.bool("depegProtection"),
 ]);
 
 export function withdraw(
@@ -92,6 +94,7 @@ export function withdraw(
       amountSpecifiedIsInput: args.amountSpecifiedIsInput,
       aToB: args.aToB,
       slippage: args.slippage,
+      depegProtection: args.depegProtection,
     },
     buffer
   );

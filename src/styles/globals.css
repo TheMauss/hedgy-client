@@ -23,6 +23,61 @@
   font-weight: 400;
 }
 
+.toggle-switch-bigger {
+  position: relative;
+  display: inline-block;
+  width: 26.6px; /* 20px * 1.33 (adjust the width) */
+  height: 13.3px; /* 10px * 1.33 (adjust the height) */
+}
+
+.toggle-switch-bigger input {
+  display: none;
+}
+
+.slider-bigger {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ffffff12;
+  border-radius: 6.67px; /* 5px * 1.33 (adjust the border-radius) */
+  transition: 0.4s;
+}
+
+.slider-bigger:before {
+  position: absolute;
+  content: "";
+  height: 8px; /* 6px * 1.33 (adjust the height of the sliding capsule) */
+  width: 8px; /* 6px * 1.33 (adjust the width of the sliding capsule) */
+  left: 2px;
+  bottom: 2.5px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+
+input:checked + .slider-bigger {
+  background-color: #6fff90;
+}
+
+input:checked + .slider-bigger:before {
+  transform: translateX(
+    13px
+  ); /* 14px * 1.33 (adjust the translation for the bigger size) */
+}
+
+.slider-bigger.active {
+  background-color: #6fff90;
+}
+
+.slider-bigger.active:before {
+  transform: translateX(
+    12.5px
+  ); /* 14px * 1.33 (adjust the translation for the bigger size) */
+}
+
 .Gilroy-Semibold {
   font-family: "Gilroy-SemiBold";
 }

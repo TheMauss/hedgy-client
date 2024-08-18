@@ -34,6 +34,7 @@ import {
   swapQuoteByOutputToken,
   IGNORE_CACHE,
 } from "@orca-so/whirlpools-sdk";
+import { debounce } from "lodash";
 import { DecimalUtil, Percentage } from "@orca-so/common-sdk";
 import axios from "axios";
 import {
@@ -111,14 +112,16 @@ const fetchAPY = async () => {
 const fetchCurrentValue = async () => {
   try {
     const response = await axios.get(
-      "https://sanctum-extra-api.ngrok.dev/v1/sol-value/current",
-      {
-        params: { lst: ["INF"] },
-      }
+      "https://sanctum-extra-api.ngrok.dev/v1/sol-value/current?lst=INF"
     );
-    return response.data.value || null;
+    if (response.status === 200 && response.data && response.data.solValues) {
+      return response.data.solValues.INF; // Returning the value for "INF"
+    } else {
+      console.error("SOL value data is not available or API request failed");
+      return null;
+    }
   } catch (error) {
-    console.error("Error fetching INF to SOL value:", error);
+    console.error("Error fetching SOL value:", error);
     return null;
   }
 };
@@ -167,6 +170,8 @@ const Lottery: FC = () => {
   const usdcbalance = useUserSOLBalanceStore((s) => s.usdcBalance);
   const { getUserSOLBalance, getUserUSDCBalance } = useUserSOLBalanceStore();
   const [amount, setAmount] = useState("");
+  const [displeyAmount, setDispleyAmount] = useState("");
+
   const [otherAmountThreshold, setOtherAmountThreshold] = useState(0);
   const [sqrtPriceLimit, setSqrtPriceLimit] = useState(0);
   const [amountSpecifiedIsInput, setAmountSpecifiedIsInput] = useState(true);
@@ -209,9 +214,14 @@ const Lottery: FC = () => {
   const [bigLotteryWinners, setBigLotteryWinners] = useState([]);
   const [userWinnings, setUserWinnings] = useState<UserWinnings | null>(null);
 
+  const [smallLotteryYield, setSmallLotteryYield] = useState(null);
+  const [bigLotteryYield, setBigLotteryYield] = useState(null);
   const [apyValue, setApyValue] = useState(null);
-  const [smallLotteryAPY, setSmallLotteryAPY] = useState(null);
-  const [bigLotteryAPY, setBigLotteryAPY] = useState(null);
+  const [isYieldCalculated, setIsYieldCalculated] = useState(false);
+
+  // New toggle state, starting with true by default
+  const [depegProtectionState, setDepegProtectionState] = useState(true);
+
   const multiplier = 0.9;
   const result =
     apyValue !== null ? calculateValue(apyValue * 100, multiplier) : null; // Convert to percentage
@@ -220,6 +230,98 @@ const Lottery: FC = () => {
     if (!pubKey) return "";
     return `${pubKey.slice(0, 3)}...${pubKey.slice(-3)}`;
   };
+
+  useEffect(() => {
+    const getAPY = async () => {
+      const apy = await fetchAPY();
+      if (apy !== null) {
+        setApyValue(apy);
+      }
+    };
+    getAPY();
+  }, []);
+
+  function calculateAdjustedValue(
+    infsol: number,
+    lstDeposits: number,
+    totalDeposits: number
+  ): number {
+    // Calculate the difference and the INF to SOL value
+    const adjustedValue = infsol * lstDeposits - totalDeposits;
+
+    if (adjustedValue > 0) {
+      // Multiply by 0.9 if adjustedValue is greater than 0
+      return adjustedValue * 0.9;
+    } else {
+      // Return the adjustedValue as is
+      return adjustedValue;
+    }
+  }
+
+  const calculateYield = async () => {
+    const apy_raw = await fetchAPY();
+    const apy = apy_raw * 0.9;
+    if (
+      !apy_raw ||
+      !remainingTimeSmallLottery ||
+      !remainingTimeBigLottery ||
+      isYieldCalculated
+    ) {
+      return;
+    }
+
+    const { whirlpool, price } = await getWhirlpoolData(whirlpoolAddress);
+
+    if (apy !== null && price !== null && lotteryAccountData) {
+      const lstDeposits = Number(lotteryAccountData.lstTotalDeposits);
+      const totalDeposits = Number(lotteryAccountData.totalDeposits);
+      const infsol = ((1 / price.toNumber()) * 9999) / 10000;
+
+      console.log("orca price", infsol);
+      console.log("lst/total", totalDeposits / lstDeposits);
+
+      // Calculate the difference and the INF to SOL value
+      const adjustedValue = calculateAdjustedValue(
+        infsol,
+        lstDeposits,
+        totalDeposits
+      );
+
+      console.log("adj value", adjustedValue);
+
+      // Calculate small lottery yield using remaining time
+      if (remainingTimeSmallLottery) {
+        const smallAPY = calculateLotteryAPY(apy, remainingTimeSmallLottery);
+        let smallYield = (smallAPY * totalDeposits + adjustedValue) / 2;
+        smallYield = smallYield < 0 ? 0 : smallYield; // Set to 0 if below 0
+        console.log("Small Lottery Yield:", smallYield);
+        setSmallLotteryYield(smallYield);
+      }
+
+      // Calculate big lottery yield using remaining time
+      if (remainingTimeBigLottery) {
+        const bigAPY = calculateLotteryAPY(apy, remainingTimeBigLottery);
+        let bigYield = (bigAPY * totalDeposits + adjustedValue) / 2;
+        bigYield = bigYield < 0 ? 0 : bigYield; // Set to 0 if below 0
+        console.log("Big Lottery Yield:", bigYield);
+        setBigLotteryYield(bigYield);
+      }
+      setIsYieldCalculated(true);
+    }
+  };
+
+  useEffect(() => {
+    if (lotteryAccountData) {
+      calculateYield();
+    }
+
+    // Reset isYieldCalculated to false every X milliseconds
+    const resetYieldCalculation = setInterval(() => {
+      setIsYieldCalculated(false);
+    }, 600000); // Reset every 60 seconds
+
+    return () => clearInterval(resetYieldCalculation);
+  }, [lotteryAccountData, remainingTimeSmallLottery, remainingTimeBigLottery]);
 
   // start
 
@@ -256,10 +358,10 @@ const Lottery: FC = () => {
     }
 
     const smallLotteryEndTime = Number(lotteryAccountData?.smallLotteryTime);
-    const smallLotteryStartTime = smallLotteryEndTime - 60 * 60 * 12; // Adjust based on your requirements
+    const smallLotteryStartTime = smallLotteryEndTime - 60 * 60 * 24 * 7; // Adjust based on your requirements
 
     const bigLotteryEndTime = Number(lotteryAccountData?.bigLotteryTime);
-    const bigLotteryStartTime = bigLotteryEndTime - 4 * 60 * 60 * 12; // Adjust based on your requirements
+    const bigLotteryStartTime = bigLotteryEndTime - 4 * 60 * 60 * 24 * 7; // Adjust based on your requirements
 
     const updateRemainingTimes = async () => {
       try {
@@ -345,7 +447,7 @@ const Lottery: FC = () => {
 
   const handleButtonClick = (buttonIndex: number) => {
     setActiveButton(buttonIndex);
-    setShowAdditionalDiv1(!showAdditionalDiv1);
+    // setShowAdditionalDiv1(!showAdditionalDiv1);
 
     switch (buttonIndex) {
       case 1:
@@ -446,6 +548,11 @@ const Lottery: FC = () => {
     } catch (error) {
       console.error("Error fetching priority fee estimate:", error);
     }
+  };
+
+  const handleToggle = () => {
+    // Update the isPriorityFee state when the toggle button is clicked
+    setDepegProtectionState(!depegProtectionState);
   };
 
   // const fetcher = new WhirlpoolAccountFetcher(connection);
@@ -641,6 +748,17 @@ const Lottery: FC = () => {
       key: Date.now(), // Use a unique key for each wave
     };
 
+    const { whirlpool, price } = await getWhirlpoolData(whirlpoolAddress);
+
+    const quote = await getSwapQuote(
+      whirlpool,
+      new Decimal(amount),
+      slippageTolerance
+    );
+
+    const formattedQuote = decodeSwapQuote(quote);
+    setSwapQuote(formattedQuote);
+
     setWaves((prevWaves) => [...prevWaves, newWave]);
 
     // Remove the wave after animation ends
@@ -661,6 +779,7 @@ const Lottery: FC = () => {
       amountSpecifiedIsInput: true,
       aToB: true,
       slippage: new BN(slippageTolerance),
+      depegProtection: depegProtectionState,
     };
 
     const depositAccounts = {
@@ -706,7 +825,7 @@ const Lottery: FC = () => {
     }
 
     const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 250000,
+      units: 300000,
     });
 
     try {
@@ -730,7 +849,7 @@ const Lottery: FC = () => {
       setTimeout(() => {
         fetchLotteryAccountData();
         fetchParticipantData();
-      }, 1000);
+      }, 1500);
     } catch (error) {
       console.error(error);
       notify({
@@ -754,6 +873,7 @@ const Lottery: FC = () => {
       amountSpecifiedIsInput: false,
       aToB: false,
       slippage: new BN(slippageTolerance),
+      depegProtection: depegProtectionState,
     };
 
     const withdrawAccounts = {
@@ -800,7 +920,7 @@ const Lottery: FC = () => {
     }
 
     const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 250000,
+      units: 300000,
     });
 
     try {
@@ -824,7 +944,7 @@ const Lottery: FC = () => {
       setTimeout(() => {
         fetchLotteryAccountData();
         fetchParticipantData();
-      }, 1000);
+      }, 1500);
     } catch (error) {
       console.error(error);
       notify({
@@ -903,7 +1023,7 @@ const Lottery: FC = () => {
     }
 
     const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 2500000,
+      units: 3000000,
     });
 
     try {
@@ -927,7 +1047,7 @@ const Lottery: FC = () => {
       setTimeout(() => {
         fetchLotteryAccountData();
         fetchParticipantData();
-      }, 1000);
+      }, 1500);
     } catch (error) {
       console.error(error);
       notify({
@@ -951,6 +1071,7 @@ const Lottery: FC = () => {
       amountSpecifiedIsInput: true,
       aToB: false,
       slippage: new BN(slippageTolerance),
+      depegProtection: depegProtectionState,
     };
 
     const withdrawAccounts = {
@@ -1021,7 +1142,7 @@ const Lottery: FC = () => {
       setTimeout(() => {
         fetchLotteryAccountData();
         fetchParticipantData();
-      }, 1000);
+      }, 1500);
     } catch (error) {
       console.error(error);
       notify({
@@ -1084,6 +1205,7 @@ const Lottery: FC = () => {
 
     // Set the sanitized value as the amount value
     setAmount(sanitizedValue);
+    setDispleyAmount(sanitizedValue);
   };
 
   const [waves, setWaves] = useState([]);
@@ -1205,31 +1327,6 @@ const Lottery: FC = () => {
     return (apy * totalTime) / secondsInAYear;
   };
 
-  useEffect(() => {
-    const getAPY = async () => {
-      const apy = await fetchAPY();
-      if (apy !== null) {
-        setApyValue(apy);
-
-        // Once APY is fetched, calculate the small and big lottery APYs
-        if (totalTimeSmallLottery) {
-          const smallAPY = calculateLotteryAPY(apy, totalTimeSmallLottery);
-          const smallLotteryYield =
-            smallAPY * Number(lotteryAccountData.totalDeposits);
-          setSmallLotteryAPY(smallLotteryYield);
-        }
-
-        if (totalTimeBigLottery) {
-          const bigAPY = calculateLotteryAPY(apy, totalTimeBigLottery);
-          const BiglotteryYield =
-            bigAPY * Number(lotteryAccountData.totalDeposits);
-          setBigLotteryAPY(BiglotteryYield);
-        }
-      }
-    };
-    getAPY();
-  }, [totalTimeSmallLottery, totalTimeBigLottery, lotteryAccountData]);
-
   const isAmountValid = amount && parseFloat(amount) > 0;
 
   const calculateWinningNewChance = () => {
@@ -1324,10 +1421,12 @@ const Lottery: FC = () => {
     let tokenBalance;
     if (type === "HALF" && !isNaN(Number(amount)) && Number(amount) > 0) {
       tokenBalance = Number(amount) / 2;
+      tokenBalance = tokenBalance.toFixed(3);
     } else {
       if (selectedStake === "DEPOSIT") {
         tokenBalance =
-          type === "HALF" ? (balance - 1 / 100) / 2 : balance - 1 / 100;
+          type === "HALF" ? (balance - 2 / 100) / 2 : balance - 2 / 100;
+        tokenBalance = tokenBalance.toFixed(3);
       } else {
         const participantDeposit = isNaN(
           (Number(participantData?.deposit) +
@@ -1342,8 +1441,11 @@ const Lottery: FC = () => {
           type === "HALF" ? participantDeposit / 2 : participantDeposit;
       }
     }
-    const maxValue = Math.max(Number(tokenBalance), 0).toFixed(6);
+    const maxValue = Math.max(Number(tokenBalance), 0).toFixed(15);
+    const displayMax = Math.max(Number(tokenBalance), 0).toFixed(3);
+
     setAmount(maxValue.toString()); // Update the state, which will update the input value reactively
+    setDispleyAmount(displayMax.toString()); // Update the state, which will update the input value reactively
   };
 
   useEffect(() => {
@@ -1388,62 +1490,62 @@ const Lottery: FC = () => {
     fetchUserResults();
   }, [publicKey]);
 
-  if (hasAccess === null) {
-    return (
-      <div className="flex flex-col justify-center items-center min-h-[calc(100vh-172px)] z-100 bg-layer-1 font-gilroy-semibold">
-        <div
-          className="rounded-3xl"
-          style={{
-            backgroundImage: "url('/rectangle-17@2x.png')",
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "top",
-          }}
-        >
-          <div className="flex justify-center items-center flex-col p-12">
-            <p className="text-xl text-white">
-              Prove that you are a Pophead holder.
-            </p>
+  // if (hasAccess === null) {
+  //   return (
+  //     <div className="flex flex-col justify-center items-center min-h-[calc(100vh-172px)] z-100 bg-layer-1 font-gilroy-semibold">
+  //       <div
+  //         className="rounded-3xl"
+  //         style={{
+  //           backgroundImage: "url('/rectangle-17@2x.png')",
+  //           backgroundSize: "cover",
+  //           backgroundRepeat: "no-repeat",
+  //           backgroundPosition: "top",
+  //         }}
+  //       >
+  //         <div className="flex justify-center items-center flex-col p-12">
+  //           <p className="text-xl text-white">
+  //             Prove that you are a Pophead holder.
+  //           </p>
 
-            <div className="flex justify-center items-center w-[250px] h-[50px] rounded-lg bg-primary cursor-pointer font-semibold text-center text-lg text-black transition ease-in-out duration-300">
-              <WalletMultiButtonDynamic
-                style={{
-                  width: "100%",
-                  backgroundColor: "transparent",
-                  color: "black",
-                }}
-                className="mt-0.5 w-[100%]"
-              >
-                CONNECT WALLET
-              </WalletMultiButtonDynamic>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  //           <div className="flex justify-center items-center w-[250px] h-[50px] rounded-lg bg-primary cursor-pointer font-semibold text-center text-lg text-black transition ease-in-out duration-300">
+  //             <WalletMultiButtonDynamic
+  //               style={{
+  //                 width: "100%",
+  //                 backgroundColor: "transparent",
+  //                 color: "black",
+  //               }}
+  //               className="mt-0.5 w-[100%]"
+  //             >
+  //               CONNECT WALLET
+  //             </WalletMultiButtonDynamic>
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
-  if (!hasAccess) {
-    return (
-      <div className="flex justify-center items-center min-h-[calc(100vh-172px)] z-100 bg-layer-1 font-gilroy-semibold">
-        <div
-          className="rounded-3xl"
-          style={{
-            backgroundImage: "url('/rectangle-17@2x.png')",
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "top",
-          }}
-        >
-          <div className="flex justify-center items-center flex-col p-12">
-            <p className="text-xl text-white">
-              Access Denied: Your wallet is not on the list.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // if (!hasAccess) {
+  //   return (
+  //     <div className="flex justify-center items-center min-h-[calc(100vh-172px)] z-100 bg-layer-1 font-gilroy-semibold">
+  //       <div
+  //         className="rounded-3xl"
+  //         style={{
+  //           backgroundImage: "url('/rectangle-17@2x.png')",
+  //           backgroundSize: "cover",
+  //           backgroundRepeat: "no-repeat",
+  //           backgroundPosition: "top",
+  //         }}
+  //       >
+  //         <div className="flex justify-center items-center flex-col p-12">
+  //           <p className="text-xl text-white">
+  //             Access Denied: Your wallet is not on the list.
+  //           </p>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className=" overflow-hidden">
@@ -1707,7 +1809,7 @@ const Lottery: FC = () => {
                           type="text"
                           className="w-full input-capsule__input text-13xl tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold bg-black"
                           placeholder="0.00"
-                          value={amount}
+                          value={displeyAmount}
                           onChange={handleInputChange}
                           min={0.05}
                           step={0.05}
@@ -1820,12 +1922,12 @@ const Lottery: FC = () => {
                   </div>
                   <div className="self-stretch h-6 flex flex-row items-center justify-between">
                     <div className="tracking-[-0.03em] leading-[120.41%]">
-                      Slippage
+                      Settings
                     </div>
                     <div className="rounded-981xl flex flex-row items-center justify-start py-0.5 px-0 gap-[4px]">
-                      <div className="tracking-[-0.03em] leading-[120.41%] inline-block h-[18px] shrink-0">
+                      {/* <div className="tracking-[-0.03em] leading-[120.41%] inline-block h-[18px] shrink-0">
                         {slippageTolerance / 100}%
-                      </div>
+                      </div> */}
                       <img
                         className="cursor-pointer w-full h-full"
                         onClick={toggleAdditionalDiv1}
@@ -1835,40 +1937,65 @@ const Lottery: FC = () => {
                     </div>
                   </div>
                   <div
-                    className={`w-full flex flex-row items-end justify-end gap-[8px] ${showAdditionalDiv1 ? "" : "hidden"}`}
+                    className={`w-full flex flex-row items-center justify-between gap-[8px] ${showAdditionalDiv1 ? "" : "hidden"}`}
                   >
+                    <div className="tracking-[-0.03em] leading-[120.41%]">
+                      Slippage
+                    </div>
                     <div className="self-stretch flex flex-col items-start justify-start">
                       <div className="self-stretch flex flex-row items-start justify-start gap-[8px]">
                         <button
                           onClick={() => handleButtonClick(1)}
-                          className={`w-1/3 rounded h-7 flex flex-col items-center justify-center box-border transition-all duration-200 ease-in-out ${
+                          className={`cursor-pointer w-1/3 rounded h-6 flex flex-col items-center justify-center box-border transition-all duration-200 ease-in-out ${
                             activeButton === 1
                               ? "bg-primary"
-                              : "bg-[#ffffff24] hover:bg-[#ffffff36] text-gray-200"
+                              : "bg-[#ffffff12] hover:bg-[#ffffff36] text-gray-200"
                           }`}
                         >
                           0.1%
                         </button>
                         <button
                           onClick={() => handleButtonClick(2)}
-                          className={`w-1/3 rounded h-7 flex flex-col items-center justify-center box-border transition-all duration-200 ease-in-out ${
+                          className={`cursor-pointer w-1/3 rounded h-6 flex flex-col items-center justify-center box-border transition-all duration-200 ease-in-out ${
                             activeButton === 2
                               ? "bg-primary"
-                              : "bg-[#ffffff24] hover:bg-[#ffffff36] text-gray-200"
+                              : "bg-[#ffffff12] hover:bg-[#ffffff36] text-gray-200"
                           }`}
                         >
                           0.3%
                         </button>
                         <button
                           onClick={() => handleButtonClick(3)}
-                          className={`w-1/3 rounded h-7 flex flex-col items-center justify-center box-border transition-all duration-200 ease-in-out ${
+                          className={`cursor-pointer w-1/3 rounded h-6 flex flex-col items-center justify-center box-border transition-all duration-200 ease-in-out ${
                             activeButton === 3
                               ? "bg-primary"
-                              : "bg-[#ffffff24] hover:bg-[#ffffff36] text-gray-200"
+                              : "bg-[#ffffff12] hover:bg-[#ffffff36] text-gray-200"
                           }`}
                         >
                           0.5%
                         </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className={`w-full flex flex-row items-end justify-between gap-[8px] ${showAdditionalDiv1 ? "" : "hidden"}`}
+                  >
+                    <div className="tracking-[-0.03em] leading-[120.41%]">
+                      Depeg Protection
+                    </div>
+                    <div className="self-stretch flex flex-col items-start justify-start">
+                      <div className="self-stretch flex flex-row items-start justify-start gap-[8px]">
+                        <label className="toggle-switch-bigger">
+                          <input
+                            type="checkbox"
+                            checked={depegProtectionState}
+                            onChange={handleToggle}
+                            className="hidden"
+                          />
+                          <div
+                            className={`slider-bigger ${depegProtectionState ? "active" : ""}`}
+                          ></div>
+                        </label>
                       </div>
                     </div>
                   </div>
@@ -1989,10 +2116,10 @@ const Lottery: FC = () => {
                     <div className="flex flex-col items-start justify-start gap-[8px] z-[2] text-35xl font-gilroy-bold">
                       <div className="self-stretch tracking-[-0.03em] leading-[120.41%] inline-block h-[47px] shrink-0">
                         <span>
-                          {smallLotteryAPY !== null
+                          {smallLotteryYield !== null
                             ? (
-                                smallLotteryAPY.toFixed(0) / LAMPORTS_PER_SOL
-                              ).toFixed(4)
+                                smallLotteryYield.toFixed(0) / LAMPORTS_PER_SOL
+                              ).toFixed(3)
                             : "0"}
                         </span>{" "}
                         {/* Small Lottery APY */}{" "}
@@ -2096,10 +2223,10 @@ const Lottery: FC = () => {
                     <div className="flex flex-col items-start justify-start gap-[8px] z-[2] text-35xl font-gilroy-bold">
                       <div className="self-stretch tracking-[-0.03em] leading-[120.41%] inline-block h-[47px] shrink-0">
                         <span>
-                          {bigLotteryAPY !== null
+                          {bigLotteryYield !== null
                             ? (
-                                bigLotteryAPY.toFixed(0) / LAMPORTS_PER_SOL
-                              ).toFixed(4)
+                                bigLotteryYield.toFixed(0) / LAMPORTS_PER_SOL
+                              ).toFixed(3)
                             : "0"}
                         </span>{" "}
                         {/* Small Lottery APY */}{" "}

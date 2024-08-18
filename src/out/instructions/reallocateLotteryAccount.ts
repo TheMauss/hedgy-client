@@ -8,44 +8,33 @@ import * as borsh from "@coral-xyz/borsh"; // eslint-disable-line @typescript-es
 import * as types from "../types"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId";
 
-export interface CommitRandomnessArgs {
-  randomnessAccount: PublicKey;
-  smallLottery: boolean;
+export interface ReallocateLotteryAccountArgs {
+  newSize: BN;
 }
 
-export interface CommitRandomnessAccounts {
+export interface ReallocateLotteryAccountAccounts {
   lotteryAccount: PublicKey;
-  systemProgram: PublicKey;
   user: PublicKey;
-  randomnessAccountData: PublicKey;
+  systemProgram: PublicKey;
 }
 
-export const layout = borsh.struct([
-  borsh.publicKey("randomnessAccount"),
-  borsh.bool("smallLottery"),
-]);
+export const layout = borsh.struct([borsh.u64("newSize")]);
 
-export function commitRandomness(
-  args: CommitRandomnessArgs,
-  accounts: CommitRandomnessAccounts,
+export function reallocateLotteryAccount(
+  args: ReallocateLotteryAccountArgs,
+  accounts: ReallocateLotteryAccountAccounts,
   programId: PublicKey = PROGRAM_ID
 ) {
   const keys: Array<AccountMeta> = [
     { pubkey: accounts.lotteryAccount, isSigner: false, isWritable: true },
-    { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
     { pubkey: accounts.user, isSigner: true, isWritable: false },
-    {
-      pubkey: accounts.randomnessAccountData,
-      isSigner: false,
-      isWritable: false,
-    },
+    { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
   ];
-  const identifier = Buffer.from([146, 52, 195, 220, 79, 30, 53, 26]);
+  const identifier = Buffer.from([183, 190, 180, 82, 112, 61, 56, 18]);
   const buffer = Buffer.alloc(1000);
   const len = layout.encode(
     {
-      randomnessAccount: args.randomnessAccount,
-      smallLottery: args.smallLottery,
+      newSize: args.newSize,
     },
     buffer
   );

@@ -16,6 +16,7 @@ export interface DistributeSmallLotteryYieldAccounts {
   infOracleAccount: PublicKey;
   infMint: PublicKey;
   poolState: PublicKey;
+  whirlpool: PublicKey;
 }
 
 export function distributeSmallLotteryYield(
@@ -29,11 +30,12 @@ export function distributeSmallLotteryYield(
       isSigner: false,
       isWritable: false,
     },
-    { pubkey: accounts.user, isSigner: true, isWritable: true },
+    { pubkey: accounts.user, isSigner: true, isWritable: false },
     { pubkey: accounts.solOracleAccount, isSigner: false, isWritable: false },
     { pubkey: accounts.infOracleAccount, isSigner: false, isWritable: false },
     { pubkey: accounts.infMint, isSigner: false, isWritable: true },
     { pubkey: accounts.poolState, isSigner: false, isWritable: false },
+    { pubkey: accounts.whirlpool, isSigner: false, isWritable: true },
   ];
   const identifier = Buffer.from([71, 102, 238, 151, 7, 3, 186, 137]);
   const data = identifier;

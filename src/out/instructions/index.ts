@@ -14,6 +14,8 @@ export type {
   WithdrawTeamYieldArgs,
   WithdrawTeamYieldAccounts,
 } from "./withdrawTeamYield";
+export { delayLottery } from "./delayLottery";
+export type { DelayLotteryAccounts } from "./delayLottery";
 export { commitRandomness } from "./commitRandomness";
 export type {
   CommitRandomnessArgs,
@@ -23,3 +25,8 @@ export { distributeBigLotteryYield } from "./distributeBigLotteryYield";
 export type { DistributeBigLotteryYieldAccounts } from "./distributeBigLotteryYield";
 export { distributeSmallLotteryYield } from "./distributeSmallLotteryYield";
 export type { DistributeSmallLotteryYieldAccounts } from "./distributeSmallLotteryYield";
+export { reallocateLotteryAccount } from "./reallocateLotteryAccount";
+export type {
+  ReallocateLotteryAccountArgs,
+  ReallocateLotteryAccountAccounts,
+} from "./reallocateLotteryAccount";

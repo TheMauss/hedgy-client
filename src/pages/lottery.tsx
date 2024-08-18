@@ -219,6 +219,9 @@ const Lottery: FC = () => {
   const [apyValue, setApyValue] = useState(null);
   const [isYieldCalculated, setIsYieldCalculated] = useState(false);
 
+  // New toggle state, starting with true by default
+  const [depegProtectionState, setDepegProtectionState] = useState(true);
+
   const multiplier = 0.9;
   const result =
     apyValue !== null ? calculateValue(apyValue * 100, multiplier) : null; // Convert to percentage
@@ -444,7 +447,7 @@ const Lottery: FC = () => {
 
   const handleButtonClick = (buttonIndex: number) => {
     setActiveButton(buttonIndex);
-    setShowAdditionalDiv1(!showAdditionalDiv1);
+    // setShowAdditionalDiv1(!showAdditionalDiv1);
 
     switch (buttonIndex) {
       case 1:
@@ -545,6 +548,11 @@ const Lottery: FC = () => {
     } catch (error) {
       console.error("Error fetching priority fee estimate:", error);
     }
+  };
+
+  const handleToggle = () => {
+    // Update the isPriorityFee state when the toggle button is clicked
+    setDepegProtectionState(!depegProtectionState);
   };
 
   // const fetcher = new WhirlpoolAccountFetcher(connection);
@@ -771,6 +779,7 @@ const Lottery: FC = () => {
       amountSpecifiedIsInput: true,
       aToB: true,
       slippage: new BN(slippageTolerance),
+      depegProtection: depegProtectionState,
     };
 
     const depositAccounts = {
@@ -864,6 +873,7 @@ const Lottery: FC = () => {
       amountSpecifiedIsInput: false,
       aToB: false,
       slippage: new BN(slippageTolerance),
+      depegProtection: depegProtectionState,
     };
 
     const withdrawAccounts = {
@@ -1061,6 +1071,7 @@ const Lottery: FC = () => {
       amountSpecifiedIsInput: true,
       aToB: false,
       slippage: new BN(slippageTolerance),
+      depegProtection: depegProtectionState,
     };
 
     const withdrawAccounts = {
@@ -1911,12 +1922,12 @@ const Lottery: FC = () => {
                   </div>
                   <div className="self-stretch h-6 flex flex-row items-center justify-between">
                     <div className="tracking-[-0.03em] leading-[120.41%]">
-                      Slippage
+                      Settings
                     </div>
                     <div className="rounded-981xl flex flex-row items-center justify-start py-0.5 px-0 gap-[4px]">
-                      <div className="tracking-[-0.03em] leading-[120.41%] inline-block h-[18px] shrink-0">
+                      {/* <div className="tracking-[-0.03em] leading-[120.41%] inline-block h-[18px] shrink-0">
                         {slippageTolerance / 100}%
-                      </div>
+                      </div> */}
                       <img
                         className="cursor-pointer w-full h-full"
                         onClick={toggleAdditionalDiv1}
@@ -1926,40 +1937,65 @@ const Lottery: FC = () => {
                     </div>
                   </div>
                   <div
-                    className={`w-full flex flex-row items-end justify-end gap-[8px] ${showAdditionalDiv1 ? "" : "hidden"}`}
+                    className={`w-full flex flex-row items-center justify-between gap-[8px] ${showAdditionalDiv1 ? "" : "hidden"}`}
                   >
+                    <div className="tracking-[-0.03em] leading-[120.41%]">
+                      Slippage
+                    </div>
                     <div className="self-stretch flex flex-col items-start justify-start">
                       <div className="self-stretch flex flex-row items-start justify-start gap-[8px]">
                         <button
                           onClick={() => handleButtonClick(1)}
-                          className={`w-1/3 rounded h-7 flex flex-col items-center justify-center box-border transition-all duration-200 ease-in-out ${
+                          className={`cursor-pointer w-1/3 rounded h-6 flex flex-col items-center justify-center box-border transition-all duration-200 ease-in-out ${
                             activeButton === 1
                               ? "bg-primary"
-                              : "bg-[#ffffff24] hover:bg-[#ffffff36] text-gray-200"
+                              : "bg-[#ffffff12] hover:bg-[#ffffff36] text-gray-200"
                           }`}
                         >
                           0.1%
                         </button>
                         <button
                           onClick={() => handleButtonClick(2)}
-                          className={`w-1/3 rounded h-7 flex flex-col items-center justify-center box-border transition-all duration-200 ease-in-out ${
+                          className={`cursor-pointer w-1/3 rounded h-6 flex flex-col items-center justify-center box-border transition-all duration-200 ease-in-out ${
                             activeButton === 2
                               ? "bg-primary"
-                              : "bg-[#ffffff24] hover:bg-[#ffffff36] text-gray-200"
+                              : "bg-[#ffffff12] hover:bg-[#ffffff36] text-gray-200"
                           }`}
                         >
                           0.3%
                         </button>
                         <button
                           onClick={() => handleButtonClick(3)}
-                          className={`w-1/3 rounded h-7 flex flex-col items-center justify-center box-border transition-all duration-200 ease-in-out ${
+                          className={`cursor-pointer w-1/3 rounded h-6 flex flex-col items-center justify-center box-border transition-all duration-200 ease-in-out ${
                             activeButton === 3
                               ? "bg-primary"
-                              : "bg-[#ffffff24] hover:bg-[#ffffff36] text-gray-200"
+                              : "bg-[#ffffff12] hover:bg-[#ffffff36] text-gray-200"
                           }`}
                         >
                           0.5%
                         </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className={`w-full flex flex-row items-end justify-between gap-[8px] ${showAdditionalDiv1 ? "" : "hidden"}`}
+                  >
+                    <div className="tracking-[-0.03em] leading-[120.41%]">
+                      Depeg Protection
+                    </div>
+                    <div className="self-stretch flex flex-col items-start justify-start">
+                      <div className="self-stretch flex flex-row items-start justify-start gap-[8px]">
+                        <label className="toggle-switch-bigger">
+                          <input
+                            type="checkbox"
+                            checked={depegProtectionState}
+                            onChange={handleToggle}
+                            className="hidden"
+                          />
+                          <div
+                            className={`slider-bigger ${depegProtectionState ? "active" : ""}`}
+                          ></div>
+                        </label>
                       </div>
                     </div>
                   </div>
