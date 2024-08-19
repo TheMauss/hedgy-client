@@ -90,7 +90,7 @@ export const HomeView: FC = ({}) => {
     connection: Connection
   ): Promise<LotteryAccountJSON> {
     const lotteryAcc = new PublicKey(
-      "5aB2uyiesNo28v2g6CsfdcXVNs2feN74TNsexPHZih1Q"
+      "9aFmbWZuMbCQzMyNqsTB4umen9mpnqL6Z6a4ypis3XzW"
     ); // Replace with actual account
     const lotteryAccount = await LotteryAccount.fetch(connection, lotteryAcc);
 
