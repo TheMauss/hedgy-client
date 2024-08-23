@@ -23,7 +23,7 @@ export const Footer: FC = () => {
 
   return (
     <div className="flex justify-center bg-layer-1 ">
-      <div className="h-20 text-gray-200 flex items-center justify-between  w-[95%] max-w-[1700px] flex flex-row items-center justify-between text-mini-7">
+      <div className="h-20 text-gray-200 flex items-center justify-between  w-[95%] max-w-[1600px] flex flex-row items-center justify-between text-mini-7">
         <a href="/" className="no-underline">
           <div className="flex flex-row items-center justify-start gap-[5px]">
             <img

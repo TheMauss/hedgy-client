@@ -136,7 +136,7 @@ export const HomeView: FC = ({}) => {
 
   return (
     <div className="w-full relative bg-layer-1 overflow-hidden flex flex-col items-center justify-center box-border  leading-[normal] tracking-[normal] text-left text-sm text-gray-200 font-gilroy-regular">
-      <header className="h-9.5 flex flex-row justify-between items-center max-w-[1700px] w-[95%] py-[29px] ">
+      <header className="h-9.5 flex flex-row justify-between items-center max-w-[1600px] w-[95%] py-[29px] ">
         {" "}
         <Link href="/lottery" className="no-underline">
           <div className="flex flex-col items-start justify-start  px-0 pb-0">
@@ -166,7 +166,7 @@ export const HomeView: FC = ({}) => {
           </button>{" "}
         </Link>
       </header>
-      <main className="min-h-[calc(100vh-172px)]  max-w-[1700px] w-[95%] flex flex-col items-start justify-start pt-0 px-0 pb-[29px] box-border gap-8 ">
+      <main className="min-h-[calc(100vh-172px)]  max-w-[1600px] w-[95%] flex flex-col items-start justify-start pt-0 px-0 pb-[29px] box-border gap-8 ">
         <section
           className={` self-stretch rounded-3xl flex flex-row items-end justify-start md:pt-[99px] md:pb-[52px] md:px-12 pl-8 pr-4 pt-16 pb-8 box-border   text-left text-base text-neutral-06 font-gilroy-semibold lg:flex-wrap  lg:box-border`}
           style={{

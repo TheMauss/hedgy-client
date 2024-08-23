@@ -1561,11 +1561,11 @@ const Lottery: FC = () => {
     <div className=" overflow-hidden">
       <Head>
         <title>Stakera | Lottery</title>
-        <meta name="description" content="PopFi" />
+        <meta name="description" content="Stakera" />
       </Head>
 
       <div className="flex justify-center items-top min-h-[calc(100vh-172px)] z-100 bg-layer-1 ">
-        <div className="w-[95%] max-w-[1700px]">
+        <div className="w-[95%] max-w-[1600px]">
           <div className="w-full  bg-layer-1 overflow-hidden text-left text-base text-neutral-06 font-gilroy-bold">
             <div
               className="lg:hidden flex rounded-2xl w-full flex lg:flex-row flex-col lg:gap-0 md:gap-4 items-center justify-between p-4 box-border text-13xl  font-gilroy-semibold"

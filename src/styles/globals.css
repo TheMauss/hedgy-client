@@ -23,6 +23,42 @@
   font-weight: 400;
 }
 
+/* The scrollbar rail */
+body::-webkit-scrollbar,
+html::-webkit-scrollbar {
+  width: 5px;
+  background: #6fff900f;
+}
+
+/* Handle */
+body::-webkit-scrollbar-thumb,
+html::-webkit-scrollbar-thumb {
+  background: #193a31;
+}
+
+/* Handle on hover */
+body::-webkit-scrollbar-thumb:hover,
+html::-webkit-scrollbar-thumb:hover {
+  background: #193a31;
+}
+
+/* The scrollbar rail */
+.custom-scrollbar::-webkit-scrollbar {
+  scroll-behavior: smooth;
+  width: 0px;
+  height: 5px;
+}
+
+/* Handle */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #193a31;
+}
+
+/* Handle on hover */
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 .toggle-switch-bigger {
   position: relative;
   display: inline-block;
