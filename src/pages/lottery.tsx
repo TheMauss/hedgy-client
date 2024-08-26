@@ -276,6 +276,7 @@ const Lottery: FC = () => {
       const lstDeposits = Number(lotteryAccountData.lstTotalDeposits);
       const totalDeposits = Number(lotteryAccountData.totalDeposits);
       const infsol = ((1 / price.toNumber()) * 9999) / 10000;
+      const biLotteryYield = Number(lotteryAccountData.bigLotteryYield);
 
       console.log("orca price", infsol);
       console.log("lst/total", totalDeposits / lstDeposits);
@@ -301,7 +302,8 @@ const Lottery: FC = () => {
       // Calculate big lottery yield using remaining time
       if (remainingTimeBigLottery) {
         const bigAPY = calculateLotteryAPY(apy, remainingTimeBigLottery);
-        let bigYield = (bigAPY * totalDeposits + adjustedValue) / 2;
+        let bigYield =
+          (bigAPY * totalDeposits + adjustedValue) / 2 + biLotteryYield;
         bigYield = bigYield < 0 ? 0 : bigYield; // Set to 0 if below 0
         console.log("Big Lottery Yield:", bigYield);
         setBigLotteryYield(bigYield);
