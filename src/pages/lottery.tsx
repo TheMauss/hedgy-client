@@ -155,6 +155,12 @@ async function checkLotteryAccount(
       teamYield: "0",
       bigLotteryYield: "0",
       smallLotteryToBig: 0,
+      solIncentive: "0",
+      lstIncentive: "0",
+      bigSolIncentive: "0",
+      bigLstIncentive: "0",
+      bigLstLotteryYield: "0",
+      teamLstYield: "0",
     };
   }
 
@@ -277,6 +283,8 @@ const Lottery: FC = () => {
       const totalDeposits = Number(lotteryAccountData.totalDeposits);
       const infsol = ((1 / price.toNumber()) * 9999) / 10000;
       const biLotteryYield = Number(lotteryAccountData.bigLotteryYield);
+      const bigIncv = Number(lotteryAccountData.bigSolIncentive);
+      const solIncv = Number(lotteryAccountData.solIncentive);
 
       console.log("orca price", infsol);
       console.log("lst/total", totalDeposits / lstDeposits);
@@ -293,7 +301,8 @@ const Lottery: FC = () => {
       // Calculate small lottery yield using remaining time
       if (remainingTimeSmallLottery) {
         const smallAPY = calculateLotteryAPY(apy, remainingTimeSmallLottery);
-        let smallYield = (smallAPY * totalDeposits + adjustedValue) / 2;
+        let smallYield =
+          (smallAPY * totalDeposits + adjustedValue + solIncv) / 2;
         smallYield = smallYield < 0 ? 0 : smallYield; // Set to 0 if below 0
         console.log("Small Lottery Yield:", smallYield);
         setSmallLotteryYield(smallYield);
@@ -303,7 +312,9 @@ const Lottery: FC = () => {
       if (remainingTimeBigLottery) {
         const bigAPY = calculateLotteryAPY(apy, remainingTimeBigLottery);
         let bigYield =
-          (bigAPY * totalDeposits + adjustedValue) / 2 + biLotteryYield;
+          (bigAPY * totalDeposits + adjustedValue) / 2 +
+          biLotteryYield +
+          bigIncv;
         bigYield = bigYield < 0 ? 0 : bigYield; // Set to 0 if below 0
         console.log("Big Lottery Yield:", bigYield);
         setBigLotteryYield(bigYield);

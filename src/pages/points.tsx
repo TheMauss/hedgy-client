@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { FC, useState, useEffect } from "react";
+import React, { FC, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import dynamic from "next/dynamic";
@@ -43,6 +43,12 @@ async function checkLotteryAccount(
       teamYield: "0",
       bigLotteryYield: "0",
       smallLotteryToBig: 0,
+      solIncentive: "0",
+      lstIncentive: "0",
+      bigSolIncentive: "0",
+      bigLstIncentive: "0",
+      bigLstLotteryYield: "0",
+      teamLstYield: "0",
     };
   }
 
@@ -233,6 +239,140 @@ const Points: FC = () => {
     }
   };
 
+  const [boostMultiplier, setBoostMultiplier] = useState(1); // Default multiplier is 1
+
+  // useEffect to calculate the boostMultiplier whenever teamData.tvl changes
+  useEffect(() => {
+    const calculateBoostMultiplier = () => {
+      const tvlNumber = teamData?.tvl; // Assume this is a number
+
+      if (tvlNumber > 3_000_000) {
+        setBoostMultiplier(1.5); // 50% boost
+      } else if (tvlNumber > 1_000_000) {
+        setBoostMultiplier(1.3); // 30% boost
+      } else if (tvlNumber > 600_000) {
+        setBoostMultiplier(1.25); // 25% boost
+      } else if (tvlNumber > 300_000) {
+        setBoostMultiplier(1.2); // 20% boost
+      } else if (tvlNumber > 100_000) {
+        setBoostMultiplier(1.15); // 15% boost
+      } else if (tvlNumber > 50_000) {
+        setBoostMultiplier(1.1); // 10% boost
+      } else if (tvlNumber > 30_000) {
+        setBoostMultiplier(1.05); // 5% boost
+      } else {
+        setBoostMultiplier(1); // No boost
+      }
+    };
+
+    // Call the function to calculate boostMultiplier
+    calculateBoostMultiplier();
+  }, [teamData]); // Dependency array includes teamData.tvl
+
+  const [ogBoost, setOgBoost] = useState(0); // Example initial value
+  const [otherBoost1, setOtherBoost1] = useState(0); // Example initial value
+  const [otherBoost2, setOtherBoost2] = useState(0); // Example initial value
+  const [totalMultiplier, setTotalMultiplier] = useState(1); // Total multiplier
+
+  function formatNumberToKOrM(num) {
+    if (num >= 1_000_000) {
+      return (num / 1_000_000).toFixed(2) + "M"; // Format as millions
+    } else if (num >= 1_000) {
+      return (num / 1_000).toFixed(1) + "k"; // Format as thousands
+    }
+    return num.toFixed(1); // Return the original number if less than 1000
+  }
+
+  function formatNumberToKOrMs(num) {
+    if (num >= 1_000_000) {
+      return (num / 1_000_000).toFixed(0) + "M"; // Format as millions
+    } else if (num >= 1_000) {
+      return (num / 1_000).toFixed(0) + "k"; // Format as thousands
+    }
+    return num.toFixed(1); // Return the original number if less than 1000
+  }
+
+  // useEffect to calculate totalMultiplier whenever any individual multiplier changes
+  useEffect(() => {
+    const sumOfMultipliers =
+      boostMultiplier + ogBoost + otherBoost1 + otherBoost2;
+    setTotalMultiplier(sumOfMultipliers);
+  }, [boostMultiplier, ogBoost, otherBoost1, otherBoost2]);
+
+  const thresholds = [
+    { limit: 30000, boost: 5 },
+    { limit: 50000, boost: 10 },
+    { limit: 100000, boost: 15 },
+    { limit: 300000, boost: 20 },
+    { limit: 600000, boost: 25 },
+    { limit: 1000000, boost: 30 },
+    { limit: 3000000, boost: 50 },
+  ];
+
+  const [progress, setProgress] = useState(0);
+  const [boost, setBoost] = useState(0);
+  useEffect(() => {
+    calculateProgress(teamData?.tvl);
+  }, [teamData]);
+
+  const calculateProgress = (tvl) => {
+    let segmentIndex = 0;
+    let percentage = 0;
+    let boostMultiplier = 0;
+
+    // Determine the correct segment for the given TVL
+    for (let i = 0; i < thresholds.length; i++) {
+      if (tvl <= thresholds[i].limit) {
+        segmentIndex = i;
+        break;
+      } else if (i === thresholds.length - 1) {
+        // If TVL exceeds the highest limit
+        segmentIndex = thresholds.length;
+      }
+    }
+
+    // Calculate the percentage progress within the segment
+    if (segmentIndex === 0) {
+      // First segment (half-width)
+      percentage = (tvl / thresholds[0].limit) * (50 / thresholds.length);
+    } else if (segmentIndex === thresholds.length) {
+      // Beyond the last segment (fully filled)
+      percentage = 100;
+    } else {
+      const rangeStart = thresholds[segmentIndex - 1].limit;
+      const rangeEnd = thresholds[segmentIndex].limit;
+      const rangeDiff = rangeEnd - rangeStart;
+
+      // Calculate total percentage directly
+      const segmentFullWidthPercentage =
+        ((0.5 + segmentIndex - 1) / thresholds.length) * 100;
+      console.log(segmentFullWidthPercentage, "fullwidthpercentage");
+      const segmentProgress =
+        ((tvl - rangeStart) / rangeDiff) * (100 / thresholds.length);
+      console.log(segmentProgress, "segmentproggres");
+
+      percentage = segmentFullWidthPercentage + segmentProgress;
+    }
+
+    setProgress(percentage);
+  };
+
+  // Determine the current index based on teamData?.tvl
+  const currentIndex = thresholds.findIndex(
+    (threshold) => teamData?.tvl < threshold.limit
+  );
+
+  // Adjust index to display from the current threshold if no threshold is exceeded
+  const adjustedIndex =
+    currentIndex === -1
+      ? thresholds.length - 1
+      : currentIndex === 0
+        ? 0
+        : currentIndex - 1;
+
+  // Calculate which thresholds to display, ensuring we only show up to four thresholds ahead
+  const displayThresholds = thresholds.slice(adjustedIndex, adjustedIndex + 4);
+
   if (participantData) {
     return (
       <div className="overflow-hidden flex justify-center items-top min-h-[calc(100vh-172px)] z-100 bg-layer-1 ">
@@ -266,8 +406,12 @@ const Points: FC = () => {
                           src="/vuesaxlinearcoin.svg"
                         />
                         <div className="mt-1 relative tracking-[-0.03em] leading-[120.41%]">
-                          {participantData?.tvlPoints +
-                            participantData?.refPoints}
+                          {`${formatNumberToKOrM(
+                            Number(
+                              participantData?.tvlPoints +
+                                participantData?.refPoints
+                            )
+                          )}`}
                         </div>
                       </div>
                     </div>
@@ -375,7 +519,7 @@ const Points: FC = () => {
                         Your TVL Points
                       </div>
                       <div className="  text-5xl tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold inline-block">
-                        {participantData?.tvlPoints}
+                        {`${formatNumberToKOrM(Number(participantData?.tvlPoints))}`}
                       </div>
                     </div>
                     <div className="w-full sm:w-1/2 rounded-2xl bg-gray-100 flex flex-col items-center justify-center py-6 gap-[9px]">
@@ -383,7 +527,7 @@ const Points: FC = () => {
                         Your Referral Points
                       </div>
                       <div className="  text-5xl tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold inline-block">
-                        {participantData?.refPoints}
+                        {`${formatNumberToKOrM(Number(participantData?.refPoints))}`}
                       </div>
                     </div>
                   </div>
@@ -437,7 +581,7 @@ const Points: FC = () => {
                       />
                       <div className=" flex flex-row items-end justify-start gap-[9px]">
                         <div className="text-[42px] relative tracking-[-0.03em] leading-[100%] inline-block h-[35px] shrink-0">
-                          2.3x
+                          {`${totalMultiplier.toFixed(2)}x`}
                         </div>
                         <div className=" relative text-base tracking-[-0.03em] leading-[120.41%] font-gilroy-medium text-neutral-06 inline-block h-[15px] shrink-0">
                           Point Multiplier
@@ -447,7 +591,7 @@ const Points: FC = () => {
                     <div className="custom-scrollbar self-stretch flex flex-row overflow-x-scroll items-start justify-start gap-4 text-base text-neutral-06">
                       <div className="self-stretch flex-1 rounded-2xl bg-bg border-primary border-[1px] border-solid flex flex-col items-center justify-start p-4 md:p-6 gap-[13px]">
                         <div className="self-stretch relative text-5xl tracking-[-0.03em] leading-[120.41%]">
-                          0.5x
+                          {`${boostMultiplier.toFixed(2)}x`}
                         </div>
                         <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%] font-gilroy-medium opacity-[0.5]">
                           Team Boost
@@ -465,10 +609,16 @@ const Points: FC = () => {
                         <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%] font-gilroy-medium opacity-[0.5]">
                           OG Boost
                         </div>
-                        <div className="self-stretch rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-left text-bg">
-                          <div className="relative tracking-[-0.03em] leading-[120.41%]">
-                            Get
-                          </div>
+                        <div className="self-stretch rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center  box-border text-left text-bg">
+                          <a
+                            href="https://forms.gle/KGpdxZWkHiyaKHZM8"
+                            target="_blank"
+                            className="flex flex-row items-center justify-center py-2 px-4 no-underline text-black w-full"
+                          >
+                            <div className="relative tracking-[-0.03em] leading-[120.41%] w-full flex flex-row items-center justify-center">
+                              Get
+                            </div>
+                          </a>
                         </div>
                       </div>
                       <div className="self-stretch flex-1 rounded-2xl bg-bg flex flex-col items-center justify-start p-4 md:p-6 gap-[13px]">
@@ -516,53 +666,90 @@ const Points: FC = () => {
                         src="/vuesaxboldimport.svg"
                       />
                       <div className="w-[181px] flex flex-row items-end justify-start gap-[9px]">
-                        <div className="text-[42px] relative tracking-[-0.03em] leading-[100%] inline-block h-[35px] shrink-0">
-                          $1.32M
+                        <div className="text-[42px] sm:text-[42px] relative tracking-[-0.03em] leading-[100%] inline-block h-[35px] shrink-0">
+                          {`$${formatNumberToKOrM(Number(teamData?.tvl))}`}{" "}
                         </div>
-                        <div className="w-[101px] relative text-base tracking-[-0.03em] leading-[120.41%] font-gilroy-medium text-neutral-06 text-left inline-block h-[15px] shrink-0">
+                        <div className="text-[13px] sm:text-[16px] w-[101px] relative text-base tracking-[-0.03em] leading-[120.41%] font-gilroy-medium text-neutral-06 text-left inline-block h-[15px] shrink-0">
                           Team Supply
                         </div>
                       </div>
                     </div>
                     <div className="self-stretch flex flex-col items-start justify-start py-6 px-0 gap-2 text-base">
+                      {/* Threshold Labels */}
                       <div className="self-stretch flex flex-row items-center justify-between">
-                        <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%]">
-                          30K
-                        </div>
-                        <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%]">
-                          50K
-                        </div>
-                        <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%]">
-                          100K
-                        </div>
-                        <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%]">
-                          200K
-                        </div>
+                        {thresholds.map((threshold, index) => (
+                          <div
+                            key={index}
+                            className="text-[11px] sm:text-[16px] flex-1 relative tracking-[-0.03em] leading-[120.41%]"
+                            style={{ textAlign: "center" }} // Center align text to align labels properly
+                          >
+                            {formatNumberToKOrMs(threshold.limit)}
+                          </div>
+                        ))}
                       </div>
+
+                      {/* Progress Bar Container */}
                       <div className="self-stretch rounded-981xl border-layer-1 border-[1px] border-solid flex flex-col items-start justify-start p-1 relative gap-2">
-                        <div className="w-[573px] !m-[0] absolute top-[calc(50%_-_12px)] left-[calc(50%_-_288px)] flex flex-row items-center justify-between z-[0]">
-                          <div className="w-px relative border-layer-1 border-r-[1px] border-solid box-border h-[25px]" />
-                          <div className="w-px relative border-layer-1 border-r-[1px] border-solid box-border h-[25px]" />
-                          <div className="w-px relative border-layer-1 border-r-[1px] border-solid box-border h-[25px]" />
-                          <div className="w-px relative border-layer-1 border-r-[1px] border-solid box-border h-[25px]" />
+                        {/* Threshold Lines */}
+                        <div className="absolute w-full self-stretch flex flex-row items-center justify-between text-neutral-06 font-gilroy-medium">
+                          {thresholds.map((threshold, index) => (
+                            <div
+                              key={index}
+                              className="absolute z-10 flex-1 relative tracking-[-0.03em] opacity-[0.5] leading-[120.41%]"
+                              style={{ textAlign: "center" }}
+                            >
+                              <span>|</span>
+                            </div>
+                          ))}
                         </div>
-                        <div className="w-[221px] rounded-981xl bg-primary h-4 overflow-hidden shrink-0 z-[1]" />
+                        <div
+                          className="hidden md:flex w-full rounded-981xl bg-[#6fff91e1] h-4 overflow-hidden shrink-0 z-[1]"
+                          style={{ width: `${progress}%` }} // Progress bar width
+                        >
+                          <img
+                            src="/Title.svg" // Replace with the actual path to your logo
+                            alt="Progress Logo"
+                            className="breathing absolute top-1/2 transform -translate-y-1/2 h-12 w-12"
+                            style={{
+                              animation: "breathing 2s ease-in-out infinite",
+                              height: "36px", // Adjust the height of the logo
+                              width: "36px", // Adjust the width of the logo
+                              left: `${progress + 0.5}%`,
+                            }} // Position the logo at the end of the filled portion
+                          />
+                        </div>
+                        {/* Progress Bar */}
+                        <div
+                          className="flex md:hidden w-full rounded-981xl bg-[#6fff91e1] h-4 overflow-hidden shrink-0 z-[1]"
+                          style={{ width: `${progress + 1}%` }} // Progress bar width
+                        >
+                          <img
+                            src="/Title.svg" // Replace with the actual path to your logo
+                            alt="Progress Logo"
+                            className="breathing absolute top-1/2 transform -translate-y-1/2 h-12 w-12"
+                            style={{
+                              animation: "breathing 2s ease-in-out infinite",
+                              height: "36px", // Adjust the height of the logo
+                              width: "36px", // Adjust the width of the logo
+                              left: `${progress + 1.5}%`,
+                            }} // Position the logo at the end of the filled portion
+                          />
+                        </div>
                       </div>
+
+                      {/* Boost Percentages */}
                       <div className="self-stretch flex flex-row items-center justify-between text-neutral-06 font-gilroy-medium">
-                        <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
-                          5%
-                        </div>
-                        <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
-                          10%
-                        </div>
-                        <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
-                          15%
-                        </div>
-                        <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
-                          20%
-                        </div>
+                        {thresholds.map((threshold, index) => (
+                          <div
+                            key={index}
+                            className="text-[11px] sm:text-[16px] flex-1 relative tracking-[-0.03em] leading-[120.41%] opacity-[0.5]"
+                            style={{ textAlign: "center" }}
+                          >
+                            {threshold.boost}%
+                          </div>
+                        ))}
                       </div>
-                    </div>
+                    </div>{" "}
                   </div>
                   <div className="self-stretch rounded-2xl bg-gray-100 flex flex-col items-center justify-center p-6 gap-4 text-center text-sm font-gilroy-medium">
                     <div className="self-stretch flex flex-row items-start justify-start gap-[9px]">
@@ -574,80 +761,40 @@ const Points: FC = () => {
                       </div>
                     </div>
                     <div className="self-stretch flex flex-col items-start justify-start gap-2 text-lg font-gilroy-semibold">
-                      <div className="self-stretch rounded bg-layer-1 flex flex-row items-center justify-start py-1 px-0 relative gap-[9px] text-primary">
-                        <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%] z-[0]">
-                          More than $30K
+                      {displayThresholds.map((threshold, index) => (
+                        <div
+                          key={index}
+                          className={`self-stretch rounded flex flex-row items-center justify-start py-1 px-0 relative gap-[9px] ${
+                            teamData?.tvl >= threshold.limit
+                              ? "bg-layer-1 text-primary"
+                              : ""
+                          }`}
+                        >
+                          <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%] z-[0]">
+                            More than ${threshold.limit.toLocaleString()}
+                          </div>
+                          <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%] z-[1]">
+                            {threshold.boost}%
+                          </div>
+                          {/* Show arrow icons for current or achieved boosts */}
+                          <img
+                            className={`w-6 absolute !m-[0] top-[3px] left-[4px] h-6 ${
+                              teamData?.tvl >= threshold.limit ? "" : "hidden"
+                            } z-[2]`}
+                            alt=""
+                            src="/vuesaxboldarrowright.svg"
+                          />
+                          <img
+                            className={`w-6 absolute !m-[0] top-[3px] right-[4px] h-6 object-contain ${
+                              teamData?.tvl >= threshold.limit ? "" : "hidden"
+                            } z-[3]`}
+                            alt=""
+                            src="/vuesaxboldarrowright1.svg"
+                          />
                         </div>
-                        <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%] z-[1]">
-                          5%
-                        </div>
-                        <img
-                          className="w-6 absolute !m-[0] top-[3px] left-[4px] h-6 z-[2]"
-                          alt=""
-                          src="/vuesaxboldarrowright.svg"
-                        />
-                        <img
-                          className="w-6 absolute !m-[0] top-[3px] right-[4px] h-6 object-contain z-[3]"
-                          alt=""
-                          src="/vuesaxboldarrowright1.svg"
-                        />
-                      </div>
-                      <div className="self-stretch rounded flex flex-row items-center justify-start py-1 px-0 relative gap-[9px]">
-                        <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%] z-[0]">
-                          More than $50K
-                        </div>
-                        <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%] z-[1]">
-                          10%
-                        </div>
-                        <img
-                          className="w-6 absolute !m-[0] top-[3px] left-[4px] h-6 hidden z-[2]"
-                          alt=""
-                          src="/vuesaxboldarrowright.svg"
-                        />
-                        <img
-                          className="w-6 absolute !m-[0] top-[3px] right-[4px] h-6 object-contain hidden z-[3]"
-                          alt=""
-                          src="/vuesaxboldarrowright1.svg"
-                        />
-                      </div>
-                      <div className="self-stretch rounded flex flex-row items-center justify-start py-1 px-0 relative gap-[9px]">
-                        <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%] z-[0]">
-                          More than $100K
-                        </div>
-                        <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%] z-[1]">
-                          15%
-                        </div>
-                        <img
-                          className="w-6 absolute !m-[0] top-[3px] left-[4px] h-6 hidden z-[2]"
-                          alt=""
-                          src="/vuesaxboldarrowright.svg"
-                        />
-                        <img
-                          className="w-6 absolute !m-[0] top-[3px] right-[4px] h-6 object-contain hidden z-[3]"
-                          alt=""
-                          src="/vuesaxboldarrowright1.svg"
-                        />
-                      </div>
-                      <div className="self-stretch rounded flex flex-row items-center justify-start py-1 px-0 relative gap-[9px]">
-                        <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%] z-[0]">
-                          More than $200K
-                        </div>
-                        <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%] z-[1]">
-                          20%
-                        </div>
-                        <img
-                          className="w-6 absolute !m-[0] top-[3px] left-[4px] h-6 hidden z-[2]"
-                          alt=""
-                          src="/vuesaxboldarrowright.svg"
-                        />
-                        <img
-                          className="w-6 absolute !m-[0] top-[3px] right-[4px] h-6 object-contain hidden z-[3]"
-                          alt=""
-                          src="/vuesaxboldarrowright1.svg"
-                        />
-                      </div>
+                      ))}
                     </div>
-                  </div>
+                  </div>{" "}
                 </div>
               )}
             </div>
@@ -801,7 +948,7 @@ const Points: FC = () => {
                     src="/vuesaxboldflag.svg"
                   />
                   <div className="relative tracking-[-0.03em] leading-[120.41%]">
-                    Join the Best team
+                    Join the Best Team
                   </div>
                 </div>
                 <div className="self-stretch flex-1 rounded-2xl bg-gray-100 flex flex-col items-center justify-start p-3 md:p-6 text-center text-sm font-gilroy-medium">
@@ -862,7 +1009,7 @@ const Points: FC = () => {
                             className="self-stretch h-[50px] flex flex-row items-center justify-center p-2 box-border"
                           >
                             <div className="relative tracking-[-0.03em] leading-[120.41%]">
-                              {team.tvl} SOL
+                              {`$ ${formatNumberToKOrM(Number(team.tvl))}`}
                             </div>
                           </div>
                         ))}

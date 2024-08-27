@@ -23,6 +23,18 @@
   font-weight: 400;
 }
 
+@keyframes breathing {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1); /* Scale up */
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1); /* Scale back to normal */
+  }
+}
+
 /* The scrollbar rail */
 body::-webkit-scrollbar,
 html::-webkit-scrollbar {

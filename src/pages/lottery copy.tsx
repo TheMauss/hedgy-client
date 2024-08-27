@@ -155,6 +155,12 @@ async function checkLotteryAccount(
       teamYield: "0",
       bigLotteryYield: "0",
       smallLotteryToBig: 0,
+      solIncentive: "0",
+      lstIncentive: "0",
+      bigSolIncentive: "0",
+      bigLstIncentive: "0",
+      bigLstLotteryYield: "0",
+      teamLstYield: "0",
     };
   }
 
