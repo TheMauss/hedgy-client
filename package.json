@@ -87,6 +87,7 @@
     "react-spinners": "^0.13.8",
     "react-spring": "^9.7.2",
     "react-starfield-animation": "git+https://github.com/TheMauss/react-starfield-animation.git",
+    "react-tooltip": "^5.28.0",
     "react-transition-group": "^4.4.5",
     "react-use": "^17.4.0",
     "recharts": "^2.10.4",

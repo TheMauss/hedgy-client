@@ -71,9 +71,9 @@ const Notification = ({
   }, [onHide, id]);
 
   const gradientBackgrounds = {
-    success: "linear-gradient(to right, #111111, #2d5547)",
-    info: "linear-gradient(to right, #111111, #2e2e2e)",
-    error: "linear-gradient(to right, #111111, #3c2121)",
+    success: "linear-gradient(to right, #2d5547, #2d5547)",
+    info: "linear-gradient(to right, #2e2e2e, #2e2e2e)",
+    error: "linear-gradient(to right, #3c2121, #3c2121)",
   };
 
   const notificationClasses = `max-w-sm ${
@@ -104,7 +104,7 @@ const Notification = ({
           }}
         />
         <div
-          className={`text-white p-2.5 rounded-b-md bg-[#00000085] bg-opacity-90 flex items-center`}
+          className={`text-white p-2.5 rounded-b-md bg-bg bg-opacity-90 flex items-center`}
         >
           {/* Icon and message layout */}
           <div className={`flex-shrink-0`}>

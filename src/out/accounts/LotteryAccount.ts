@@ -26,6 +26,15 @@ export interface LotteryAccountFields {
   bigLstIncentive: BN;
   bigLstLotteryYield: BN;
   teamLstYield: BN;
+  bigCommitTime: BN;
+  smallCommitTime: BN;
+  isBigCommitted: boolean;
+  isSmallComitted: boolean;
+  weeklyHour: number;
+  monthlyHour: number;
+  maxWeeklyHour: number;
+  maxMonthlyHour: number;
+  hourlyTimestamp: BN;
 }
 
 export interface LotteryAccountJSON {
@@ -50,6 +59,15 @@ export interface LotteryAccountJSON {
   bigLstIncentive: string;
   bigLstLotteryYield: string;
   teamLstYield: string;
+  bigCommitTime: string;
+  smallCommitTime: string;
+  isBigCommitted: boolean;
+  isSmallComitted: boolean;
+  weeklyHour: number;
+  monthlyHour: number;
+  maxWeeklyHour: number;
+  maxMonthlyHour: number;
+  hourlyTimestamp: string;
 }
 
 export class LotteryAccount {
@@ -74,6 +92,15 @@ export class LotteryAccount {
   readonly bigLstIncentive: BN;
   readonly bigLstLotteryYield: BN;
   readonly teamLstYield: BN;
+  readonly bigCommitTime: BN;
+  readonly smallCommitTime: BN;
+  readonly isBigCommitted: boolean;
+  readonly isSmallComitted: boolean;
+  readonly weeklyHour: number;
+  readonly monthlyHour: number;
+  readonly maxWeeklyHour: number;
+  readonly maxMonthlyHour: number;
+  readonly hourlyTimestamp: BN;
 
   static readonly discriminator = Buffer.from([
     1, 165, 125, 59, 215, 12, 246, 7,
@@ -101,6 +128,15 @@ export class LotteryAccount {
     borsh.u64("bigLstIncentive"),
     borsh.u64("bigLstLotteryYield"),
     borsh.u64("teamLstYield"),
+    borsh.i64("bigCommitTime"),
+    borsh.i64("smallCommitTime"),
+    borsh.bool("isBigCommitted"),
+    borsh.bool("isSmallComitted"),
+    borsh.u16("weeklyHour"),
+    borsh.u16("monthlyHour"),
+    borsh.u16("maxWeeklyHour"),
+    borsh.u16("maxMonthlyHour"),
+    borsh.i64("hourlyTimestamp"),
   ]);
 
   constructor(fields: LotteryAccountFields) {
@@ -127,6 +163,15 @@ export class LotteryAccount {
     this.bigLstIncentive = fields.bigLstIncentive;
     this.bigLstLotteryYield = fields.bigLstLotteryYield;
     this.teamLstYield = fields.teamLstYield;
+    this.bigCommitTime = fields.bigCommitTime;
+    this.smallCommitTime = fields.smallCommitTime;
+    this.isBigCommitted = fields.isBigCommitted;
+    this.isSmallComitted = fields.isSmallComitted;
+    this.weeklyHour = fields.weeklyHour;
+    this.monthlyHour = fields.monthlyHour;
+    this.maxWeeklyHour = fields.maxWeeklyHour;
+    this.maxMonthlyHour = fields.maxMonthlyHour;
+    this.hourlyTimestamp = fields.hourlyTimestamp;
   }
 
   static async fetch(
@@ -198,6 +243,15 @@ export class LotteryAccount {
       bigLstIncentive: dec.bigLstIncentive,
       bigLstLotteryYield: dec.bigLstLotteryYield,
       teamLstYield: dec.teamLstYield,
+      bigCommitTime: dec.bigCommitTime,
+      smallCommitTime: dec.smallCommitTime,
+      isBigCommitted: dec.isBigCommitted,
+      isSmallComitted: dec.isSmallComitted,
+      weeklyHour: dec.weeklyHour,
+      monthlyHour: dec.monthlyHour,
+      maxWeeklyHour: dec.maxWeeklyHour,
+      maxMonthlyHour: dec.maxMonthlyHour,
+      hourlyTimestamp: dec.hourlyTimestamp,
     });
   }
 
@@ -224,6 +278,15 @@ export class LotteryAccount {
       bigLstIncentive: this.bigLstIncentive.toString(),
       bigLstLotteryYield: this.bigLstLotteryYield.toString(),
       teamLstYield: this.teamLstYield.toString(),
+      bigCommitTime: this.bigCommitTime.toString(),
+      smallCommitTime: this.smallCommitTime.toString(),
+      isBigCommitted: this.isBigCommitted,
+      isSmallComitted: this.isSmallComitted,
+      weeklyHour: this.weeklyHour,
+      monthlyHour: this.monthlyHour,
+      maxWeeklyHour: this.maxWeeklyHour,
+      maxMonthlyHour: this.maxMonthlyHour,
+      hourlyTimestamp: this.hourlyTimestamp.toString(),
     };
   }
 
@@ -252,6 +315,15 @@ export class LotteryAccount {
       bigLstIncentive: new BN(obj.bigLstIncentive),
       bigLstLotteryYield: new BN(obj.bigLstLotteryYield),
       teamLstYield: new BN(obj.teamLstYield),
+      bigCommitTime: new BN(obj.bigCommitTime),
+      smallCommitTime: new BN(obj.smallCommitTime),
+      isBigCommitted: obj.isBigCommitted,
+      isSmallComitted: obj.isSmallComitted,
+      weeklyHour: obj.weeklyHour,
+      monthlyHour: obj.monthlyHour,
+      maxWeeklyHour: obj.maxWeeklyHour,
+      maxMonthlyHour: obj.maxMonthlyHour,
+      hourlyTimestamp: new BN(obj.hourlyTimestamp),
     });
   }
 }

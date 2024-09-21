@@ -11,12 +11,16 @@ import {
   LotteryAccountJSON,
 } from "../out/accounts/LotteryAccount";
 import { ParticipantJSON } from "../out/types/Participant";
+import { Tooltip } from "react-tooltip";
+import "react-tooltip/dist/react-tooltip.css";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
     (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
   { ssr: false }
 );
+
+const APIKEYTEAM = process.env.NEXT_PUBLIC_APIKEYTEAM;
 
 async function checkLotteryAccount(
   connection: Connection
@@ -49,6 +53,15 @@ async function checkLotteryAccount(
       bigLstIncentive: "0",
       bigLstLotteryYield: "0",
       teamLstYield: "0",
+      bigCommitTime: "0",
+      smallCommitTime: "0",
+      isBigCommitted: false,
+      isSmallComitted: false,
+      weeklyHour: 0,
+      monthlyHour: 0,
+      maxWeeklyHour: 0,
+      maxMonthlyHour: 0,
+      hourlyTimestamp: "0",
     };
   }
 
@@ -103,14 +116,26 @@ const Points: FC = () => {
     }
 
     setLoading(true);
+    notify({
+      type: "info",
+      message: action === "create" ? "Creating team..." : "Joining team...",
+    });
 
     try {
-      const response = await axios.post("http://localhost:4000/api/team", {
-        publicKey: publicKey.toBase58(),
-        teamName,
-        action,
-        usedReferralCode: referralCode || null, // Adjust this if you're using referral codes
-      });
+      const response = await axios.post(
+        "http://localhost:4000/api/team",
+        {
+          publicKey: publicKey.toBase58(),
+          teamName,
+          action,
+          usedReferralCode: referralCode || null, // Adjust this if you're using referral codes
+        },
+        {
+          headers: {
+            "x-api-key": APIKEYTEAM, // Add the API key in the request headers
+          },
+        }
+      );
 
       if (response.status === 200) {
         notify({ type: "success", message: response.data.message });
@@ -178,22 +203,21 @@ const Points: FC = () => {
         "http://localhost:4000/api/check-participant",
         {
           publicKey: publicKey.toBase58(),
+        },
+        {
+          headers: {
+            "x-api-key": APIKEYTEAM, // Add the API key in the request headers
+          },
         }
       );
 
       if (response.status === 200) {
         setParticipantData(response.data.participant);
+        console.log(response.data.participant);
         setTeamData(response.data.team);
-        notify({ type: "success", message: "Participant data loaded." });
-      } else {
-        notify({
-          type: "info",
-          message: "Participant not found. Please create or join a team.",
-        });
       }
     } catch (error) {
       console.error("Error:", error);
-      notify({ type: "error", message: "Failed to check participant." });
     }
   };
 
@@ -203,16 +227,16 @@ const Points: FC = () => {
 
   const fetchTopTeams = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/api/top-teams");
-
+      const response = await axios.get("http://localhost:4000/api/top-teams", {
+        headers: {
+          "x-api-key": APIKEYTEAM, // Add the API key in the request headers
+        },
+      });
       if (response.status === 200) {
         setTopTeams(response.data.topTeams);
-      } else {
-        notify({ type: "error", message: "Failed to load top teams." });
       }
     } catch (error) {
       console.error("Error:", error);
-      notify({ type: "error", message: "Failed to load top teams." });
     }
   };
 
@@ -269,8 +293,29 @@ const Points: FC = () => {
     calculateBoostMultiplier();
   }, [teamData]); // Dependency array includes teamData.tvl
 
+  useEffect(() => {
+    if (participantData?.OG) {
+      setOgBoost(0.1);
+    } else {
+      setOgBoost(0); // Reset to 0 if OG is not true
+    }
+
+    if (participantData?.swboardOG) {
+      setSwBoost(0.05);
+    } else {
+      setSwBoost(0); // Reset to 0 if OG is not true
+    }
+
+    if (participantData?.pophead) {
+      setPopheadBoost(0.1);
+    } else {
+      setPopheadBoost(0); // Reset to 0 if OG is not true
+    }
+  }, [participantData]); // Dependency array includes teamData.tvl
+
   const [ogBoost, setOgBoost] = useState(0); // Example initial value
-  const [otherBoost1, setOtherBoost1] = useState(0); // Example initial value
+  const [swBoost, setSwBoost] = useState(0); // Example initial value
+  const [popheadBoost, setPopheadBoost] = useState(0); // Example initial value
   const [otherBoost2, setOtherBoost2] = useState(0); // Example initial value
   const [totalMultiplier, setTotalMultiplier] = useState(1); // Total multiplier
 
@@ -294,10 +339,9 @@ const Points: FC = () => {
 
   // useEffect to calculate totalMultiplier whenever any individual multiplier changes
   useEffect(() => {
-    const sumOfMultipliers =
-      boostMultiplier + ogBoost + otherBoost1 + otherBoost2;
+    const sumOfMultipliers = boostMultiplier + ogBoost + popheadBoost + swBoost;
     setTotalMultiplier(sumOfMultipliers);
-  }, [boostMultiplier, ogBoost, otherBoost1, otherBoost2]);
+  }, [boostMultiplier, ogBoost, popheadBoost, otherBoost2, swBoost]);
 
   const thresholds = [
     { limit: 30000, boost: 5 },
@@ -376,7 +420,7 @@ const Points: FC = () => {
   if (participantData) {
     return (
       <div className="overflow-hidden flex justify-center items-top min-h-[calc(100vh-172px)] z-100 bg-layer-1 ">
-        <div className=" w-[95%] max-w-[1600px] justify-start flex flex-col gap-4 lg:gap-8 text-left text-3xl-1 text-neutral-06 font-gilroy-bold">
+        <div className=" w-[95%] max-w-[1550px] justify-start flex flex-col gap-4 lg:gap-8 text-left text-3xl-1 text-neutral-06 font-gilroy-bold">
           <div className="w-full flex flex-col lg:flex-row gap-8">
             <div
               style={{
@@ -476,7 +520,7 @@ const Points: FC = () => {
                   </div>
                   <div
                     onClick={handleCopyClick}
-                    className="cursor-pointer self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border text-lg text-bg font-gilroy-semibold"
+                    className="hover:opacity-70 transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border text-lg text-bg font-gilroy-semibold"
                   >
                     <div className="mt-1 cursor-pointer relative tracking-[-0.03em] leading-[120.41%]">
                       Invite your Friends
@@ -515,17 +559,35 @@ const Points: FC = () => {
                 <div className="w-full flex flex-col gap-[11px]">
                   <div className="flex flex-col sm:flex-row items-start justify-start gap-[11px] text-center font-gilroy-medium">
                     <div className="w-full sm:w-1/2 rounded-2xl bg-gray-100 flex flex-col items-center justify-center py-6 gap-[9px]">
-                      <div className="w-full  tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
+                      <div
+                        id="totalPointsInfo"
+                        className="cursor-pointer w-full  tracking-[-0.03em] leading-[120.41%] opacity-[0.5]"
+                      >
                         Your TVL Points
                       </div>
+                      <Tooltip
+                        anchorSelect="#totalPointsInfo"
+                        place="top"
+                        content="You earn 1 point for every USD deposited per 24 hours."
+                        className="font-gilroy-regular max-w-xs p-2 text-sm bg-gray-800 text-white rounded-lg shadow-lg"
+                      />
                       <div className="  text-5xl tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold inline-block">
                         {`${formatNumberToKOrM(Number(participantData?.tvlPoints))}`}
                       </div>
                     </div>
                     <div className="w-full sm:w-1/2 rounded-2xl bg-gray-100 flex flex-col items-center justify-center py-6 gap-[9px]">
-                      <div className="w-full  tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
+                      <div
+                        id="refPointsInfo"
+                        className="cursor-pointer w-full  tracking-[-0.03em] leading-[120.41%] opacity-[0.5]"
+                      >
                         Your Referral Points
-                      </div>
+                      </div>{" "}
+                      <Tooltip
+                        anchorSelect="#refPointsInfo"
+                        place="top"
+                        content="You earn 10% of the points accumulated by your referrals."
+                        className="font-gilroy-regular max-w-xs p-2 text-sm bg-gray-800 text-white rounded-lg shadow-lg"
+                      />
                       <div className="  text-5xl tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold inline-block">
                         {`${formatNumberToKOrM(Number(participantData?.refPoints))}`}
                       </div>
@@ -563,7 +625,7 @@ const Points: FC = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-bg font-gilroy-semibold">
+                      <div className="hover:opacity-70 transition ease-in-out duration-300 rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-bg font-gilroy-semibold">
                         <a href="/lottery" className="no-underline text-black">
                           <div className="mt-1 relative tracking-[-0.03em] leading-[120.41%]">
                             Deposit
@@ -591,59 +653,120 @@ const Points: FC = () => {
                     <div className="custom-scrollbar self-stretch flex flex-row overflow-x-scroll items-start justify-start gap-4 text-base text-neutral-06">
                       <div className="self-stretch flex-1 rounded-2xl bg-bg border-primary border-[1px] border-solid flex flex-col items-center justify-start p-4 md:p-6 gap-[13px]">
                         <div className="self-stretch relative text-5xl tracking-[-0.03em] leading-[120.41%]">
-                          {`${boostMultiplier.toFixed(2)}x`}
+                          {`${(Number(boostMultiplier.toFixed(2)) - 1).toFixed(2)}x`}
                         </div>
                         <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%] font-gilroy-medium opacity-[0.5]">
                           Team Boost
                         </div>
-                        <div className="self-stretch rounded-lg bg-gray-100 h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-left text-primary">
+                        <div className="cursor-not-allowed self-stretch rounded-lg bg-gray-100 h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-left text-primary">
                           <div className="relative tracking-[-0.03em] leading-[120.41%]">
                             Completed
                           </div>
                         </div>
                       </div>
-                      <div className="self-stretch flex-1 rounded-2xl bg-bg flex flex-col items-center justify-start p-4 md:p-6 gap-[13px]">
-                        <div className="self-stretch relative text-5xl tracking-[-0.03em] leading-[120.41%]">
-                          0.1x
-                        </div>
-                        <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%] font-gilroy-medium opacity-[0.5]">
-                          OG Boost
-                        </div>
-                        <div className="self-stretch rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center  box-border text-left text-bg">
-                          <a
-                            href="https://forms.gle/KGpdxZWkHiyaKHZM8"
-                            target="_blank"
-                            className="flex flex-row items-center justify-center py-2 px-4 no-underline text-black w-full"
-                          >
-                            <div className="relative tracking-[-0.03em] leading-[120.41%] w-full flex flex-row items-center justify-center">
-                              Get
-                            </div>
-                          </a>
-                        </div>
-                      </div>
-                      <div className="self-stretch flex-1 rounded-2xl bg-bg flex flex-col items-center justify-start p-4 md:p-6 gap-[13px]">
-                        <div className="self-stretch relative text-5xl tracking-[-0.03em] leading-[120.41%]">
-                          0.5x
-                        </div>
-                        <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%] font-gilroy-medium opacity-[0.5]">
-                          Team Boost
-                        </div>
-                        <div className="self-stretch rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-left text-bg">
-                          <div className="relative tracking-[-0.03em] leading-[120.41%]">
-                            Get
+                      {!participantData?.OG ? (
+                        <div className="self-stretch flex-1 rounded-2xl bg-bg flex flex-col items-center justify-start p-4 md:p-6 gap-[13px]">
+                          <div className="self-stretch relative text-5xl tracking-[-0.03em] leading-[120.41%]">
+                            0.1x
+                          </div>
+                          <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%] font-gilroy-medium opacity-[0.5]">
+                            OG Boost
+                          </div>
+                          <div className="hover:opacity-70 transition ease-in-out duration-300 self-stretch rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center  box-border text-left text-bg">
+                            <a
+                              href="https://forms.gle/KGpdxZWkHiyaKHZM8"
+                              target="_blank"
+                              className="flex flex-row items-center justify-center py-2 px-4 no-underline text-black w-full"
+                            >
+                              <div className="relative tracking-[-0.03em] leading-[120.41%] w-full flex flex-row items-center justify-center">
+                                Get
+                              </div>
+                            </a>
                           </div>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="self-stretch flex-1 rounded-2xl bg-bg border-primary border-[1px] border-solid flex flex-col items-center justify-start p-4 md:p-6 gap-[13px]">
+                          <div className="self-stretch relative text-5xl tracking-[-0.03em] leading-[120.41%]">
+                            {`${ogBoost.toFixed(2)}x`}
+                          </div>
+                          <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%] font-gilroy-medium opacity-[0.5]">
+                            OG Boost
+                          </div>
+                          <div className="cursor-not-allowed self-stretch rounded-lg bg-gray-100 h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-left text-primary">
+                            <div className="relative tracking-[-0.03em] leading-[120.41%]">
+                              Completed
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {!participantData?.pophead ? (
+                        <div className="self-stretch flex-1 rounded-2xl bg-bg flex flex-col items-center justify-start p-4 md:p-6 gap-[13px]">
+                          <div className="self-stretch relative text-5xl tracking-[-0.03em] leading-[120.41%]">
+                            0.10x
+                          </div>
+                          <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%] font-gilroy-medium opacity-[0.5]">
+                            Pophead Boost
+                          </div>
+                          <div className="cursor-not-allowed self-stretch rounded-lg bg-gray-100 h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-left text-primary">
+                            <div className="relative tracking-[-0.03em] leading-[120.41%]">
+                              Unobtainable
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="self-stretch flex-1 rounded-2xl bg-bg border-primary border-[1px] border-solid flex flex-col items-center justify-start p-4 md:p-6 gap-[13px]">
+                          <div className="self-stretch relative text-5xl tracking-[-0.03em] leading-[120.41%]">
+                            {`${ogBoost.toFixed(2)}x`}
+                          </div>
+                          <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%] font-gilroy-medium opacity-[0.5]">
+                            Pophead Boost
+                          </div>
+                          <div className="cursor-not-allowed self-stretch rounded-lg bg-gray-100 h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-left text-primary">
+                            <div className="relative tracking-[-0.03em] leading-[120.41%]">
+                              Completed
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {!participantData?.swboardOG ? (
+                        <div className="self-stretch flex-1 rounded-2xl bg-bg flex flex-col items-center justify-start p-4 md:p-6 gap-[13px]">
+                          <div className="self-stretch relative text-5xl tracking-[-0.03em] leading-[120.41%]">
+                            0.05x
+                          </div>
+                          <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%] font-gilroy-medium opacity-[0.5]">
+                            Switchboard AMA
+                          </div>
+                          <div className="cursor-not-allowed self-stretch rounded-lg bg-gray-100 h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-left text-primary">
+                            <div className="relative tracking-[-0.03em] leading-[120.41%]">
+                              Unobtainable
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="self-stretch flex-1 rounded-2xl bg-bg border-primary border-[1px] border-solid flex flex-col items-center justify-start p-4 md:p-6 gap-[13px]">
+                          <div className="self-stretch relative text-5xl tracking-[-0.03em] leading-[120.41%]">
+                            {`${ogBoost.toFixed(2)}x`}
+                          </div>
+                          <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%] font-gilroy-medium opacity-[0.5]">
+                            Switchboard AMA
+                          </div>
+                          <div className="cursor-not-allowed self-stretch rounded-lg bg-gray-100 h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-left text-primary">
+                            <div className="relative tracking-[-0.03em] leading-[120.41%]">
+                              Completed
+                            </div>
+                          </div>
+                        </div>
+                      )}
                       <div className="self-stretch flex-1 rounded-2xl bg-bg flex flex-col items-center justify-start p-4 md:p-6 gap-[13px]">
                         <div className="self-stretch relative text-5xl tracking-[-0.03em] leading-[120.41%]">
-                          0.5x
+                          0.0x
                         </div>
                         <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%] font-gilroy-medium opacity-[0.5]">
-                          Team Boost
+                          ?
                         </div>
-                        <div className="self-stretch rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-left text-bg">
+                        <div className="cursor-not-allowed self-stretch rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-left text-bg">
                           <div className="relative tracking-[-0.03em] leading-[120.41%]">
-                            Get
+                            Soon™
                           </div>
                         </div>
                       </div>
@@ -654,11 +777,11 @@ const Points: FC = () => {
               {selectedPoint === "Team" && (
                 <div className="w-full flex flex-col gap-[11px]">
                   <div className="flex flex-row items-center justify-center pt-4 px-0 pb-0 text-lg font-gilroy-medium">
-                    <div className="w-full text-left items-start justify-start relative tracking-[-0.03em] leading-[120.41%]">
+                    <div className="w-full text-left items-start justify-start relative tracking-[-0.03em] leading-[120.41%] ">
                       Play as a team to maximize your point boosting
                     </div>
                   </div>
-                  <div className="w-full rounded-2xl bg-gray-100 flex flex-col items-start justify-center pt-6 px-6 pb-0 box-border gap-4 text-center text-21xl text-primary">
+                  <div className="w-full rounded-2xl bg-gray-100 flex flex-col items-start justify-center pt-6 px-4 md:px-6 pb-0 box-border gap-4 text-center text-21xl text-primary">
                     <div className="self-stretch flex flex-row items-center justify-start gap-2">
                       <img
                         className="w-10 relative h-10"
@@ -751,7 +874,7 @@ const Points: FC = () => {
                       </div>
                     </div>{" "}
                   </div>
-                  <div className="self-stretch rounded-2xl bg-gray-100 flex flex-col items-center justify-center p-6 gap-4 text-center text-sm font-gilroy-medium">
+                  <div className="self-stretch rounded-2xl bg-gray-100 flex flex-col items-center justify-center p-4 md:p-6 gap-4 text-center text-sm font-gilroy-medium">
                     <div className="self-stretch flex flex-row items-start justify-start gap-[9px]">
                       <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
                         Total Team Deposits
@@ -770,7 +893,7 @@ const Points: FC = () => {
                               : ""
                           }`}
                         >
-                          <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%] z-[0]">
+                          <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%] z-[0] text-[14px] sm:text-[16px]">
                             More than ${threshold.limit.toLocaleString()}
                           </div>
                           <div className="flex-1 relative tracking-[-0.03em] leading-[120.41%] z-[1]">
@@ -778,14 +901,14 @@ const Points: FC = () => {
                           </div>
                           {/* Show arrow icons for current or achieved boosts */}
                           <img
-                            className={`w-6 absolute !m-[0] top-[3px] left-[4px] h-6 ${
+                            className={`hidden sm:flex w-6 absolute !m-[0] top-[3px] left-[4px] h-6 ${
                               teamData?.tvl >= threshold.limit ? "" : "hidden"
                             } z-[2]`}
                             alt=""
                             src="/vuesaxboldarrowright.svg"
                           />
                           <img
-                            className={`w-6 absolute !m-[0] top-[3px] right-[4px] h-6 object-contain ${
+                            className={`hidden sm:flex w-6 absolute !m-[0] top-[3px] right-[4px] h-6 object-contain ${
                               teamData?.tvl >= threshold.limit ? "" : "hidden"
                             } z-[3]`}
                             alt=""
@@ -812,7 +935,7 @@ const Points: FC = () => {
       </Head>
 
       <div className="flex justify-center items-top min-h-[calc(100vh-172px)] z-100 bg-layer-1 ">
-        <div className=" w-[95%] max-w-[1600px] justify-start flex flex-col gap-4 lg:gap-8">
+        <div className=" w-[95%] max-w-[1550px] justify-start flex flex-col gap-4 lg:gap-8">
           <div className="pt-8 w-full flex flex-col items-start justify-start gap-[11px] text-5xl font-gilroy-semibold">
             <div className="text-white self-stretch relative tracking-[-0.03em] leading-[120.41%]">
               Join the Stakventure
@@ -838,7 +961,7 @@ const Points: FC = () => {
 
                   <>
                     {!publicKey ? (
-                      <div className="w-[110px] rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center box-border text-left text-base text-bg font-gilroy-semibold flex justify-center items-center h-[34px] rounded-lg tracking-[-0.03em] leading-[120.41%] bg-primary cursor-pointer font-semibold">
+                      <div className="hover:opacity-70 transition ease-in-out duration-300 w-[110px] rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center box-border text-left text-base text-bg font-gilroy-semibold flex justify-center items-center h-[34px] rounded-lg tracking-[-0.03em] leading-[120.41%] bg-primary cursor-pointer font-semibold">
                         <WalletMultiButtonDynamic
                           style={{
                             width: "100%",
@@ -853,7 +976,7 @@ const Points: FC = () => {
                         </WalletMultiButtonDynamic>
                       </div>
                     ) : (
-                      <div className="w-[110px] rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center box-border text-left text-base text-bg font-gilroy-semibold font-gilroy-semibold relative tracking-[-0.03em] text-sm leading-[120.41%]">
+                      <div className="hover:opacity-70 transition ease-in-out duration-300 w-[110px] rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center box-border text-left text-base text-bg font-gilroy-semibold font-gilroy-semibold relative tracking-[-0.03em] text-sm leading-[120.41%]">
                         <a
                           className="mt-1 twitter-follow-button no-underline text-black"
                           href="https://x.com/intent/follow?screen_name=stakera_io"
@@ -879,7 +1002,7 @@ const Points: FC = () => {
                     </div>
                   </div>
                   <a
-                    className={`w-[110px] rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-left text-base text-bg font-gilroy-semibold no-underline text-black text-sm ${!hasFollowedTwitter ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`hover:opacity-70 transition ease-in-out duration-300 w-[110px] rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-left text-base text-bg font-gilroy-semibold no-underline text-black text-sm ${!hasFollowedTwitter ? "opacity-50 cursor-not-allowed" : ""}`}
                     href={
                       hasFollowedTwitter ? "https://discord.gg/cpJ2GF6Skc" : ""
                     }
@@ -912,7 +1035,7 @@ const Points: FC = () => {
                     />
                     <div className="flex flex-row gap-2 items-end justify-end">
                       <div
-                        className={`w-[110px] rounded-lg border-primary border-[1px] border-solid box-border h-[34px] flex flex-row items-center justify-center py-2 px-4 ${!hasJoinedDiscord ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                        className={`hover:opacity-70 transition ease-in-out duration-300 w-[110px] rounded-lg border-primary border-[1px] border-solid box-border h-[34px] flex flex-row items-center justify-center py-2 px-4 ${!hasJoinedDiscord ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                         onClick={() =>
                           handleCreateOrJoinTeam("create", teamName)
                         }
@@ -922,7 +1045,7 @@ const Points: FC = () => {
                         </div>
                       </div>
                       <div
-                        className={`w-[110px] rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-bg ${!hasJoinedDiscord ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                        className={`hover:opacity-70 transition ease-in-out duration-300 w-[110px] rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-bg ${!hasJoinedDiscord ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                         onClick={() => handleCreateOrJoinTeam("join", teamName)}
                       >
                         <div className="mt-0.5 relative tracking-[-0.03em] leading-[120.41%] text-sm">
@@ -1028,7 +1151,7 @@ const Points: FC = () => {
                             className="self-stretch flex flex-col items-center justify-center p-2"
                           >
                             <div
-                              className={`rounded-lg border-primary border-[1px] border-solid box-border h-[34px] flex flex-row items-center justify-center py-2 px-4 ${!hasJoinedDiscord ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                              className={`hover:opacity-70 transition ease-in-out duration-300 rounded-lg border-primary border-[1px] border-solid box-border h-[34px] flex flex-row items-center justify-center py-2 px-4 ${!hasJoinedDiscord ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                               onClick={() =>
                                 handleCreateOrJoinTeam("join", team.name)
                               }

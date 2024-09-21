@@ -98,7 +98,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
 
   return (
     <div className="Gilroy-Semibold flex justify-center bg-layer-1">
-      <div className="h-[92px] flex flex-row justify-between items-center w-[95%] max-w-[1600px]">
+      <div className="h-[92px] flex flex-row justify-between items-center w-[95%] max-w-[1550px]">
         <a href="/lottery" className="no-underline">
           <div className="flex flex-row items-center justify-start gap-[7.4px]">
             <img
@@ -112,7 +112,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
           </div>
         </a>
         <div className="flex flex-row justify-center items-center gap-2 md:gap-10">
-          <Link href="/points" className="no-underline">
+          {/* <Link href="/points" className="no-underline">
             <div
               className={`text-semibold tracking-[-0.03em] leading-[100%] transition-all duration-300 ease-in-out ${
                 currentPath === "/points"
@@ -122,7 +122,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
             >
               Points
             </div>
-          </Link>
+          </Link> */}
           <WalletMultiButtonDynamic
             className="bg-primary box-border flex flex-row items-center justify-center btn-ghost"
             style={{

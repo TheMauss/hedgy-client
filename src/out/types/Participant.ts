@@ -8,6 +8,10 @@ export interface ParticipantFields {
   deposit: BN;
   lstDeposits: BN;
   pendingDeposit: BN;
+  avgWeeklyDeposit: number;
+  startOfWeeklyDeposit: number;
+  avgMonthlyDeposit: number;
+  startOfMonthlyDeposit: number;
 }
 
 export interface ParticipantJSON {
@@ -15,6 +19,10 @@ export interface ParticipantJSON {
   deposit: string;
   lstDeposits: string;
   pendingDeposit: string;
+  avgWeeklyDeposit: number;
+  startOfWeeklyDeposit: number;
+  avgMonthlyDeposit: number;
+  startOfMonthlyDeposit: number;
 }
 
 export class Participant {
@@ -22,12 +30,20 @@ export class Participant {
   readonly deposit: BN;
   readonly lstDeposits: BN;
   readonly pendingDeposit: BN;
+  readonly avgWeeklyDeposit: number;
+  readonly startOfWeeklyDeposit: number;
+  readonly avgMonthlyDeposit: number;
+  readonly startOfMonthlyDeposit: number;
 
   constructor(fields: ParticipantFields) {
     this.pubkey = fields.pubkey;
     this.deposit = fields.deposit;
     this.lstDeposits = fields.lstDeposits;
     this.pendingDeposit = fields.pendingDeposit;
+    this.avgWeeklyDeposit = fields.avgWeeklyDeposit;
+    this.startOfWeeklyDeposit = fields.startOfWeeklyDeposit;
+    this.avgMonthlyDeposit = fields.avgMonthlyDeposit;
+    this.startOfMonthlyDeposit = fields.startOfMonthlyDeposit;
   }
 
   static layout(property?: string) {
@@ -37,6 +53,10 @@ export class Participant {
         borsh.u64("deposit"),
         borsh.u64("lstDeposits"),
         borsh.u64("pendingDeposit"),
+        borsh.u16("avgWeeklyDeposit"),
+        borsh.u16("startOfWeeklyDeposit"),
+        borsh.u16("avgMonthlyDeposit"),
+        borsh.u16("startOfMonthlyDeposit"),
       ],
       property
     );
@@ -49,6 +69,10 @@ export class Participant {
       deposit: obj.deposit,
       lstDeposits: obj.lstDeposits,
       pendingDeposit: obj.pendingDeposit,
+      avgWeeklyDeposit: obj.avgWeeklyDeposit,
+      startOfWeeklyDeposit: obj.startOfWeeklyDeposit,
+      avgMonthlyDeposit: obj.avgMonthlyDeposit,
+      startOfMonthlyDeposit: obj.startOfMonthlyDeposit,
     });
   }
 
@@ -58,6 +82,10 @@ export class Participant {
       deposit: fields.deposit,
       lstDeposits: fields.lstDeposits,
       pendingDeposit: fields.pendingDeposit,
+      avgWeeklyDeposit: fields.avgWeeklyDeposit,
+      startOfWeeklyDeposit: fields.startOfWeeklyDeposit,
+      avgMonthlyDeposit: fields.avgMonthlyDeposit,
+      startOfMonthlyDeposit: fields.startOfMonthlyDeposit,
     };
   }
 
@@ -67,6 +95,10 @@ export class Participant {
       deposit: this.deposit.toString(),
       lstDeposits: this.lstDeposits.toString(),
       pendingDeposit: this.pendingDeposit.toString(),
+      avgWeeklyDeposit: this.avgWeeklyDeposit,
+      startOfWeeklyDeposit: this.startOfWeeklyDeposit,
+      avgMonthlyDeposit: this.avgMonthlyDeposit,
+      startOfMonthlyDeposit: this.startOfMonthlyDeposit,
     };
   }
 
@@ -76,6 +108,10 @@ export class Participant {
       deposit: new BN(obj.deposit),
       lstDeposits: new BN(obj.lstDeposits),
       pendingDeposit: new BN(obj.pendingDeposit),
+      avgWeeklyDeposit: obj.avgWeeklyDeposit,
+      startOfWeeklyDeposit: obj.startOfWeeklyDeposit,
+      avgMonthlyDeposit: obj.avgMonthlyDeposit,
+      startOfMonthlyDeposit: obj.startOfMonthlyDeposit,
     });
   }
 

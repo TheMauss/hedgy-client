@@ -8,6 +8,8 @@ import {
   ComputeBudgetProgram,
   LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
+import { Tooltip } from "react-tooltip";
+import "react-tooltip/dist/react-tooltip.css";
 import debounce from "lodash.debounce";
 import { FaCheckCircle } from "react-icons/fa";
 import { ClipLoader } from "react-spinners";
@@ -17,6 +19,8 @@ import { deposit as depositInstruction } from "../out/instructions"; // Update w
 import { withdraw as withdrawInstruction } from "../out/instructions"; // Update with the correct path
 import { withdrawWithRatioLoss as withdrawwithLossInstruction } from "../out/instructions"; // Update with the correct path
 import { withdrawTeamYield as withdrawTeamYield } from "../out/instructions"; // Update with the correct path
+import { incentive as incentiveInstruction } from "../out/instructions/incentive"; // Update with the correct path
+
 import Decimal from "decimal.js";
 import { usePriorityFee } from "../contexts/PriorityFee";
 import { PROGRAM_ID } from "../out/programId";
@@ -66,19 +70,36 @@ const lotteryAccount = new PublicKey(
 const pdaHouseAcc = new PublicKey(
   "FnxstpbQKMYW3Jw7SY5outhEiHGDkg7GUpoCVt9nVuHJ"
 ); // Replace with actual account
+
+// const pdaHouseAcc = new PublicKey(
+//   "5JFM78fdoch814cxzs8TfpyJ9muGPzSNVHY5ZnHTAYDn"
+// ); // Replace with actual account
+
 const whirlpoolProgram = new PublicKey(ORCA_WHIRLPOOL_PROGRAM_ID);
 const tokenProgram = new PublicKey(
   "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
 ); // Replace with actual account
+
 const tokenOwnerAccountA = new PublicKey(
   "5UwRe6CoRZLJYJSd8GcbaXKrFCHbjYeRUdKSRpqRtkMH"
 ); // Replace with actual account
+
+// const tokenOwnerAccountA = new PublicKey(
+//   "7D62nDAMoaxgDRzJxVvqiyTQ4WhArmxB7gF4x7pqavv7"
+// ); // Replace with actual account
+
 const tokenVaultA = new PublicKey(
   "9sxSBQ3bS35VgV736MaSJRX11MfZHXxTdU4Pc1JfA5ML"
 ); // Replace with actual account
+
 const tokenOwnerAccountB = new PublicKey(
   "ESXQ1jcH2CzchJR3oqYfsxJU9evGM14Fg5gaJPFXSvoX"
 ); // Replace with actual account
+
+// const tokenOwnerAccountB = new PublicKey(
+//   "D1qDMbr3nL68eJNLd5gCyeZtTrN526priCerN6XNjVna"
+// ); // Replace with actual account
+
 const tokenVaultB = new PublicKey(
   "FZKgBhFkwNwsJLx3GXHHW8XPi8NMiJX791wweHBKaPcP"
 ); // Replace with actual account
@@ -91,6 +112,8 @@ const oraclePDA = PDAUtil.getOracle(
 );
 
 const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT5;
+const APIKEY = process.env.NEXT_PUBLIC_APIKEY;
+const APIKEYTEAM = process.env.NEXT_PUBLIC_APIKEYTEAM;
 
 const fetchAPY = async () => {
   try {
@@ -133,6 +156,9 @@ const calculateValue = (value, multiplier) => {
 async function checkLotteryAccount(
   connection: Connection
 ): Promise<LotteryAccountJSON> {
+  // const lotteryAcc = new PublicKey(
+  //   "9aFmbWZuMbCQzMyNqsTB4umen9mpnqL6Z6a4ypis3XzW"
+  // ); // Replace with actual account
   const lotteryAcc = new PublicKey(
     "9aFmbWZuMbCQzMyNqsTB4umen9mpnqL6Z6a4ypis3XzW"
   ); // Replace with actual account
@@ -161,6 +187,15 @@ async function checkLotteryAccount(
       bigLstIncentive: "0",
       bigLstLotteryYield: "0",
       teamLstYield: "0",
+      bigCommitTime: "0",
+      smallCommitTime: "0",
+      isBigCommitted: false,
+      isSmallComitted: false,
+      weeklyHour: 0,
+      monthlyHour: 0,
+      maxWeeklyHour: 0,
+      maxMonthlyHour: 0,
+      hourlyTimestamp: "0",
     };
   }
 
@@ -189,7 +224,7 @@ const Lottery: FC = () => {
     useState<LotteryAccountJSON | null>(null);
   const [participantData, setParticipantData] =
     useState<ParticipantJSON | null>(null);
-
+  const [participantDataMongo, setParticipantDataMongo] = useState(null);
   const [whirlpool, setWhirlpool] = useState<any>(null);
   const [aToB, setAToB] = useState(true);
   const wallet = useWallet();
@@ -227,6 +262,7 @@ const Lottery: FC = () => {
 
   // New toggle state, starting with true by default
   const [depegProtectionState, setDepegProtectionState] = useState(true);
+  const [referralLink, setReferralLink] = useState("");
 
   const multiplier = 0.9;
   const result =
@@ -287,6 +323,7 @@ const Lottery: FC = () => {
       const solIncv = Number(lotteryAccountData.solIncentive);
 
       console.log("orca price", infsol);
+
       console.log("lst/total", totalDeposits / lstDeposits);
 
       // Calculate the difference and the INF to SOL value
@@ -486,6 +523,55 @@ const Lottery: FC = () => {
       getUserUSDCBalance(publicKey, connection);
     }
   }, [publicKey, connection]);
+
+  const checkParticipant = async () => {
+    if (!publicKey) return;
+
+    try {
+      const response = await axios.post(
+        "http://localhost:4000/api/check-participant",
+        {
+          publicKey: publicKey.toBase58(),
+        },
+        {
+          headers: {
+            "x-api-key": APIKEYTEAM, // Add the API key in the request headers
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setParticipantDataMongo(response.data.participant);
+        console.log(response.data.participant);
+      } else {
+        console.log(response);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  useEffect(() => {
+    checkParticipant();
+  }, [publicKey]);
+
+  useEffect(() => {
+    if (participantDataMongo?.referralCode) {
+      // Create the referral link using the referral code
+      const link = `http://localhost:3030/points?ref=${participantDataMongo.referralCode}`;
+      setReferralLink(link);
+    }
+  }, [participantDataMongo]);
+
+  const handleCopyClick = () => {
+    if (referralLink) {
+      navigator.clipboard.writeText(referralLink);
+      notify({
+        type: "success",
+        message: "Referral link copied to clipboard!",
+      });
+    }
+  };
 
   const fetchLotteryAccountData = async () => {
     try {
@@ -1141,7 +1227,7 @@ const Lottery: FC = () => {
     }
 
     const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 250000,
+      units: 300000,
     });
 
     try {
@@ -1257,10 +1343,10 @@ const Lottery: FC = () => {
     }, 600);
 
     if (participantData && currentPrice && whirlpool) {
-      const depositAmount = new BN(
-        participantData.deposit + participantData?.pendingDeposit
-      );
-      const lstDepositAmount = new BN(participantData.lstDeposits);
+      const depositAmount =
+        Number(participantData.deposit) +
+        Number(participantData?.pendingDeposit);
+      const lstDepositAmount = Number(participantData.lstDeposits);
       const { whirlpool, price } = await getWhirlpoolData(whirlpoolAddress);
       const swapRatio = 1 / price.toNumber(); // Example calculation, update as needed
 
@@ -1295,6 +1381,8 @@ const Lottery: FC = () => {
       const amountOut = amountIn.times(PriceN);
       const amountOutQuote = new Decimal(amountOut);
 
+      console.log(`amountIn: ${amountOutQuote.toString()}`);
+
       const quoteOut = await getSwapQuoteOutput(
         whirlpool,
         amountIn,
@@ -1321,8 +1409,10 @@ const Lottery: FC = () => {
       // console.log("depositAmount:", depositAmount);
       // console.log("formattedQuoteOut.estimatedAmountOut:", formattedQuoteOut.estimatedAmountOut);
 
+      console.log("");
       if (
         // swapRatio >= depositRatio &&
+
         lstDepositAmount > formattedQuoteOut.estimatedAmountIn &&
         depositAmount >= formattedQuoteOut.estimatedAmountOut
 
@@ -1352,57 +1442,234 @@ const Lottery: FC = () => {
 
   const isAmountValid = amount && parseFloat(amount) > 0;
 
-  const calculateWinningNewChance = () => {
-    let parsedAmount = parseFloat(amount);
+  const [winningNewChance, setWinningNewChance] = useState("0.00%");
 
-    // Set parsedAmount to 0 if it's NaN or less than or equal to 0
-    if (isNaN(parsedAmount) || parsedAmount <= 0) {
-      parsedAmount = 0;
-    }
+  useEffect(() => {
+    const calculateWinningNewChance = () => {
+      let parsedAmount = parseFloat(amount);
 
-    if (
-      !lotteryAccountData ||
-      Number(lotteryAccountData.totalDeposits) === 0 ||
-      (parsedAmount === 0 &&
-        (!participantData ||
-          Number(participantData?.deposit) +
-            Number(participantData?.pendingDeposit) ===
-            0))
-    ) {
-      return "0.00%";
-    }
+      // Set parsedAmount to 0 if it's NaN or less than or equal to 0
+      if (isNaN(parsedAmount) || parsedAmount <= 0) {
+        parsedAmount = 0;
+      }
 
-    const totalDeposits =
-      Number(lotteryAccountData.totalDeposits) / LAMPORTS_PER_SOL;
-    const participantDeposit =
-      Number(participantData?.deposit) +
-        Number(participantData?.pendingDeposit) || 0;
-    const newTotal =
-      selectedStake === "DEPOSIT"
-        ? totalDeposits + parsedAmount
-        : totalDeposits - parsedAmount;
-    const newPerson =
-      selectedStake === "DEPOSIT"
-        ? participantDeposit / LAMPORTS_PER_SOL + parsedAmount
-        : participantDeposit / LAMPORTS_PER_SOL - parsedAmount;
-    const chance = (newPerson / newTotal) * 100;
-    return `${Math.max(chance, 0).toFixed(2)}%`;
-  };
+      if (
+        !lotteryAccountData ||
+        Number(lotteryAccountData.totalDeposits) === 0 ||
+        (parsedAmount === 0 &&
+          (!participantData ||
+            Number(participantData?.deposit) +
+              Number(participantData?.pendingDeposit) ===
+              0))
+      ) {
+        setWinningNewChance(`0.00%`);
+        return "0.00%";
+      }
 
-  const calculateWinningChance = () => {
-    if (!lotteryAccountData || Number(lotteryAccountData.totalDeposits) === 0) {
-      return "0.00%";
-    }
+      const MAX_CYCLE = lotteryAccountData?.maxWeeklyHour * 10;
+      const current_hor = lotteryAccountData?.weeklyHour;
 
-    const totalDeposits =
-      Number(lotteryAccountData.totalDeposits) / LAMPORTS_PER_SOL;
-    const participantDeposit =
-      Number(participantData?.deposit) +
-        Number(participantData?.pendingDeposit) || 0;
-    const person = participantDeposit / LAMPORTS_PER_SOL;
-    const chance = (person / totalDeposits) * 100;
-    return `${chance.toFixed(2)}%`;
-  };
+      if (
+        current_hor + 1 > lotteryAccountData?.maxWeeklyHour &&
+        selectedStake == "DEPOSIT"
+      ) {
+        setWinningNewChance(`0.00%`);
+        return "0.00%";
+      }
+
+      // Calculate total weighted deposits
+      const totalDeposits = lotteryAccountData.participants.reduce(
+        (total, participant) => {
+          // Ensure deposit and pendingDeposit are valid numbers and default to 0 if they're undefined or null
+          const deposit = Number(participant?.deposit || 0);
+          const pendingDeposit =
+            current_hor === MAX_CYCLE / 10 - 1
+              ? 0
+              : Number(participant?.pendingDeposit || 0); // Exclude pendingDeposit if smallLotteryToBig === 3
+          const totalDeposit = (deposit + pendingDeposit) / LAMPORTS_PER_SOL;
+          const depositCycleStart = Number(participant?.avgWeeklyDeposit || 0);
+
+          const weight = MAX_CYCLE - depositCycleStart;
+
+          const weightedDeposit = totalDeposit * weight;
+
+          // Add weighted deposit to total and return the new total
+          return total + weightedDeposit;
+        },
+        0 // Initial value of total
+      );
+
+      const participantDeposit = Number(participantData?.deposit) || 0;
+      const participantPendingDeposit =
+        current_hor === MAX_CYCLE - 1
+          ? 0
+          : Number(participantData?.pendingDeposit) || 0; // Exclude pendingDeposit if smallLotteryToBig === 3
+      const participantCycleStart =
+        Number(participantData?.avgWeeklyDeposit) || 0;
+      const participantWeight = MAX_CYCLE - participantCycleStart;
+
+      const participantTotalDeposit =
+        (participantDeposit + participantPendingDeposit) / LAMPORTS_PER_SOL;
+      const participantWeightedDeposit =
+        participantTotalDeposit * participantWeight;
+
+      const actualPercentage =
+        (participantWeightedDeposit / totalDeposits) * 100;
+
+      const newTotal = Math.max(
+        selectedStake === "DEPOSIT"
+          ? totalDeposits + parsedAmount * (MAX_CYCLE - (current_hor + 1) * 10)
+          : totalDeposits - parsedAmount * (MAX_CYCLE - (current_hor + 1) * 10),
+        0 // Ensure newTotal is not negative
+      );
+
+      const newPerson = Math.max(
+        selectedStake === "DEPOSIT"
+          ? participantWeightedDeposit +
+              parsedAmount * (MAX_CYCLE - (current_hor + 1) * 10)
+          : participantWeightedDeposit -
+              parsedAmount * (MAX_CYCLE - (current_hor + 1) * 10),
+        0 // Ensure newPerson is not negative
+      );
+      const chance =
+        newTotal === 0
+          ? 0
+          : selectedStake === "DEPOSIT"
+            ? (newPerson / newTotal) * 100 - actualPercentage
+            : -(actualPercentage - (newPerson / newTotal) * 100);
+      setWinningNewChance(`${chance.toFixed(2)}%`);
+    };
+    // Call the calculation function
+    calculateWinningNewChance();
+
+    // Recalculate the winning chance when lotteryAccountData or participantData changes
+  }, [lotteryAccountData, participantData, amount, selectedStake]);
+
+  const [winningChance, setWinningChance] = useState("0.00%");
+
+  useEffect(() => {
+    const calculateWinningChance = () => {
+      if (
+        !lotteryAccountData ||
+        Number(lotteryAccountData.totalDeposits) === 0
+      ) {
+        return "0.00%";
+      }
+
+      // Constants
+      const MAX_CYCLE = lotteryAccountData?.maxWeeklyHour * 10;
+      const current_hor = lotteryAccountData?.weeklyHour;
+
+      // Calculate total weighted deposits
+      const totalWeightedDeposits = lotteryAccountData.participants.reduce(
+        (total, participant) => {
+          // Ensure deposit and pendingDeposit are valid numbers and default to 0 if they're undefined or null
+          const deposit = Number(participant?.deposit || 0);
+          const pendingDeposit =
+            current_hor === MAX_CYCLE / 10 - 1
+              ? 0
+              : Number(participant?.pendingDeposit || 0); // Exclude pendingDeposit if smallLotteryToBig === 3
+          const totalDeposit = (deposit + pendingDeposit) / LAMPORTS_PER_SOL;
+          const depositCycleStart = Number(participant?.avgWeeklyDeposit || 0);
+
+          const weight = MAX_CYCLE - depositCycleStart;
+
+          const weightedDeposit = totalDeposit * weight;
+
+          // Add weighted deposit to total and return the new total
+          return total + weightedDeposit;
+        },
+        0 // Initial value of total
+      );
+
+      // Calculate participant's deposit and weight
+      const participantDeposit = Number(participantData?.deposit) || 0;
+      const participantPendingDeposit =
+        current_hor === MAX_CYCLE - 1
+          ? 0
+          : Number(participantData?.pendingDeposit) || 0; // Exclude pendingDeposit if smallLotteryToBig === 3
+      const participantCycleStart =
+        Number(participantData?.avgWeeklyDeposit) || 0;
+      const participantWeight = MAX_CYCLE - participantCycleStart;
+
+      const participantTotalDeposit =
+        (participantDeposit + participantPendingDeposit) / LAMPORTS_PER_SOL;
+      const participantWeightedDeposit =
+        participantTotalDeposit * participantWeight;
+
+      // Calculate the chance
+      const chance = (participantWeightedDeposit / totalWeightedDeposits) * 100;
+
+      setWinningChance(`${chance.toFixed(2)}%`);
+    };
+    // Call the calculation function
+    calculateWinningChance();
+
+    // Recalculate the winning chance when lotteryAccountData or participantData changes
+  }, [lotteryAccountData, participantData]);
+
+  const [winningChanceBig, setWinningChanceBig] = useState("0.00%");
+
+  useEffect(() => {
+    const calculateWinningChanceBig = () => {
+      if (
+        !lotteryAccountData ||
+        Number(lotteryAccountData.totalDeposits) === 0
+      ) {
+        return "0.00%";
+      }
+
+      // Constants
+      const max_monthly_hours = lotteryAccountData?.maxMonthlyHour * 10; // Assuming 4000 is the maximum value for cycle calculation.
+      const current_hor = lotteryAccountData?.monthlyHour; // Assuming 4000 is the maximum value for cycle calculation.
+
+      // Calculate total weighted deposits
+      const totalWeightedDeposits = lotteryAccountData.participants.reduce(
+        (total, participant) => {
+          // Ensure deposit and pendingDeposit are valid numbers and default to 0 if they're undefined or null
+          const deposit = Number(participant?.deposit || 0);
+          const pendingDeposit =
+            current_hor === max_monthly_hours / 10 - 1
+              ? 0
+              : Number(participant?.pendingDeposit || 0); // Exclude pendingDeposit if smallLotteryToBig === 3
+          const totalDeposit = (deposit + pendingDeposit) / LAMPORTS_PER_SOL;
+          const depositCycleStart = Number(participant?.avgMonthlyDeposit || 0);
+
+          const weight = max_monthly_hours - depositCycleStart;
+
+          const weightedDeposit = totalDeposit * weight;
+
+          // Add weighted deposit to total and return the new total
+          return total + weightedDeposit;
+        },
+        0 // Initial value of total
+      );
+
+      // Calculate participant's deposit and weight
+      const participantDeposit = Number(participantData?.deposit) || 0;
+      const participantPendingDeposit =
+        current_hor === max_monthly_hours - 1
+          ? 0
+          : Number(participantData?.pendingDeposit) || 0; // Exclude pendingDeposit if smallLotteryToBig === 3
+      const participantCycleStart =
+        Number(participantData?.avgMonthlyDeposit) || 0;
+      const participantWeight = max_monthly_hours - participantCycleStart;
+
+      const participantTotalDeposit =
+        (participantDeposit + participantPendingDeposit) / LAMPORTS_PER_SOL;
+      const participantWeightedDeposit =
+        participantTotalDeposit * participantWeight;
+
+      // Calculate the chance
+      const chance = (participantWeightedDeposit / totalWeightedDeposits) * 100;
+      setWinningChanceBig(`${chance.toFixed(2)}%`);
+    };
+
+    // Call the calculation function
+    calculateWinningChanceBig();
+
+    // Recalculate the winning chance when lotteryAccountData or participantData changes
+  }, [lotteryAccountData, participantData]);
 
   const toggleAdditionalDiv1 = () => {
     setShowAdditionalDiv1(!showAdditionalDiv1);
@@ -1475,7 +1742,12 @@ const Lottery: FC = () => {
     const fetchLotteryResults = async () => {
       try {
         const response = await axios.get(
-          "https://stakera-socket-1-969a3dd5a532.herokuapp.com/lottery-results"
+          "http://localhost:3001/lottery-results",
+          {
+            headers: {
+              "x-api-key": APIKEY, // Add the API key in the request headers
+            },
+          }
         );
         const { smallResults, bigResults } = response.data;
 
@@ -1499,7 +1771,12 @@ const Lottery: FC = () => {
         }
 
         const response = await axios.get(
-          `https://stakera-socket-1-969a3dd5a532.herokuapp.com/user-winnings/${publicKey}`
+          `http://localhost:3001/user-winnings/${publicKey}`,
+          {
+            headers: {
+              "x-api-key": APIKEY, // Add the API key in the request headers
+            },
+          }
         );
         const userWinn = response.data;
 
@@ -1571,14 +1848,14 @@ const Lottery: FC = () => {
   // }
 
   return (
-    <div className=" overflow-hidden">
+    <div className="overflow-hidden">
       <Head>
         <title>Stakera | Lottery</title>
         <meta name="description" content="Stakera" />
       </Head>
 
       <div className="flex justify-center items-top min-h-[calc(100vh-172px)] z-100 bg-layer-1 ">
-        <div className="w-[95%] max-w-[1600px]">
+        <div className="w-[95%] max-w-[1550px]">
           <div className="w-full  bg-layer-1 overflow-hidden text-left text-base text-neutral-06 font-gilroy-bold">
             <div
               className="lg:hidden flex rounded-2xl w-full flex lg:flex-row flex-col lg:gap-0 md:gap-4 items-center justify-between p-4 box-border text-13xl  font-gilroy-semibold"
@@ -1610,19 +1887,17 @@ const Lottery: FC = () => {
                   <div className="self-stretch flex md:flex-row flex-col items-start justify-center gap-[32px] ">
                     <div className="w-1/3 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
                       <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
-                        Your Stake
+                        TVL
                       </div>
                       <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
                         <span>
                           {isNaN(
-                            (Number(participantData?.deposit) +
-                              Number(participantData?.pendingDeposit)) /
+                            Number(lotteryAccountData?.totalDeposits) /
                               LAMPORTS_PER_SOL
                           )
                             ? 0
                             : (
-                                (Number(participantData?.deposit) +
-                                  Number(participantData?.pendingDeposit)) /
+                                Number(lotteryAccountData?.totalDeposits) /
                                 LAMPORTS_PER_SOL
                               ).toFixed(2)}{" "}
                         </span>
@@ -1632,33 +1907,41 @@ const Lottery: FC = () => {
                     <div className="w-full md:w-2/3 flex flex-row">
                       <div className="md:w-full w-1/2 flex-1 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
                         <div className=" tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
-                          Your Small Winnings
+                          Your Stake
                         </div>
                         <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
                           <span>
-                            {userWinnings?.smallWinnings
-                              ? isNaN(userWinnings.smallWinnings)
-                                ? 0
-                                : (
-                                    userWinnings.smallWinnings /
-                                    LAMPORTS_PER_SOL
-                                  ).toFixed(3)
-                              : 0}
+                            {isNaN(
+                              (Number(participantData?.deposit) +
+                                Number(participantData?.pendingDeposit)) /
+                                LAMPORTS_PER_SOL
+                            )
+                              ? 0
+                              : (
+                                  (Number(participantData?.deposit) +
+                                    Number(participantData?.pendingDeposit)) /
+                                  LAMPORTS_PER_SOL
+                                ).toFixed(2)}{" "}
                           </span>{" "}
                           <span className="text-lg">SOL</span>
                         </div>
                       </div>
                       <div className="md:w-full w-1/2 flex-1 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
                         <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
-                          Your Big Winnings
+                          Your Winnings
                         </div>
                         <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
                           <span>
-                            {userWinnings?.bigWinnings
-                              ? isNaN(userWinnings.bigWinnings)
+                            {userWinnings?.smallWinnings
+                              ? isNaN(
+                                  userWinnings.smallWinnings +
+                                    userWinnings.bigWinnings
+                                )
                                 ? 0
                                 : (
-                                    userWinnings.bigWinnings / LAMPORTS_PER_SOL
+                                    (userWinnings.smallWinnings +
+                                      userWinnings.bigWinnings) /
+                                    LAMPORTS_PER_SOL
                                   ).toFixed(3)
                               : 0}
                           </span>{" "}
@@ -1699,6 +1982,25 @@ const Lottery: FC = () => {
                 <div className="self-stretch flex flex-row items-center justify-center gap-[32px] ">
                   <div className="flex-1 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
                     <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
+                      TVL
+                    </div>
+                    <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
+                      <span>
+                        {isNaN(
+                          Number(lotteryAccountData?.totalDeposits) /
+                            LAMPORTS_PER_SOL
+                        )
+                          ? 0
+                          : (
+                              Number(lotteryAccountData?.totalDeposits) /
+                              LAMPORTS_PER_SOL
+                            ).toFixed(2)}{" "}
+                      </span>
+                      <span className="text-lg">SOL</span>
+                    </div>
+                  </div>
+                  <div className="flex-1 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
+                    <div className=" tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
                       Your Stake
                     </div>
                     <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
@@ -1715,37 +2017,25 @@ const Lottery: FC = () => {
                               LAMPORTS_PER_SOL
                             ).toFixed(2)}{" "}
                       </span>
-                      <span className="text-lg">SOL</span>
-                    </div>
-                  </div>
-                  <div className="flex-1 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
-                    <div className=" tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
-                      Your Small Winnings
-                    </div>
-                    <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
-                      <span>
-                        {userWinnings?.smallWinnings
-                          ? isNaN(userWinnings.smallWinnings)
-                            ? 0
-                            : (
-                                userWinnings.smallWinnings / LAMPORTS_PER_SOL
-                              ).toFixed(3)
-                          : 0}
-                      </span>
                       <span className="text-lg"> SOL</span>
                     </div>
                   </div>
                   <div className="flex-1 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
                     <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
-                      Your Big Winnings
+                      Your Winnings
                     </div>
                     <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
                       <span>
-                        {userWinnings?.bigWinnings
-                          ? isNaN(userWinnings.bigWinnings)
+                        {userWinnings?.smallWinnings
+                          ? isNaN(
+                              userWinnings.smallWinnings +
+                                userWinnings.bigWinnings
+                            )
                             ? 0
                             : (
-                                userWinnings.bigWinnings / LAMPORTS_PER_SOL
+                                (userWinnings.smallWinnings +
+                                  userWinnings.bigWinnings) /
+                                LAMPORTS_PER_SOL
                               ).toFixed(3)
                           : 0}
                       </span>{" "}
@@ -1862,7 +2152,10 @@ const Lottery: FC = () => {
                           </div>
                         ) : (
                           <>
-                            {isAmountValid && selectedStake === "DEPOSIT" ? (
+                            {isAmountValid &&
+                            selectedStake === "DEPOSIT" &&
+                            lotteryAccountData?.weeklyHour <
+                              lotteryAccountData?.maxWeeklyHour ? (
                               <button
                                 className="button-wrapper hover:opacity-70 transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
                                 onClick={handleDeposit}
@@ -1887,7 +2180,10 @@ const Lottery: FC = () => {
                               selectedStake === "DEPOSIT" && (
                                 <div className="transition ease-in-out duration-300 self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-[0.5] text-lg text-bg font-gilroy-semibold">
                                   <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
-                                    Deposit
+                                    {lotteryAccountData?.weeklyHour >=
+                                    lotteryAccountData?.maxWeeklyHour
+                                      ? "Wait until next Draw"
+                                      : "Deposit"}
                                   </div>
                                 </div>
                               )
@@ -2021,12 +2317,21 @@ const Lottery: FC = () => {
                   </div>
 
                   <div className="self-stretch h-6 flex flex-row items-center justify-between">
-                    <div className="tracking-[-0.03em] leading-[120.41%]">
-                      Winning Chance
+                    <div>
+                      <span id="winningChance" className="cursor-pointer">
+                        Winning Chance Δ
+                      </span>
+
+                      <Tooltip
+                        className="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg p-2 text-sm bg-gray-800 text-white rounded-lg shadow-lg"
+                        anchorSelect="#winningChance"
+                        place="top"
+                        content="This represents the change in your winning chance compared to current chance."
+                      />
                     </div>
                     <div className="rounded-981xl flex flex-row items-center justify-start py-0.5 px-0 gap-[4px]">
                       <div className="tracking-[-0.03em] leading-[120.41%] inline-block h-[18px] shrink-0">
-                        {calculateWinningNewChance()}
+                        {winningNewChance}
                       </div>
                       <img
                         className="w-4 h-4"
@@ -2046,24 +2351,50 @@ const Lottery: FC = () => {
                   }}
                 >
                   <div className="text-xl tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold">
-                    Refer to increase your winnings
+                    Refer your friends
                   </div>
                   <span className="text-mini tracking-[-0.03em] leading-[130%] font-gilroy-regular text-gray-300 inline-block">
-                    For each friend you refer you will increase your winnings
+                    For each friend you refer you will increase your Points
+                    rewards
                   </span>
-                  <div className="font-gilroy-semibold flex xl:flex-row flex-col gap-4">
-                    <div className="h-9 [backdrop-filter:blur(4px)] rounded-lg bg-gray-500 w-full flex flex-row items-center justify-between pl-2 box-border gap-[8px]">
-                      <div className="z-[0]">Soon™</div>
-                      <div className="h-full w-9 justify-end items-end rounded-tl-none rounded-tr-lg rounded-br-lg rounded-bl-none bg-gray-400 flex flex-row items-center justify-center z-[1]">
-                        <img
-                          className="w-6 h-6"
-                          alt=""
-                          src="/vuesaxbulkcopy.svg"
-                        />
+                  <div className="w-full font-gilroy-semibold flex md:flex-row flex-col justify-between gap-4">
+                    {participantDataMongo ? (
+                      // If participantDataMongo exists, show referral code with copy button
+                      <div className="h-9 [backdrop-filter:blur(4px)] rounded-lg bg-gray-500 w-full flex flex-row items-center justify-between pl-2 box-border gap-[8px]">
+                        <div className="z-[0]">
+                          {" "}
+                          {participantDataMongo?.referralCode}
+                        </div>
+                        <div
+                          onClick={handleCopyClick}
+                          className="cursor-pointer h-full w-9 justify-end items-end rounded-tl-none rounded-tr-lg rounded-br-lg rounded-bl-none bg-gray-400 flex flex-row items-center justify-center z-[1]"
+                        >
+                          <img
+                            className="w-6 h-6"
+                            alt=""
+                            src="/vuesaxbulkcopy.svg"
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex flex-row items-center justify-start gap-[32px]">
-                      <div className="flex flex-row items-center justify-start gap-[9px]">
+                    ) : (
+                      // If participantDataMongo does not exist, show 'Create Ref' message
+                      <div className="w-full h-9  [backdrop-filter:blur(4px)] rounded-lg bg-gray-500 w-full flex flex-row items-center justify-center pl-2 box-border gap-[8px]">
+                        <div className="z-[0] w-full"> Soon™ </div>
+                      </div>
+
+                      // <a
+                      //   href="/points"
+                      //   target="_blank"
+                      //   rel="noreferrer"
+                      //   className="text-center no-underline text-white w-full"
+                      // >
+                      //   <div className="w-full h-9  [backdrop-filter:blur(4px)] rounded-lg bg-gray-500 w-full flex flex-row items-center justify-center pl-2 box-border gap-[8px]">
+                      //     <div className="z-[0] w-full"> Create Ref </div>
+                      //   </div>{" "}
+                      // </a>
+                    )}
+
+                    {/* <div className="flex flex-row items-center justify-start gap-[9px]">
                         <img
                           className="w-6 h-6 opacity-[0.5]"
                           alt=""
@@ -2072,16 +2403,15 @@ const Lottery: FC = () => {
                         <div className="tracking-[-0.03em] leading-[130%]">
                           0.0 SOL
                         </div>
-                      </div>
-                      <div className="flex flex-row items-center justify-start gap-[6px]">
-                        <img
-                          className="w-6 h-6 opacity-[0.5]"
-                          alt=""
-                          src="/vuesaxboldprofile2user.svg"
-                        />
-                        <div className="tracking-[-0.03em] leading-[130%]">
-                          0
-                        </div>
+                      </div> */}
+                    <div className="flex flex-row items-center justify-start">
+                      <img
+                        className="w-6 h-6 opacity-[0.5]"
+                        alt=""
+                        src="/vuesaxboldprofile2user.svg"
+                      />
+                      <div className="tracking-[-0.03em] leading-[130%]">
+                        {participantDataMongo?.referred_user}
                       </div>
                     </div>
                   </div>
@@ -2128,9 +2458,11 @@ const Lottery: FC = () => {
                       <div className="tracking-[-0.03em] leading-[120.41%]">
                         Small Lottery
                       </div>
-                      <div className="tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold">
+                      <div className=" tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold">
                         {remainingTimeSmallLottery !== null
-                          ? formatRemainingTime(remainingTimeSmallLottery)
+                          ? remainingTimeSmallLottery < 0
+                            ? "Drawing any moment..."
+                            : formatRemainingTime(remainingTimeSmallLottery)
                           : "Loading..."}
                       </div>
                     </div>
@@ -2147,7 +2479,34 @@ const Lottery: FC = () => {
                         <span className="text-13xl">SOL</span>
                       </div>
                       <div className="self-stretch text-mid tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold">
-                        {calculateWinningChance()} Chance
+                        <span id="currentInfo" className="cursor-pointer">
+                          {winningChance} Chance
+                        </span>
+
+                        {/* Tooltip must be after the element */}
+                        <Tooltip
+                          anchorSelect="#currentInfo"
+                          place="bottom"
+                          content="This shows your current winning chance."
+                          className="font-gilroy-regular max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg p-4 text-sm bg-gray-800 text-white rounded-lg shadow-lg"
+                        />
+                        {/* {
+        !isNaN(Number(calculateWinningChanceNextWeek())) && Number(calculateWinningChanceNextWeek()) > 0
+          ? (
+            <>
+              <span id="pendingInfo" className="cursor-pointer">
+              {" + "} {calculateWinningChanceNextWeek()}% Pending
+              </span>
+              <Tooltip
+                anchorSelect="#pendingInfo"
+                place="bottom"
+                content="This shows how much your winning chance will increase next week."
+                className="font-gilroy-regular max-w-xs p-2 text-sm bg-gray-800 text-white rounded-lg shadow-lg"
+              />
+            </>
+          )
+          : ''
+      } */}
                       </div>
                     </div>
                   </div>
@@ -2237,7 +2596,9 @@ const Lottery: FC = () => {
                       </div>
                       <div className="tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold">
                         {remainingTimeBigLottery !== null
-                          ? formatRemainingTime(remainingTimeBigLottery)
+                          ? remainingTimeBigLottery < 0
+                            ? "Drawing any moment..."
+                            : formatRemainingTime(remainingTimeBigLottery)
                           : "Loading..."}
                       </div>
                     </div>
@@ -2253,8 +2614,21 @@ const Lottery: FC = () => {
                         {/* Small Lottery APY */}{" "}
                         <span className="text-13xl">SOL</span>
                       </div>
+
                       <div className="self-stretch text-mid tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold">
-                        {calculateWinningChance()} Chance
+                        <span
+                          id="winningChanceBigInfo"
+                          className="cursor-pointer"
+                        >
+                          {winningChanceBig} Chance
+                        </span>
+                        {/* Tooltip for Winning Chance with additional context */}
+                        <Tooltip
+                          anchorSelect="#winningChanceBigInfo"
+                          place="bottom"
+                          content="The longer you hold, the bigger your chances of winning. Holding since the beginning of lottery gives you a bigger advantage than depositing at the end. You must have deposited for at least a week to be eligible."
+                          className="font-gilroy-regular max-w-xs p-2 text-sm bg-gray-800 text-white rounded-lg shadow-lg"
+                        />
                       </div>
                     </div>
                   </div>
@@ -2315,42 +2689,66 @@ const Lottery: FC = () => {
                 }}
               >
                 <div className="text-xl tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold">
-                  Refer to increase your winnings
+                  Refer your friends
                 </div>
                 <span className="text-mini tracking-[-0.03em] leading-[130%] font-gilroy-regular text-gray-300 inline-block">
-                  For each friend you refer you will increase your winnings
+                  For each friend you refer you will increase your Points
+                  rewards
                 </span>
-                <div className="font-gilroy-semibold flex xk:flex-row flex-col gap-4">
-                  <div className=" [backdrop-filter:blur(4px)] rounded-lg bg-gray-500 w-[213px] flex flex-row items-center justify-start p-2 box-border gap-[8px]">
-                    <div className="tracking-[-0.03em] leading-[130%] z-[0]">
-                      Soon™
-                    </div>
-                    <div className="absolute w-9 !m-[0] top-[0px] right-[0px] rounded-tl-none rounded-tr-lg rounded-br-lg rounded-bl-none bg-gray-400 h-[37px] flex flex-row items-center justify-center z-[1]">
-                      <img
-                        className="w-6 h-6"
-                        alt=""
-                        src="/vuesaxbulkcopy.svg"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex flex-row items-center justify-start gap-[32px]">
-                    <div className="flex flex-row items-center justify-start gap-[9px]">
-                      <img
-                        className="w-6 h-6 opacity-[0.5]"
-                        alt=""
-                        src="/vuesaxbolddollarcircle.svg"
-                      />
-                      <div className="tracking-[-0.03em] leading-[130%]">
-                        0.0 SOL
+                <div className="w-full font-gilroy-semibold flex flex-row justify-between gap-4">
+                  {participantDataMongo ? (
+                    // If participantDataMongo exists, show referral code with copy button
+                    <div className="h-9 [backdrop-filter:blur(4px)] rounded-lg bg-gray-500 w-full flex flex-row items-center justify-between pl-2 box-border gap-[8px]">
+                      <div className="z-[0]">
+                        {" "}
+                        {participantDataMongo?.referralCode}
+                      </div>
+                      <div
+                        onClick={handleCopyClick}
+                        className="cursor-pointer h-full w-9 justify-end items-end rounded-tl-none rounded-tr-lg rounded-br-lg rounded-bl-none bg-gray-400 flex flex-row items-center justify-center z-[1]"
+                      >
+                        <img
+                          className="w-6 h-6"
+                          alt=""
+                          src="/vuesaxbulkcopy.svg"
+                        />
                       </div>
                     </div>
-                    <div className="flex flex-row items-center justify-start gap-[6px]">
-                      <img
-                        className="w-6 h-6 opacity-[0.5]"
-                        alt=""
-                        src="/vuesaxboldprofile2user.svg"
-                      />
-                      <div className="tracking-[-0.03em] leading-[130%]">0</div>
+                  ) : (
+                    // If participantDataMongo does not exist, show 'Create Ref' message
+                    <div className="w-full h-9  [backdrop-filter:blur(4px)] rounded-lg bg-gray-500 w-full flex flex-row items-center justify-center pl-2 box-border gap-[8px]">
+                      <div className="z-[0] w-full"> Soon™ </div>
+                    </div>
+                    // <a
+                    //   href="/points"
+                    //   target="_blank"
+                    //   rel="noreferrer"
+                    //   className="text-center no-underline text-white w-full"
+                    // >
+                    //   <div className="w-full h-9  [backdrop-filter:blur(4px)] rounded-lg bg-gray-500 w-full flex flex-row items-center justify-center pl-2 box-border gap-[8px]">
+                    //     <div className="z-[0] w-full"> Create Ref </div>
+                    //   </div>{" "}
+                    // </a>
+                  )}
+
+                  {/* <div className="flex flex-row items-center justify-start gap-[9px]">
+                        <img
+                          className="w-6 h-6 opacity-[0.5]"
+                          alt=""
+                          src="/vuesaxbolddollarcircle.svg"
+                        />
+                        <div className="tracking-[-0.03em] leading-[130%]">
+                          0.0 SOL
+                        </div>
+                      </div> */}
+                  <div className="flex flex-row items-center justify-start">
+                    <img
+                      className="w-6 h-6 opacity-[0.5]"
+                      alt=""
+                      src="/vuesaxboldprofile2user.svg"
+                    />
+                    <div className="tracking-[-0.03em] leading-[130%]">
+                      {participantDataMongo?.referred_user}
                     </div>
                   </div>
                 </div>

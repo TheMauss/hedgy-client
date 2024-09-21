@@ -117,6 +117,15 @@ export const HomeView: FC = ({}) => {
         bigLstIncentive: "0",
         bigLstLotteryYield: "0",
         teamLstYield: "0",
+        bigCommitTime: "0",
+        smallCommitTime: "0",
+        isBigCommitted: false,
+        isSmallComitted: false,
+        weeklyHour: 0,
+        monthlyHour: 0,
+        maxWeeklyHour: 0,
+        maxMonthlyHour: 0,
+        hourlyTimestamp: "0",
       };
     }
 
