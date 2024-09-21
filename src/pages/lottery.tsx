@@ -1742,7 +1742,7 @@ const Lottery: FC = () => {
     const fetchLotteryResults = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3001/lottery-results",
+          "https://stakera-socket-1-969a3dd5a532.herokuapp.com/lottery-results",
           {
             headers: {
               "x-api-key": APIKEY, // Add the API key in the request headers
@@ -1771,7 +1771,7 @@ const Lottery: FC = () => {
         }
 
         const response = await axios.get(
-          `http://localhost:3001/user-winnings/${publicKey}`,
+          `https://stakera-socket-1-969a3dd5a532.herokuapp.com/user-winnings/${publicKey}`,
           {
             headers: {
               "x-api-key": APIKEY, // Add the API key in the request headers
