@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import axios from "axios";
 import { notify } from "utils/notifications";
 import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import Modal from "react-modal";
 import {
   LotteryAccount,
   LotteryAccountJSON,
@@ -86,6 +87,9 @@ const Points: FC = () => {
   const [referralLink, setReferralLink] = useState("");
   const [referralCode, setReferralCode] = useState("");
 
+  const [showModal, setShowModal] = useState(false);
+  const [modalAction, setModalAction] = useState<"create" | "join">();
+
   const router = useRouter(); // Use useRouter instead of useLocation
 
   useEffect(() => {
@@ -107,6 +111,22 @@ const Points: FC = () => {
     }
   };
 
+  const openModal = (action: "create" | "join", selectedTeamName?: string) => {
+    const teamToJoin = selectedTeamName || teamName; // Use the selected team name or the current teamName state
+
+    if (!teamToJoin) {
+      return notify({ type: "error", message: "Please enter a team name." });
+    }
+
+    setModalAction(action);
+    setTeamName(teamToJoin); // Set the selected team name in the state
+    setShowModal(true); // Open the modal
+  };
+
+  const closeModal = () => {
+    setShowModal(false); // Close modal
+  };
+
   const handleCreateOrJoinTeam = async (
     action: "create" | "join",
     teamName: string
@@ -115,6 +135,7 @@ const Points: FC = () => {
       return notify({ type: "error", message: "Please enter a team name." });
     }
 
+    setShowModal(false); // Close modal
     setLoading(true);
     notify({
       type: "info",
@@ -248,7 +269,7 @@ const Points: FC = () => {
   useEffect(() => {
     if (participantData?.referralCode) {
       // Create the referral link using the referral code
-      const link = `http://localhost:3030/points?ref=${participantData.referralCode}`;
+      const link = `http://stakera.io/points?ref=${participantData.referralCode}`;
       setReferralLink(link);
     }
   }, [participantData]);
@@ -416,6 +437,66 @@ const Points: FC = () => {
 
   // Calculate which thresholds to display, ensuring we only show up to four thresholds ahead
   const displayThresholds = thresholds.slice(adjustedIndex, adjustedIndex + 4);
+
+  const ModalDetails = (
+    <Modal
+      className="flex-col items-center justify-center bg-gray-100 p-3 md:p-6 rounded-2xl"
+      isOpen={showModal}
+      onRequestClose={closeModal}
+      contentLabel="Confirm Team Action"
+      style={{
+        overlay: {
+          zIndex: "100",
+          backgroundColor: "transparent",
+          backdropFilter: "blur(5px)",
+        },
+        content: {
+          backgroundSize: "cover",
+          position: "fixed",
+          width: "320px",
+          height: "160px",
+          top: "35%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        },
+      }}
+    >
+      <div className=" flex flex-col items-center justify-center gap-[2px] text-center text-white font-gilroy-medium">
+        <h2>
+          Are you sure you want to{" "}
+          {modalAction === "create" ? "create" : "join"} team{" "}
+          <span className="text-primary">{teamName}</span>?
+        </h2>
+        <div className="flex flex-row gap-2 items-end justify-end">
+          {" "}
+          <button
+            className={`bg-gray-100 hover:opacity-70 transition ease-in-out duration-300 w-[110px] rounded-lg border-primary border-[1px] border-solid box-border h-[34px] flex flex-row items-center justify-center py-2 px-4 ${
+              !hasJoinedDiscord
+                ? "opacity-50 cursor-not-allowed"
+                : "cursor-pointer"
+            }`}
+            onClick={() => handleCreateOrJoinTeam(modalAction, teamName)} // Wrap the function call
+          >
+            <div className="text-primary font-gilroy-medium mt-0.5 relative tracking-[-0.03em] leading-[120.41%] text-sm">
+              Yes
+            </div>{" "}
+          </button>
+          <button
+            className={`hover:opacity-70 transition ease-in-out duration-300 w-[110px] rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-bg ${
+              !hasJoinedDiscord
+                ? "opacity-50 cursor-not-allowed"
+                : "cursor-pointer"
+            }`}
+            onClick={closeModal}
+          >
+            <div className="font-gilroy-medium mt-0.5 relative tracking-[-0.03em] leading-[120.41%] text-sm">
+              No
+            </div>
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
 
   if (participantData) {
     return (
@@ -929,6 +1010,7 @@ const Points: FC = () => {
 
   return (
     <div className=" overflow-hidden">
+      {ModalDetails}
       <Head>
         <title>Stakera | Points</title>
         <meta name="description" content="Stakera" />
@@ -1035,18 +1117,24 @@ const Points: FC = () => {
                     />
                     <div className="flex flex-row gap-2 items-end justify-end">
                       <div
-                        className={`hover:opacity-70 transition ease-in-out duration-300 w-[110px] rounded-lg border-primary border-[1px] border-solid box-border h-[34px] flex flex-row items-center justify-center py-2 px-4 ${!hasJoinedDiscord ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
-                        onClick={() =>
-                          handleCreateOrJoinTeam("create", teamName)
-                        }
+                        className={`hover:opacity-70 transition ease-in-out duration-300 w-[110px] rounded-lg border-primary border-[1px] border-solid box-border h-[34px] flex flex-row items-center justify-center py-2 px-4 ${
+                          !hasJoinedDiscord
+                            ? "opacity-50 cursor-not-allowed"
+                            : "cursor-pointer"
+                        }`}
+                        onClick={() => openModal("create")} // Open modal for "Create" action
                       >
                         <div className="mt-0.5 relative tracking-[-0.03em] leading-[120.41%] text-sm">
                           Create
                         </div>
                       </div>
                       <div
-                        className={`hover:opacity-70 transition ease-in-out duration-300 w-[110px] rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-bg ${!hasJoinedDiscord ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
-                        onClick={() => handleCreateOrJoinTeam("join", teamName)}
+                        className={`hover:opacity-70 transition ease-in-out duration-300 w-[110px] rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-bg ${
+                          !hasJoinedDiscord
+                            ? "opacity-50 cursor-not-allowed"
+                            : "cursor-pointer"
+                        }`}
+                        onClick={() => openModal("join")} // Open modal for "Join" action
                       >
                         <div className="mt-0.5 relative tracking-[-0.03em] leading-[120.41%] text-sm">
                           Join
@@ -1153,8 +1241,10 @@ const Points: FC = () => {
                             <div
                               className={`hover:opacity-70 transition ease-in-out duration-300 rounded-lg border-primary border-[1px] border-solid box-border h-[34px] flex flex-row items-center justify-center py-2 px-4 ${!hasJoinedDiscord ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                               onClick={() =>
-                                handleCreateOrJoinTeam("join", team.name)
-                              }
+                                hasJoinedDiscord
+                                  ? openModal("join", team.name)
+                                  : null
+                              } // Pass team.name here
                             >
                               <div className="mt-1 relative tracking-[-0.03em] leading-[120.41%]">
                                 Join
