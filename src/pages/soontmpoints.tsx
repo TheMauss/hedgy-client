@@ -255,7 +255,7 @@ const Points: FC = () => {
   useEffect(() => {
     if (participantData?.referralCode) {
       // Create the referral link using the referral code
-      const link = `http://stakera.io/points?ref=${participantData.referralCode}`;
+      const link = `https://stakera.io/points?ref=${participantData.referralCode}`;
       setReferralLink(link);
     }
   }, [participantData]);

@@ -112,7 +112,6 @@ const oraclePDA = PDAUtil.getOracle(
 );
 
 const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT5;
-const APIKEYTEAM = process.env.NEXT_PUBLIC_APIKEYTEAM;
 
 const fetchAPY = async () => {
   try {
@@ -552,7 +551,7 @@ const Lottery: FC = () => {
   useEffect(() => {
     if (participantDataMongo?.referralCode) {
       // Create the referral link using the referral code
-      const link = `http://localhost:3030/points?ref=${participantDataMongo.referralCode}`;
+      const link = `https://stakera.io/points?ref=${participantDataMongo.referralCode}`;
       setReferralLink(link);
     }
   }, [participantDataMongo]);
