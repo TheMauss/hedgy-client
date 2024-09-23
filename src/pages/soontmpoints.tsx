@@ -21,8 +21,6 @@ const WalletMultiButtonDynamic = dynamic(
   { ssr: false }
 );
 
-const APIKEYTEAM = process.env.NEXT_PUBLIC_APIKEYTEAM;
-
 async function checkLotteryAccount(
   connection: Connection
 ): Promise<LotteryAccountJSON> {
@@ -144,17 +142,12 @@ const Points: FC = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/team",
+        "/api/team", // Using internal API route
         {
           publicKey: publicKey.toBase58(),
           teamName,
           action,
           usedReferralCode: referralCode || null, // Adjust this if you're using referral codes
-        },
-        {
-          headers: {
-            "x-api-key": APIKEYTEAM, // Add the API key in the request headers
-          },
         }
       );
 
@@ -167,7 +160,6 @@ const Points: FC = () => {
     } catch (error) {
       console.error("Error:", error);
 
-      // Check if the error is a 400 error and handle it accordingly
       if (error.response && error.response.status === 400) {
         notify({
           type: "error",
@@ -221,47 +213,41 @@ const Points: FC = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/check-participant",
+        "/api/check-participant", // Use a relative URL for the API
         {
           publicKey: publicKey.toBase58(),
-        },
-        {
-          headers: {
-            "x-api-key": APIKEYTEAM, // Add the API key in the request headers
-          },
         }
       );
 
       if (response.status === 200) {
         setParticipantData(response.data.participant);
-        console.log(response.data.participant);
         setTeamData(response.data.team);
+      } else {
+        console.error("Failed to fetch participant:", response.data.message);
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error fetching participant data:", error);
     }
   };
 
   useEffect(() => {
-    checkParticipant();
+    if (publicKey) {
+      checkParticipant();
+    }
   }, [publicKey]);
 
   const fetchTopTeams = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/api/top-teams", {
-        headers: {
-          "x-api-key": APIKEYTEAM, // Add the API key in the request headers
-        },
-      });
+      const response = await axios.get("/api/top-teams");
       if (response.status === 200) {
         setTopTeams(response.data.topTeams);
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error fetching top teams:", error);
     }
   };
 
-  // You can call this function in a useEffect or whenever needed
+  // Call fetchTopTeams in useEffect
   useEffect(() => {
     fetchTopTeams();
   }, []);
@@ -512,55 +498,71 @@ const Points: FC = () => {
               }}
               className="rounded-2xl w-full lg:w-[35%] flex flex-col items-start justify-start p-4 sm:p-6 box-border gap-8 bg-cover bg-no-repeat bg-[top] text-5xl font-gilroy-semibold"
             >
-              <div className="self-stretch flex-1 [backdrop-filter:blur(20px)] rounded-2xl bg-darkslategray-200 flex flex-col items-start justify-start p-5 sm:p-6 gap-6">
-                <div className="w-[166px] flex-1 flex flex-col items-start justify-start">
-                  <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%]">
-                    Your profile
+              <div className="self-stretch flex-1 [backdrop-filter:blur(20px)] rounded-2xl bg-darkslategray-200 flex flex-row items-center justify-between p-5 sm:p-6 ">
+                <div className="w-1/3 flex flex-col gap-6">
+                  <div className="w-[166px] flex-1 flex flex-col items-start justify-start">
+                    <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%]">
+                      Your profile
+                    </div>
+                  </div>
+                  <div className="self-stretch flex flex-row items-center justify-start gap-[7px] text-base font-gilroy-medium">
+                    <div className="flex-1 flex flex-col items-start justify-start gap-4">
+                      <div className="h-[57px] flex flex-col items-start justify-center gap-[9px]">
+                        <div className="relative tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
+                          Your Total Points
+                        </div>
+                        <div className="flex flex-row items-center justify-start gap-1 text-lg font-gilroy-semibold">
+                          <img
+                            className="w-6 relative h-6"
+                            alt=""
+                            src="/vuesaxlinearcoin.svg"
+                          />
+                          <div className="mt-1 relative tracking-[-0.03em] leading-[120.41%]">
+                            {`${formatNumberToKOrM(
+                              Number(
+                                participantData?.tvlPoints +
+                                  participantData?.refPoints
+                              )
+                            )}`}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="h-[57px] flex flex-col items-start justify-center gap-[9px]">
+                        <div className="relative tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
+                          Your Team
+                        </div>
+                        <div className="flex flex-row items-start justify-start gap-1 text-lg font-gilroy-semibold">
+                          <img
+                            className="w-6 relative h-6"
+                            alt=""
+                            src="/vuesaxlinearflag.svg"
+                          />
+                          <div className="mt-0.5 relative tracking-[-0.03em] leading-[120.41%]">
+                            {teamData?.name}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="self-stretch flex flex-row items-center justify-start gap-[7px] text-base font-gilroy-medium">
-                  <div className="flex-1 flex flex-col items-start justify-start gap-4">
-                    <div className="h-[57px] flex flex-col items-start justify-center gap-[9px]">
-                      <div className="relative tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
-                        Your Total Points
-                      </div>
-                      <div className="flex flex-row items-center justify-start gap-1 text-lg font-gilroy-semibold">
-                        <img
-                          className="w-6 relative h-6"
-                          alt=""
-                          src="/vuesaxlinearcoin.svg"
-                        />
-                        <div className="mt-1 relative tracking-[-0.03em] leading-[120.41%]">
-                          {`${formatNumberToKOrM(
-                            Number(
-                              participantData?.tvlPoints +
-                                participantData?.refPoints
-                            )
-                          )}`}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="h-[57px] flex flex-col items-start justify-center gap-[9px]">
-                      <div className="relative tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
-                        Your Team
-                      </div>
-                      <div className="flex flex-row items-start justify-start gap-1 text-lg font-gilroy-semibold">
-                        <img
-                          className="w-6 relative h-6"
-                          alt=""
-                          src="/vuesaxlinearflag.svg"
-                        />
-                        <div className="mt-0.5 relative tracking-[-0.03em] leading-[120.41%]">
-                          {teamData?.name}
-                        </div>
-                      </div>
-                    </div>
+                <div className="relative flex justify-center items-center">
+                  <div className="relative flex justify-center items-center">
+                    <div
+                      className="absolute rounded-full w-[150px] h-[220px] sm:w-[170px] sm:h-[240px] opacity-0 drop-shadow-[0_0_40px_rgba(111,255,144,0.7)]"
+                      style={{
+                        background:
+                          "radial-gradient(ellipse, rgb(111, 255, 144) 0%, transparent 70%)",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                      }}
+                    ></div>
+                    <img
+                      className="relative z-10 rounded-2xl h-[170px] sm:h-[200px] object-cover drop-shadow-[0_0_40px_rgba(111,255,144,0.6)]"
+                      alt="avatar"
+                      src="/avatar2.png"
+                    />
                   </div>
-                  <img
-                    className="w-[100px] h-[100px] sm:w-[150px] relative rounded-2xl sm:h-[150px] object-cover"
-                    alt=""
-                    src="/siamese-cat@2x.png"
-                  />
                 </div>
               </div>
               <div className="self-stretch [backdrop-filter:blur(20px)] rounded-2xl bg-darkslategray-200 flex flex-col items-start justify-center p-6 gap-6 text-base font-gilroy-medium">

@@ -112,7 +112,6 @@ const oraclePDA = PDAUtil.getOracle(
 );
 
 const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT5;
-const APIKEY = process.env.NEXT_PUBLIC_APIKEY;
 const APIKEYTEAM = process.env.NEXT_PUBLIC_APIKEYTEAM;
 
 const fetchAPY = async () => {
@@ -529,14 +528,9 @@ const Lottery: FC = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/check-participant",
+        "/api/check-participant", // Use a relative URL for the API
         {
           publicKey: publicKey.toBase58(),
-        },
-        {
-          headers: {
-            "x-api-key": APIKEYTEAM, // Add the API key in the request headers
-          },
         }
       );
 
@@ -1678,7 +1672,8 @@ const Lottery: FC = () => {
   const [randomImage, setRandomImage] = useState("");
 
   const getRandomImageName = () => {
-    const images = ["ellipse-1@2x.png", "cat1.png", "cat4.png", "cat6.png"];
+    // const images = ["ellipse-1@2x.png", "cat1.png", "cat4.png", "cat6.png"];
+    const images = ["catavatargod.png"];
     const randomIndex = Math.floor(Math.random() * images.length);
     return images[randomIndex];
   };
@@ -1741,17 +1736,9 @@ const Lottery: FC = () => {
   useEffect(() => {
     const fetchLotteryResults = async () => {
       try {
-        const response = await axios.get(
-          "https://stakera-socket-1-969a3dd5a532.herokuapp.com/lottery-results",
-          {
-            headers: {
-              "x-api-key": APIKEY, // Add the API key in the request headers
-            },
-          }
-        );
+        const response = await axios.get("/api/lottery-results"); // Call your Next.js API route
         const { smallResults, bigResults } = response.data;
 
-        // Set the state with the fetched results
         setSmallLotteryWinners(smallResults);
         setBigLotteryWinners(bigResults);
       } catch (error) {
@@ -1771,19 +1758,11 @@ const Lottery: FC = () => {
         }
 
         const response = await axios.get(
-          `https://stakera-socket-1-969a3dd5a532.herokuapp.com/user-winnings/${publicKey}`,
-          {
-            headers: {
-              "x-api-key": APIKEY, // Add the API key in the request headers
-            },
-          }
-        );
-        const userWinn = response.data;
-
-        // Set the state with the fetched results
-        setUserWinnings(userWinn);
+          `/api/user-winnings?publicKey=${publicKey}`
+        ); // Call your Next.js API route
+        setUserWinnings(response.data);
       } catch (error) {
-        console.error("Error fetching lottery results:", error);
+        console.error("Error fetching user winnings:", error);
       }
     };
 
@@ -1866,10 +1845,10 @@ const Lottery: FC = () => {
                 backgroundPosition: "top",
               }}
             >
-              <div className="w-full flex flex-col md:items-center items-start justify-between py-4 gap-[8px] md:rounded-2xl [backdrop-filter:blur(10px)] rounded-2xl">
+              <div className="w-full flex flex-col md:items-center items-start justify-between py-4 gap-[8px] md:rounded-2xl [backdrop-filter:blur(20px)] rounded-2xl">
                 <div className="px-4 flex flex-row gap-[16px]">
                   <img
-                    className="w-16  rounded-[50%] h-16 object-cover"
+                    className="w-16 rounded-[50%] h-16 object-cover drop-shadow-[0_0_20px_rgba(111,255,144,0.7)]"
                     alt=""
                     src={`/${randomImage}`}
                   />
@@ -1964,7 +1943,7 @@ const Lottery: FC = () => {
             >
               <div className="flex flex-row items-center justify-start py-6 px-2 gap-[16px] md:rounded-2xl  lg:[backdrop-filter:blur(0px)] md:[backdrop-filter:blur(20px)] rounded-2xl">
                 <img
-                  className="w-16  rounded-[50%] h-16 object-cover"
+                  className="w-16 rounded-[50%] h-16 object-cover drop-shadow-[0_0_20px_rgba(111,255,144,0.45)]"
                   alt=""
                   src={`/${randomImage}`}
                 />
