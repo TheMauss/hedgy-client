@@ -1835,7 +1835,7 @@ const Lottery: FC = () => {
         />
         <meta
           name="keywords"
-          content="Stakera, lottery, crypto, win, blockchain, solana"
+          content="Stakera, lottery, lossless, crypto, win, blockchain, solana"
         />{" "}
         {/* SEO keywords */}
         <meta name="author" content="Stakera Team" />
