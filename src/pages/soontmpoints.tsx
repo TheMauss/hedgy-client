@@ -799,7 +799,7 @@ const Points: FC = () => {
                       ) : (
                         <div className="self-stretch flex-1 rounded-2xl bg-bg border-primary border-[1px] border-solid flex flex-col items-center justify-start p-4 md:p-6 gap-[13px]">
                           <div className="self-stretch relative text-5xl tracking-[-0.03em] leading-[120.41%]">
-                            {`${ogBoost.toFixed(2)}x`}
+                            {`${popheadBoost.toFixed(2)}x`}
                           </div>
                           <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%] font-gilroy-medium opacity-[0.5]">
                             Pophead Boost
