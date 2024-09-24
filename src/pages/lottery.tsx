@@ -1880,8 +1880,8 @@ const Lottery: FC = () => {
                   <div className="flex flex-col items-start justify-start gap-[4px] ">
                     <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%]">
                       Welcome{" "}
-                      {participantData
-                        ? "" + (participantDataMongo?.nickName + "," || "")
+                      {participantData && participantDataMongo?.nickName
+                        ? `${participantDataMongo.nickName},`
                         : ""}
                     </div>
 
@@ -1978,8 +1978,8 @@ const Lottery: FC = () => {
                 <div className="w-[226px] flex flex-col items-start justify-start gap-[4px] ">
                   <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%]">
                     Welcome{" "}
-                    {participantData
-                      ? "" + (participantDataMongo?.nickName + "," || "")
+                    {participantData && participantDataMongo?.nickName
+                      ? `${participantDataMongo.nickName},`
                       : ""}
                   </div>
 
