@@ -1024,14 +1024,14 @@ const Points: FC = () => {
             <div className="text-white self-stretch relative tracking-[-0.03em] leading-[120.41%]">
               Join the Stakventure
             </div>
-            <div className="text-white self-stretch relative text-base tracking-[-0.03em] leading-[120.41%] font-gilroy-medium opacity-[0.5]">
+            <div className="hidden lg:flex text-white self-stretch relative text-base tracking-[-0.03em] leading-[120.41%] font-gilroy-medium opacity-[0.5]">
               Complete your tasks to unlock more rewards!
             </div>
           </div>
           <div className="flex flex-col lg:flex-row gap-8">
             <div className="self-stretch w-full lg:w-[50%]">
               <div className="flex flex-col items-start justify-start gap-2.5 text-center text-lg text-primary">
-                <div className="self-stretch rounded-2xl bg-bg flex flex-row items-center justify-between p-6">
+                <div className="hidden lg:flex self-stretch rounded-2xl bg-bg flex flex-row items-center justify-between p-6">
                   <div className="flex flex-row items-center justify-start gap-3">
                     <div className="w-8 rounded-full bg-mediumspringgreen-300 border-primary border-[1px] border-solid box-border h-8 flex flex-col items-center justify-center p-2">
                       <div className="w-[15px] relative tracking-[-0.03em] leading-[100%] flex items-end justify-center h-5 shrink-0">
@@ -1074,7 +1074,7 @@ const Points: FC = () => {
                     )}
                   </>
                 </div>
-                <div className="self-stretch rounded-2xl bg-bg flex flex-row items-center justify-between p-6">
+                <div className="hidden lg:flex self-stretch rounded-2xl bg-bg flex flex-row items-center justify-between p-6">
                   <div className="flex flex-row items-center justify-start gap-3">
                     <div className="w-8 rounded-full bg-mediumspringgreen-300 border-primary border-[1px] border-solid box-border h-8 flex flex-col items-center justify-center p-2">
                       <div className="w-[15px] relative tracking-[-0.03em] leading-[100%] flex items-end justify-center h-5 shrink-0">
@@ -1099,16 +1099,46 @@ const Points: FC = () => {
                 </div>
                 <div className="self-stretch rounded-2xl bg-bg flex flex flex-col md:flex-row md:items-center md:justify-between p-6">
                   <div className="flex flex-row items-center justify-start gap-3">
-                    <div className="w-8 rounded-full bg-mediumspringgreen-300 border-primary border-[1px] border-solid box-border h-8 flex flex-col items-center justify-center p-2">
+                    <div className="hidden lg:flex w-8 rounded-full bg-mediumspringgreen-300 border-primary border-[1px] border-solid box-border h-8 flex flex-col items-center justify-center p-2">
                       <div className="w-[15px] relative tracking-[-0.03em] leading-[100%] flex items-end justify-center h-5 shrink-0">
                         3
                       </div>
                     </div>
-                    <div className="relative tracking-[-0.03em] leading-[120.41%] text-neutral-06 text-left font-gilroy-medium ">
+                    <div className="relative tracking-[-0.03em] leading-[120.41%] text-neutral-06 text-left font-gilroy-medium text-lg">
                       Join or create a Stakera Team
                     </div>
                   </div>
-                  <div className="w-full md:w-[60%] flex flex-col items-end justify-start gap-2 text-left text-base font-gilroy-semibold">
+                  {/* Mobile - Directly allow Create/Join Team */}
+                  <div className="lg:hidden w-full md:w-[60%] flex flex-col items-end justify-start gap-2 text-left text-base font-gilroy-semibold">
+                    <input
+                      type="text"
+                      className="input-capsule__input text-13xl tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold bg-black"
+                      placeholder="Team Name"
+                      value={teamName}
+                      onChange={(e) => setTeamName(e.target.value)}
+                      disabled={!hasJoinedDiscord}
+                    />
+                    <div className="flex flex-row gap-2 items-end justify-end">
+                      <button
+                        className="bg-bg text-primary hover:opacity-70 transition ease-in-out duration-300 w-[110px] rounded-lg border-primary border-[1px] border-solid box-border h-[34px] flex flex-row items-center justify-center py-2 px-4 cursor-pointer"
+                        onClick={() => openModal("create")}
+                      >
+                        <div className="mt-0.5 relative tracking-[-0.03em] leading-[120.41%] text-sm">
+                          Create
+                        </div>
+                      </button>
+                      <button
+                        className="hover:opacity-70 transition ease-in-out duration-300 w-[110px] rounded-lg bg-primary h-[34px] flex flex-row items-center justify-center py-2 px-4 box-border text-bg cursor-pointer"
+                        onClick={() => openModal("join")}
+                      >
+                        <div className="mt-0.5 relative tracking-[-0.03em] leading-[120.41%] text-sm">
+                          Join
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="hidden lg:flex w-full md:w-[60%] flex flex-col items-end justify-start gap-2 text-left font-gilroy-semibold">
                     <input
                       type="text"
                       className="input-capsule__input text-13xl tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold bg-black"
@@ -1145,6 +1175,114 @@ const Points: FC = () => {
                     </div>
                   </div>
                 </div>
+                <div className="self-stretch w-full lg:w-[50%]">
+                  <div className="lg:hidden flex-1 rounded-2xl bg-bg flex flex-col items-start justify-center p-4 md:p-6 box-border gap-4 text-left text-5xl text-neutral-06 font-gilroy-semibold">
+                    <div className="flex flex-row items-center justify-start gap-1">
+                      <img
+                        className="w-10 relative h-10"
+                        alt=""
+                        src="/vuesaxboldflag.svg"
+                      />
+                      <div className="relative tracking-[-0.03em] leading-[120.41%] text-neutral-06 text-left font-gilroy-medium text-lg">
+                        Join the Best Team
+                      </div>
+                    </div>
+                    <div className="self-stretch flex-1 rounded-2xl bg-gray-100 flex flex-col items-center justify-start p-3 md:p-6 text-center text-sm font-gilroy-medium">
+                      <div className="self-stretch flex flex-row items-start justify-start">
+                        <div className="w-[146px] flex flex-col items-center justify-start gap-2">
+                          <div className="self-stretch flex flex-row items-center justify-start py-2 px-0">
+                            <div className="relative tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
+                              Team Name
+                            </div>
+                          </div>
+                          <div className="self-stretch flex flex-col items-start justify-start text-left text-base font-gilroy-semibold">
+                            {topTeams?.map((team, index) => (
+                              <div
+                                key={team._id}
+                                className="self-stretch h-[50px] flex flex-row items-center justify-start gap-2"
+                              >
+                                <img
+                                  className="w-8 relative rounded-[50%] h-8 object-cover"
+                                  alt={`Team ${team.name}`}
+                                  src={catImages[index]}
+                                />
+                                <div className="relative tracking-[-0.03em] leading-[120.41%]">
+                                  {team.name}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="flex-1 flex flex-col items-start justify-start gap-2">
+                          <div className="self-stretch flex flex-row items-center justify-center p-2">
+                            <div className="relative tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
+                              Members
+                            </div>
+                          </div>
+                          <div className="self-stretch flex flex-col items-start justify-start text-base font-gilroy-regular">
+                            {topTeams?.map((team, index) => (
+                              <div
+                                key={index}
+                                className="self-stretch h-[50px] flex flex-row items-center justify-center p-2 box-border"
+                              >
+                                <div className="relative tracking-[-0.03em] leading-[120.41%]">
+                                  {team.memberCount}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="flex-1 flex flex-col items-start justify-start gap-2 text-left">
+                          <div className="self-stretch flex flex-row items-center justify-center p-2">
+                            <div className="relative tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
+                              TVL
+                            </div>
+                          </div>
+                          <div className="self-stretch flex flex-col items-start justify-start text-center text-base font-gilroy-regular">
+                            {topTeams?.map((team, index) => (
+                              <div
+                                key={index}
+                                className="self-stretch h-[50px] flex flex-row items-center justify-center p-2 box-border"
+                              >
+                                <div className="relative tracking-[-0.03em] leading-[120.41%]">
+                                  {`$ ${formatNumberToKOrM(Number(team.tvl))}`}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="w-[103px] flex flex-col items-end justify-center gap-2 text-left">
+                          <div className="self-stretch flex flex-row items-center justify-center p-2">
+                            <div className="relative tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
+                              Action
+                            </div>
+                          </div>
+                          <div className="self-stretch flex flex-col items-end justify-center text-base text-primary font-gilroy-semibold">
+                            {topTeams?.map((team, index) => (
+                              <div
+                                key={index}
+                                className="self-stretch flex flex-col items-center justify-center p-2"
+                              >
+                                <div
+                                  className={`hover:opacity-70 transition ease-in-out duration-300 rounded-lg border-primary border-[1px] border-solid box-border h-[34px] flex flex-row items-center justify-center py-2 px-4 ${!hasJoinedDiscord ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                                  onClick={() =>
+                                    hasJoinedDiscord
+                                      ? openModal("join", team.name)
+                                      : null
+                                  } // Pass team.name here
+                                >
+                                  <div className="mt-1 relative tracking-[-0.03em] leading-[120.41%]">
+                                    Join
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <img
                   className="mt-6 rounded-3xl w-full h-[200px] object-cover"
                   alt=""
@@ -1153,7 +1291,7 @@ const Points: FC = () => {
               </div>
             </div>
             <div className="self-stretch w-full lg:w-[50%]">
-              <div className="flex-1 rounded-2xl bg-bg flex flex-col items-start justify-center p-4 md:p-6 box-border gap-4 text-left text-5xl text-neutral-06 font-gilroy-semibold">
+              <div className="hidden lg:flex flex-1 rounded-2xl bg-bg flex flex-col items-start justify-center p-4 md:p-6 box-border gap-4 text-left text-5xl text-neutral-06 font-gilroy-semibold">
                 <div className="flex flex-row items-center justify-start gap-1">
                   <img
                     className="w-10 relative h-10"

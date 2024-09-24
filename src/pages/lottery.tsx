@@ -1840,7 +1840,7 @@ const Lottery: FC = () => {
         {/* SEO keywords */}
         <meta name="author" content="Stakera Team" />
         {/* Open Graph and Twitter meta tags as mentioned above */}
-        <meta property="og:title" content="Stakera" />
+        <meta property="og:title" content="Stakera | Lottery" />
         <meta
           property="og:description"
           content="A lossless lottery platform built on Solana Liquidity Staking"
