@@ -1379,7 +1379,15 @@ const Points: FC = () => {
                             className="self-stretch flex flex-col items-center justify-center p-2"
                           >
                             <div
-                              className={`hover:opacity-70 transition ease-in-out duration-300 rounded-lg border-primary border-[1px] border-solid box-border h-[34px] flex flex-row items-center justify-center py-2 px-4 ${!hasJoinedDiscord ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                              className={`lg:hidden hover:opacity-70 transition ease-in-out duration-300 rounded-lg border-primary border-[1px] border-solid box-border h-[34px] flex flex-row items-center justify-center py-2 px-4 cursor-pointer`}
+                              onClick={() => openModal("join", team.name)} // Pass team.name here
+                            >
+                              <div className="mt-1 relative tracking-[-0.03em] leading-[120.41%]">
+                                Join
+                              </div>
+                            </div>
+                            <div
+                              className={`hidden lg:flex hover:opacity-70 transition ease-in-out duration-300 rounded-lg border-primary border-[1px] border-solid box-border h-[34px] flex flex-row items-center justify-center py-2 px-4 ${!hasJoinedDiscord ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                               onClick={() =>
                                 hasJoinedDiscord
                                   ? openModal("join", team.name)
