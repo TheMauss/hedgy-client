@@ -2020,7 +2020,7 @@ const Lottery: FC = () => {
                             className={`inline-block cursor-pointer ${isModalOpen ? "text-primary" : "opacity-[0.5]"}`}
                           />
                           {isModalOpen && (
-                            <div className="absolute right-0 mt-1 w-64 p-4 bg-bg rounded-lg shadow-lg z-100">
+                            <div className="absolute right-0 mt-1 w-64 p-4 bg-bg rounded-lg shadow-lg z-1000">
                               <h3 className="text-xl mb-4 text-left flex item-start justify-start">
                                 Winnings History
                               </h3>
@@ -2194,7 +2194,7 @@ const Lottery: FC = () => {
                         className={`inline-block cursor-pointer ${isModalOpen ? "text-primary" : "opacity-[0.5]"}`}
                       />
                       {isModalOpen && (
-                        <div className="absolute right-32 mt-1 w-80 p-4 bg-bg rounded-lg shadow-lg z-100">
+                        <div className="absolute right-32 mt-1 w-80 p-4 bg-bg rounded-lg shadow-lg z-1000">
                           <h3 className="text-xl mb-4 text-left flex item-start justify-start">
                             Winnings History
                           </h3>
@@ -2811,7 +2811,7 @@ const Lottery: FC = () => {
                     className="self-stretch rounded-2xl flex flex-col items-start justify-center p-6 gap-[24px]"
                     style={bigLotteryBgStyle}
                   >
-                    <div className="self-stretch flex flex-row items-start justify-between z-[1]">
+                    <div className="self-stretch flex flex-row items-start justify-between ">
                       <div className="tracking-[-0.03em] leading-[120.41%]">
                         Big Lottery
                       </div>
@@ -2823,7 +2823,7 @@ const Lottery: FC = () => {
                           : "Loading..."}
                       </div>
                     </div>
-                    <div className="flex flex-col items-start justify-start gap-[8px] z-[2] text-35xl font-gilroy-bold">
+                    <div className="flex flex-col items-start justify-start gap-[8px]  text-35xl font-gilroy-bold">
                       <div className="self-stretch tracking-[-0.03em] leading-[120.41%] inline-block h-[47px] shrink-0">
                         <span>
                           {bigLotteryYield !== null
