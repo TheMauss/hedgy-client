@@ -1116,7 +1116,6 @@ const Points: FC = () => {
                       placeholder="Team Name"
                       value={teamName}
                       onChange={(e) => setTeamName(e.target.value)}
-                      disabled={!hasJoinedDiscord}
                     />
                     <div className="flex flex-row gap-2 items-end justify-end">
                       <button
@@ -1257,19 +1256,15 @@ const Points: FC = () => {
                               Action
                             </div>
                           </div>
-                          <div className="self-stretch flex flex-col items-end justify-center text-base text-primary font-gilroy-semibold">
+                          <div className="self-stretch flex flex-col items-end justify-center text-base text-primary font-gilroy-regular">
                             {topTeams?.map((team, index) => (
                               <div
                                 key={index}
                                 className="self-stretch flex flex-col items-center justify-center p-2"
                               >
                                 <div
-                                  className={`hover:opacity-70 transition ease-in-out duration-300 rounded-lg border-primary border-[1px] border-solid box-border h-[34px] flex flex-row items-center justify-center py-2 px-4 ${!hasJoinedDiscord ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
-                                  onClick={() =>
-                                    hasJoinedDiscord
-                                      ? openModal("join", team.name)
-                                      : null
-                                  } // Pass team.name here
+                                  className="text-sm hover:opacity-70 transition ease-in-out duration-300 rounded-lg border-primary border-[1px] border-solid box-border h-[30px] flex items-center justify-center py-2 px-4 cursor-pointer"
+                                  onClick={() => openModal("join", team.name)}
                                 >
                                   <div className="mt-1 relative tracking-[-0.03em] leading-[120.41%]">
                                     Join
@@ -1366,35 +1361,56 @@ const Points: FC = () => {
                         ))}
                       </div>
                     </div>
-                    <div className="w-[103px] flex flex-col items-end justify-center gap-2 text-left">
+                    <div className="flex lg:hidden w-[103px]  flex-col items-center justify-end gap-2 text-left">
                       <div className="self-stretch flex flex-row items-center justify-center p-2">
                         <div className="relative tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
                           Action
                         </div>
                       </div>
-                      <div className="self-stretch flex flex-col items-end justify-center text-base text-primary font-gilroy-semibold">
+                      <div className="flex flex-col items-end justify-center text-base text-primary font-gilroy-semibold">
                         {topTeams?.map((team, index) => (
                           <div
                             key={index}
                             className="self-stretch flex flex-col items-center justify-center p-2"
                           >
                             <div
-                              className={`lg:hidden hover:opacity-70 transition ease-in-out duration-300 rounded-lg border-primary border-[1px] border-solid box-border h-[34px] flex flex-row items-center justify-center py-2 px-4 cursor-pointer`}
-                              onClick={() => openModal("join", team.name)} // Pass team.name here
+                              className="hover:opacity-70 transition ease-in-out duration-300 rounded-lg border-primary border-[1px] border-solid box-border h-[34px] flex items-center justify-center py-2 px-4 cursor-pointer"
+                              onClick={() => openModal("join", team.name)}
                             >
                               <div className="mt-1 relative tracking-[-0.03em] leading-[120.41%]">
-                                Join
+                                Join me
                               </div>
                             </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="hidden lg:flex w-[103px]  lg:flex-col items-center justify-center gap-2 text-left">
+                      <div className="self-stretch flex flex-row items-center justify-center p-2">
+                        <div className="relative tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
+                          Action
+                        </div>
+                      </div>
+                      {/* Visible on large screens only */}
+                      <div className="hidden lg:flex  flex-col items-end justify-center text-base text-primary font-gilroy-semibold">
+                        {topTeams?.map((team, index) => (
+                          <div
+                            key={index}
+                            className="hidden lg:flex self-stretch flex flex-col items-start justify-center p-2"
+                          >
                             <div
-                              className={`hidden lg:flex hover:opacity-70 transition ease-in-out duration-300 rounded-lg border-primary border-[1px] border-solid box-border h-[34px] flex flex-row items-center justify-center py-2 px-4 ${!hasJoinedDiscord ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                              className={`hidden lg:flex hover:opacity-70 transition ease-in-out duration-300 rounded-lg border-primary border-[1px] border-solid box-border h-[34px] flex items-center justify-center py-2 px-4 ${
+                                !hasJoinedDiscord
+                                  ? "opacity-50 cursor-not-allowed"
+                                  : "cursor-pointer"
+                              }`}
                               onClick={() =>
                                 hasJoinedDiscord
                                   ? openModal("join", team.name)
                                   : null
-                              } // Pass team.name here
+                              }
                             >
-                              <div className="mt-1 relative tracking-[-0.03em] leading-[120.41%]">
+                              <div className="justify-start hidden lg:flex mt-1 relative tracking-[-0.03em] leading-[120.41%]">
                                 Join
                               </div>
                             </div>
