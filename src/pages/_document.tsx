@@ -17,7 +17,7 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head>
-          <link rel="shortcut icon" href="/group-1.svg" />
+          <link rel="shortcut icon" href="/favicon.ico" />
           <script defer src="charting_library/charting_library.standalone.js" />
           <script defer src="datafeeds/udf/dist/bundle.js" />
           <script
