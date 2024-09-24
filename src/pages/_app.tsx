@@ -65,7 +65,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
   return (
     <>
       <Head>
-        <title>Stakera | Lottery</title>
+        <title>Stakera</title>
         <meta
           name="description"
           content="A lossless lottery platform built on Solana Liquidity Staking"
@@ -77,13 +77,13 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
         {/* SEO keywords */}
         <meta name="author" content="Stakera Team" />
         {/* Open Graph and Twitter meta tags as mentioned above */}
-        <meta property="og:title" content="Stakera" />
+        <meta property="og:title" content="Stakera | Lottery" />
         <meta
           property="og:description"
           content="A lossless lottery platform built on Solana Liquidity Staking"
         />
         <meta property="og:image" content="/stakerameta.png" />
-        <meta property="og:url" content="https://stakera.io/lottery" />
+        <meta property="og:url" content="https://stakera.io" />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Stakera" />

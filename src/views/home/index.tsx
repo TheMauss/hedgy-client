@@ -1,4 +1,5 @@
 import React from "react";
+import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect, useRef, FC } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
@@ -151,6 +152,37 @@ export const HomeView: FC = ({}) => {
 
   return (
     <div className="w-full relative bg-layer-1 overflow-hidden flex flex-col items-center justify-center box-border  leading-[normal] tracking-[normal] text-left text-sm text-gray-200 font-gilroy-regular">
+      <Head>
+        <title>Stakera | Lottery</title>
+        <meta
+          name="description"
+          content="A lossless lottery platform built on Solana Liquidity Staking"
+        />
+        <meta
+          name="keywords"
+          content="Stakera, lottery, lossless, crypto, win, blockchain, solana"
+        />{" "}
+        {/* SEO keywords */}
+        <meta name="author" content="Stakera Team" />
+        {/* Open Graph and Twitter meta tags as mentioned above */}
+        <meta property="og:title" content="Stakera | Lottery" />
+        <meta
+          property="og:description"
+          content="A lossless lottery platform built on Solana Liquidity Staking"
+        />
+        <meta property="og:image" content="/stakerameta.png" />
+        <meta property="og:url" content="https://stakera.io/lottery" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Stakera" />
+        <meta
+          name="twitter:description"
+          content="A lossless lottery platform built on Solana Liquidity Staking"
+        />
+        <meta name="twitter:image" content="/stakerameta.png" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
       <header className="h-9.5 flex flex-row justify-between items-center max-w-[1700px] w-[95%] py-[29px] ">
         {" "}
         <Link href="/lottery" className="no-underline">
