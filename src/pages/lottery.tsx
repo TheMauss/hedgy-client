@@ -9,6 +9,7 @@ import {
   LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
 import { Tooltip } from "react-tooltip";
+import { IoMdInformationCircle } from "react-icons/io";
 import "react-tooltip/dist/react-tooltip.css";
 import debounce from "lodash.debounce";
 import { FaCheckCircle } from "react-icons/fa";
@@ -20,7 +21,7 @@ import { withdraw as withdrawInstruction } from "../out/instructions"; // Update
 import { withdrawWithRatioLoss as withdrawwithLossInstruction } from "../out/instructions"; // Update with the correct path
 import { withdrawTeamYield as withdrawTeamYield } from "../out/instructions"; // Update with the correct path
 import { incentive as incentiveInstruction } from "../out/instructions/incentive"; // Update with the correct path
-
+import Modal from "react-modal";
 import Decimal from "decimal.js";
 import { usePriorityFee } from "../contexts/PriorityFee";
 import { PROGRAM_ID } from "../out/programId";
@@ -252,6 +253,7 @@ const Lottery: FC = () => {
   const [smallLotteryWinners, setSmallLotteryWinners] = useState([]);
   const [bigLotteryWinners, setBigLotteryWinners] = useState([]);
   const [userWinnings, setUserWinnings] = useState<UserWinnings | null>(null);
+  const [userWinningsHistory, setUserWinningsHistory] = useState([]);
 
   const [smallLotteryYield, setSmallLotteryYield] = useState(null);
   const [bigLotteryYield, setBigLotteryYield] = useState(null);
@@ -1780,7 +1782,7 @@ const Lottery: FC = () => {
       try {
         const response = await axios.get("/api/lottery-results"); // Call your Next.js API route
         const { smallResults, bigResults } = response.data;
-        console.log("response", response);
+
         setSmallLotteryWinners(smallResults);
         setBigLotteryWinners(bigResults);
       } catch (error) {
@@ -1802,7 +1804,9 @@ const Lottery: FC = () => {
         const response = await axios.get(
           `/api/user-winnings?publicKey=${publicKey}`
         ); // Call your Next.js API route
-        setUserWinnings(response.data);
+        console.log("response", response);
+        setUserWinnings(response.data.winnings);
+        setUserWinningsHistory(response.data.lotteryWins);
       } catch (error) {
         console.error("Error fetching user winnings:", error);
       }
@@ -1810,6 +1814,13 @@ const Lottery: FC = () => {
 
     fetchUserResults();
   }, [publicKey]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Handle clicking on the info icon to toggle the modal
+  const handleToggleModal = () => {
+    setIsModalOpen((prevState) => !prevState); // Toggle modal
+  };
 
   // if (hasAccess === null) {
   //   return (
@@ -2002,8 +2013,60 @@ const Lottery: FC = () => {
                         </div>
                       </div>
                       <div className="md:w-full w-1/2 flex-1 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
-                        <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
-                          Your Winnings
+                        <div className="self-stretch  tracking-[-0.03em] leading-[120.41%]">
+                          <span className="opacity-[0.5]"> Your Winnings </span>{" "}
+                          <IoMdInformationCircle
+                            onClick={handleToggleModal} // Toggle modal on click
+                            className={`inline-block cursor-pointer ${isModalOpen ? "text-primary" : "opacity-[0.5]"}`}
+                          />
+                          {isModalOpen && (
+                            <div className="absolute right-0 mt-1 w-64 p-4 bg-bg rounded-lg shadow-lg z-100">
+                              <h3 className="text-xl mb-4 text-left flex item-start justify-start">
+                                Winnings History
+                              </h3>
+                              {userWinningsHistory.length > 0 ? (
+                                <div>
+                                  {userWinningsHistory.map((winning, index) => (
+                                    <div
+                                      key={index}
+                                      className="mb-2 flex justify-between"
+                                    >
+                                      <div>
+                                        {winning.lotteryType === "small"
+                                          ? "Small Lottery"
+                                          : "Big Lottery"}
+                                        :{" "}
+                                        {(
+                                          winning.yieldAmount / LAMPORTS_PER_SOL
+                                        ).toFixed(3)}{" "}
+                                        SOL{" "}
+                                        <span className="opacity-[0.5]">
+                                          on{" "}
+                                          {new Date(
+                                            winning.timestamp
+                                          ).toLocaleDateString()}
+                                        </span>
+                                      </div>
+                                      <a
+                                        href={`https://solscan.io/tx/${winning.transactionSignature}`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="hover:underline"
+                                      >
+                                        <img
+                                          className="w-4 h-4"
+                                          alt=""
+                                          src="/vuesaxlinearlink.svg"
+                                        />
+                                      </a>{" "}
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <p>No winnings history available.</p>
+                              )}
+                            </div>
+                          )}
                         </div>
                         <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
                           <span>
@@ -2124,8 +2187,60 @@ const Lottery: FC = () => {
                     </div>
                   </div>
                   <div className="flex-1 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
-                    <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
-                      Your Winnings
+                    <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] ">
+                      <span className="opacity-[0.5]"> Your Winnings </span>{" "}
+                      <IoMdInformationCircle
+                        onClick={handleToggleModal} // Toggle modal on click
+                        className={`inline-block cursor-pointer ${isModalOpen ? "text-primary" : "opacity-[0.5]"}`}
+                      />
+                      {isModalOpen && (
+                        <div className="absolute right-32 mt-1 w-80 p-4 bg-bg rounded-lg shadow-lg z-100">
+                          <h3 className="text-xl mb-4 text-left flex item-start justify-start">
+                            Winnings History
+                          </h3>
+                          {userWinningsHistory.length > 0 ? (
+                            <div>
+                              {userWinningsHistory.map((winning, index) => (
+                                <div
+                                  key={index}
+                                  className="mb-2 flex justify-between"
+                                >
+                                  <div>
+                                    {winning.lotteryType === "small"
+                                      ? "Small Lottery"
+                                      : "Big Lottery"}
+                                    :{" "}
+                                    {(
+                                      winning.yieldAmount / LAMPORTS_PER_SOL
+                                    ).toFixed(3)}{" "}
+                                    SOL{" "}
+                                    <span className="opacity-[0.5]">
+                                      on{" "}
+                                      {new Date(
+                                        winning.timestamp
+                                      ).toLocaleDateString()}
+                                    </span>
+                                  </div>
+                                  <a
+                                    href={`https://solscan.io/tx/${winning.transactionSignature}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="hover:underline"
+                                  >
+                                    <img
+                                      className="w-4 h-4"
+                                      alt=""
+                                      src="/vuesaxlinearlink.svg"
+                                    />
+                                  </a>{" "}
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p>No winnings history available.</p>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
                       <span>
@@ -2732,7 +2847,7 @@ const Lottery: FC = () => {
                         <Tooltip
                           anchorSelect="#winningChanceBigInfo"
                           place="bottom"
-                          content="The longer you hold, the bigger your chances of winning. Holding since the beginning of lottery gives you a bigger advantage than depositing at the end. You must have deposited for at least a week to be eligible."
+                          content="The longer you hold, the bigger your chances of winning. Holding since the beginning of lottery gives you a bigger advantage than depositing at the end."
                           className="font-gilroy-regular max-w-xs p-2 text-sm bg-gray-800 text-white rounded-lg shadow-lg"
                         />
                       </div>
