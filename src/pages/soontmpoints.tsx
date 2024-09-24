@@ -424,11 +424,86 @@ const Points: FC = () => {
   // Calculate which thresholds to display, ensuring we only show up to four thresholds ahead
   const displayThresholds = thresholds.slice(adjustedIndex, adjustedIndex + 4);
 
+  const [nickname, setNickname] = useState("");
+  const [showNicknameModal, setShowNicknameModal] = useState(false);
+
+  const handleSetNickname = async () => {
+    if (!publicKey) return;
+    try {
+      // Send the nickname to the backend
+      const response = await axios.post("/api/set-nickname", {
+        publicKey: publicKey.toBase58(),
+        nickname,
+      });
+      if (response.status === 200) {
+        notify({ type: "success", message: "Nickname set successfully!" });
+        setShowNicknameModal(false);
+      } else {
+        console.error("Failed to set nickname.:", response.data.message);
+      }
+    } catch (error) {
+      notify({ type: "error", message: "Failed to set nickname." });
+    }
+  };
+  const ModalDetails2 = (
+    <Modal
+      className="flex-col items-center justify-center bg-gray-100 p-6 rounded-2xl"
+      isOpen={showNicknameModal}
+      contentLabel="Confirm Team Action"
+      style={{
+        overlay: {
+          zIndex: "100",
+          backgroundColor: "transparent",
+          backdropFilter: "blur(5px)",
+        },
+        content: {
+          backgroundSize: "cover",
+          position: "fixed",
+          width: "320px",
+          height: "160px",
+          top: "35%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        },
+      }}
+    >
+      <div className="flex flex-col items-center justify-center gap-[2px] text-center text-white font-gilroy-medium">
+        <div className="w-full rounded-lg">
+          <h2 className="text-lg font-bold mb-4">Set Your Nickname</h2>
+          <div className="flex flex-col px-8 gap-4">
+            <div className="">
+              <input
+                type="text"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                placeholder="Enter your nickname"
+                className="bg-bg h-8 rounded-lg w-full text-center mr-8 text-white"
+              />
+            </div>
+            <div className="flex justify-between w-full gap-2">
+              <button
+                className="bg-primary text-black  w-2/3 rounded-lg cursor-pointer hover:opacity-70 transition ease-in-out duration-300"
+                onClick={handleSetNickname}
+              >
+                Save Nickname
+              </button>
+              <button
+                className="bg-bg text-primary hover:opacity-70 transition ease-in-out duration-300 w-1/3 rounded-lg border-primary border-[1px] border-solid box-border h-[34px] flex flex-row items-center justify-center py-2 px-4 cursor-pointer"
+                onClick={() => setShowNicknameModal(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Modal>
+  );
+
   const ModalDetails = (
     <Modal
       className="flex-col items-center justify-center bg-gray-100 p-3 md:p-6 rounded-2xl"
       isOpen={showModal}
-      onRequestClose={closeModal}
       contentLabel="Confirm Team Action"
       style={{
         overlay: {
@@ -487,6 +562,7 @@ const Points: FC = () => {
   if (participantData) {
     return (
       <div className="overflow-hidden flex justify-center items-top min-h-[calc(100vh-172px)] z-100 bg-layer-1 ">
+        {ModalDetails2}
         <div className=" w-[95%] max-w-[1550px] justify-start flex flex-col gap-4 lg:gap-8 text-left text-3xl-1 text-neutral-06 font-gilroy-bold">
           <div className="w-full flex flex-col lg:flex-row gap-8">
             <div
@@ -499,10 +575,30 @@ const Points: FC = () => {
               className="rounded-2xl w-full lg:w-[35%] flex flex-col items-start justify-start p-4 sm:p-6 box-border gap-8 bg-cover bg-no-repeat bg-[top] text-5xl font-gilroy-semibold"
             >
               <div className="self-stretch flex-1 [backdrop-filter:blur(20px)] rounded-2xl bg-darkslategray-200 flex flex-row items-center justify-between p-5 sm:p-6 ">
-                <div className="w-1/3 flex flex-col gap-6">
+                <div className="w-1/3 flex flex-col gap-4">
                   <div className="w-[166px] flex-1 flex flex-col items-start justify-start">
                     <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%]">
-                      Your profile
+                      {/* Check if participantData.nickName exists */}
+                      {participantData?.nickName ? (
+                        <div className=" flex flex-col">
+                          <span className="text-base text-neutral-06 text-white">
+                            Welcome back,{" "}
+                          </span>
+                          <span className="font-gilroy-bold text-primary text-[27px]">
+                            {participantData.nickName}
+                          </span>
+                        </div>
+                      ) : (
+                        <div>
+                          Your profile
+                          <button
+                            className="hover:opacity-70 transition ease-in-out duration-300 px-2 py-1 mt-1 bg-primary text-black rounded-lg text-xs flex justify-start items-start font-gilroy cursor-pointer"
+                            onClick={() => setShowNicknameModal(true)}
+                          >
+                            Set Nickname
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="self-stretch flex flex-row items-center justify-start gap-[7px] text-base font-gilroy-medium">

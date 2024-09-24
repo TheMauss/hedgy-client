@@ -1737,7 +1737,7 @@ const Lottery: FC = () => {
       try {
         const response = await axios.get("/api/lottery-results"); // Call your Next.js API route
         const { smallResults, bigResults } = response.data;
-
+        console.log("response", response);
         setSmallLotteryWinners(smallResults);
         setBigLotteryWinners(bigResults);
       } catch (error) {
@@ -1878,8 +1878,11 @@ const Lottery: FC = () => {
                     src={`/${randomImage}`}
                   />
                   <div className="flex flex-col items-start justify-start gap-[4px] ">
-                    <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
-                      Welcome {participantData ? "back" : ""}
+                    <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%]">
+                      Welcome{" "}
+                      {participantData
+                        ? "" + (participantDataMongo?.nickName + "," || "")
+                        : ""}
                     </div>
 
                     <div className=" text-lg tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block">
@@ -1973,8 +1976,11 @@ const Lottery: FC = () => {
                   src={`/${randomImage}`}
                 />
                 <div className="w-[226px] flex flex-col items-start justify-start gap-[4px] ">
-                  <div className="self-stretch tracking-[-0.03em] leading-[120.41%]">
-                    Welcome {participantData ? "back" : ""}
+                  <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%]">
+                    Welcome{" "}
+                    {participantData
+                      ? "" + (participantDataMongo?.nickName + "," || "")
+                      : ""}
                   </div>
 
                   <div className="w-[255px]  text-lg tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block">
@@ -2533,7 +2539,10 @@ const Lottery: FC = () => {
                                 ).toLocaleDateString()}
                               </div>
                               <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
-                                {formatPublicKey(winner.winner)} won{" "}
+                                {winner.nickName
+                                  ? winner.nickName
+                                  : formatPublicKey(winner.winner)}{" "}
+                                won{" "}
                                 {(
                                   winner.yieldAmount / LAMPORTS_PER_SOL
                                 ).toFixed(2)}{" "}
@@ -2656,7 +2665,10 @@ const Lottery: FC = () => {
                                 ).toLocaleDateString()}
                               </div>
                               <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
-                                {formatPublicKey(winner.winner)} won{" "}
+                                {winner.nickName
+                                  ? winner.nickName
+                                  : formatPublicKey(winner.winner)}{" "}
+                                won{" "}
                                 {(
                                   winner.yieldAmount / LAMPORTS_PER_SOL
                                 ).toFixed(2)}{" "}
