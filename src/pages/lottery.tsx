@@ -1855,7 +1855,7 @@ const Lottery: FC = () => {
           content="A lossless lottery platform built on Solana Liquidity Staking"
         />
         <meta name="twitter:image" content="/stakerameta.png" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/logoico.png" />
       </Head>
 
       <div className="flex justify-center items-top min-h-[calc(100vh-172px)] z-100 bg-layer-1 ">

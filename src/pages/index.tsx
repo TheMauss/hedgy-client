@@ -33,7 +33,7 @@ const Home: NextPage = () => {
           content="A lossless lottery platform built on Solana Liquidity Staking"
         />
         <meta name="twitter:image" content="/stakerameta.png" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/logoico.png" />
       </Head>
       <HomeView />
     </div>
