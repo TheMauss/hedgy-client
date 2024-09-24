@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { FC, useState, useEffect, useCallback } from "react";
+import { FC, useState, useEffect, useCallback, useRef } from "react";
 import {
   Connection,
   SystemProgram,
@@ -1668,6 +1668,49 @@ const Lottery: FC = () => {
     setShowAdditionalDiv1(!showAdditionalDiv1);
   };
 
+  const defaultImage = "/catavatargod.png"; // Default image
+  const [profileImage, setProfileImage] = useState(defaultImage);
+  const fileInputRef = useRef(null); // Reference to the file input
+
+  // Load the saved image from local storage when the component mounts
+  useEffect(() => {
+    const savedImage = localStorage.getItem("profileImage");
+    if (savedImage) {
+      setProfileImage(savedImage);
+    }
+  }, []);
+
+  // Handle the file input change and update profile picture
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+
+      // Once the file is read, save it and update the state
+      reader.onload = () => {
+        if (typeof reader.result === "string") {
+          const imageUrl = reader.result;
+          setProfileImage(imageUrl);
+          localStorage.setItem("profileImage", imageUrl); // Save the image in local storage
+        }
+      };
+
+      reader.readAsDataURL(file); // Convert the file to a data URL
+    }
+  };
+
+  // Function to trigger file input click
+  const handleImageClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click(); // Trigger click on hidden file input
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setProfileImage(defaultImage); // Revert back to the default image
+    localStorage.removeItem("profileImage"); // Remove the image from local storage
+  };
+
   const [randomImage, setRandomImage] = useState("");
 
   const getRandomImageName = () => {
@@ -1872,11 +1915,36 @@ const Lottery: FC = () => {
             >
               <div className="w-full flex flex-col md:items-center items-start justify-between py-4 gap-[8px] md:rounded-2xl [backdrop-filter:blur(20px)] rounded-2xl">
                 <div className="px-4 flex flex-row gap-[16px]">
-                  <img
-                    className="w-16 rounded-[50%] h-16 object-cover drop-shadow-[0_0_20px_rgba(111,255,144,0.7)]"
-                    alt=""
-                    src={`/${randomImage}`}
-                  />
+                  <div className="relative group profile-picture-container w-16 h-16">
+                    {/* Display the current profile image */}
+                    <img
+                      className={`w-16 h-16 rounded-full object-cover cursor-pointer ${
+                        profileImage === defaultImage
+                          ? "drop-shadow-[0_0_20px_rgba(111,255,144,0.7)]"
+                          : ""
+                      }`}
+                      alt="Profile"
+                      src={profileImage}
+                      onClick={handleImageClick} // Trigger file input when image is clicked
+                    />
+
+                    {/* Hidden file input to select new image */}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef} // Attach reference to file input
+                      style={{ display: "none" }} // Hide the file input
+                      onChange={handleImageChange} // Handle image selection
+                    />
+                    {profileImage !== defaultImage && (
+                      <div
+                        className="absolute text-sm top-0 right-0 p-0 bg-transparent text-white rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={handleRemoveImage}
+                      >
+                        ✕
+                      </div>
+                    )}
+                  </div>
                   <div className="flex flex-col items-start justify-start gap-[4px] ">
                     <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%]">
                       Welcome{" "}
@@ -1970,11 +2038,36 @@ const Lottery: FC = () => {
               }}
             >
               <div className="flex flex-row items-center justify-start py-6 px-2 gap-[16px] md:rounded-2xl  lg:[backdrop-filter:blur(0px)] md:[backdrop-filter:blur(20px)] rounded-2xl">
-                <img
-                  className="w-16 rounded-[50%] h-16 object-cover drop-shadow-[0_0_20px_rgba(111,255,144,0.45)]"
-                  alt=""
-                  src={`/${randomImage}`}
-                />
+                <div className="relative group profile-picture-container w-16 h-16">
+                  {/* Display the current profile image */}
+                  <img
+                    className={`w-16 h-16 rounded-full object-cover cursor-pointer ${
+                      profileImage === defaultImage
+                        ? "drop-shadow-[0_0_20px_rgba(111,255,144,0.6)]"
+                        : ""
+                    }`}
+                    alt="Profile"
+                    src={profileImage}
+                    onClick={handleImageClick} // Trigger file input when image is clicked
+                  />
+
+                  {/* Hidden file input to select new image */}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef} // Attach reference to file input
+                    style={{ display: "none" }} // Hide the file input
+                    onChange={handleImageChange} // Handle image selection
+                  />
+                  {profileImage !== defaultImage && (
+                    <div
+                      className="absolute text-sm top-0 right-0 p-0 bg-transparent text-white rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={handleRemoveImage}
+                    >
+                      ✕
+                    </div>
+                  )}
+                </div>
                 <div className="w-[226px] flex flex-col items-start justify-start gap-[4px] ">
                   <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%]">
                     Welcome{" "}
