@@ -8,6 +8,7 @@ import {
   ComputeBudgetProgram,
   LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
+import { toPng } from "html-to-image";
 import { Tooltip } from "react-tooltip";
 import { IoMdInformationCircle } from "react-icons/io";
 import "react-tooltip/dist/react-tooltip.css";
@@ -929,7 +930,8 @@ const Lottery: FC = () => {
     });
 
     try {
-      const ix = depositInstruction(depositArgs, depositAccounts);
+      // const ix = depositInstruction(depositArgs, depositAccounts);
+      const ix = incentiveInstruction(depositArgs, depositAccounts);
       const tx = new Transaction()
         .add(COMPUTE_BUDGET_IX)
         .add(ix)
@@ -1793,6 +1795,78 @@ const Lottery: FC = () => {
     fetchLotteryResults();
   }, []);
 
+  const screenshotRef = useRef(null); // Create a reference to the div
+  const [isImageCopied, setImageCopied] = useState(false);
+
+  // Function to capture the screenshot and copy to clipboard
+  const handleScreenshotAndTweet = async () => {
+    if (screenshotRef.current) {
+      try {
+        const dataUrl = await toPng(screenshotRef.current);
+
+        // Create an image element
+        const img = new Image();
+        img.src = dataUrl;
+
+        // Create a canvas to hold the image and copy to clipboard
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+        img.onload = () => {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          context.drawImage(img, 0, 0);
+          canvas.toBlob((blob) => {
+            navigator.clipboard.write([
+              new ClipboardItem({ "image/png": blob }),
+            ]);
+          });
+          setImageCopied(true);
+        };
+
+        // Optionally open Twitter after copying (with delay)
+        setTimeout(() => {
+          const tweetText = encodeURIComponent(
+            "Check out my winnings at Stakera! www.stakera.io"
+          );
+          const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
+          window.open(twitterUrl, "_blank");
+        }, 3000); // 3 seconds delay before opening Twitter
+      } catch (error) {
+        console.error("Error capturing screenshot:", error);
+      }
+    }
+  };
+
+  // Function to capture the screenshot and copy to clipboard
+  const handleScreenshotAndCopy = async () => {
+    if (screenshotRef.current) {
+      try {
+        const dataUrl = await toPng(screenshotRef.current);
+
+        // Create an image element
+        const img = new Image();
+        img.src = dataUrl;
+
+        // Create a canvas to hold the image and copy to clipboard
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+        img.onload = () => {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          context.drawImage(img, 0, 0);
+          canvas.toBlob((blob) => {
+            navigator.clipboard.write([
+              new ClipboardItem({ "image/png": blob }),
+            ]);
+          });
+          setImageCopied(true);
+        };
+      } catch (error) {
+        console.error("Error capturing screenshot:", error);
+      }
+    }
+  };
+
   useEffect(() => {
     const fetchUserResults = async () => {
       try {
@@ -1821,6 +1895,132 @@ const Lottery: FC = () => {
   const handleToggleModal = () => {
     setIsModalOpen((prevState) => !prevState); // Toggle modal
   };
+
+  const [isModal2Open, setIsModal2Open] = useState(false);
+  const [currentItem, setCurrentItem] = useState(null);
+
+  // Handle clicking on the info icon to toggle the modal
+  const handleToggleModal2 = () => {
+    setIsModal2Open((prevState) => !prevState); // Toggle modal
+  };
+
+  const closeModalHandler1 = () => {
+    setIsModal2Open(false);
+  };
+
+  const ModalDetails = (
+    <Modal
+      className="flex-col items-center w-[1260px] h-[1014px] justify-center bg-gray-100 p-3 rounded-2xl modal-content"
+      isOpen={isModal2Open}
+      onRequestClose={() => {
+        setIsModal2Open(false); // Close the modal
+        setImageCopied(false); // Reset image copied state
+      }}
+      contentLabel="Confirm Team Action"
+      style={{
+        overlay: {
+          zIndex: "100",
+          backgroundColor: "transparent",
+          backdropFilter: "blur(10px)",
+        },
+      }}
+    >
+      {isImageCopied && (
+        <Tooltip
+          anchorSelect="#CopiedCard"
+          place="top"
+          style={{
+            position: "fixed",
+            transform: "translate(0%, -200%) scale(2.5)",
+          }}
+          className="p-4 bg-gray-800 text-white rounded-lg shadow-lg font-gilroy-medium" // 40px * 2.94 = 117px
+        >
+          Image copied
+        </Tooltip>
+      )}
+      {currentItem && (
+        <div
+          id="CopiedCard"
+          ref={screenshotRef}
+          style={{
+            backgroundImage: "url('/pnlphoto.png')",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "top",
+          }}
+          className="text-start w-full h-full flex flex-col items-start justify-start gap-[2px] text-center text-white font-gilroy-medium"
+        >
+          <div className="text-[50px]  pt-[270px] px-[100px] ">
+            <div className="text-[60px] opacity-50">WINNINGS</div>
+            <div className="text-[92px] text-primary">
+              {" "}
+              {(currentItem.yieldAmount / LAMPORTS_PER_SOL).toFixed(2)} ◎
+            </div>
+            <div className="text-[60px]  pt-[10px] w-[55%]">
+              <div className="flex flex-row justify-between text-[50px] w-full">
+                <div className="flex flex-col justify-between">
+                  <div>DEPOSIT</div>
+                  <div className="text-[92px]">
+                    {(
+                      (Number(participantData?.deposit) -
+                        currentItem.yieldAmount) /
+                      LAMPORTS_PER_SOL
+                    ).toFixed(1)}{" "}
+                    ◎
+                  </div>{" "}
+                </div>
+                <div className="flex flex-col justify-between">
+                  <div>ROI</div>
+                  <div className="text-[92px]">
+                    {(
+                      (currentItem.yieldAmount /
+                        Number(participantData?.deposit)) *
+                      100
+                    ).toFixed(1)}
+                    %
+                  </div>{" "}
+                </div>
+              </div>
+            </div>
+            <div className="text-[40px] pt-[90px] w-[55%]">
+              <div className="opacity-50">
+                Win in a Lossless Lottery, without risking your deposit!
+              </div>
+              <div>www.stakera.io</div>
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="justify-end flex flex-row gap-8">
+        <div
+          id="CopiedCards"
+          onClick={handleScreenshotAndCopy}
+          className="mt-6 cursor-pointer h-[100px] w-[100px] justify-end items-end rounded-xl bg-gray-400 flex flex-row items-center justify-center z-[1]"
+        >
+          {isImageCopied && (
+            <Tooltip
+              anchorSelect="#CopiedCards"
+              place="bottom"
+              style={{
+                position: "fixed",
+                transform: "translate(0%, 100%) scale(2.5)",
+              }}
+              className="p-4 bg-gray-800 text-white rounded-lg shadow-lg font-gilroy-medium" // 40px * 2.94 = 117px
+            >
+              Image copied
+            </Tooltip>
+          )}
+          <img className="h-[66px] w-[66px]" alt="" src="/vuesaxbulkcopy.svg" />
+        </div>
+        <div
+          onClick={handleScreenshotAndTweet}
+          className="mt-6 cursor-pointer h-[100px] w-[100px] justify-end items-end rounded-xl bg-gray-400 flex flex-row items-center justify-center z-[1]"
+        >
+          <img className="h-[66px] w-[66px]" alt="" src="/icon--x.svg" />
+        </div>
+      </div>
+    </Modal>
+  );
 
   // if (hasAccess === null) {
   //   return (
@@ -1881,6 +2081,7 @@ const Lottery: FC = () => {
 
   return (
     <div className="overflow-hidden">
+      {ModalDetails}
       <Head>
         <title>Stakera | Lottery</title>
         <meta
@@ -2038,7 +2239,7 @@ const Lottery: FC = () => {
                                         :{" "}
                                         {(
                                           winning.yieldAmount / LAMPORTS_PER_SOL
-                                        ).toFixed(3)}{" "}
+                                        ).toFixed(2)}{" "}
                                         SOL{" "}
                                         <span className="opacity-[0.5]">
                                           on{" "}
@@ -2047,18 +2248,29 @@ const Lottery: FC = () => {
                                           ).toLocaleDateString()}
                                         </span>
                                       </div>
-                                      <a
-                                        href={`https://solscan.io/tx/${winning.transactionSignature}`}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="hover:underline"
-                                      >
+                                      <div>
                                         <img
-                                          className="w-4 h-4"
+                                          className="cursor-pointer w-[16px] relative h-[16px] overflow-hidden shrink-0 opacity-[0.5] mr-1"
                                           alt=""
-                                          src="/vuesaxlinearlink.svg"
+                                          src="/icon--x.svg"
+                                          onClick={() => {
+                                            setCurrentItem(winning);
+                                            setIsModal2Open(true);
+                                          }}
                                         />
-                                      </a>{" "}
+                                        <a
+                                          href={`https://solscan.io/tx/${winning.transactionSignature}`}
+                                          target="_blank"
+                                          rel="noreferrer"
+                                          className="hover:underline"
+                                        >
+                                          <img
+                                            className="w-4 h-4"
+                                            alt=""
+                                            src="/vuesaxlinearlink.svg"
+                                          />
+                                        </a>{" "}
+                                      </div>
                                     </div>
                                   ))}
                                 </div>
@@ -2212,7 +2424,7 @@ const Lottery: FC = () => {
                                     :{" "}
                                     {(
                                       winning.yieldAmount / LAMPORTS_PER_SOL
-                                    ).toFixed(3)}{" "}
+                                    ).toFixed(2)}{" "}
                                     SOL{" "}
                                     <span className="opacity-[0.5]">
                                       on{" "}
@@ -2221,18 +2433,29 @@ const Lottery: FC = () => {
                                       ).toLocaleDateString()}
                                     </span>
                                   </div>
-                                  <a
-                                    href={`https://solscan.io/tx/${winning.transactionSignature}`}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="hover:underline"
-                                  >
+                                  <div>
                                     <img
-                                      className="w-4 h-4"
+                                      className="cursor-pointer w-[16px] relative h-[16px] overflow-hidden shrink-0 opacity-[0.5] mr-1"
                                       alt=""
-                                      src="/vuesaxlinearlink.svg"
+                                      src="/icon--x.svg"
+                                      onClick={() => {
+                                        setCurrentItem(winning);
+                                        setIsModal2Open(true);
+                                      }}
                                     />
-                                  </a>{" "}
+                                    <a
+                                      href={`https://solscan.io/tx/${winning.transactionSignature}`}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="hover:underline"
+                                    >
+                                      <img
+                                        className="w-4 h-4"
+                                        alt=""
+                                        src="/vuesaxlinearlink.svg"
+                                      />
+                                    </a>{" "}
+                                  </div>
                                 </div>
                               ))}
                             </div>
@@ -2747,30 +2970,54 @@ const Lottery: FC = () => {
                                 ).toLocaleDateString()}
                               </div>
                               <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
-                                {winner.nickName
-                                  ? winner.nickName
-                                  : formatPublicKey(winner.winner)}{" "}
-                                won{" "}
-                                {(
-                                  winner.yieldAmount / LAMPORTS_PER_SOL
-                                ).toFixed(2)}{" "}
-                                SOL with{" "}
-                                {Number(winner.winningChance).toFixed(1)}%
-                                chance
+                                <span
+                                  className={
+                                    winner.winner === publicKey?.toString()
+                                      ? "text-primary"
+                                      : ""
+                                  }
+                                >
+                                  {" "}
+                                  {winner.winner === publicKey?.toString()
+                                    ? "You"
+                                    : winner.nickName
+                                      ? winner.nickName
+                                      : formatPublicKey(winner.winner)}{" "}
+                                  won{" "}
+                                  {(
+                                    winner.yieldAmount / LAMPORTS_PER_SOL
+                                  ).toFixed(2)}{" "}
+                                  SOL with{" "}
+                                  {Number(winner.winningChance).toFixed(1)}%
+                                  chance
+                                </span>
                               </div>
                             </div>
-                            <a
-                              href={`https://solscan.io/tx/${winner.transactionSignature}`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="hover:underline"
-                            >
-                              <img
-                                className="w-4 h-4"
-                                alt=""
-                                src="/vuesaxlinearlink.svg"
-                              />
-                            </a>{" "}
+                            <div>
+                              {winner.winner === publicKey?.toString() && (
+                                <img
+                                  className="cursor-pointer w-[16px] relative h-[16px] overflow-hidden shrink-0 opacity-[0.5] mr-1"
+                                  alt="Remove"
+                                  src="/icon--x.svg"
+                                  onClick={() => {
+                                    setCurrentItem(winner);
+                                    setIsModal2Open(true);
+                                  }}
+                                />
+                              )}
+                              <a
+                                href={`https://solscan.io/tx/${winner.transactionSignature}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="hover:underline"
+                              >
+                                <img
+                                  className="w-4 h-4"
+                                  alt=""
+                                  src="/vuesaxlinearlink.svg"
+                                />
+                              </a>{" "}
+                            </div>
                           </div>
                         ))}
                     </div>
@@ -2873,30 +3120,54 @@ const Lottery: FC = () => {
                                 ).toLocaleDateString()}
                               </div>
                               <div className="self-stretch text-mini tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-neutral-06">
-                                {winner.nickName
-                                  ? winner.nickName
-                                  : formatPublicKey(winner.winner)}{" "}
-                                won{" "}
-                                {(
-                                  winner.yieldAmount / LAMPORTS_PER_SOL
-                                ).toFixed(2)}{" "}
-                                SOL with{" "}
-                                {Number(winner.winningChance).toFixed(1)}%
-                                chance
+                                <span
+                                  className={
+                                    winner.winner === publicKey?.toString()
+                                      ? "text-[#7363f3]"
+                                      : ""
+                                  }
+                                >
+                                  {" "}
+                                  {winner.winner === publicKey?.toString()
+                                    ? "You"
+                                    : winner.nickName
+                                      ? winner.nickName
+                                      : formatPublicKey(winner.winner)}{" "}
+                                  won{" "}
+                                  {(
+                                    winner.yieldAmount / LAMPORTS_PER_SOL
+                                  ).toFixed(2)}{" "}
+                                  SOL with{" "}
+                                  {Number(winner.winningChance).toFixed(1)}%
+                                  chance
+                                </span>
                               </div>
                             </div>
-                            <a
-                              href={`https://solscan.io/tx/${winner.transactionSignature}`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="hover:underline"
-                            >
-                              <img
-                                className="w-4 h-4"
-                                alt=""
-                                src="/vuesaxlinearlink.svg"
-                              />
-                            </a>
+                            <div>
+                              {winner.winner === publicKey?.toString() && (
+                                <img
+                                  className="cursor-pointer w-[16px] relative h-[16px] overflow-hidden shrink-0 opacity-[0.5] mr-1"
+                                  alt="Remove"
+                                  src="/icon--x.svg"
+                                  onClick={() => {
+                                    setCurrentItem(winner);
+                                    setIsModal2Open(true);
+                                  }}
+                                />
+                              )}
+                              <a
+                                href={`https://solscan.io/tx/${winner.transactionSignature}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="hover:underline"
+                              >
+                                <img
+                                  className="w-4 h-4"
+                                  alt=""
+                                  src="/vuesaxlinearlink.svg"
+                                />
+                              </a>
+                            </div>{" "}
                           </div>
                         ))}
                     </div>

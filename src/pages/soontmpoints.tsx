@@ -445,10 +445,12 @@ const Points: FC = () => {
       notify({ type: "error", message: "Failed to set nickname." });
     }
   };
+
   const ModalDetails2 = (
     <Modal
       className="flex-col items-center justify-center bg-gray-100 p-6 rounded-2xl"
       isOpen={showNicknameModal}
+      onRequestClose={() => setShowNicknameModal(false)}
       contentLabel="Confirm Team Action"
       style={{
         overlay: {

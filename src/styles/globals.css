@@ -23,6 +23,35 @@
   font-weight: 400;
 }
 
+.tooltip {
+  padding: 8px 16px;
+  border-radius: 3px;
+  font-size: 900%;
+  width: max-content;
+}
+
+.modal-content {
+  background-size: cover;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.34);
+}
+
+/* For small screens */
+@media only screen and (max-width: 600px) {
+  .modal-content {
+    transform: translate(-50%, -50%) scale(0.3); /* Smaller scale for small screens */
+  }
+}
+
+/* For medium screens */
+@media only screen and (min-width: 601px) and (max-width: 1024px) {
+  .modal-content {
+    transform: translate(-50%, -50%) scale(0.3); /* Adjust for medium screens */
+  }
+}
+
 @keyframes breathing {
   0% {
     transform: translate(-50%, -50%) scale(1);
