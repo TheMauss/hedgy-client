@@ -1952,26 +1952,27 @@ const Lottery: FC = () => {
         >
           <div className="text-[50px]  pt-[150px] px-[100px] ">
             <div className="text-[60px] font-gilroy-regular">Winnings</div>
-            <div className="text-[140px] text-primary">
+            <div className="text-[150px] text-primary">
               {" "}
-              {(currentItem.yieldAmount / LAMPORTS_PER_SOL).toFixed(2)} ◎
+              {(currentItem.yieldAmount / LAMPORTS_PER_SOL).toFixed(2)}{" "}
+              <span className="text-[120px]">◎</span>
             </div>
-            <div className="pt-[10px] w-[70%]">
+            <div className="pt-[25px] w-[70%]">
               <div className="flex flex-row justify-between text-[50px] w-full">
                 <div className="flex flex-col justify-between">
                   <div className="text-[60px] font-gilroy-regular">Deposit</div>
-                  <div className="text-[140px]">
+                  <div className="text-[150px]">
                     {(
                       (Number(participantData?.deposit) -
                         currentItem.yieldAmount) /
                       LAMPORTS_PER_SOL
                     ).toFixed(1)}{" "}
-                    ◎
+                    <span className="text-[120px]">◎</span>
                   </div>{" "}
                 </div>
                 <div className="flex flex-col justify-between">
                   <div className="text-[60px] font-gilroy-regular">ROI</div>
-                  <div className="text-[140px]">
+                  <div className="text-[150px]">
                     {(
                       (currentItem.yieldAmount /
                         Number(participantData?.deposit)) *
@@ -1982,7 +1983,7 @@ const Lottery: FC = () => {
                 </div>
               </div>
             </div>
-            <div className="text-[50px] pt-[30px] w-[60%]">
+            <div className="text-[50px] pt-[50px] w-[60%]">
               Win in a Lossless Lottery, without risking your deposit!
             </div>
           </div>
