@@ -1826,7 +1826,7 @@ const Lottery: FC = () => {
         // Optionally open Twitter after copying (with delay)
         setTimeout(() => {
           const tweetText = encodeURIComponent(
-            "Check out my winnings at Stakera! www.stakera.io"
+            "Check out my lossless lottery winnings at Stakera!"
           );
           const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
           window.open(twitterUrl, "_blank");
@@ -1910,7 +1910,7 @@ const Lottery: FC = () => {
 
   const ModalDetails = (
     <Modal
-      className="flex-col items-center w-[1260px] h-[1014px] justify-center bg-gray-100 p-3 rounded-2xl modal-content"
+      className="flex-col items-center w-[1920px] h-[1080px] justify-center bg-gray-100 p-3 rounded-2xl modal-content"
       isOpen={isModal2Open}
       onRequestClose={() => {
         setIsModal2Open(false); // Close the modal
@@ -1943,24 +1943,24 @@ const Lottery: FC = () => {
           id="CopiedCard"
           ref={screenshotRef}
           style={{
-            backgroundImage: "url('/pnlphoto.png')",
+            backgroundImage: "url('/twitterpost.png')",
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "top",
           }}
           className="text-start w-full h-full flex flex-col items-start justify-start gap-[2px] text-center text-white font-gilroy-medium"
         >
-          <div className="text-[50px]  pt-[270px] px-[100px] ">
-            <div className="text-[60px] opacity-50">WINNINGS</div>
-            <div className="text-[92px] text-primary">
+          <div className="text-[50px]  pt-[150px] px-[100px] ">
+            <div className="text-[60px] font-gilroy-regular">Winnings</div>
+            <div className="text-[140px] text-primary">
               {" "}
               {(currentItem.yieldAmount / LAMPORTS_PER_SOL).toFixed(2)} ◎
             </div>
-            <div className="text-[60px]  pt-[10px] w-[55%]">
+            <div className="pt-[10px] w-[70%]">
               <div className="flex flex-row justify-between text-[50px] w-full">
                 <div className="flex flex-col justify-between">
-                  <div>DEPOSIT</div>
-                  <div className="text-[92px]">
+                  <div className="text-[60px] font-gilroy-regular">Deposit</div>
+                  <div className="text-[140px]">
                     {(
                       (Number(participantData?.deposit) -
                         currentItem.yieldAmount) /
@@ -1970,8 +1970,8 @@ const Lottery: FC = () => {
                   </div>{" "}
                 </div>
                 <div className="flex flex-col justify-between">
-                  <div>ROI</div>
-                  <div className="text-[92px]">
+                  <div className="text-[60px] font-gilroy-regular">ROI</div>
+                  <div className="text-[140px]">
                     {(
                       (currentItem.yieldAmount /
                         Number(participantData?.deposit)) *
@@ -1982,11 +1982,8 @@ const Lottery: FC = () => {
                 </div>
               </div>
             </div>
-            <div className="text-[40px] pt-[90px] w-[55%]">
-              <div className="opacity-50">
-                Win in a Lossless Lottery, without risking your deposit!
-              </div>
-              <div>www.stakera.io</div>
+            <div className="text-[50px] pt-[30px] w-[60%]">
+              Win in a Lossless Lottery, without risking your deposit!
             </div>
           </div>
         </div>
@@ -1995,7 +1992,7 @@ const Lottery: FC = () => {
         <div
           id="CopiedCards"
           onClick={handleScreenshotAndCopy}
-          className="mt-6 cursor-pointer h-[100px] w-[100px] justify-end items-end rounded-xl bg-gray-400 flex flex-row items-center justify-center z-[1]"
+          className="mt-6 cursor-pointer h-[150px] w-[150px] md:h-[120px] md:w-[120px] justify-end items-end rounded-xl bg-gray-400 flex flex-row items-center justify-center z-[1]"
         >
           {isImageCopied && (
             <Tooltip
@@ -2010,13 +2007,21 @@ const Lottery: FC = () => {
               Image copied
             </Tooltip>
           )}
-          <img className="h-[66px] w-[66px]" alt="" src="/vuesaxbulkcopy.svg" />
+          <img
+            className="h-[100px] w-[100px] md:h-[80px] md:w-[80px]"
+            alt=""
+            src="/vuesaxbulkcopy.svg"
+          />
         </div>
         <div
           onClick={handleScreenshotAndTweet}
-          className="mt-6 cursor-pointer h-[100px] w-[100px] justify-end items-end rounded-xl bg-gray-400 flex flex-row items-center justify-center z-[1]"
+          className="mt-6 cursor-pointer h-[150px] w-[150px] md:h-[120px] md:w-[120px] justify-end items-end rounded-xl bg-gray-400 flex flex-row items-center justify-center z-[1]"
         >
-          <img className="h-[66px] w-[66px]" alt="" src="/icon--x.svg" />
+          <img
+            className="h-[100px] w-[100px] md:h-[80px] md:w-[80px]"
+            alt=""
+            src="/icon--x.svg"
+          />
         </div>
       </div>
     </Modal>
