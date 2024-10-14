@@ -16,7 +16,18 @@ export interface CancelRequestWithdrawAccounts {
   driftUser: PublicKey;
   driftState: PublicKey;
   oracleAddress: PublicKey; // Add account 12
-  spotMarketAddress: PublicKey;
+  acc11: PublicKey; // Add account 14
+  acc12: PublicKey; // Add account 14
+  acc13: PublicKey; // Add account 15
+  acc14: PublicKey; // Add account 16
+  acc15: PublicKey; // Add account 17
+  acc16: PublicKey; // Add account 18
+  spotMarketAddress: PublicKey; // Add account 13 (Drift Spot Market)
+  acc17: PublicKey; // Add account 19
+  acc18: PublicKey; // Add account 20
+  acc19: PublicKey; // Add account 20
+  acc20: PublicKey; // Add account 20
+  acc21: PublicKey; // Add account 20
 }
 
 export function cancelRequestWithdraw(
@@ -31,7 +42,18 @@ export function cancelRequestWithdraw(
     { pubkey: accounts.driftUser, isSigner: false, isWritable: false },
     { pubkey: accounts.driftState, isSigner: false, isWritable: false },
     { pubkey: accounts.oracleAddress, isSigner: false, isWritable: false }, // Add account 12
-    { pubkey: accounts.spotMarketAddress, isSigner: false, isWritable: true },
+    { pubkey: accounts.acc11, isSigner: false, isWritable: false }, // Add account 14
+    { pubkey: accounts.acc12, isSigner: false, isWritable: false }, // Add account 14
+    { pubkey: accounts.acc13, isSigner: false, isWritable: false }, // Add account 15
+    { pubkey: accounts.acc14, isSigner: false, isWritable: false }, // Add account 16
+    { pubkey: accounts.acc15, isSigner: false, isWritable: false }, // Add account 17
+    { pubkey: accounts.acc16, isSigner: false, isWritable: false }, // Add account 18
+    { pubkey: accounts.spotMarketAddress, isSigner: false, isWritable: false }, // Add account 13
+    { pubkey: accounts.acc17, isSigner: false, isWritable: false }, // Add account 19
+    { pubkey: accounts.acc18, isSigner: false, isWritable: false }, // Add account 20
+    { pubkey: accounts.acc19, isSigner: false, isWritable: false }, // Add account 20
+    { pubkey: accounts.acc20, isSigner: false, isWritable: false }, // Add account 20
+    { pubkey: accounts.acc21, isSigner: false, isWritable: false }, // Add account 20
   ];
   const identifier = Buffer.from([26, 109, 1, 81, 102, 15, 6, 106]);
   const data = identifier;
