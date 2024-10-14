@@ -32,16 +32,16 @@ export const Footer: FC = () => {
               src="/group-11.svg"
             />
             <div className="font-gilroy-semibold text-white w-[50.2px] relative tracking-[-0.03em] leading-[120.41%] inline-block h-[14.6px] shrink-0">
-              Stakera
+              Neutra
             </div>
           </div>
         </a>
         <div className="hidden sm:flex px-2 relative justify-center items-center text-center text-sm leading-[150%] font-gilroy-regular opacity-[0.5]">
-          Stakera is currently in beta. Please proceed with caution and be aware
+          Neutra is currently in beta. Please proceed with caution and be aware
           of potential risks.
         </div>
         <div className="sm:hidden px-2 relative flex justify-center items-center text-center text-sm leading-[150%] font-gilroy-regular opacity-[0.5]">
-          Stakera is currently in beta.
+          Neutra is currently in beta.
         </div>
         <div className="flex flex-row items-center justify-start gap-[13px] opacity-[0.5]">
           <a

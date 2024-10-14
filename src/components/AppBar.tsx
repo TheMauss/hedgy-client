@@ -102,12 +102,12 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
         <a href="/lottery" className="no-underline">
           <div className="flex flex-row items-center justify-start gap-[7.4px]">
             <img
-              className="ml-1 w-[27.2px] relative h-[29.2px]"
+              className="ml-1 w-[40.2px] relative h-[40.2px]"
               alt=""
-              src="/group-1.svg"
+              src="/hedgehog.svg"
             />
             <div className="text-[22px] text-white justify-center items-start tracking-[-0.01em] leading-[120.41%] inline-block shrink-0 pt-0.5">
-              Stakera
+              Neutra
             </div>
           </div>
         </a>

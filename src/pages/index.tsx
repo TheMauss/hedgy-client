@@ -6,33 +6,20 @@ const Home: NextPage = () => {
   return (
     <div>
       <Head>
-        <title>Stakera</title>
-        <meta
-          name="description"
-          content="A lossless lottery platform built on Solana Liquidity Staking"
-        />
-        <meta
-          name="keywords"
-          content="Stakera, lottery, lossless, crypto, win, blockchain, solana"
-        />{" "}
-        {/* SEO keywords */}
-        <meta name="author" content="Stakera Team" />
+        <title></title>
+        <meta name="description" content="" />
+        <meta name="keywords" content="" /> {/* SEO keywords */}
+        <meta name="author" content="" />
         {/* Open Graph and Twitter meta tags as mentioned above */}
-        <meta property="og:title" content="Stakera | Lottery" />
-        <meta
-          property="og:description"
-          content="A lossless lottery platform built on Solana Liquidity Staking"
-        />
-        <meta property="og:image" content="/stakerameta.png" />
-        <meta property="og:url" content="https://stakera.io/lottery" />
+        <meta property="og:title" content="" />
+        <meta property="og:description" content="" />
+        <meta property="og:image" content="/meta.png" />
+        <meta property="og:url" content="https://.io/lottery" />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Stakera" />
-        <meta
-          name="twitter:description"
-          content="A lossless lottery platform built on Solana Liquidity Staking"
-        />
-        <meta name="twitter:image" content="/stakerameta.png" />
+        <meta name="twitter:title" content="" />
+        <meta name="twitter:description" content="" />
+        <meta name="twitter:image" content="" />
         <link rel="icon" href="/logoico.png" />
       </Head>
       <HomeView />

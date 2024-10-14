@@ -1,12 +1,6 @@
-import React from "react";
 import Head from "next/head";
-import Link from "next/link";
-import { useState, useEffect, useRef, FC, useCallback } from "react";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { FunctionComponent } from "react";
-import FrameComponent9 from "./components/FrameComponent3";
-import FrameComponent from "./components/FrameComponent";
-import FrameComponent8 from "./components/FrameComponent2";
+import { BN } from "@project-serum/anchor";
+import { FC, useState, useEffect, useCallback, useRef } from "react";
 import {
   Connection,
   SystemProgram,
@@ -15,474 +9,1039 @@ import {
   ComputeBudgetProgram,
   LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
-import {
-  LotteryAccount,
-  LotteryAccountJSON,
-} from "../../out/accounts/LotteryAccount";
-import {
-  LotteryAccount as LotteryAccount2,
-  LotteryAccountJSON as LotteryAccountJSON2,
-} from "../../output/accounts/LotteryAccount";
-import Frame1 from "./components/Frame1";
+import { notify } from "utils/notifications";
+import { deposit as depositInstruction } from "../../idl/instructions"; // Update with the correct path
+import "react-tooltip/dist/react-tooltip.css";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import useUserSOLBalanceStore from "../../stores/useUserSOLBalanceStore";
 import axios from "axios";
-import Decimal from "decimal.js";
-import {
-  buildWhirlpoolClient,
-  ORCA_WHIRLPOOL_PROGRAM_ID,
-  WhirlpoolContext,
-  PriceMath,
-} from "@orca-so/whirlpools-sdk";
+import dynamic from "next/dynamic";
+import { usePriorityFee } from "../../contexts/PriorityFee";
+import { VaultDepositor, VaultDepositorJSON } from "idl/accounts";
 
-const whirlpoolAddress = new PublicKey(
-  "DxD41srN8Xk9QfYjdNXF9tTnP6qQxeF2bZF8s1eN62Pe"
+import { initializeVaultDepositor as initVaultDepositor } from "../../idl/instructions"; // Update with the correct path
+import { cancelRequestWithdraw } from "../../idl/instructions"; // Update with the correct path
+
+import { requestWithdraw } from "../../idl/instructions"; // Update with the correct path
+import { withdraw } from "../../idl/instructions"; // Update with the correct path
+import { Token } from "../../idl/types/WithdrawUnit";
+
+const WalletMultiButtonDynamic = dynamic(
+  async () =>
+    (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
+  { ssr: false }
 );
 
-// Dynamically import the StarfieldAnimationComponent with SSR disabled
-const fetchHistoricalPriceUpdates = async (timestamp, ids) => {
-  const baseURL = "https://benchmarks.pyth.network/v1/updates/price/";
-  const url = `${baseURL}${timestamp}`;
-  const params = ids.map((id) => `ids=${id}`).join("&");
-  const fullUrl = `${url}?${params}`;
+const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT5;
 
-  console.log(`Fetching data from URL: ${fullUrl}`);
+const DRIFT_VAULTS = new PublicKey(process.env.NEXT_PUBLIC_DRIFT_VAULTS);
+const VAULT_ADDRESS = new PublicKey(process.env.NEXT_PUBLIC_VAULT_ADDRESS);
+const VAULT_USDC_ADDRESS = new PublicKey(
+  process.env.NEXT_PUBLIC_VAULT_USDC_ADDRESS
+);
+const VAULT_MANAGER = new PublicKey(process.env.NEXT_PUBLIC_VAULT_MANAGER);
+const TOKEN_PROGRAM = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_PROGRAM);
+const ASSOCIATED_TOKENPROGRAM = new PublicKey(
+  process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM
+);
+const DRIFT_STATE = new PublicKey(process.env.NEXT_PUBLIC_DRIFT_STATE);
+const DRIFT_SPOT = new PublicKey(process.env.NEXT_PUBLIC_DRIFT_SPOT);
+const DRIFT_SPOT_USDC = new PublicKey(process.env.NEXT_PUBLIC_DRIFT_SPOT_USDC);
+const DRIFT_PROGRAM = new PublicKey(process.env.NEXT_PUBLIC_DRIFT_PROGRAM);
+const USDCMINT = new PublicKey(process.env.NEXT_PUBLIC_USDC_MINT);
+const RENT = new PublicKey("SysvarRent111111111111111111111111111111111");
+const SYSTEM_PROGRAM = new PublicKey("11111111111111111111111111111111");
+const DRIFT_SPOT_MARKET_USDC = new PublicKey(
+  process.env.NEXT_PUBLIC_DRIFT_SPOT_MARKET_USDC
+);
+const DRIFT_SPOT_ORACLE = new PublicKey(
+  process.env.NEXT_PUBLIC_DRIFT_SPOT_ORACLE
+);
 
-  try {
-    const response = await axios.get(fullUrl);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching historical price updates:", error);
-    return null;
+async function usdcSplTokenAccountSync(walletAddress) {
+  const [splTokenAccount] = PublicKey.findProgramAddressSync(
+    [walletAddress.toBuffer(), TOKEN_PROGRAM.toBuffer(), USDCMINT.toBuffer()],
+    ASSOCIATED_TOKENPROGRAM
+  );
+  return splTokenAccount;
+}
+
+function getVaultDepositorAddressSync(
+  programId: PublicKey,
+  vault: PublicKey,
+  authority: PublicKey
+): PublicKey {
+  return PublicKey.findProgramAddressSync(
+    [
+      Buffer.from(new TextEncoder().encode("vault_depositor")),
+      vault.toBuffer(),
+      authority.toBuffer(),
+    ],
+    programId
+  )[0];
+}
+
+function encodeName(name: string): number[] {
+  if (name.length > 32) {
+    throw Error(`Name (${name}) longer than 32 characters`);
   }
-};
 
-const priceIdToSymbolMap = {
-  ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d:
-    "Crypto.SOL/USD",
-  // Add more mappings as necessary
-};
+  const buffer = Buffer.alloc(32);
+  buffer.fill(name);
+  buffer.fill(" ", name.length);
 
-export const HomeView: FC = ({}) => {
-  const { connection } = useConnection();
-  const [isNavOpen, setIsNavOpen] = useState(false);
-  const [lotteryAccountData, setLotteryAccountData] =
-    useState<LotteryAccountJSON | null>(null);
-  const [totalParticipants, setTotalParticipants] = useState(0);
-  const [lotteryAccountData2, setLotteryAccountData2] =
-    useState<LotteryAccountJSON2 | null>(null);
-  const [totalParticipants2, setTotalParticipants2] = useState(0);
+  return Array(...buffer);
+}
 
-  const [windowWidth, setWindowWidth] = useState(0);
-  const [openPrices, setopenPrices] = useState({});
-  const [prices, setPrices] = useState({});
-  const [currentPrice, setCurrentPrice] = useState<Decimal | null>(null);
-  const wallet = useWallet();
+function getUserStatsAccountPublicKey(
+  programId: PublicKey,
+  authority: PublicKey
+): PublicKey {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from(new TextEncoder().encode("user_stats")), authority.toBuffer()],
+    programId
+  )[0];
+}
 
-  const getWhirlpoolClient = useCallback(() => {
-    const ctx = WhirlpoolContext.from(
-      connection,
-      wallet,
-      ORCA_WHIRLPOOL_PROGRAM_ID
-    );
-    const client = buildWhirlpoolClient(ctx);
-    return client;
-  }, [connection, wallet]);
+function getUserAccountPublicKeySync(
+  programId: PublicKey,
+  authority: PublicKey,
+  subAccountId = 0
+): PublicKey {
+  return PublicKey.findProgramAddressSync(
+    [
+      Buffer.from(new TextEncoder().encode("user")),
+      authority.toBuffer(),
+      Buffer.from(new Uint8Array(new BN(subAccountId).toArray("le", 2))),
+    ],
+    programId
+  )[0];
+}
 
-  const getWhirlpoolData = useCallback(
-    async (whirlpoolAddress: PublicKey) => {
-      const client = getWhirlpoolClient();
-      const whirlpool = await client.getPool(whirlpoolAddress);
-      const sqrtPriceX64 = whirlpool.getData().sqrtPrice;
-      const price = PriceMath.sqrtPriceX64ToPrice(sqrtPriceX64, 9, 9); // Update decimals based on token pairs
-      return { whirlpool, price };
-    },
-    [getWhirlpoolClient]
+async function checkVaultDepositor(
+  vaultDepositor: PublicKey,
+  connection: Connection
+): Promise<VaultDepositorJSON | null> {
+  const vaultDepositorData = await VaultDepositor.fetch(
+    connection,
+    vaultDepositor
   );
 
-  const fetchWhirlpoolData = async () => {
-    try {
-      const { whirlpool, price } = await getWhirlpoolData(whirlpoolAddress);
-      setCurrentPrice(price);
-    } catch (error) {
-      console.error("Failed to fetch whirlpool data:", error);
-    }
+  if (!vaultDepositorData) {
+    console.log("Vault depositor account not found.");
+    return null;
+  }
+
+  return vaultDepositorData.toJSON();
+}
+
+require("dotenv").config();
+
+export const HomeView: FC = () => {
+  const { connection } = useConnection();
+  const { publicKey, sendTransaction } = useWallet();
+  const balance = useUserSOLBalanceStore((s) => s.solBalance);
+  const usdcbalance = useUserSOLBalanceStore((s) => s.usdcBalance);
+  const { getUserSOLBalance, getUserUSDCBalance } = useUserSOLBalanceStore();
+  const [amount, setAmount] = useState("");
+  const [yieldAmount, setYieldAmount] = useState("");
+  const [displeyAmount, setDispleyAmount] = useState("");
+  const [vaultDepositor, setVaultDepositor] = useState<PublicKey | null>(null);
+  const [USDCAddress, setUSDCAddress] = useState<PublicKey | null>(null);
+  const [depositorData, setDepositorData] = useState<VaultDepositorJSON | null>(
+    null
+  );
+  const wallet = useWallet();
+  const [waves, setWaves] = useState([]);
+  const { isPriorityFee, setPriorityFee } = usePriorityFee();
+  const [selectedStake, setSelectedStake] = useState<"DEPOSIT" | "WITHDRAW">(
+    "DEPOSIT"
+  );
+
+  const fetchDepositorData = async () => {
+    const data = await checkVaultDepositor(vaultDepositor, connection);
+    setDepositorData(data);
   };
 
-  useEffect(() => {
-    fetchWhirlpoolData();
-  }, []);
+  const handleAmountClick = (type) => {
+    let tokenBalance;
 
-  useEffect(() => {
-    const currentDate = new Date();
-    const gmt2Date = new Date(currentDate.getTime() - 50000);
-    const timestamp = Math.floor(gmt2Date.getTime() / 1000);
-
-    const ids = Object.keys(priceIdToSymbolMap);
-
-    const fetchPrices = async () => {
-      const priceUpdates = await fetchHistoricalPriceUpdates(timestamp, ids);
-
-      if (priceUpdates && priceUpdates.parsed) {
-        const updatedPrices = { ...openPrices };
-        priceUpdates.parsed.forEach((priceUpdate) => {
-          const symbol = priceIdToSymbolMap[priceUpdate.id];
-          if (symbol) {
-            updatedPrices[symbol] = priceUpdate.price.price;
-          }
-        });
-
-        setPrices(updatedPrices);
-        console.log("updatedPrices", updatedPrices);
+    if (type === "HALF" && !isNaN(Number(amount)) && Number(amount) > 0) {
+      tokenBalance = Number(amount) / 2;
+    } else {
+      if (selectedStake === "DEPOSIT") {
+        tokenBalance = type === "HALF" ? usdcbalance / 2 : usdcbalance;
+        tokenBalance = tokenBalance;
+      } else {
       }
+    }
+    const maxValue = Math.max(Number(tokenBalance), 0);
+    const displayMax = Math.max(Number(tokenBalance), 0).toFixed(3);
+
+    setAmount(maxValue.toString()); // Update the state, which will update the input value reactively
+    setDispleyAmount(displayMax.toString()); // Update the state, which will update the input value reactively
+  };
+
+  const formatPublicKey = (pubKey) => {
+    if (!pubKey) return "";
+    return `${pubKey.slice(0, 3)}...${pubKey.slice(-3)}`;
+  };
+
+  const handleWithdrawDecision = async (e) => {
+    const button = e.currentTarget;
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(button.clientWidth, button.clientHeight);
+    const x = e.clientX - rect.left - size / 2;
+    const y = e.clientY - rect.top - size / 2;
+
+    const newWave = {
+      x,
+      y,
+      size,
+      key: Date.now(), // Use a unique key for each wave
     };
 
-    fetchPrices();
-  }, []);
+    setWaves((prevWaves) => [...prevWaves, newWave]);
 
-  const solPrice =
-    Number((prices["Crypto.SOL/USD"] / 100000000).toFixed(2)) || 150.35;
-
-  async function checkLotteryAccount2(
-    connection: Connection
-  ): Promise<LotteryAccountJSON2> {
-    const lotteryAcc = new PublicKey(
-      "AnmXvJgAto11nm75RiUTEKAR3Ad2ZzzogxmhdUE4rdUA"
-    ); // Replace with actual account
-    const lotteryAccount = await LotteryAccount2.fetch(connection, lotteryAcc);
-
-    if (!lotteryAccount) {
-      return {
-        isInitialized: false,
-        totalDeposits: "0",
-        lstTotalDeposits: "0",
-        lstYieldDeposits: "0",
-        lstLotteryDeposits: "0",
-        participants: [],
-        smallCommitSlot: "0",
-        smallRandomnessAccount: "0",
-        bigLotteryTime: "0",
-        bigLotteryHappened: false,
-        smallLotteryTime: "0",
-        smallLotteryHappened: false,
-        bigCommitSlot: "0",
-        bigRandomnessAccount: "0",
-        teamYield: "0",
-        bigLotteryYield: "0",
-        smallLotteryToBig: 0,
-        solIncentive: "0",
-        lstIncentive: "0",
-        bigSolIncentive: "0",
-        bigLstIncentive: "0",
-        bigLstLotteryYield: "0",
-        teamLstYield: "0",
-        bigCommitTime: "0",
-        smallCommitTime: "0",
-        isBigCommitted: false,
-        isSmallComitted: false,
-        weeklyHour: 0,
-        monthlyHour: 0,
-        maxWeeklyHour: 0,
-        maxMonthlyHour: 0,
-        hourlyTimestamp: "0",
-      };
-    }
-
-    return lotteryAccount.toJSON();
-  }
-
-  async function checkLotteryAccount(
-    connection: Connection
-  ): Promise<LotteryAccountJSON> {
-    const lotteryAcc = new PublicKey(
-      "9aFmbWZuMbCQzMyNqsTB4umen9mpnqL6Z6a4ypis3XzW"
-    ); // Replace with actual account
-    const lotteryAccount = await LotteryAccount.fetch(connection, lotteryAcc);
-
-    if (!lotteryAccount) {
-      return {
-        isInitialized: false,
-        totalDeposits: "0",
-        lstTotalDeposits: "0",
-        participants: [],
-        smallCommitSlot: "0",
-        smallRandomnessAccount: "0",
-        bigLotteryTime: "0",
-        bigLotteryHappened: false,
-        smallLotteryTime: "0",
-        smallLotteryHappened: false,
-        bigCommitSlot: "0",
-        bigRandomnessAccount: "0",
-        teamYield: "0",
-        bigLotteryYield: "0",
-        smallLotteryToBig: 0,
-        solIncentive: "0",
-        lstIncentive: "0",
-        bigSolIncentive: "0",
-        bigLstIncentive: "0",
-        bigLstLotteryYield: "0",
-        teamLstYield: "0",
-        bigCommitTime: "0",
-        smallCommitTime: "0",
-        isBigCommitted: false,
-        isSmallComitted: false,
-        weeklyHour: 0,
-        monthlyHour: 0,
-        maxWeeklyHour: 0,
-        maxMonthlyHour: 0,
-        hourlyTimestamp: "0",
-      };
-    }
-
-    return lotteryAccount.toJSON();
-  }
-
-  useEffect(() => {
-    fetchLotteryAccountData();
-  }, [connection]);
-
-  const mergeParticipants = (participants1, participants2) => {
-    const mergedParticipants = {};
-
-    // Iterate over the participants of lotteryAccount
-    for (const participant of participants1) {
-      const pubkeyStr = participant.pubkey.toString();
-      mergedParticipants[pubkeyStr] = participant;
-    }
-
-    // Iterate over the participants of lotteryAccount2 and merge, if not already present
-    for (const participant of participants2) {
-      const pubkeyStr = participant.pubkey.toString();
-
-      // If the participant exists in lotteryAccount1, don't double count
-      if (!mergedParticipants[pubkeyStr]) {
-        mergedParticipants[pubkeyStr] = participant;
-      }
-    }
-
-    return Object.values(mergedParticipants); // Return merged participants as an array
+    // Remove the wave after animation ends
+    setTimeout(() => {
+      setWaves((prevWaves) =>
+        prevWaves.filter((wave) => wave.key !== newWave.key)
+      );
+    }, 600);
   };
 
-  const fetchLotteryAccountData = async () => {
-    try {
-      const data = await checkLotteryAccount(connection);
-      setLotteryAccountData(data);
-      const data2 = await checkLotteryAccount2(connection);
-      setLotteryAccountData2(data2);
-      const mergedParticipants = mergeParticipants(
-        data.participants,
-        data2.participants
+  const handleWithdrawRequest = async () => {
+    if (!publicKey || !vaultDepositor || !USDCAddress) {
+      console.error(
+        "Required data missing (publicKey, vaultDepositor, USDCAddress)."
       );
-      const totalParticipants = mergedParticipants.length;
-      // Store the total number of participants
-      setTotalParticipants(totalParticipants);
-    } catch (error) {
-      console.error("Error fetching lottery account data:", error);
+      return;
     }
+    let PRIORITY_FEE_IX;
+
+    if (isPriorityFee) {
+      const priorityfees = await getPriorityFeeEstimate();
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: priorityfees,
+      });
+    } else {
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: 0,
+      });
+    }
+
+    const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 300000,
+    });
+
+    const RequestWithdrawArgs = {
+      withdrawAmount: new BN(Number(amount) * 1e6),
+      withdrawUnit: new Token(),
+    };
+
+    const RequestAccounts = {
+      vault: VAULT_ADDRESS,
+      vaultDepositor: vaultDepositor,
+      authority: publicKey,
+      driftUserStats: new PublicKey(
+        "GV3F3CaTj1rQnCJbHuvAF4fMXYrEBaoaB7BFRJZuZFjF"
+      ),
+      driftUser: new PublicKey("GfixmLMU3eGVpf3Go7A51rvdyjBnJoryNotTiqpWpoFs"),
+      driftState: DRIFT_STATE,
+      oracleAddress: DRIFT_SPOT_ORACLE,
+      spotMarketAddress: DRIFT_SPOT,
+    };
+
+    try {
+      let tx = new Transaction();
+
+      // 3. Create deposit instruction and add to transaction
+      const depositIx = requestWithdraw(RequestWithdrawArgs, RequestAccounts);
+      tx.add(COMPUTE_BUDGET_IX).add(depositIx).add(PRIORITY_FEE_IX);
+
+      // 4. Send transaction
+      const signature = await sendTransaction(tx, connection);
+      notify({
+        type: "info",
+        message: "Deposit transaction sent!",
+        txid: signature,
+      });
+
+      // 5. Confirm transaction
+      await connection.confirmTransaction(signature, "processed");
+      notify({
+        type: "success",
+        message: "Deposit transaction successful!",
+        txid: signature,
+      });
+
+      // Refresh user data after deposit
+      setTimeout(() => {
+        fetchDepositorData();
+      }, 1200);
+    } catch (error) {
+      console.error(error);
+      notify({
+        type: "error",
+        message: "Deposit transaction failed!",
+        description: error.message,
+      });
+    }
+  };
+
+  const handleCancelRequest = async () => {
+    if (!publicKey || !vaultDepositor || !USDCAddress) {
+      console.error(
+        "Required data missing (publicKey, vaultDepositor, USDCAddress)."
+      );
+      return;
+    }
+    let PRIORITY_FEE_IX;
+
+    if (isPriorityFee) {
+      const priorityfees = await getPriorityFeeEstimate();
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: priorityfees,
+      });
+    } else {
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: 0,
+      });
+    }
+
+    const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 300000,
+    });
+
+    const RequestArgs = {
+      marketIndex: 0,
+    };
+
+    const RequestAccounts = {
+      vault: VAULT_ADDRESS,
+      vaultDepositor: vaultDepositor,
+      authority: publicKey,
+      driftUserStats: new PublicKey(
+        "GV3F3CaTj1rQnCJbHuvAF4fMXYrEBaoaB7BFRJZuZFjF"
+      ),
+      driftUser: new PublicKey("GfixmLMU3eGVpf3Go7A51rvdyjBnJoryNotTiqpWpoFs"),
+      driftState: DRIFT_STATE,
+      oracleAddress: DRIFT_SPOT_ORACLE,
+      spotMarketAddress: DRIFT_SPOT,
+    };
+
+    try {
+      let tx = new Transaction();
+
+      // 3. Create deposit instruction and add to transaction
+      const depositIx = cancelRequestWithdraw(RequestAccounts);
+      tx.add(COMPUTE_BUDGET_IX).add(depositIx).add(PRIORITY_FEE_IX);
+
+      // 4. Send transaction
+      const signature = await sendTransaction(tx, connection);
+      notify({
+        type: "info",
+        message: "Deposit transaction sent!",
+        txid: signature,
+      });
+
+      // 5. Confirm transaction
+      await connection.confirmTransaction(signature, "processed");
+      notify({
+        type: "success",
+        message: "Deposit transaction successful!",
+        txid: signature,
+      });
+
+      // Refresh user data after deposit
+      setTimeout(() => {
+        fetchDepositorData();
+      }, 1200);
+    } catch (error) {
+      console.error(error);
+      notify({
+        type: "error",
+        message: "Deposit transaction failed!",
+        description: error.message,
+      });
+    }
+  };
+
+  const handleDeposit = async (e) => {
+    if (!publicKey || !vaultDepositor || !USDCAddress) {
+      console.error(
+        "Required data missing (publicKey, vaultDepositor, USDCAddress)."
+      );
+      return;
+    }
+
+    const button = e.currentTarget;
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(button.clientWidth, button.clientHeight);
+    const x = e.clientX - rect.left - size / 2;
+    const y = e.clientY - rect.top - size / 2;
+
+    const newWave = {
+      x,
+      y,
+      size,
+      key: Date.now(), // Use a unique key for each wave
+    };
+
+    setWaves((prevWaves) => [...prevWaves, newWave]);
+
+    // Remove the wave after animation ends
+    setTimeout(() => {
+      setWaves((prevWaves) =>
+        prevWaves.filter((wave) => wave.key !== newWave.key)
+      );
+    }, 600);
+    if (!publicKey) {
+      notify({ type: "error", message: "Wallet not connected!" });
+      return;
+    }
+
+    let PRIORITY_FEE_IX;
+
+    if (isPriorityFee) {
+      const priorityfees = await getPriorityFeeEstimate();
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: priorityfees,
+      });
+    } else {
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: 0,
+      });
+    }
+
+    const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 300000,
+    });
+
+    const depositArgs = {
+      marketIndex: 0,
+      amount: new BN(Number(amount) * 1e6), // Adjust precision based on the token
+      reduceOnly: false,
+    };
+
+    const depositAccounts = {
+      vault: VAULT_ADDRESS, // Replace with actual vault public key
+      vaultDepositor: vaultDepositor, // Replace with actual depositor public key
+      authority: publicKey, // User's public key (from wallet adapter)
+      vaultTokenAccount: VAULT_USDC_ADDRESS, // Replace with actual vault token account
+      driftUserStats: new PublicKey(
+        "GV3F3CaTj1rQnCJbHuvAF4fMXYrEBaoaB7BFRJZuZFjF"
+      ), // Replace with drift user stats account
+      driftUser: new PublicKey("GfixmLMU3eGVpf3Go7A51rvdyjBnJoryNotTiqpWpoFs"), // Replace with drift user account
+      driftState: DRIFT_STATE, // Replace with drift state account
+      driftSpotMarketVault: DRIFT_SPOT_MARKET_USDC, // Replace with spot market vault account
+      userTokenAccount: USDCAddress, // User's token account for depositing tokens
+      driftProgram: DRIFT_PROGRAM, // Replace with actual Drift program ID
+      tokenProgram: TOKEN_PROGRAM, // Standard SPL token program ID
+      oracleAddress: DRIFT_SPOT_ORACLE,
+      spotMarketAddress: DRIFT_SPOT, // Replace with actual spot market address (e.g., USDC market)
+    };
+
+    try {
+      let tx = new Transaction();
+
+      // 1. Check if the vaultDepositor account exists
+      const depositorInfo = await connection.getAccountInfo(vaultDepositor);
+
+      if (!depositorInfo) {
+        // 2. Initialize vaultDepositor if it doesn't exist
+
+        const vaultAccounts = {
+          vault: VAULT_ADDRESS, // Replace with actual vault public key
+          vaultDepositor: vaultDepositor, // Replace with actual depositor public key
+          authority: publicKey, // User's public key (from wallet adapter)
+          payer: publicKey, // Replace with actual vault token account
+          rent: RENT, // Replace with drift user stats account
+          systemProgram: SYSTEM_PROGRAM, // Replace with drift user account                        // Standard SPL token program ID
+        };
+        const initVaultDepositorIx = initVaultDepositor(vaultAccounts);
+        tx.add(initVaultDepositorIx);
+      }
+
+      // 3. Create deposit instruction and add to transaction
+      const depositIx = depositInstruction(depositArgs, depositAccounts);
+      tx.add(COMPUTE_BUDGET_IX).add(depositIx).add(PRIORITY_FEE_IX);
+
+      // 4. Send transaction
+      const signature = await sendTransaction(tx, connection);
+      notify({
+        type: "info",
+        message: "Deposit transaction sent!",
+        txid: signature,
+      });
+
+      // 5. Confirm transaction
+      await connection.confirmTransaction(signature, "processed");
+      notify({
+        type: "success",
+        message: "Deposit transaction successful!",
+        txid: signature,
+      });
+
+      // Refresh user data after deposit
+      setTimeout(() => {
+        fetchDepositorData();
+      }, 1200);
+    } catch (error) {
+      console.error(error);
+      notify({
+        type: "error",
+        message: "Deposit transaction failed!",
+        description: error.message,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (publicKey) {
+      getUserSOLBalance(publicKey, connection);
+      getUserUSDCBalance(publicKey, connection);
+      const Depositor = getVaultDepositorAddressSync(
+        DRIFT_VAULTS,
+        VAULT_ADDRESS,
+        publicKey
+      );
+      setVaultDepositor(Depositor);
+      const fetchUSDCAddress = async () => {
+        if (publicKey) {
+          const USDCAddy = await usdcSplTokenAccountSync(publicKey);
+          setUSDCAddress(USDCAddy); // Now USDCAddy is resolved to PublicKey
+        }
+      };
+      fetchUSDCAddress();
+    }
+  }, [publicKey, connection]);
+
+  useEffect(() => {
+    if (vaultDepositor) {
+      const fetchDepositorData = async () => {
+        const data = await checkVaultDepositor(vaultDepositor, connection);
+        setDepositorData(data);
+        console.log("rawdata", data);
+      };
+
+      fetchDepositorData();
+    }
+  }, [vaultDepositor, connection]);
+
+  const defaultImage = "/cat4.png"; // Default image
+  const [profileImage, setProfileImage] = useState(defaultImage);
+  const fileInputRef = useRef(null); // Reference to the file input
+
+  // Load the saved image from local storage when the component mounts
+  useEffect(() => {
+    const savedImage = localStorage.getItem("profileImage");
+    if (savedImage) {
+      setProfileImage(savedImage);
+    }
+  }, []);
+
+  // Handle the file input change and update profile picture
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+
+      // Once the file is read, save it and update the state
+      reader.onload = () => {
+        if (typeof reader.result === "string") {
+          const imageUrl = reader.result;
+          setProfileImage(imageUrl);
+          localStorage.setItem("profileImage", imageUrl); // Save the image in local storage
+        }
+      };
+
+      reader.readAsDataURL(file); // Convert the file to a data URL
+    }
+  };
+
+  // Function to trigger file input click
+  const handleImageClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click(); // Trigger click on hidden file input
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setProfileImage(defaultImage); // Revert back to the default image
+    localStorage.removeItem("profileImage"); // Remove the image from local storage
+  };
+
+  const [randomImage, setRandomImage] = useState("");
+
+  const getRandomImageName = () => {
+    // const images = ["ellipse-1@2x.png", "cat1.png", "cat4.png", "cat6.png"];
+    const images = ["cat4.png"];
+    const randomIndex = Math.floor(Math.random() * images.length);
+    return images[randomIndex];
+  };
+
+  useEffect(() => {
+    const randomImageName = getRandomImageName();
+    setRandomImage(randomImageName);
+  }, []);
+
+  // const fetchParticipantData = async () => {
+  //   try {
+  //     const data = await checkLotteryAccount(connection);
+  //     const participant = data.participants.find(
+  //       (participant) => participant.pubkey === publicKey.toString()
+  //     );
+  //     const data2 = await checkLotteryAccount2(connection);
+  //     const participant2 = data2.participants.find(
+  //       (participant2) => participant2.pubkey === publicKey.toString()
+  //     );
+  //     setParticipantData(participant || null);
+  //     setParticipantData2(participant2 || null);
+  //   } catch (error) {
+  //     console.error("Error fetching lottery account data:", error);
+  //   }
+  // };
+
+  // myslet na to!
+  // useEffect(() => {
+  //   fetchLotteryAccountData();
+  // }, [connection]);
+
+  // // myslet na to!
+  // useEffect(() => {
+  //   if (publicKey) {
+  //     setTimeout(() => {
+  //       fetchParticipantData();
+  //     }, 150);
+  //   }
+  // }, [publicKey, connection]);
+
+  const getPriorityFeeEstimate = async () => {
+    try {
+      const rpcUrl = ENDPOINT5;
+
+      const requestData = {
+        jsonrpc: "2.0",
+        id: "1",
+        method: "getPriorityFeeEstimate",
+        params: [
+          {
+            accountKeys: [
+              "StkraNY8rELLLoDHmVg8Di8DKTLbE8yAWZqRR9w413n",
+              "DxD41srN8Xk9QfYjdNXF9tTnP6qQxeF2bZF8s1eN62Pe",
+            ],
+            options: {
+              includeAllPriorityFeeLevels: true,
+            },
+          },
+        ],
+      };
+
+      const response = await axios.post(rpcUrl, requestData);
+
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const responseData = response.data;
+      if (responseData.error) {
+        throw new Error(
+          `RPC error! Code: ${responseData.error.code}, Message: ${responseData.error.message}`
+        );
+      }
+
+      return responseData.result.priorityFeeLevels.veryHigh.toFixed(0);
+    } catch (error) {
+      console.error("Error fetching priority fee estimate:", error);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+
+    // Replace comma with dot, and remove non-numeric characters except dot (.) as decimal separator
+    const preNumericValue = inputValue.replace(/,/g, ".");
+    const numericValue = preNumericValue.replace(/[^0-9.]/g, "");
+
+    // Count the occurrences of dot (.)
+    const dotCount = (numericValue.match(/\./g) || []).length;
+
+    // If there is more than one dot, keep only the portion before the second dot
+    let sanitizedValue = numericValue;
+    if (dotCount > 1) {
+      sanitizedValue = sanitizedValue.substring(
+        0,
+        sanitizedValue.lastIndexOf(".")
+      );
+    }
+
+    setAmount(sanitizedValue); // Use maxValue for POOL1
+    setDispleyAmount(sanitizedValue);
   };
 
   return (
-    <div className="w-full relative bg-layer-1 overflow-hidden flex flex-col items-center justify-center box-border  leading-[normal] tracking-[normal] text-left text-sm text-gray-200 font-gilroy-regular">
+    <div className="overflow-hidden">
       <Head>
-        <title>Stakera | Lottery</title>
-        <meta
-          name="description"
-          content="A lossless lottery platform built on Solana Liquidity Staking"
-        />
-        <meta
-          name="keywords"
-          content="Stakera, lottery, lossless, crypto, win, blockchain, solana"
-        />{" "}
-        {/* SEO keywords */}
-        <meta name="author" content="Stakera Team" />
+        <title>Neutra</title>
+        <meta name="description" content="" />
+        <meta name="keywords" content="" /> {/* SEO keywords */}
+        <meta name="author" content="" />
         {/* Open Graph and Twitter meta tags as mentioned above */}
-        <meta property="og:title" content="Stakera | Lottery" />
-        <meta
-          property="og:description"
-          content="A lossless lottery platform built on Solana Liquidity Staking"
-        />
-        <meta property="og:image" content="/stakerameta.png" />
-        <meta property="og:url" content="https://stakera.io/lottery" />
+        <meta property="og:title" content="" />
+        <meta property="og:description" content="" />
+        <meta property="og:image" content="/" />
+        <meta property="og:url" content="" />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Stakera" />
-        <meta
-          name="twitter:description"
-          content="A lossless lottery platform built on Solana Liquidity Staking"
-        />
-        <meta name="twitter:image" content="/stakerameta.png" />
-        <link rel="icon" href="/favicon.ico" />
+        <meta name="twitter:title" content="" />
+        <meta name="twitter:description" content="" />
+        <meta name="twitter:image" content="/" />
+        <link rel="icon" href="/hedgehog.svg" />
       </Head>
 
-      <header className="h-9.5 flex flex-row justify-between items-center max-w-[1700px] w-[95%] py-[29px] ">
-        {" "}
-        <Link href="/lottery" className="no-underline">
-          <div className="flex flex-col items-start justify-start  px-0 pb-0">
-            <FrameComponent9
-              group1="/group-1.svg"
-              propHeight="29.2px"
-              propWidth="27.2px"
-              propMinHeight="unset"
-              propHeight1="21.9px"
-              propFontSize="22.1px"
-              propMinWidth="75.3px"
-            />
-          </div>{" "}
-        </Link>
-        <Link href="/lottery" className="no-underline">
-          <button className="hover:opacity-50 transition ease-in-out duration-300 cursor-pointer [border:none] py-[7px] pl-4 pr-3 bg-primary rounded-lg overflow-hidden flex flex-row items-start justify-start gap-1 shrink-0">
-            <div className="flex flex-col items-start justify-start pt-[2.5px] px-0 pb-0">
-              <div className="relative text-base tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-bg text-left inline-block min-w-[84px] whitespace-nowrap">
-                Launch App
+      <div className="flex justify-center items-top min-h-[calc(100vh-172px)] z-100 bg-layer-1 ">
+        <div className="w-[95%] max-w-[1550px]">
+          <div className="w-full overflow-hidden text-left text-base text-neutral-06 font-gilroy-bold">
+            <div
+              className="lg:hidden flex rounded-2xl w-full flex lg:flex-row flex-col lg:gap-0 md:gap-4 items-center justify-between p-4 box-border text-13xl  font-gilroy-semibold"
+              style={{
+                backgroundImage: "url('/frame-2085660298@3x.png')",
+                backgroundSize: "cover",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "top",
+              }}
+            >
+              <div className="w-full flex flex-col md:items-center items-start justify-between py-4 gap-[8px] md:rounded-2xl [backdrop-filter:blur(20px)] rounded-2xl">
+                <div className="px-4 flex flex-row gap-[16px]">
+                  <div className="relative group profile-picture-container w-16 h-16">
+                    {/* Display the current profile image */}
+                    <img
+                      className={`w-16 h-16 rounded-full object-cover cursor-pointer ${
+                        profileImage === defaultImage
+                          ? "drop-shadow-[0_0_20px_rgba(111,255,144,0.7)]"
+                          : ""
+                      }`}
+                      alt="Profile"
+                      src={profileImage}
+                      onClick={handleImageClick} // Trigger file input when image is clicked
+                    />
+
+                    {/* Hidden file input to select new image */}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef} // Attach reference to file input
+                      style={{ display: "none" }} // Hide the file input
+                      onChange={handleImageChange} // Handle image selection
+                    />
+                    {profileImage !== defaultImage && (
+                      <div
+                        className="absolute text-sm top-0 right-0 p-0 bg-transparent text-white rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={handleRemoveImage}
+                      >
+                        ✕
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col items-start justify-start gap-[4px] ">
+                    <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%]">
+                      Welcome{" "}
+                    </div>
+
+                    <div className=" text-lg tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block">
+                      May the odds be in your favour
+                    </div>
+                  </div>
+                </div>
+                <div className="w-full md:w-4/5 py-2 px-4 rounded-2xl flex flex-col items-center justify-center  box-border text-base font-gilroy-medium ">
+                  <div className="self-stretch flex md:flex-row flex-col items-start justify-center gap-[32px] ">
+                    <div className="w-1/3 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
+                      <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
+                        Pool TVL
+                      </div>
+                      <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
+                        <span></span>
+
+                        <span className="text-lg">USDC</span>
+                      </div>
+                    </div>
+                    <div className="w-full md:w-2/3 flex flex-row">
+                      <div className="md:w-full w-1/2 flex-1 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
+                        <div className=" tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
+                          Your Stake
+                        </div>
+                        <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
+                          <span></span>
+
+                          <span className="text-lg">
+                            {" "}
+                            {isNaN(Number(depositorData?.netDeposits) / 10e5)
+                              ? 0
+                              : (
+                                  Number(depositorData?.netDeposits) / 10e5
+                                ).toFixed(1)}{" "}
+                            USDC
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <img
-              className="h-6 w-6 relative min-h-[24px]"
-              alt=""
-              src="/vuesaxlineararrowright.svg"
-            />
-          </button>{" "}
-        </Link>
-      </header>
-      <main className="min-h-[calc(100vh-172px)]  max-w-[1700px] w-[95%] flex flex-col items-start justify-start pt-0 px-0 pb-[29px] box-border gap-8 ">
-        <section
-          className={` self-stretch rounded-3xl flex flex-row items-end justify-start md:pt-[99px] md:pb-[52px] md:px-12 pl-8 pr-4 pt-16 pb-8 box-border   text-left text-base text-neutral-06 font-gilroy-semibold lg:flex-wrap  lg:box-border`}
-          style={{
-            backgroundImage: "url('/rectangle-17@2x.png')",
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "top",
-          }}
-        >
-          <div className="flex-1 flex flex-col items-start justify-start pt-0 px-0  box-border max-w-full ">
-            <div className="self-stretch flex lg:flex-row flex-col items-start justify-start gap-[30px] z-[1]">
-              <div className="w-full lg:w-1/2 self-stretch flex flex-col items-start justify-start gap-4">
-                <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%] text-primary">
-                  Stake Together, Win Individually
-                </div>
-                <h1 className="m-0 self-stretch relative xl:text-[60px] md:text-[50px] text-[45px] tracking-[-0.03em] leading-[120.41%] font-normal font-[inherit] ">
-                  A lossless lottery platform built on top of Liquidity Staking.
-                </h1>
+            <div
+              className="hidden lg:flex rounded-2xl w-full flex lg:flex-row flex-col lg:gap-0 md:gap-4 items-center justify-between py-2 px-6 box-border text-13xl font-gilroy-semibold"
+              style={{
+                backgroundImage: "url('/frame-2085660298@3x.png')",
+                backgroundSize: "cover",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "top",
+              }}
+            >
+              <div className="flex flex-row items-center justify-start py-6 px-2 gap-[16px] md:rounded-2xl  lg:[backdrop-filter:blur(0px)] md:[backdrop-filter:blur(20px)] rounded-2xl">
+                <div className="relative group profile-picture-container w-16 h-16">
+                  {/* Display the current profile image */}
+                  <img
+                    className={`w-16 h-16 rounded-full object-cover cursor-pointer ${
+                      profileImage === defaultImage
+                        ? "drop-shadow-[0_0_20px_rgba(111,255,144,0.6)]"
+                        : ""
+                    }`}
+                    alt="Profile"
+                    src={profileImage}
+                    onClick={handleImageClick} // Trigger file input when image is clicked
+                  />
 
-                <div className="flex flex-col gap-[8px] ">
-                  <div className="flex flex-row items-center justify-start gap-0 opacity-[0.5] text-mini font-gilroy-regular ">
-                    <div className="relative tracking-[-0.03em] leading-[120.41%] inline-block min-w-[77px]">
-                      Powered by
+                  {/* Hidden file input to select new image */}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef} // Attach reference to file input
+                    style={{ display: "none" }} // Hide the file input
+                    onChange={handleImageChange} // Handle image selection
+                  />
+                  {profileImage !== defaultImage && (
+                    <div
+                      className="absolute text-sm top-0 right-0 p-0 bg-transparent text-white rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={handleRemoveImage}
+                    >
+                      ✕
                     </div>
-                    <img
-                      className="h-[21.1px] relative overflow-hidden shrink-0"
-                      loading="lazy"
-                      alt=""
-                      src="/logo-left-white.svg"
-                    />
+                  )}
+                </div>
+                <div className="flex flex-col items-start justify-start gap-[4px] ">
+                  <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%]">
+                    Welcome{" "}
                   </div>
-                  <Link href="/lottery" className="no-underline">
-                    <button className="hover:opacity-50 transition ease-in-out duration-300 cursor-pointer [border:none] py-[7px] pl-4 pr-3 bg-primary rounded-lg overflow-hidden flex flex-row items-center justify-center gap-1 whitespace-nowrap hover:bg-limegreen">
-                      <div className="relative text-base tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-bg text-left inline-block min-w-[84px]">
-                        Launch App
-                      </div>
-                      <img
-                        className="h-6 w-6 relative"
-                        alt=""
-                        src="/vuesaxlineararrowright.svg"
-                      />
-                    </button>{" "}
-                  </Link>
+
+                  <div className=" text-lg tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block"></div>
                 </div>
               </div>
-              <div className=" xl:pt-30 lg:pt-36 lg:w-1/2 w-full flex flex-col md:flex-row items-end justify-end gap-4">
-                <div className="flex lg:flex-col md:flex-row flex-col items-start justify-start md:w-1/3 lg:w-1/2 w-full">
-                  <Frame1
-                    frameDivFlex="0.8939"
-                    frameDivPosition="unset"
-                    frameDivBorderRadius="16px"
-                    frameDivBackgroundColor="rgba(12, 30, 27, 0.81)"
-                    frameDivPadding="20.9px 13px"
-                    frameDivGap="5.2px"
-                    frameDivAlignSelf="unset"
-                    frameDivBackdropFilter="blur(17.22px)"
-                    frameDivMinWidth="159px"
-                    users="TVL"
-                    usersColor="rgba(255, 255, 255, 0.75)"
-                    prop={`$${
-                      isNaN(Number(currentPrice)) ||
-                      currentPrice === null ||
-                      isNaN(
-                        Number(lotteryAccountData?.totalDeposits) /
-                          LAMPORTS_PER_SOL +
-                          Number(lotteryAccountData2?.lstTotalDeposits) /
-                            LAMPORTS_PER_SOL
-                      )
-                        ? "0.00"
-                        : (
-                            ((Number(lotteryAccountData?.totalDeposits) +
-                              Number(lotteryAccountData2?.lstTotalDeposits) /
-                                Number(currentPrice)) /
-                              LAMPORTS_PER_SOL) *
-                            solPrice
-                          ).toFixed(2)
-                    }`}
-                    divFontSize="32px"
-                    divColor="#fff"
-                    className="w-full"
-                  />{" "}
+              <div className="lg:w-[40%] md:w-4/5 py-2 px-8 [backdrop-filter:blur(20px)] rounded-2xl bg-darkslategray-200 h-[90px] flex flex-col items-center justify-center  box-border text-base font-gilroy-medium">
+                <div className="self-stretch flex md:flex-row flex-col items-start justify-center gap-[32px] ">
+                  <div className="w-1/2 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
+                    <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
+                      Pool TVL
+                    </div>
+                    <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
+                      <span></span>
+                      <span className="text-lg">USDC</span>
+                    </div>
+                  </div>
+                  <div className="w-full md:w-2/3 flex flex-row">
+                    <div className="md:w-full w-1/2 flex-1 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
+                      <div className=" tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
+                        Your Deposit
+                      </div>
+                      <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
+                        <span></span>
+                        <span className="text-lg">
+                          {isNaN(Number(depositorData?.netDeposits) / 10e5)
+                            ? 0
+                            : (
+                                Number(depositorData?.netDeposits) / 10e5
+                              ).toFixed(1)}{" "}
+                          USDC
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex lg:flex-col md:flex-row flex-col items-start justify-start gap-4 w-full lg:w-1/2">
-                  <Frame1
-                    frameDivFlex="unset"
-                    frameDivPosition="unset"
-                    frameDivBorderRadius="16px"
-                    frameDivBackgroundColor="rgba(12, 30, 27, 0.81)"
-                    frameDivPadding="20.9px 13px"
-                    frameDivGap="5.2px"
-                    frameDivAlignSelf="stretch"
-                    frameDivBackdropFilter="blur(17.22px)"
-                    frameDivMinWidth="unset"
-                    users="Users"
-                    usersColor="rgba(255, 255, 255, 0.75)"
-                    prop={totalParticipants?.toString()}
-                    divFontSize="32px"
-                    divColor="#fff"
-                  />
-
-                  <Frame1
-                    frameDivFlex="unset"
-                    frameDivPosition="unset"
-                    frameDivBorderRadius="16px"
-                    frameDivBackgroundColor="rgba(12, 30, 27, 0.81)"
-                    frameDivPadding="20.9px 13px"
-                    frameDivGap="5.2px"
-                    frameDivAlignSelf="stretch"
-                    frameDivBackdropFilter="blur(17.22px)"
-                    frameDivMinWidth="unset"
-                    users="Total Winnings"
-                    usersColor="rgba(255, 255, 255, 0.75)"
-                    prop="$100"
-                    divFontSize="32px"
-                    divColor="#fff"
-                  />
-                </div>
-              </div>{" "}
+              </div>
             </div>
           </div>
-        </section>
-        <div className=" flex flex-col lg:flex-row w-full items-start justify-start gap-[32px]">
-          <FrameComponent
-            vuesaxbulkimport="/vuesaxbulkimport.svg"
-            deposit="Deposit"
-            depositYourTokensAndStart="Deposit your SOL into Stakera and start winning rewards, Immediately."
-          />
-          <FrameComponent
-            vuesaxbulkimport="/vuesaxbulklikeshapes.svg"
-            deposit="Win Solana"
-            depositYourTokensAndStart="Win rewards from collective staking, Risklessly."
-          />
-          <FrameComponent
-            vuesaxbulkimport="/vuesaxbulkexport.svg"
-            deposit="Withdraw"
-            depositYourTokensAndStart="Withdraw your tokens anytime, Instantly."
-          />
+          <div className=" flex md:flex-row flex-col gap-6 mt-6">
+            <div className="flex flex-col gap-6 lg:w-[34%] md:w-[44%]">
+              <div className=" flex-1 rounded-2xl bg-bg flex flex-col items-between justify-start py-6 px-5 md:p-6 box-border gap-[16px] text-gray-200 font-gilroy-regular">
+                <div className="self-stretch rounded-lg bg-gray-100 flex flex-row items-center justify-start p-1 text-neutral-06 font-gilroy-semibold">
+                  <div
+                    className={`cursor-pointer flex-1 rounded-lg overflow-hidden flex flex-row items-center justify-center p-2 transition-background ${
+                      selectedStake === "DEPOSIT"
+                        ? "bg-bg text-white"
+                        : "bg-gray-100 text-gray-200 hover:text-white transition-all duration-200"
+                    }`}
+                    onClick={() => setSelectedStake("DEPOSIT")}
+                  >
+                    Deposit
+                  </div>
+                  <div
+                    className={`cursor-pointer flex-1 rounded-lg flex flex-row items-center justify-center p-2 transition-background ${
+                      selectedStake === "WITHDRAW"
+                        ? "bg-bg text-white"
+                        : "bg-gray-100 text-gray-200 hover:text-white transition-all duration-200"
+                    }`}
+                    onClick={() => setSelectedStake("WITHDRAW")}
+                  >
+                    Withdraw
+                  </div>
+                </div>
+                <div className="self-stretch flex flex-row items-center justify-between">
+                  <div className="w-[74px] tracking-[-0.03em] leading-[100%] flex items-end h-5 shrink-0">
+                    Balance
+                  </div>
+                  <div className="flex flex-row items-center justify-start gap-[8px]">
+                    <div className="tracking-[-0.03em] leading-[120.41%] inline-block h-[18px] shrink-0">
+                      {usdcbalance.toFixed(1)} USDC
+                    </div>
+                    {/* <img
+                        className="w-4 h-4"
+                        alt=""
+                        src="/vuesaxboldwallet2.svg"
+                      /> */}
+                  </div>
+                </div>
+                <div className="self-stretch flex flex-row items-center justify-between">
+                  <div className="tracking-[-0.03em] leading-[100%] flex items-end h-5 shrink-0">
+                    Minimum Deposit
+                  </div>
+                  <div className="flex flex-row items-center justify-start gap-[8px]">
+                    <div className="tracking-[-0.03em] leading-[120.41%] inline-block h-[18px] shrink-0">
+                      100 USDC
+                    </div>
+                    {/* <img
+                        className="w-4 h-4"
+                        alt=""
+                        src="/vuesaxboldwallet2.svg"
+                      /> */}
+                  </div>
+                </div>
+                <div className="self-stretch flex flex-col items-start justify-start text-sm">
+                  <div className="self-stretch rounded-2xl bg-gray-100 flex flex-row items-center justify-between gap-[2] p-4 box-border">
+                    <div className="flex flex-col items-start justify-center gap-[8px]">
+                      <div className="tracking-[-0.03em] leading-[120.41%]">
+                        You are{" "}
+                        {selectedStake === "DEPOSIT"
+                          ? "depositing"
+                          : "withdrawing"}
+                      </div>
+                      <div className="rounded-lg overflow-hidden flex flex-row items-center justify-center gap-[10.3px] text-lg text-neutral-06 font-gilroy-semibold">
+                        <img
+                          className="w-8 rounded-981xl h-8 overflow-hidden shrink-0 object-cover"
+                          alt=""
+                          src="/paypal.svg"
+                        />
+                        <div className="tracking-[-0.21px]">USDC</div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end justify-end gap-1">
+                      <div className="flex flew-row gap-2">
+                        <div
+                          className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-50 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary"
+                          onClick={() => handleAmountClick("HALF")}
+                        >
+                          <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center">
+                            HALF
+                          </div>
+                        </div>
+                        <div
+                          className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-50 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary"
+                          onClick={() => handleAmountClick("MAX")}
+                        >
+                          <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center">
+                            MAX
+                          </div>
+                        </div>
+                      </div>
+                      <input
+                        type="text"
+                        className="w-full input-capsule__input text-13xl tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold bg-black"
+                        placeholder="0.00"
+                        value={displeyAmount}
+                        onChange={handleInputChange}
+                        min={0.05}
+                        step={0.05}
+                      />
+                    </div>
+                  </div>{" "}
+                </div>
+                <>
+                  {!publicKey ? (
+                    <div className="flex justify-center items-center w-full h-[50px] rounded-lg bg-primary cursor-pointer font-semibold text-center text-lg text-black transition ease-in-out duration-300">
+                      <WalletMultiButtonDynamic
+                        style={{
+                          width: "100%",
+                          backgroundColor: "transparent",
+                          color: "black",
+                        }}
+                        className="mt-0.5 w-[100%]"
+                      >
+                        CONNECT WALLET
+                      </WalletMultiButtonDynamic>
+                    </div>
+                  ) : (
+                    <>
+                      {selectedStake === "DEPOSIT" ? (
+                        <button
+                          className="button-wrapper hover:opacity-70 transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
+                          onClick={handleDeposit}
+                        >
+                          <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
+                            Deposit
+                          </div>
+                        </button>
+                      ) : selectedStake === "WITHDRAW" ? (
+                        depositorData &&
+                        Number(depositorData?.lastWithdrawRequest.value) > 0 &&
+                        Number(depositorData?.lastWithdrawRequest.ts) >
+                          Date.now() / 1000000 ? (
+                          <div className="self-stretch rounded-lg bg-gray-100 p-4 flex flex-col items-center justify-center gap-2">
+                            <div className="text-lg text-primary">
+                              You are withdrawing{" "}
+                              {Number(
+                                depositorData?.lastWithdrawRequest.value
+                              ) / 10e5}{" "}
+                              USDC
+                            </div>
+                            <button
+                              className="button-wrapper hover:opacity-70 transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-red-500 h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
+                              onClick={handleCancelRequest}
+                            >
+                              <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
+                                Cancel Request
+                              </div>
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            className="button-wrapper hover:opacity-70 transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
+                            onClick={handleWithdrawRequest}
+                          >
+                            <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
+                              Withdraw
+                            </div>
+                          </button>
+                        )
+                      ) : null}
+                    </>
+                  )}
+                </>
+              </div>
+            </div>
+          </div>
         </div>
-        <FrameComponent8 />
-      </main>
+      </div>
     </div>
   );
 };

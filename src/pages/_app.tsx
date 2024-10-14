@@ -24,7 +24,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
   const hideCss = ["/"]; // Add paths where you don't want to show the footer
   const showCss = !hideCss.includes(router.pathname);
   const showFooter = !hideFooterFor.includes(router.pathname);
-  const hideAppBarFor = ["/"]; // Add paths where you don't want to show the footer
+  const hideAppBarFor = [""]; // Add paths where you don't want to show the footer
   const showAppBar = !hideAppBarFor.includes(router.pathname);
 
   useEffect(() => {
@@ -92,7 +92,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
           content="A lossless lottery platform built on Solana Liquidity Staking"
         />
         <meta name="twitter:image" content="/stakerameta.png" />
-        <link rel="icon" href="/logoico.png" />
+        <link rel="icon" href="/hedgehog.svg" />
       </Head>
       <Script
         async
