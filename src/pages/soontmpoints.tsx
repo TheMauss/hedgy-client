@@ -1,5 +1,5 @@
 import Head from "next/head";
-import React, { FC, useState, useEffect } from "react";
+import React, { FC, useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import dynamic from "next/dynamic";
@@ -14,12 +14,72 @@ import {
 import { ParticipantJSON } from "../out/types/Participant";
 import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
+import {
+  LotteryAccount as LotteryAccount2,
+  LotteryAccountJSON as LotteryAccountJSON2,
+} from "../output/accounts/LotteryAccount";
+import { ParticipantJSON as ParticipantJSON2 } from "../output/types/Participant";
+import Decimal from "decimal.js";
+import {
+  buildWhirlpoolClient,
+  ORCA_WHIRLPOOL_PROGRAM_ID,
+  WhirlpoolContext,
+  PriceMath,
+} from "@orca-so/whirlpools-sdk";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
     (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
   { ssr: false }
 );
+
+async function checkLotteryAccount2(
+  connection: Connection
+): Promise<LotteryAccountJSON2> {
+  const lotteryAcc = new PublicKey(
+    "AnmXvJgAto11nm75RiUTEKAR3Ad2ZzzogxmhdUE4rdUA"
+  ); // Replace with actual account
+  const lotteryAccount = await LotteryAccount2.fetch(connection, lotteryAcc);
+
+  if (!lotteryAccount) {
+    return {
+      isInitialized: false,
+      totalDeposits: "0",
+      lstTotalDeposits: "0",
+      lstYieldDeposits: "0",
+      lstLotteryDeposits: "0",
+      participants: [],
+      smallCommitSlot: "0",
+      smallRandomnessAccount: "0",
+      bigLotteryTime: "0",
+      bigLotteryHappened: false,
+      smallLotteryTime: "0",
+      smallLotteryHappened: false,
+      bigCommitSlot: "0",
+      bigRandomnessAccount: "0",
+      teamYield: "0",
+      bigLotteryYield: "0",
+      smallLotteryToBig: 0,
+      solIncentive: "0",
+      lstIncentive: "0",
+      bigSolIncentive: "0",
+      bigLstIncentive: "0",
+      bigLstLotteryYield: "0",
+      teamLstYield: "0",
+      bigCommitTime: "0",
+      smallCommitTime: "0",
+      isBigCommitted: false,
+      isSmallComitted: false,
+      weeklyHour: 0,
+      monthlyHour: 0,
+      maxWeeklyHour: 0,
+      maxMonthlyHour: 0,
+      hourlyTimestamp: "0",
+    };
+  }
+
+  return lotteryAccount.toJSON();
+}
 
 async function checkLotteryAccount(
   connection: Connection
@@ -79,9 +139,13 @@ const Points: FC = () => {
   const [topTeams, setTopTeams] = useState(null);
   const [participantDataSOL, setParticipantDataSOL] =
     useState<ParticipantJSON | null>(null);
+  const [participantDataSOL2, setParticipantDataSOL2] =
+    useState<ParticipantJSON2 | null>(null);
   const [selectedPoint, setSelectedPoints] = useState<"Individual" | "Team">(
     "Individual"
   );
+  const [currentPrice, setCurrentPrice] = useState<Decimal | null>(null);
+
   const [referralLink, setReferralLink] = useState("");
   const [referralCode, setReferralCode] = useState("");
 
@@ -89,6 +153,46 @@ const Points: FC = () => {
   const [modalAction, setModalAction] = useState<"create" | "join">();
 
   const router = useRouter(); // Use useRouter instead of useLocation
+
+  const wallet = useWallet();
+
+  const whirlpoolAddress = new PublicKey(
+    "DxD41srN8Xk9QfYjdNXF9tTnP6qQxeF2bZF8s1eN62Pe"
+  );
+
+  const getWhirlpoolClient = useCallback(() => {
+    const ctx = WhirlpoolContext.from(
+      connection,
+      wallet,
+      ORCA_WHIRLPOOL_PROGRAM_ID
+    );
+    const client = buildWhirlpoolClient(ctx);
+    return client;
+  }, [connection, wallet]);
+
+  const getWhirlpoolData = useCallback(
+    async (whirlpoolAddress: PublicKey) => {
+      const client = getWhirlpoolClient();
+      const whirlpool = await client.getPool(whirlpoolAddress);
+      const sqrtPriceX64 = whirlpool.getData().sqrtPrice;
+      const price = PriceMath.sqrtPriceX64ToPrice(sqrtPriceX64, 9, 9); // Update decimals based on token pairs
+      return { whirlpool, price };
+    },
+    [getWhirlpoolClient]
+  );
+
+  const fetchWhirlpoolData = async () => {
+    try {
+      const { whirlpool, price } = await getWhirlpoolData(whirlpoolAddress);
+      setCurrentPrice(price);
+    } catch (error) {
+      console.error("Failed to fetch whirlpool data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchWhirlpoolData();
+  }, []);
 
   useEffect(() => {
     // Parse the referral code from the URL
@@ -185,6 +289,13 @@ const Points: FC = () => {
         (participant) => participant.pubkey === publicKey.toString()
       );
       setParticipantDataSOL(participant || null);
+
+      const data2 = await checkLotteryAccount2(connection);
+      const participant2 = data2.participants.find(
+        (participant) => participant.pubkey === publicKey.toString()
+      );
+      setParticipantDataSOL2(participant2 || null);
+      console.log("participantData2", participant2)
     } catch (error) {
       console.error("Error fetching lottery account data:", error);
     }
@@ -788,20 +899,32 @@ const Points: FC = () => {
                           </div>
                           <div className=" text-5xl tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-center">
                             <span>
-                              {isNaN(
-                                (Number(participantDataSOL?.deposit) +
-                                  Number(participantDataSOL?.pendingDeposit)) /
-                                  LAMPORTS_PER_SOL
-                              )
-                                ? 0
-                                : (
-                                    (Number(participantDataSOL?.deposit) +
-                                      Number(
-                                        participantDataSOL?.pendingDeposit
-                                      )) /
-                                    LAMPORTS_PER_SOL
-                                  ).toFixed(2)}
+                            {
+  (() => {
+    const result = isNaN(Number(currentPrice)) || currentPrice === null
+      ? 0
+      : isNaN(
+          (Number(participantDataSOL?.deposit || 0) +
+            Number(participantDataSOL?.pendingDeposit || 0) +
+            (Number(participantDataSOL2?.lstYieldDeposits || 0) +
+              Number(participantDataSOL2?.lstLotteryDeposits || 0)) *
+              Number(currentPrice)) / LAMPORTS_PER_SOL
+        )
+      ? 0
+      : (
+          (Number(participantDataSOL?.deposit || 0) +
+            Number(participantDataSOL?.pendingDeposit || 0) +
+            (Number(participantDataSOL2?.lstYieldDeposits || 0) +
+              Number(participantDataSOL2?.lstLotteryDeposits || 0)) /
+              Number(currentPrice)) / LAMPORTS_PER_SOL
+        ).toFixed(2);
+    return result;
+  })()
+}
+
+
                             </span>
+
                             <span className="text-lg ml-1">SOL</span>
                           </div>
                         </div>

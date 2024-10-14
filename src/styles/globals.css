@@ -159,6 +159,20 @@ input:checked + .slider-bigger:before {
   font-family: "Gilroy-SemiBold";
 }
 
+.animated-img {
+  position: absolute;
+  right: -100px; /* start outside the view */
+  top: 0;
+  width: 100px;
+  opacity: 0;
+  transition: all 0.5s ease-in-out;
+}
+
+.button-wrapper:hover .animated-img {
+  right: 0; /* bring the image fully into view */
+  opacity: 1;
+}
+
 .button-wrapper {
   position: relative;
   display: inline-block;

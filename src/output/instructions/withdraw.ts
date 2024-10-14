@@ -1,0 +1,119 @@
+import {
+  TransactionInstruction,
+  PublicKey,
+  AccountMeta,
+} from "@solana/web3.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import BN from "bn.js"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import * as borsh from "@coral-xyz/borsh"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import * as types from "../types"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { PROGRAM_ID } from "../programId";
+
+export interface WithdrawArgs {
+  amount: BN;
+  otherAmountThreshold: BN;
+  sqrtPriceLimit: BN;
+  amountSpecifiedIsInput: boolean;
+  aToB: boolean;
+  amountYield: BN;
+  otherAmountThresholdYield: BN;
+  sqrtPriceLimitYield: BN;
+  amountSpecifiedIsInputYield: boolean;
+  aToBYield: boolean;
+  slippageYield: BN;
+  depegProtection: boolean;
+}
+
+export interface WithdrawAccounts {
+  lotteryAccount: PublicKey;
+  user: PublicKey;
+  pdaHouseAcc: PublicKey;
+  systemProgram: PublicKey;
+  whirlpoolProgram: PublicKey;
+  tokenProgram: PublicKey;
+  whirlpool: PublicKey;
+  tokenOwnerAccountA: PublicKey;
+  tokenVaultA: PublicKey;
+  tokenOwnerAccountB: PublicKey;
+  tokenVaultB: PublicKey;
+  tickArray0: PublicKey;
+  tickArray1: PublicKey;
+  tickArray2: PublicKey;
+  oracle: PublicKey;
+  wsolMint: PublicKey;
+  associatedTokenProgram: PublicKey;
+  solOracleAccount: PublicKey;
+  infOracleAccount: PublicKey;
+  infMint: PublicKey;
+  poolState: PublicKey;
+}
+
+export const layout = borsh.struct([
+  borsh.u64("amount"),
+  borsh.u64("otherAmountThreshold"),
+  borsh.u128("sqrtPriceLimit"),
+  borsh.bool("amountSpecifiedIsInput"),
+  borsh.bool("aToB"),
+  borsh.u64("amountYield"),
+  borsh.u64("otherAmountThresholdYield"),
+  borsh.u128("sqrtPriceLimitYield"),
+  borsh.bool("amountSpecifiedIsInputYield"),
+  borsh.bool("aToBYield"),
+  borsh.u64("slippageYield"),
+  borsh.bool("depegProtection"),
+]);
+
+export function withdraw(
+  args: WithdrawArgs,
+  accounts: WithdrawAccounts,
+  programId: PublicKey = PROGRAM_ID
+) {
+  const keys: Array<AccountMeta> = [
+    { pubkey: accounts.lotteryAccount, isSigner: false, isWritable: true },
+    { pubkey: accounts.user, isSigner: true, isWritable: true },
+    { pubkey: accounts.pdaHouseAcc, isSigner: false, isWritable: true },
+    { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
+    { pubkey: accounts.whirlpoolProgram, isSigner: false, isWritable: false },
+    { pubkey: accounts.tokenProgram, isSigner: false, isWritable: false },
+    { pubkey: accounts.whirlpool, isSigner: false, isWritable: true },
+    { pubkey: accounts.tokenOwnerAccountA, isSigner: false, isWritable: true },
+    { pubkey: accounts.tokenVaultA, isSigner: false, isWritable: true },
+    { pubkey: accounts.tokenOwnerAccountB, isSigner: false, isWritable: true },
+    { pubkey: accounts.tokenVaultB, isSigner: false, isWritable: true },
+    { pubkey: accounts.tickArray0, isSigner: false, isWritable: true },
+    { pubkey: accounts.tickArray1, isSigner: false, isWritable: true },
+    { pubkey: accounts.tickArray2, isSigner: false, isWritable: true },
+    { pubkey: accounts.oracle, isSigner: false, isWritable: true },
+    { pubkey: accounts.wsolMint, isSigner: false, isWritable: true },
+    {
+      pubkey: accounts.associatedTokenProgram,
+      isSigner: false,
+      isWritable: false,
+    },
+    { pubkey: accounts.solOracleAccount, isSigner: false, isWritable: false },
+    { pubkey: accounts.infOracleAccount, isSigner: false, isWritable: false },
+    { pubkey: accounts.infMint, isSigner: false, isWritable: true },
+    { pubkey: accounts.poolState, isSigner: false, isWritable: false },
+  ];
+  const identifier = Buffer.from([183, 18, 70, 156, 148, 109, 161, 34]);
+  const buffer = Buffer.alloc(1000);
+  const len = layout.encode(
+    {
+      amount: args.amount,
+      otherAmountThreshold: args.otherAmountThreshold,
+      sqrtPriceLimit: args.sqrtPriceLimit,
+      amountSpecifiedIsInput: args.amountSpecifiedIsInput,
+      aToB: args.aToB,
+      amountYield: args.amountYield,
+      otherAmountThresholdYield: args.otherAmountThresholdYield,
+      sqrtPriceLimitYield: args.sqrtPriceLimitYield,
+      amountSpecifiedIsInputYield: args.amountSpecifiedIsInputYield,
+      aToBYield: args.aToBYield,
+      slippageYield: args.slippageYield,
+      depegProtection: args.depegProtection,
+    },
+    buffer
+  );
+  const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len);
+  const ix = new TransactionInstruction({ keys, programId, data });
+  return ix;
+}

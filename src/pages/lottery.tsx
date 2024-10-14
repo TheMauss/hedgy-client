@@ -22,6 +22,18 @@ import { withdraw as withdrawInstruction } from "../out/instructions"; // Update
 import { withdrawWithRatioLoss as withdrawwithLossInstruction } from "../out/instructions"; // Update with the correct path
 import { withdrawTeamYield as withdrawTeamYield } from "../out/instructions"; // Update with the correct path
 import { incentive as incentiveInstruction } from "../out/instructions/incentive"; // Update with the correct path
+
+import { deposit as depositInstruction2 } from "../output/instructions"; // Update with the correct path
+import { withdraw as withdrawInstruction2 } from "../output/instructions"; // Update with the correct path
+import { withdrawWithRatioLoss as withdrawwithLossInstruction2 } from "../output/instructions"; // Update with the correct path
+import { withdrawTeamYield as withdrawTeamYield2 } from "../output/instructions"; // Update with the correct path
+import { incentive as incentiveInstruction2 } from "../output/instructions/incentive"; // Update with the correct path
+import {
+  LotteryAccount as LotteryAccount2,
+  LotteryAccountJSON as LotteryAccountJSON2,
+} from "../output/accounts/LotteryAccount";
+import { ParticipantJSON as ParticipantJSON2 } from "../output/types/Participant";
+
 import Modal from "react-modal";
 import Decimal from "decimal.js";
 import { usePriorityFee } from "../contexts/PriorityFee";
@@ -69,13 +81,18 @@ interface UserWinnings {
 const lotteryAccount = new PublicKey(
   "9aFmbWZuMbCQzMyNqsTB4umen9mpnqL6Z6a4ypis3XzW"
 ); // Replace with actual account
+
+const lotteryAccount2 = new PublicKey(
+  "AnmXvJgAto11nm75RiUTEKAR3Ad2ZzzogxmhdUE4rdUA"
+); // Replace with actual account
+
 const pdaHouseAcc = new PublicKey(
   "FnxstpbQKMYW3Jw7SY5outhEiHGDkg7GUpoCVt9nVuHJ"
 ); // Replace with actual account
 
-// const pdaHouseAcc = new PublicKey(
-//   "5JFM78fdoch814cxzs8TfpyJ9muGPzSNVHY5ZnHTAYDn"
-// ); // Replace with actual account
+const pdaHouseAcc2 = new PublicKey(
+  "EVRz6QgBH55qky7KWoVqQfxSE5S7vgR5zFdwQ9R7CM95"
+); // Replace with actual account
 
 const whirlpoolProgram = new PublicKey(ORCA_WHIRLPOOL_PROGRAM_ID);
 const tokenProgram = new PublicKey(
@@ -86,9 +103,9 @@ const tokenOwnerAccountA = new PublicKey(
   "5UwRe6CoRZLJYJSd8GcbaXKrFCHbjYeRUdKSRpqRtkMH"
 ); // Replace with actual account
 
-// const tokenOwnerAccountA = new PublicKey(
-//   "7D62nDAMoaxgDRzJxVvqiyTQ4WhArmxB7gF4x7pqavv7"
-// ); // Replace with actual account
+const tokenOwnerAccountA2 = new PublicKey(
+  "6rVELXwk6io32kyqsJodM7VQLKYaTahnexavu9dTZ6RM"
+); // Replace with actual account
 
 const tokenVaultA = new PublicKey(
   "9sxSBQ3bS35VgV736MaSJRX11MfZHXxTdU4Pc1JfA5ML"
@@ -98,9 +115,9 @@ const tokenOwnerAccountB = new PublicKey(
   "ESXQ1jcH2CzchJR3oqYfsxJU9evGM14Fg5gaJPFXSvoX"
 ); // Replace with actual account
 
-// const tokenOwnerAccountB = new PublicKey(
-//   "D1qDMbr3nL68eJNLd5gCyeZtTrN526priCerN6XNjVna"
-// ); // Replace with actual account
+const tokenOwnerAccountB2 = new PublicKey(
+  "3x1Q9VxKoo5Q6C3XxYd66YTdL4Ahz5LsnyyT1Pb3j72n"
+); // Replace with actual account
 
 const tokenVaultB = new PublicKey(
   "FZKgBhFkwNwsJLx3GXHHW8XPi8NMiJX791wweHBKaPcP"
@@ -202,6 +219,54 @@ async function checkLotteryAccount(
   return lotteryAccount.toJSON();
 }
 
+async function checkLotteryAccount2(
+  connection: Connection
+): Promise<LotteryAccountJSON2> {
+  const lotteryAcc = new PublicKey(
+    "AnmXvJgAto11nm75RiUTEKAR3Ad2ZzzogxmhdUE4rdUA"
+  ); // Replace with actual account
+  const lotteryAccount = await LotteryAccount2.fetch(connection, lotteryAcc);
+
+  if (!lotteryAccount) {
+    return {
+      isInitialized: false,
+      totalDeposits: "0",
+      lstTotalDeposits: "0",
+      lstYieldDeposits: "0",
+      lstLotteryDeposits: "0",
+      participants: [],
+      smallCommitSlot: "0",
+      smallRandomnessAccount: "0",
+      bigLotteryTime: "0",
+      bigLotteryHappened: false,
+      smallLotteryTime: "0",
+      smallLotteryHappened: false,
+      bigCommitSlot: "0",
+      bigRandomnessAccount: "0",
+      teamYield: "0",
+      bigLotteryYield: "0",
+      smallLotteryToBig: 0,
+      solIncentive: "0",
+      lstIncentive: "0",
+      bigSolIncentive: "0",
+      bigLstIncentive: "0",
+      bigLstLotteryYield: "0",
+      teamLstYield: "0",
+      bigCommitTime: "0",
+      smallCommitTime: "0",
+      isBigCommitted: false,
+      isSmallComitted: false,
+      weeklyHour: 0,
+      monthlyHour: 0,
+      maxWeeklyHour: 0,
+      maxMonthlyHour: 0,
+      hourlyTimestamp: "0",
+    };
+  }
+
+  return lotteryAccount.toJSON();
+}
+
 require("dotenv").config();
 
 const Lottery: FC = () => {
@@ -211,6 +276,7 @@ const Lottery: FC = () => {
   const usdcbalance = useUserSOLBalanceStore((s) => s.usdcBalance);
   const { getUserSOLBalance, getUserUSDCBalance } = useUserSOLBalanceStore();
   const [amount, setAmount] = useState("");
+  const [yieldAmount, setYieldAmount] = useState("");
   const [displeyAmount, setDispleyAmount] = useState("");
 
   const [otherAmountThreshold, setOtherAmountThreshold] = useState(0);
@@ -220,10 +286,20 @@ const Lottery: FC = () => {
   const [swapQuote, setSwapQuote] = useState<any>(null);
   const [swapQuoteOut, setSwapQuoteOut] = useState<any>(null);
   const [swapQuoteOutLoss, setSwapQuoteOutLoss] = useState<any>(null);
+  const [swapQuoteOutYield, setSwapQuoteOutYield] = useState<any>(null);
+
   const [lotteryAccountData, setLotteryAccountData] =
     useState<LotteryAccountJSON | null>(null);
+
+  const [lotteryAccountData2, setLotteryAccountData2] =
+    useState<LotteryAccountJSON2 | null>(null);
+
   const [participantData, setParticipantData] =
     useState<ParticipantJSON | null>(null);
+
+  const [participantData2, setParticipantData2] =
+    useState<ParticipantJSON2 | null>(null);
+
   const [participantDataMongo, setParticipantDataMongo] = useState(null);
   const [whirlpool, setWhirlpool] = useState<any>(null);
   const [aToB, setAToB] = useState(true);
@@ -235,6 +311,7 @@ const Lottery: FC = () => {
   const [selectedStake, setSelectedStake] = useState<"DEPOSIT" | "WITHDRAW">(
     "DEPOSIT"
   );
+
   const [showAdditionalDiv1, setShowAdditionalDiv1] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -251,6 +328,19 @@ const Lottery: FC = () => {
     null
   );
 
+  const [remainingTimeSmallLottery2, setRemainingTimeSmallLottery2] = useState<
+    number | null
+  >(null);
+  const [remainingTimeBigLottery2, setRemainingTimeBigLottery2] = useState<
+    number | null
+  >(null);
+  const [totalTimeSmallLottery2, setTotalTimeSmallLottery2] = useState<
+    number | null
+  >(null);
+  const [totalTimeBigLottery2, setTotalTimeBigLottery2] = useState<
+    number | null
+  >(null);
+
   const [smallLotteryWinners, setSmallLotteryWinners] = useState([]);
   const [bigLotteryWinners, setBigLotteryWinners] = useState([]);
   const [userWinnings, setUserWinnings] = useState<UserWinnings | null>(null);
@@ -258,8 +348,11 @@ const Lottery: FC = () => {
 
   const [smallLotteryYield, setSmallLotteryYield] = useState(null);
   const [bigLotteryYield, setBigLotteryYield] = useState(null);
+  const [smallLotteryYield2, setSmallLotteryYield2] = useState(null);
+  const [bigLotteryYield2, setBigLotteryYield2] = useState(null);
   const [apyValue, setApyValue] = useState(null);
   const [isYieldCalculated, setIsYieldCalculated] = useState(false);
+  const [isYieldCalculated2, setIsYieldCalculated2] = useState(false);
 
   // New toggle state, starting with true by default
   const [depegProtectionState, setDepegProtectionState] = useState(true);
@@ -268,6 +361,8 @@ const Lottery: FC = () => {
   const multiplier = 0.9;
   const result =
     apyValue !== null ? calculateValue(apyValue * 100, multiplier) : null; // Convert to percentage
+
+  const [selectedPool, setSelectedPool] = useState<"POOL1" | "POOL2">("POOL1");
 
   const formatPublicKey = (pubKey) => {
     if (!pubKey) return "";
@@ -374,6 +469,79 @@ const Lottery: FC = () => {
     return () => clearInterval(resetYieldCalculation);
   }, [lotteryAccountData, remainingTimeSmallLottery, remainingTimeBigLottery]);
 
+  const calculateYield2 = async () => {
+    const apy_raw = await fetchAPY();
+    const apy = (apy_raw / 2) * 0.85;
+    if (
+      !apy_raw ||
+      !remainingTimeSmallLottery2 ||
+      !remainingTimeBigLottery2 ||
+      isYieldCalculated2
+    ) {
+      return;
+    }
+
+    const { whirlpool, price } = await getWhirlpoolData(whirlpoolAddress);
+
+    if (apy !== null && price !== null && lotteryAccountData2) {
+      const lstDeposits = Number(lotteryAccountData2.lstLotteryDeposits);
+      const totalDeposits = Number(lotteryAccountData2.totalDeposits);
+      const infsol = ((1 / price.toNumber()) * 9999) / 10000;
+      const biLotteryYield = Number(lotteryAccountData2.bigLotteryYield);
+      const bigIncv = Number(lotteryAccountData2.bigSolIncentive);
+      const solIncv = Number(lotteryAccountData2.solIncentive);
+
+      console.log("orca price", infsol);
+
+      console.log("lst/total", totalDeposits / lstDeposits);
+
+      // Calculate the difference and the INF to SOL value
+      const adjustedValue = calculateAdjustedValue(
+        infsol,
+        lstDeposits,
+        totalDeposits
+      );
+
+      console.log("adj value", adjustedValue);
+
+      // Calculate small lottery yield using remaining time
+      if (remainingTimeSmallLottery2) {
+        const smallAPY = calculateLotteryAPY(apy, remainingTimeSmallLottery2);
+        let smallYield =
+          (smallAPY * totalDeposits + adjustedValue + solIncv) / 2;
+        smallYield = smallYield < 0 ? 0 : smallYield; // Set to 0 if below 0
+        console.log("Small Lottery Yield:", smallYield);
+        setSmallLotteryYield2(smallYield);
+      }
+
+      // Calculate big lottery yield using remaining time
+      if (remainingTimeBigLottery2) {
+        const bigAPY = calculateLotteryAPY(apy, remainingTimeBigLottery2);
+        let bigYield =
+          (bigAPY * totalDeposits + adjustedValue) / 2 +
+          biLotteryYield +
+          bigIncv;
+        bigYield = bigYield < 0 ? 0 : bigYield; // Set to 0 if below 0
+        console.log("Big Lottery Yield:", bigYield);
+        setBigLotteryYield2(bigYield);
+      }
+      setIsYieldCalculated2(true);
+    }
+  };
+
+  useEffect(() => {
+    if (lotteryAccountData2) {
+      calculateYield2();
+    }
+
+    // Reset isYieldCalculated to false every X milliseconds
+    const resetYieldCalculation = setInterval(() => {
+      setIsYieldCalculated2(false);
+    }, 600000); // Reset every 60 seconds
+
+    return () => clearInterval(resetYieldCalculation);
+  }, [lotteryAccountData, remainingTimeSmallLottery, remainingTimeBigLottery]);
+
   // start
 
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
@@ -408,10 +576,19 @@ const Lottery: FC = () => {
       return; // Exit early if lotteryAccountData is not yet available
     }
 
-    const smallLotteryEndTime = Number(lotteryAccountData?.smallLotteryTime);
+    if (!lotteryAccountData2) {
+      console.log("Waiting for lotteryAccountData...");
+      return; // Exit early if lotteryAccountData is not yet available
+    }
+    const activeLotteryAccountData =
+      selectedPool === "POOL1" ? lotteryAccountData : lotteryAccountData2;
+
+    const smallLotteryEndTime = Number(
+      activeLotteryAccountData?.smallLotteryTime
+    );
     const smallLotteryStartTime = smallLotteryEndTime - 60 * 60 * 24 * 7; // Adjust based on your requirements
 
-    const bigLotteryEndTime = Number(lotteryAccountData?.bigLotteryTime);
+    const bigLotteryEndTime = Number(activeLotteryAccountData?.bigLotteryTime);
     const bigLotteryStartTime = bigLotteryEndTime - 4 * 60 * 60 * 24 * 7; // Adjust based on your requirements
 
     const updateRemainingTimes = async () => {
@@ -427,10 +604,17 @@ const Lottery: FC = () => {
             smallLotteryEndTime - smallLotteryStartTime;
           const totalTimeBigLottery = bigLotteryEndTime - bigLotteryStartTime;
 
-          setRemainingTimeSmallLottery(remainingTimeSmallLottery);
-          setRemainingTimeBigLottery(remainingTimeBigLottery);
-          setTotalTimeSmallLottery(totalTimeSmallLottery);
-          setTotalTimeBigLottery(totalTimeBigLottery);
+          if (selectedPool === "POOL1") {
+            setRemainingTimeSmallLottery(remainingTimeSmallLottery);
+            setRemainingTimeBigLottery(remainingTimeBigLottery);
+            setTotalTimeSmallLottery(totalTimeSmallLottery);
+            setTotalTimeBigLottery(totalTimeBigLottery);
+          } else {
+            setRemainingTimeSmallLottery2(remainingTimeSmallLottery);
+            setRemainingTimeBigLottery2(remainingTimeBigLottery);
+            setTotalTimeSmallLottery2(totalTimeSmallLottery);
+            setTotalTimeBigLottery2(totalTimeBigLottery);
+          }
         } else {
           console.error("Failed to retrieve Solana block time.");
         }
@@ -443,7 +627,7 @@ const Lottery: FC = () => {
     const interval = setInterval(updateRemainingTimes, 1000);
 
     return () => clearInterval(interval);
-  }, [lotteryAccountData]);
+  }, [lotteryAccountData, lotteryAccountData2, selectedPool]);
 
   const getPercentage = (
     remainingTime: number | null,
@@ -460,6 +644,15 @@ const Lottery: FC = () => {
   const bigLotteryPercentage = getPercentage(
     remainingTimeBigLottery,
     totalTimeBigLottery
+  );
+
+  const smallLotteryPercentage2 = getPercentage(
+    remainingTimeSmallLottery2,
+    totalTimeSmallLottery2
+  );
+  const bigLotteryPercentage2 = getPercentage(
+    remainingTimeBigLottery2,
+    totalTimeBigLottery2
   );
 
   const getBackgroundStyle = (
@@ -479,6 +672,17 @@ const Lottery: FC = () => {
   ); // Adjust colors as needed
   const bigLotteryBgStyle = getBackgroundStyle(
     bigLotteryPercentage,
+    "#7363f3",
+    "#255146"
+  ); // Adjust colors as needed
+
+  const smallLotteryBgStyle2 = getBackgroundStyle(
+    smallLotteryPercentage2,
+    "#6fff90",
+    "#255146"
+  ); // Adjust colors as needed
+  const bigLotteryBgStyle2 = getBackgroundStyle(
+    bigLotteryPercentage2,
     "#7363f3",
     "#255146"
   ); // Adjust colors as needed
@@ -574,6 +778,9 @@ const Lottery: FC = () => {
       const data = await checkLotteryAccount(connection);
       console.log("rawdata", data);
       setLotteryAccountData(data);
+      const data2 = await checkLotteryAccount2(connection);
+      console.log("rawdata", data2);
+      setLotteryAccountData2(data2);
     } catch (error) {
       console.error("Error fetching lottery account data:", error);
     }
@@ -585,7 +792,12 @@ const Lottery: FC = () => {
       const participant = data.participants.find(
         (participant) => participant.pubkey === publicKey.toString()
       );
+      const data2 = await checkLotteryAccount2(connection);
+      const participant2 = data2.participants.find(
+        (participant2) => participant2.pubkey === publicKey.toString()
+      );
       setParticipantData(participant || null);
+      setParticipantData2(participant2 || null);
     } catch (error) {
       console.error("Error fetching lottery account data:", error);
     }
@@ -747,31 +959,67 @@ const Lottery: FC = () => {
       const PriceN = new Decimal(price);
       const amountOut = amountIn.times(PriceN);
       const amountOutQuote = new Decimal(amountOut);
-
-      const quote = await getSwapQuote(whirlpool, amountIn, slippageTolerance);
-      const quoteOut = await getSwapQuoteOutput(
-        whirlpool,
-        amountIn,
-        slippageTolerance
-      );
-      const quoteOutLoss = await getSwapQuoteOutputLoss(
-        whirlpool,
-        amountOutQuote,
-        slippageTolerance
-      );
-
-      const formattedQuote = decodeSwapQuote(quote);
-      const formattedQuoteOut = decodeSwapQuote(quoteOut);
-      const formattedQuoteOutLoss = decodeSwapQuote(quoteOutLoss);
-
-      setSwapQuote(formattedQuote);
-      setSwapQuoteOut(formattedQuoteOut);
-      setSwapQuoteOutLoss(formattedQuoteOutLoss);
+      const amountOutYield = new Decimal(yieldAmount);
 
       console.log("Current Pool Price:", price.toFixed(9));
-      console.log("Formatted Swap Quote:", formattedQuote);
-      console.log("Formatted Swap Quote Out:", formattedQuoteOut);
-      console.log("Formatted Swap Quote Out Loss:", formattedQuoteOutLoss);
+      if (selectedStake === "DEPOSIT") {
+        const quote = await getSwapQuote(
+          whirlpool,
+          amountIn,
+          slippageTolerance
+        );
+        const formattedQuote = decodeSwapQuote(quote);
+        setSwapQuote(formattedQuote);
+        console.log("Formatted Swap Quote:", formattedQuote);
+      } else if (selectedStake === "WITHDRAW" && selectedPool === "POOL1") {
+        const quoteOut = await getSwapQuoteOutput(
+          whirlpool,
+          amountIn,
+          slippageTolerance
+        );
+        const quoteOutLoss = await getSwapQuoteOutputLoss(
+          whirlpool,
+          amountOutQuote,
+          slippageTolerance
+        );
+
+        const formattedQuoteOut = decodeSwapQuote(quoteOut);
+        const formattedQuoteOutLoss = decodeSwapQuote(quoteOutLoss);
+
+        setSwapQuoteOut(formattedQuoteOut);
+        setSwapQuoteOutLoss(formattedQuoteOutLoss);
+        console.log("Formatted Swap Quote Out:", formattedQuoteOut);
+        console.log("Formatted Swap Quote Out Loss:", formattedQuoteOutLoss);
+      } else if (selectedStake === "WITHDRAW" && selectedPool === "POOL2") {
+        const quoteOut = await getSwapQuoteOutput(
+          whirlpool,
+          amountIn,
+          slippageTolerance
+        );
+        const quoteOutLoss = await getSwapQuoteOutputLoss(
+          whirlpool,
+          amountOutQuote,
+          slippageTolerance
+        );
+
+        const quoteOutYield = await getSwapQuoteOutputLoss(
+          whirlpool,
+          amountOutYield,
+          slippageTolerance
+        );
+
+        const formattedQuoteOut = decodeSwapQuote(quoteOut);
+        const formattedQuoteOutLoss = decodeSwapQuote(quoteOutLoss);
+        const formattedQuoteOutYield = decodeSwapQuote(quoteOutYield);
+
+        setSwapQuoteOut(formattedQuoteOut);
+        setSwapQuoteOutLoss(formattedQuoteOutLoss);
+        setSwapQuoteOutYield(formattedQuoteOutYield);
+
+        console.log("Formatted Swap Quote Out:", formattedQuoteOut);
+        console.log("Formatted Swap Quote Out Loss:", formattedQuoteOutLoss);
+        console.log("Formatted Swap Quote Out Yield:", formattedQuoteOutYield);
+      }
     } catch (error) {
       console.error("Failed to fetch whirlpool data:", error);
     } finally {
@@ -782,7 +1030,7 @@ const Lottery: FC = () => {
   // Debounced version of fetchWhirlpoolData
   const debouncedFetchWhirlpoolData = useCallback(
     debounce(fetchWhirlpoolData, 400), // 500ms debounce
-    [amount, slippageTolerance, whirlpoolAddress]
+    [amount, slippageTolerance, whirlpoolAddress, yieldAmount]
   );
 
   useEffect(() => {
@@ -909,10 +1157,41 @@ const Lottery: FC = () => {
       infMint: new PublicKey("5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm"),
       poolState: new PublicKey("AYhux5gJzCoeoc1PoJ1VxwPDe22RwcvpHviLDD1oCGvW"),
     };
-    let PRIORITY_FEE_IX;
 
-    console.log("depositAcc", JSON.stringify(depositArgs, null, 2));
-    console.log("depositAcc", JSON.stringify(depositAccounts, null, 2));
+    const depositAccounts2 = {
+      lotteryAccount: lotteryAccount2,
+      user: publicKey,
+      pdaHouseAcc: pdaHouseAcc2,
+      systemProgram: SystemProgram.programId,
+      whirlpoolProgram,
+      tokenProgram,
+      whirlpool: whirlpoolAddress,
+      tokenOwnerAccountA: tokenOwnerAccountA2,
+      tokenVaultA,
+      tokenOwnerAccountB: tokenOwnerAccountB2,
+      tokenVaultB,
+      tickArray0: new PublicKey(swapQuote.tickArray0),
+      tickArray1: new PublicKey(swapQuote.tickArray1),
+      tickArray2: new PublicKey(swapQuote.tickArray2),
+      oracle: oraclePDA.publicKey,
+      wsolMint: new PublicKey("So11111111111111111111111111111111111111112"),
+      associatedTokenProgram: new PublicKey(
+        "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+      ),
+      solOracleAccount: new PublicKey(
+        "7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE"
+      ),
+      infOracleAccount: new PublicKey(
+        "Ceg5oePJv1a6RR541qKeQaTepvERA3i8SvyueX9tT8Sq"
+      ),
+      infMint: new PublicKey("5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm"),
+      poolState: new PublicKey("AYhux5gJzCoeoc1PoJ1VxwPDe22RwcvpHviLDD1oCGvW"),
+    };
+
+    const accountsToUse =
+      selectedPool === "POOL1" ? depositAccounts : depositAccounts2;
+
+    let PRIORITY_FEE_IX;
 
     if (isPriorityFee) {
       const priorityfees = await getPriorityFeeEstimate();
@@ -930,8 +1209,11 @@ const Lottery: FC = () => {
     });
 
     try {
-      // const ix = depositInstruction(depositArgs, depositAccounts);
-      const ix = incentiveInstruction(depositArgs, depositAccounts);
+      const ix =
+        selectedPool === "POOL1"
+          ? depositInstruction(depositArgs, depositAccounts)
+          : depositInstruction2(depositArgs, depositAccounts2);
+      // const ix = incentiveInstruction(depositArgs, depositAccounts);
       const tx = new Transaction()
         .add(COMPUTE_BUDGET_IX)
         .add(ix)
@@ -978,8 +1260,6 @@ const Lottery: FC = () => {
       depegProtection: depegProtectionState,
     };
 
-    console.log("args", withdrawArgs);
-
     const withdrawAccounts = {
       lotteryAccount,
       user: publicKey,
@@ -991,6 +1271,54 @@ const Lottery: FC = () => {
       tokenOwnerAccountA,
       tokenVaultA,
       tokenOwnerAccountB,
+      tokenVaultB,
+      tickArray0: new PublicKey(swapQuoteOut.tickArray0),
+      tickArray1: new PublicKey(swapQuoteOut.tickArray1),
+      tickArray2: new PublicKey(swapQuoteOut.tickArray2),
+      oracle: oraclePDA.publicKey,
+      wsolMint: new PublicKey("So11111111111111111111111111111111111111112"),
+      associatedTokenProgram: new PublicKey(
+        "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+      ),
+      solOracleAccount: new PublicKey(
+        "7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE"
+      ),
+      infOracleAccount: new PublicKey(
+        "Ceg5oePJv1a6RR541qKeQaTepvERA3i8SvyueX9tT8Sq"
+      ),
+      infMint: new PublicKey("5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm"),
+      poolState: new PublicKey("AYhux5gJzCoeoc1PoJ1VxwPDe22RwcvpHviLDD1oCGvW"),
+    };
+
+    const withdrawArgs2 = {
+      amount: new BN(swapQuoteOut.estimatedAmountOut),
+      otherAmountThreshold: new BN(swapQuoteOut.otherAmountThreshold),
+      sqrtPriceLimit: new BN(swapQuoteOut.sqrtPriceLimit),
+      amountSpecifiedIsInput: false,
+      aToB: false,
+      amountYield: new BN(swapQuoteOutYield.estimatedAmountIn),
+      otherAmountThresholdYield: new BN(swapQuoteOutYield.otherAmountThreshold),
+      sqrtPriceLimitYield: new BN(swapQuoteOutYield.sqrtPriceLimit),
+      amountSpecifiedIsInputYield: true,
+      aToBYield: false,
+      slippageYield: new BN(slippageTolerance),
+      depegProtection: depegProtectionState,
+    };
+
+    console.log("args", withdrawArgs);
+    console.log("args2", withdrawArgs2);
+
+    const withdrawAccounts2 = {
+      lotteryAccount: lotteryAccount2,
+      user: publicKey,
+      pdaHouseAcc: pdaHouseAcc2,
+      systemProgram: SystemProgram.programId,
+      whirlpoolProgram,
+      tokenProgram,
+      whirlpool: whirlpoolAddress,
+      tokenOwnerAccountA: tokenOwnerAccountA2,
+      tokenVaultA,
+      tokenOwnerAccountB: tokenOwnerAccountB2,
       tokenVaultB,
       tickArray0: new PublicKey(swapQuoteOut.tickArray0),
       tickArray1: new PublicKey(swapQuoteOut.tickArray1),
@@ -1023,12 +1351,20 @@ const Lottery: FC = () => {
       });
     }
 
-    const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 300000,
-    });
+    const COMPUTE_BUDGET_IX =
+      selectedPool === "POOL1"
+        ? ComputeBudgetProgram.setComputeUnitLimit({
+            units: 300000,
+          })
+        : ComputeBudgetProgram.setComputeUnitLimit({
+            units: 400000,
+          });
 
     try {
-      const ix = withdrawInstruction(withdrawArgs, withdrawAccounts);
+      const ix =
+        selectedPool === "POOL1"
+          ? withdrawInstruction(withdrawArgs, withdrawAccounts)
+          : withdrawInstruction2(withdrawArgs2, withdrawAccounts2);
       const tx = new Transaction()
         .add(COMPUTE_BUDGET_IX)
         .add(ix)
@@ -1178,7 +1514,20 @@ const Lottery: FC = () => {
       depegProtection: depegProtectionState,
     };
 
-    console.log("args", withdrawArgs);
+    const withdrawArgs2 = {
+      amount: new BN(amount),
+      otherAmountThreshold: new BN(swapQuoteOutLoss.otherAmountThreshold),
+      sqrtPriceLimit: new BN(swapQuoteOutLoss.sqrtPriceLimit),
+      amountSpecifiedIsInput: true,
+      aToB: false,
+      amountYield: new BN(swapQuoteOutYield.estimatedAmountIn),
+      otherAmountThresholdYield: new BN(swapQuoteOutYield.otherAmountThreshold),
+      sqrtPriceLimitYield: new BN(swapQuoteOutYield.sqrtPriceLimit),
+      amountSpecifiedIsInputYield: true,
+      aToBYield: false,
+      slippage: new BN(slippageTolerance),
+      depegProtection: depegProtectionState,
+    };
 
     const withdrawAccounts = {
       lotteryAccount,
@@ -1191,6 +1540,36 @@ const Lottery: FC = () => {
       tokenOwnerAccountA,
       tokenVaultA,
       tokenOwnerAccountB,
+      tokenVaultB,
+      tickArray0: new PublicKey(swapQuoteOutLoss.tickArray0),
+      tickArray1: new PublicKey(swapQuoteOutLoss.tickArray1),
+      tickArray2: new PublicKey(swapQuoteOutLoss.tickArray2),
+      oracle: oraclePDA.publicKey,
+      wsolMint: new PublicKey("So11111111111111111111111111111111111111112"),
+      associatedTokenProgram: new PublicKey(
+        "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+      ),
+      solOracleAccount: new PublicKey(
+        "7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE"
+      ),
+      infOracleAccount: new PublicKey(
+        "Ceg5oePJv1a6RR541qKeQaTepvERA3i8SvyueX9tT8Sq"
+      ),
+      infMint: new PublicKey("5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm"),
+      poolState: new PublicKey("AYhux5gJzCoeoc1PoJ1VxwPDe22RwcvpHviLDD1oCGvW"),
+    };
+
+    const withdrawAccounts2 = {
+      lotteryAccount: lotteryAccount2,
+      user: publicKey,
+      pdaHouseAcc: pdaHouseAcc2,
+      systemProgram: SystemProgram.programId,
+      whirlpoolProgram,
+      tokenProgram,
+      whirlpool: whirlpoolAddress,
+      tokenOwnerAccountA: tokenOwnerAccountA2,
+      tokenVaultA,
+      tokenOwnerAccountB: tokenOwnerAccountB2,
       tokenVaultB,
       tickArray0: new PublicKey(swapQuoteOutLoss.tickArray0),
       tickArray1: new PublicKey(swapQuoteOutLoss.tickArray1),
@@ -1223,12 +1602,20 @@ const Lottery: FC = () => {
       });
     }
 
-    const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 300000,
-    });
+    const COMPUTE_BUDGET_IX =
+      selectedPool === "POOL1"
+        ? ComputeBudgetProgram.setComputeUnitLimit({
+            units: 300000,
+          })
+        : ComputeBudgetProgram.setComputeUnitLimit({
+            units: 400000,
+          });
 
     try {
-      const ix = withdrawwithLossInstruction(withdrawArgs, withdrawAccounts);
+      const ix =
+        selectedPool === "POOL1"
+          ? withdrawwithLossInstruction(withdrawArgs, withdrawAccounts)
+          : withdrawwithLossInstruction2(withdrawArgs2, withdrawAccounts2);
       const tx = new Transaction()
         .add(COMPUTE_BUDGET_IX)
         .add(ix)
@@ -1309,8 +1696,28 @@ const Lottery: FC = () => {
       );
     }
 
-    // Set the sanitized value as the amount value
-    setAmount(sanitizedValue);
+    const PoolTwoyieldDeposits = participantData2?.lstYieldDeposits;
+    const PoolTwoDeposits =
+      participantData2?.pendingDeposit + participantData2?.deposit;
+
+    const Numbers = parseFloat(sanitizedValue) / 2;
+    const NumbersMultiplied = Numbers * Number(currentPrice);
+
+    const SolWithdrawal =
+      Numbers > Number(PoolTwoDeposits) ? Number(PoolTwoDeposits) : Numbers;
+    const YieldWithdrawal =
+      NumbersMultiplied > Number(PoolTwoyieldDeposits)
+        ? Number(PoolTwoyieldDeposits)
+        : NumbersMultiplied;
+
+    // Conditional logic for setting amount and yield
+    if (selectedPool === "POOL2" && selectedStake === "WITHDRAW") {
+      setAmount(SolWithdrawal.toString()); // Set amount for POOL2
+      setYieldAmount(YieldWithdrawal.toString()); // Set yield amount for POOL2
+    } else {
+      setAmount(sanitizedValue); // Use maxValue for POOL1
+    }
+
     setDispleyAmount(sanitizedValue);
   };
 
@@ -1339,7 +1746,12 @@ const Lottery: FC = () => {
       );
     }, 600);
 
-    if (participantData && currentPrice && whirlpool) {
+    if (
+      participantData &&
+      currentPrice &&
+      whirlpool &&
+      selectedPool === "POOL1"
+    ) {
       const depositAmount =
         Number(participantData.deposit) +
         Number(participantData?.pendingDeposit);
@@ -1428,6 +1840,113 @@ const Lottery: FC = () => {
 
         handleWithdrawWithLoss(withdrawAmount);
       }
+    } else if (
+      participantData2 &&
+      currentPrice &&
+      whirlpool &&
+      selectedPool === "POOL2"
+    ) {
+      const depositAmount =
+        Number(participantData2.deposit) +
+        Number(participantData2?.pendingDeposit);
+      const lstDepositAmount = Number(participantData2.lstLotteryDeposits);
+      const { whirlpool, price } = await getWhirlpoolData(whirlpoolAddress);
+      const swapRatio = 1 / price.toNumber(); // Example calculation, update as needed
+
+      let amountIn;
+
+      const amountInLamports = parseFloat(amount) * LAMPORTS_PER_SOL;
+      const participantDeposit =
+        Number(participantData2?.deposit) +
+          Number(participantData2?.pendingDeposit) || 0;
+
+      const difference = Math.abs(amountInLamports - participantDeposit);
+      const percentageDifference = difference / participantDeposit;
+
+      if (
+        participantDeposit > 0 &&
+        percentageDifference < 0.002 &&
+        participantDeposit < amountInLamports
+      ) {
+        // If participantDeposit is less than amountInLamports and percentage difference is within 0.0002%
+        amountIn = new Decimal(participantDeposit / LAMPORTS_PER_SOL);
+      } else if (amountInLamports <= participantDeposit) {
+        // If amountInLamports is less than participantDeposit
+        amountIn = new Decimal(amount);
+      } else {
+        // Default case, set amountIn to 0
+        amountIn = new Decimal(0);
+      }
+
+      console.log(`amountIn: ${amountIn.toString()}`);
+
+      const PriceN = new Decimal(price);
+      const amountOut = amountIn.times(PriceN);
+      const amountOutQuote = new Decimal(amountOut);
+      const amountOutYield = new Decimal(yieldAmount);
+
+      console.log(`amountIn: ${amountOutQuote.toString()}`);
+
+      const quoteOut = await getSwapQuoteOutput(
+        whirlpool,
+        amountIn,
+        slippageTolerance
+      );
+      const quoteOutLoss = await getSwapQuoteOutputLoss(
+        whirlpool,
+        amountOutQuote,
+        slippageTolerance
+      );
+
+      const quoteOutYield = await getSwapQuoteOutputLoss(
+        whirlpool,
+        amountOutYield,
+        slippageTolerance
+      );
+
+      const formattedQuoteOut = decodeSwapQuote(quoteOut);
+      const formattedQuoteOutLoss = decodeSwapQuote(quoteOutLoss);
+      const formattedQuoteOutYield = decodeSwapQuote(quoteOutYield);
+
+      // const quoteOutLoss = await getSwapQuoteOutputLoss(whirlpool, amountOutQuote, slippageTolerance);
+
+      setSwapQuoteOut(formattedQuoteOut);
+      setSwapQuoteOutLoss(formattedQuoteOutLoss);
+      setSwapQuoteOutYield(formattedQuoteOutYield);
+
+      // console.log("swapRatio:", swapRatio);
+      // console.log("depositRatio:", depositRatio);
+      console.log("lstDepositAmount:", lstDepositAmount);
+      console.log("formattedQuoteOut", formattedQuoteOut);
+      console.log("formattedQuoteOutLoss", formattedQuoteOutLoss);
+      console.log("formattedQuoteOutYield", formattedQuoteOutYield);
+
+      console.log("");
+      if (
+        // swapRatio >= depositRatio &&
+
+        lstDepositAmount > formattedQuoteOut.estimatedAmountIn &&
+        depositAmount >= formattedQuoteOut.estimatedAmountOut
+
+        // swapRatio >= depositRatio &&
+        // formattedQuoteOut.estimatedAmountOut.eq(depositAmount)
+      ) {
+        console.log("met");
+        handleWithdraw();
+      } else {
+        const withdrawAmount = new BN(formattedQuoteOut.estimatedAmountIn).gt(
+          lstDepositAmount
+        )
+          ? lstDepositAmount
+          : new BN(formattedQuoteOut.estimatedAmountIn);
+        console.log(Number(withdrawAmount.toString()), "withdrawAmount");
+        console.log(
+          Number(swapQuoteOutYield.estimatedAmountIn.toString()),
+          "withdrawAmountYield"
+        );
+
+        handleWithdrawWithLoss(withdrawAmount);
+      }
     }
   };
 
@@ -1450,24 +1969,29 @@ const Lottery: FC = () => {
         parsedAmount = 0;
       }
 
+      const activeLotteryAccountData =
+        selectedPool === "POOL1" ? lotteryAccountData : lotteryAccountData2;
+      const activeParticipantData =
+        selectedPool === "POOL1" ? participantData : participantData2;
+
       if (
-        !lotteryAccountData ||
-        Number(lotteryAccountData.totalDeposits) === 0 ||
+        !activeLotteryAccountData ||
+        Number(activeLotteryAccountData.totalDeposits) === 0 ||
         (parsedAmount === 0 &&
-          (!participantData ||
-            Number(participantData?.deposit) +
-              Number(participantData?.pendingDeposit) ===
+          (!activeParticipantData ||
+            Number(activeParticipantData?.deposit) +
+              Number(activeParticipantData?.pendingDeposit) ===
               0))
       ) {
         setWinningNewChance(`0.00%`);
         return "0.00%";
       }
 
-      const MAX_CYCLE = lotteryAccountData?.maxWeeklyHour * 10;
-      const current_hor = lotteryAccountData?.weeklyHour;
+      const MAX_CYCLE = activeLotteryAccountData?.maxWeeklyHour * 10;
+      const current_hor = activeLotteryAccountData?.weeklyHour;
 
       if (
-        current_hor + 1 > lotteryAccountData?.maxWeeklyHour &&
+        current_hor + 1 > activeLotteryAccountData?.maxWeeklyHour &&
         selectedStake == "DEPOSIT"
       ) {
         setWinningNewChance(`0.00%`);
@@ -1475,7 +1999,7 @@ const Lottery: FC = () => {
       }
 
       // Calculate total weighted deposits
-      const totalDeposits = lotteryAccountData.participants.reduce(
+      const totalDeposits = activeLotteryAccountData.participants.reduce(
         (total, participant) => {
           // Ensure deposit and pendingDeposit are valid numbers and default to 0 if they're undefined or null
           const deposit = Number(participant?.deposit || 0);
@@ -1496,13 +2020,13 @@ const Lottery: FC = () => {
         0 // Initial value of total
       );
 
-      const participantDeposit = Number(participantData?.deposit) || 0;
+      const participantDeposit = Number(activeParticipantData?.deposit) || 0;
       const participantPendingDeposit =
         current_hor === MAX_CYCLE - 1
           ? 0
-          : Number(participantData?.pendingDeposit) || 0; // Exclude pendingDeposit if smallLotteryToBig === 3
+          : Number(activeParticipantData?.pendingDeposit) || 0; // Exclude pendingDeposit if smallLotteryToBig === 3
       const participantCycleStart =
-        Number(participantData?.avgWeeklyDeposit) || 0;
+        Number(activeParticipantData?.avgWeeklyDeposit) || 0;
       const participantWeight = MAX_CYCLE - participantCycleStart;
 
       const participantTotalDeposit =
@@ -1540,53 +2064,69 @@ const Lottery: FC = () => {
     calculateWinningNewChance();
 
     // Recalculate the winning chance when lotteryAccountData or participantData changes
-  }, [lotteryAccountData, participantData, amount, selectedStake]);
+  }, [
+    lotteryAccountData,
+    lotteryAccountData2,
+    participantData,
+    participantData2,
+    amount,
+    selectedStake,
+    selectedPool,
+  ]);
 
   const [winningChance, setWinningChance] = useState("0.00%");
 
   useEffect(() => {
     const calculateWinningChance = () => {
+      const activeLotteryAccountData =
+        selectedPool === "POOL1" ? lotteryAccountData : lotteryAccountData2;
+      const activeParticipantData =
+        selectedPool === "POOL1" ? participantData : participantData2;
+
       if (
-        !lotteryAccountData ||
-        Number(lotteryAccountData.totalDeposits) === 0
+        !activeLotteryAccountData ||
+        Number(activeLotteryAccountData.totalDeposits) === 0
       ) {
         return "0.00%";
       }
 
       // Constants
-      const MAX_CYCLE = lotteryAccountData?.maxWeeklyHour * 10;
-      const current_hor = lotteryAccountData?.weeklyHour;
+      const MAX_CYCLE = activeLotteryAccountData?.maxWeeklyHour * 10;
+      const current_hor = activeLotteryAccountData?.weeklyHour;
 
       // Calculate total weighted deposits
-      const totalWeightedDeposits = lotteryAccountData.participants.reduce(
-        (total, participant) => {
-          // Ensure deposit and pendingDeposit are valid numbers and default to 0 if they're undefined or null
-          const deposit = Number(participant?.deposit || 0);
-          const pendingDeposit =
-            current_hor === MAX_CYCLE / 10 - 1
-              ? 0
-              : Number(participant?.pendingDeposit || 0); // Exclude pendingDeposit if smallLotteryToBig === 3
-          const totalDeposit = (deposit + pendingDeposit) / LAMPORTS_PER_SOL;
-          const depositCycleStart = Number(participant?.avgWeeklyDeposit || 0);
+      const totalWeightedDeposits =
+        activeLotteryAccountData.participants.reduce(
+          (total, participant) => {
+            // Ensure deposit and pendingDeposit are valid numbers and default to 0 if they're undefined or null
+            const deposit = Number(participant?.deposit || 0);
+            const pendingDeposit =
+              current_hor === MAX_CYCLE / 10 - 1
+                ? 0
+                : Number(participant?.pendingDeposit || 0); // Exclude pendingDeposit if smallLotteryToBig === 3
+            const totalDeposit = (deposit + pendingDeposit) / LAMPORTS_PER_SOL;
+            const depositCycleStart = Number(
+              participant?.avgWeeklyDeposit || 0
+            );
 
-          const weight = MAX_CYCLE - depositCycleStart;
+            const weight = MAX_CYCLE - depositCycleStart;
 
-          const weightedDeposit = totalDeposit * weight;
+            const weightedDeposit = totalDeposit * weight;
 
-          // Add weighted deposit to total and return the new total
-          return total + weightedDeposit;
-        },
-        0 // Initial value of total
-      );
+            // Add weighted deposit to total and return the new total
+            return total + weightedDeposit;
+          },
+          0 // Initial value of total
+        );
 
       // Calculate participant's deposit and weight
-      const participantDeposit = Number(participantData?.deposit) || 0;
+      const participantDeposit = Number(activeParticipantData?.deposit) || 0;
       const participantPendingDeposit =
         current_hor === MAX_CYCLE - 1
           ? 0
-          : Number(participantData?.pendingDeposit) || 0; // Exclude pendingDeposit if smallLotteryToBig === 3
+          : Number(activeParticipantData?.pendingDeposit) || 0; // Exclude pendingDeposit if smallLotteryToBig === 3
       const participantCycleStart =
-        Number(participantData?.avgWeeklyDeposit) || 0;
+        Number(activeParticipantData?.avgWeeklyDeposit) || 0;
       const participantWeight = MAX_CYCLE - participantCycleStart;
 
       const participantTotalDeposit =
@@ -1603,53 +2143,67 @@ const Lottery: FC = () => {
     calculateWinningChance();
 
     // Recalculate the winning chance when lotteryAccountData or participantData changes
-  }, [lotteryAccountData, participantData]);
+  }, [
+    lotteryAccountData,
+    participantData,
+    lotteryAccountData2,
+    participantData2,
+    selectedPool,
+  ]);
 
   const [winningChanceBig, setWinningChanceBig] = useState("0.00%");
 
   useEffect(() => {
     const calculateWinningChanceBig = () => {
+      const activeLotteryAccountData =
+        selectedPool === "POOL1" ? lotteryAccountData : lotteryAccountData2;
+      const activeParticipantData =
+        selectedPool === "POOL1" ? participantData : participantData2;
+
       if (
-        !lotteryAccountData ||
-        Number(lotteryAccountData.totalDeposits) === 0
+        !activeLotteryAccountData ||
+        Number(activeLotteryAccountData.totalDeposits) === 0
       ) {
         return "0.00%";
       }
 
       // Constants
-      const max_monthly_hours = lotteryAccountData?.maxMonthlyHour * 10; // Assuming 4000 is the maximum value for cycle calculation.
-      const current_hor = lotteryAccountData?.monthlyHour; // Assuming 4000 is the maximum value for cycle calculation.
+      const max_monthly_hours = activeLotteryAccountData?.maxMonthlyHour * 10; // Assuming 4000 is the maximum value for cycle calculation.
+      const current_hor = activeLotteryAccountData?.monthlyHour; // Assuming 4000 is the maximum value for cycle calculation.
 
       // Calculate total weighted deposits
-      const totalWeightedDeposits = lotteryAccountData.participants.reduce(
-        (total, participant) => {
-          // Ensure deposit and pendingDeposit are valid numbers and default to 0 if they're undefined or null
-          const deposit = Number(participant?.deposit || 0);
-          const pendingDeposit =
-            current_hor === max_monthly_hours / 10 - 1
-              ? 0
-              : Number(participant?.pendingDeposit || 0); // Exclude pendingDeposit if smallLotteryToBig === 3
-          const totalDeposit = (deposit + pendingDeposit) / LAMPORTS_PER_SOL;
-          const depositCycleStart = Number(participant?.avgMonthlyDeposit || 0);
+      const totalWeightedDeposits =
+        activeLotteryAccountData.participants.reduce(
+          (total, participant) => {
+            // Ensure deposit and pendingDeposit are valid numbers and default to 0 if they're undefined or null
+            const deposit = Number(participant?.deposit || 0);
+            const pendingDeposit =
+              current_hor === max_monthly_hours / 10 - 1
+                ? 0
+                : Number(participant?.pendingDeposit || 0); // Exclude pendingDeposit if smallLotteryToBig === 3
+            const totalDeposit = (deposit + pendingDeposit) / LAMPORTS_PER_SOL;
+            const depositCycleStart = Number(
+              participant?.avgMonthlyDeposit || 0
+            );
 
-          const weight = max_monthly_hours - depositCycleStart;
+            const weight = max_monthly_hours - depositCycleStart;
 
-          const weightedDeposit = totalDeposit * weight;
+            const weightedDeposit = totalDeposit * weight;
 
-          // Add weighted deposit to total and return the new total
-          return total + weightedDeposit;
-        },
-        0 // Initial value of total
-      );
+            // Add weighted deposit to total and return the new total
+            return total + weightedDeposit;
+          },
+          0 // Initial value of total
+        );
 
       // Calculate participant's deposit and weight
-      const participantDeposit = Number(participantData?.deposit) || 0;
+      const participantDeposit = Number(activeParticipantData?.deposit) || 0;
       const participantPendingDeposit =
         current_hor === max_monthly_hours - 1
           ? 0
-          : Number(participantData?.pendingDeposit) || 0; // Exclude pendingDeposit if smallLotteryToBig === 3
+          : Number(activeParticipantData?.pendingDeposit) || 0; // Exclude pendingDeposit if smallLotteryToBig === 3
       const participantCycleStart =
-        Number(participantData?.avgMonthlyDeposit) || 0;
+        Number(activeParticipantData?.avgMonthlyDeposit) || 0;
       const participantWeight = max_monthly_hours - participantCycleStart;
 
       const participantTotalDeposit =
@@ -1666,7 +2220,13 @@ const Lottery: FC = () => {
     calculateWinningChanceBig();
 
     // Recalculate the winning chance when lotteryAccountData or participantData changes
-  }, [lotteryAccountData, participantData]);
+  }, [
+    lotteryAccountData,
+    participantData,
+    lotteryAccountData2,
+    participantData2,
+    selectedPool,
+  ]);
 
   const toggleAdditionalDiv1 = () => {
     setShowAdditionalDiv1(!showAdditionalDiv1);
@@ -1750,32 +2310,84 @@ const Lottery: FC = () => {
 
   const handleAmountClick = (type) => {
     let tokenBalance;
+    let maxAmount;
+    let maxLSTAmount;
+
     if (type === "HALF" && !isNaN(Number(amount)) && Number(amount) > 0) {
-      tokenBalance = Number(amount) / 2;
-      tokenBalance = tokenBalance.toFixed(3);
+      if (selectedStake === "WITHDRAW" && selectedPool === "POOL2") {
+        tokenBalance =
+          Number(amount) / 2 +
+          ((1 / Number(currentPrice)) * Number(yieldAmount)) / 2;
+        maxAmount = Number(amount) / 2;
+        maxLSTAmount = Number(yieldAmount) / 2;
+      } else {
+        tokenBalance = Number(amount) / 2;
+      }
     } else {
       if (selectedStake === "DEPOSIT") {
         tokenBalance =
           type === "HALF" ? (balance - 2 / 100) / 2 : balance - 2 / 100;
         tokenBalance = tokenBalance.toFixed(3);
       } else {
-        const participantDeposit = isNaN(
-          (Number(participantData?.deposit) +
-            Number(participantData?.pendingDeposit)) /
-            LAMPORTS_PER_SOL
-        )
-          ? 0
-          : (Number(participantData?.deposit) +
-              Number(participantData?.pendingDeposit)) /
-            LAMPORTS_PER_SOL;
+        const participantDeposit =
+          selectedPool === "POOL1"
+            ? isNaN(
+                (Number(participantData?.deposit) +
+                  Number(participantData?.pendingDeposit)) /
+                  LAMPORTS_PER_SOL
+              )
+              ? 0
+              : (Number(participantData?.deposit) +
+                  Number(participantData?.pendingDeposit)) /
+                LAMPORTS_PER_SOL
+            : isNaN(
+                  (Number(participantData2?.deposit) +
+                    Number(participantData2?.pendingDeposit) +
+                    (1 / Number(currentPrice)) *
+                      Number(participantData2?.lstLotteryDeposits)) /
+                    LAMPORTS_PER_SOL
+                )
+              ? 0
+              : (Number(participantData2?.deposit) +
+                  Number(participantData2?.pendingDeposit) +
+                  (1 / Number(currentPrice)) *
+                    Number(participantData2?.lstLotteryDeposits)) /
+                LAMPORTS_PER_SOL;
+
+        const participantDepositTotal =
+          (Number(participantData2?.deposit) +
+            Number(participantData2?.pendingDeposit)) /
+          LAMPORTS_PER_SOL;
+
         tokenBalance =
           type === "HALF" ? participantDeposit / 2 : participantDeposit;
+        maxAmount =
+          type === "HALF"
+            ? participantDepositTotal / 2
+            : participantDepositTotal;
+        maxLSTAmount =
+          type === "HALF"
+            ? Number(participantData2?.lstYieldDeposits) / LAMPORTS_PER_SOL / 2
+            : Number(participantData2?.lstYieldDeposits) / LAMPORTS_PER_SOL;
       }
     }
-    const maxValue = Math.max(Number(tokenBalance), 0).toFixed(15);
+    const maxValue = Math.max(Number(tokenBalance), 0);
     const displayMax = Math.max(Number(tokenBalance), 0).toFixed(3);
+    const maxDepositValue = Math.max(Number(maxAmount), 0);
+    const maximumLSTValue = Math.max(Number(maxLSTAmount), 0);
 
     setAmount(maxValue.toString()); // Update the state, which will update the input value reactively
+
+    // Conditional logic for setting amount and yield
+    if (selectedPool === "POOL2" && selectedStake === "WITHDRAW") {
+      setAmount(maxDepositValue.toString()); // Set amount for POOL2
+      setYieldAmount(maximumLSTValue.toString()); // Set yield amount for POOL2
+    } else {
+      setAmount(maxValue.toString()); // Use maxValue for POOL1
+
+      // For POOL2, use deposit + pendingDeposit for setAmount
+    }
+
     setDispleyAmount(displayMax.toString()); // Update the state, which will update the input value reactively
   };
 
@@ -1962,10 +2574,18 @@ const Lottery: FC = () => {
                 <div className="flex flex-col justify-between">
                   <div className="text-[60px] font-gilroy-regular">Deposit</div>
                   <div className="text-[150px]">
-                    {(
-                      (Number(participantData?.deposit) -
-                        currentItem.yieldAmount) /
-                      LAMPORTS_PER_SOL
+                    {(isNaN(
+                      ((currentItem.pool ?? 1) === 1
+                        ? Number(participantData?.deposit || 0)
+                        : Number(participantData2?.deposit || 0)) -
+                        Number(currentItem.yieldAmount || 0)
+                    )
+                      ? 0
+                      : (((currentItem.pool ?? 1) === 1
+                          ? Number(participantData?.deposit || 0)
+                          : Number(participantData2?.deposit || 0)) -
+                          Number(currentItem.yieldAmount || 0)) /
+                        LAMPORTS_PER_SOL
                     ).toFixed(1)}{" "}
                     <span className="text-[120px]">◎</span>
                   </div>{" "}
@@ -1975,7 +2595,9 @@ const Lottery: FC = () => {
                   <div className="text-[150px]">
                     {(
                       (currentItem.yieldAmount /
-                        Number(participantData?.deposit)) *
+                        ((currentItem.pool ?? 1) === 1
+                          ? Number(participantData?.deposit)
+                          : Number(participantData2?.deposit))) *
                       100
                     ).toFixed(1)}
                     %
@@ -2180,20 +2802,45 @@ const Lottery: FC = () => {
                   <div className="self-stretch flex md:flex-row flex-col items-start justify-center gap-[32px] ">
                     <div className="w-1/3 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
                       <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
-                        TVL
+                        Pool TVL
                       </div>
                       <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
-                        <span>
-                          {isNaN(
-                            Number(lotteryAccountData?.totalDeposits) /
-                              LAMPORTS_PER_SOL
-                          )
-                            ? 0
-                            : (
-                                Number(lotteryAccountData?.totalDeposits) /
+                        {selectedPool === "POOL1" ? (
+                          <span>
+                            {isNaN(
+                              Number(lotteryAccountData?.totalDeposits) /
                                 LAMPORTS_PER_SOL
-                              ).toFixed(2)}{" "}
-                        </span>
+                            )
+                              ? 0
+                              : (
+                                  Number(lotteryAccountData?.totalDeposits) /
+                                  LAMPORTS_PER_SOL
+                                ).toFixed(2)}{" "}
+                          </span>
+                        ) : (
+                          <span>
+                            {isNaN(
+                              Number(lotteryAccountData2?.totalDeposits) /
+                                LAMPORTS_PER_SOL
+                            ) ||
+                            isNaN(
+                              Number(lotteryAccountData2?.lstLotteryDeposits) /
+                                LAMPORTS_PER_SOL
+                            ) ||
+                            Number(currentPrice) === 0 ||
+                            isNaN(Number(currentPrice))
+                              ? 0 // Fallback value if any number is invalid or if currentPrice is 0
+                              : (
+                                  Number(lotteryAccountData2?.totalDeposits) /
+                                    LAMPORTS_PER_SOL +
+                                  (1 / Number(currentPrice)) *
+                                    (Number(
+                                      lotteryAccountData2?.lstLotteryDeposits
+                                    ) /
+                                      LAMPORTS_PER_SOL)
+                                ).toFixed(2)}{" "}
+                          </span>
+                        )}
                         <span className="text-lg">SOL</span>
                       </div>
                     </div>
@@ -2203,19 +2850,43 @@ const Lottery: FC = () => {
                           Your Stake
                         </div>
                         <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
-                          <span>
-                            {isNaN(
-                              (Number(participantData?.deposit) +
-                                Number(participantData?.pendingDeposit)) /
-                                LAMPORTS_PER_SOL
-                            )
-                              ? 0
-                              : (
-                                  (Number(participantData?.deposit) +
-                                    Number(participantData?.pendingDeposit)) /
+                          {selectedPool === "POOL1" ? (
+                            <span>
+                              {isNaN(
+                                (Number(participantData?.deposit) +
+                                  Number(participantData?.pendingDeposit)) /
                                   LAMPORTS_PER_SOL
-                                ).toFixed(2)}{" "}
-                          </span>{" "}
+                              )
+                                ? 0
+                                : (
+                                    (Number(participantData?.deposit) +
+                                      Number(participantData?.pendingDeposit)) /
+                                    LAMPORTS_PER_SOL
+                                  ).toFixed(2)}{" "}
+                            </span>
+                          ) : (
+                            <span>
+                              {isNaN(
+                                (Number(participantData2?.deposit) +
+                                  Number(participantData2?.pendingDeposit)) /
+                                  LAMPORTS_PER_SOL
+                              ) ||
+                              Number(currentPrice) === 0 ||
+                              isNaN(Number(currentPrice)) ||
+                              Number(participantData2?.lstLotteryDeposits) === 0
+                                ? 0 // Fallback value if the calculation results in NaN or if currentPrice is 0 or NaN
+                                : (
+                                    (Number(participantData2?.deposit) +
+                                      Number(participantData2?.pendingDeposit) +
+                                      (1 / Number(currentPrice)) *
+                                        Number(
+                                          participantData2?.lstLotteryDeposits
+                                        )) /
+                                    LAMPORTS_PER_SOL
+                                  ).toFixed(2)}{" "}
+                            </span>
+                          )}
+
                           <span className="text-lg">SOL</span>
                         </div>
                       </div>
@@ -2366,20 +3037,45 @@ const Lottery: FC = () => {
                 <div className="self-stretch flex flex-row items-center justify-center gap-[32px] ">
                   <div className="flex-1 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
                     <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
-                      TVL
+                      Pool TVL
                     </div>
                     <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
-                      <span>
-                        {isNaN(
-                          Number(lotteryAccountData?.totalDeposits) /
-                            LAMPORTS_PER_SOL
-                        )
-                          ? 0
-                          : (
-                              Number(lotteryAccountData?.totalDeposits) /
+                      {selectedPool === "POOL1" ? (
+                        <span>
+                          {isNaN(
+                            Number(lotteryAccountData?.totalDeposits) /
                               LAMPORTS_PER_SOL
-                            ).toFixed(2)}{" "}
-                      </span>
+                          )
+                            ? 0
+                            : (
+                                Number(lotteryAccountData?.totalDeposits) /
+                                LAMPORTS_PER_SOL
+                              ).toFixed(2)}{" "}
+                        </span>
+                      ) : (
+                        <span>
+                          {isNaN(
+                            Number(lotteryAccountData2?.totalDeposits) /
+                              LAMPORTS_PER_SOL
+                          ) ||
+                          isNaN(
+                            Number(lotteryAccountData2?.lstLotteryDeposits) /
+                              LAMPORTS_PER_SOL
+                          ) ||
+                          Number(currentPrice) === 0 ||
+                          isNaN(Number(currentPrice))
+                            ? 0 // Fallback value if any number is invalid or if currentPrice is 0
+                            : (
+                                Number(lotteryAccountData2?.totalDeposits) /
+                                  LAMPORTS_PER_SOL +
+                                (1 / Number(currentPrice)) *
+                                  (Number(
+                                    lotteryAccountData2?.lstLotteryDeposits
+                                  ) /
+                                    LAMPORTS_PER_SOL)
+                              ).toFixed(2)}{" "}
+                        </span>
+                      )}
                       <span className="text-lg">SOL</span>
                     </div>
                   </div>
@@ -2388,19 +3084,42 @@ const Lottery: FC = () => {
                       Your Stake
                     </div>
                     <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
-                      <span>
-                        {isNaN(
-                          (Number(participantData?.deposit) +
-                            Number(participantData?.pendingDeposit)) /
-                            LAMPORTS_PER_SOL
-                        )
-                          ? 0
-                          : (
-                              (Number(participantData?.deposit) +
-                                Number(participantData?.pendingDeposit)) /
+                      {selectedPool === "POOL1" ? (
+                        <span>
+                          {isNaN(
+                            (Number(participantData?.deposit) +
+                              Number(participantData?.pendingDeposit)) /
                               LAMPORTS_PER_SOL
-                            ).toFixed(2)}{" "}
-                      </span>
+                          )
+                            ? 0
+                            : (
+                                (Number(participantData?.deposit) +
+                                  Number(participantData?.pendingDeposit)) /
+                                LAMPORTS_PER_SOL
+                              ).toFixed(2)}{" "}
+                        </span>
+                      ) : (
+                        <span>
+                          {isNaN(
+                            (Number(participantData2?.deposit) +
+                              Number(participantData2?.pendingDeposit)) /
+                              LAMPORTS_PER_SOL
+                          ) ||
+                          Number(currentPrice) === 0 ||
+                          isNaN(Number(currentPrice)) ||
+                          Number(participantData2?.lstLotteryDeposits) === 0
+                            ? 0 // Fallback value if the calculation results in NaN or if currentPrice is 0 or NaN
+                            : (
+                                (Number(participantData2?.deposit) +
+                                  Number(participantData2?.pendingDeposit) +
+                                  (1 / Number(currentPrice)) *
+                                    Number(
+                                      participantData2?.lstLotteryDeposits
+                                    )) /
+                                LAMPORTS_PER_SOL
+                              ).toFixed(2)}{" "}
+                        </span>
+                      )}
                       <span className="text-lg"> SOL</span>
                     </div>
                   </div>
@@ -2495,13 +3214,64 @@ const Lottery: FC = () => {
             <div className=" flex md:flex-row flex-col gap-6 mt-6">
               <div className="flex flex-col gap-6 lg:w-[34%] md:w-[44%]">
                 <div className=" flex-1 rounded-2xl bg-bg flex flex-col items-between justify-start py-6 px-5 md:p-6 box-border gap-[16px] text-gray-200 font-gilroy-regular">
-                  <div className="self-stretch flex flex-row items-center justify-between text-5xl text-neutral-06 font-gilroy-semibold">
+                  <div className="self-stretch flex flex-row items-center justify-between">
+                    <div className="text-[18px] text-neutral-06 tracking-[-0.03em] font-gilroy-regular ">
+                      Lottery Pool
+                    </div>
+                    <div className="text-[12px] text-primary flex flex-row gap-2">
+                      <div
+                        id="pool1"
+                        onClick={() => setSelectedPool("POOL1")}
+                        className={`cursor-pointer rounded-981xl bg-gray-100  py-1.5 px-2.5   inline-block h-3.5 flex justify-center items-center font-gilroy-semibold ${
+                          selectedPool === "POOL1"
+                            ? "bg-mediumspringgreen-100  text-primary transition-all duration-200"
+                            : "bg-gray-100 text-gray-200 hover:text-white transition-all duration-200"
+                        }`}
+                      >
+                        Pool 1
+                      </div>
+                      <Tooltip
+                        anchorSelect="#pool1"
+                        place="top"
+                        className="p-4 w-[260px] bg-gray-800 text-white rounded-lg shadow-lg font-gilroy-medium" // 40px * 2.94 = 117px
+                      >
+                        In Pool One, all of the yield generated from staking is pooled into the lottery. This means that 100% of the staking rewards are used to create the prize pool.
+                      </Tooltip>
+                      <div
+                        id="pool2"
+                        onClick={() => setSelectedPool("POOL2")}
+                        className={`cursor-pointer rounded-981xl bg-gray-100  py-1.5 px-2.5   inline-block h-3.5 flex justify-center items-center font-gilroy-semibold ${
+                          selectedPool === "POOL2"
+                            ? "bg-mediumspringgreen-100  text-primary transition-all duration-200"
+                            : "bg-gray-100 text-gray-200 hover:text-white transition-all duration-200"
+                        }`}
+                      >
+                        {" "}
+                        Pool 2
+                      </div>
+                      <Tooltip
+                        anchorSelect="#pool2"
+                        place="top"
+                        className="p-4 bg-gray-800 text-white rounded-lg shadow-lg font-gilroy-medium" // 40px * 2.94 = 117px
+                      >
+                        Pool Two offers a balanced approach. Here, 50% of the yield generated is kept as individual staking rewards for participants, while the remaining 50% goes into the lottery pool.
+                      </Tooltip>
+                    </div>
+                  </div>
+                  <div className="self-stretch flex flex-row items-center justify-between text-[20px] text-neutral-06 font-gilroy-semibold">
                     <div className="tracking-[-0.03em] leading-[120.41%]">
                       Enter Draw
                     </div>
-                    <div className="rounded-981xl bg-mediumspringgreen-100 flex flex-row items-center justify-center py-2 px-3 text-sm text-primary">
-                      <div className="w-[100px] leading-[120%] inline-block h-3.5 flex justify-center items-center">
-                        Est. APY {result?.toFixed(2)}%
+                    <div className="rounded-981xl bg-mediumspringgreen-100 flex flex-row items-center justify-center py-2 px-3 text-[13px] text-primary">
+                      <div className="leading-[120%] inline-block h-3.5 flex justify-center items-center">
+                        {selectedPool === "POOL1" ? (
+                          <span>Lottery {result?.toFixed(1)}%</span>
+                        ) : (
+                          <span>
+                            Lottery {(result / 2)?.toFixed(1)}%, Yield{" "}
+                            {(result / 2)?.toFixed(1)}%
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -2610,6 +3380,12 @@ const Lottery: FC = () => {
                                 <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
                                   Deposit
                                 </div>
+                                <img
+                                  src="/cat_money.png"
+                                  className="animated-img"
+                                  alt="animated-image"
+                                />
+
                                 {waves.map((wave) => (
                                   <span
                                     key={wave.key}
@@ -2644,6 +3420,12 @@ const Lottery: FC = () => {
                                 <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
                                   Withdraw
                                 </div>
+                                <img
+                                  src="/cat_withdraw.png"
+                                  className="animated-img"
+                                  alt="animated-image"
+                                />
+
                                 {waves.map((wave) => (
                                   <span
                                     key={wave.key}
@@ -2899,29 +3681,59 @@ const Lottery: FC = () => {
                   </div>
                   <div
                     className="text-black self-stretch rounded-2xl flex flex-col items-start justify-center p-6 gap-[24px]"
-                    style={smallLotteryBgStyle}
+                    style={
+                      selectedPool === "POOL1"
+                        ? smallLotteryBgStyle
+                        : smallLotteryBgStyle2
+                    }
                   >
                     <div className="self-stretch flex flex-row items-start justify-between z-[1]">
                       <div className="tracking-[-0.03em] leading-[120.41%]">
                         Small Lottery
                       </div>
                       <div className=" tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold">
-                        {remainingTimeSmallLottery !== null
-                          ? remainingTimeSmallLottery < 0
-                            ? "Drawing any moment..."
-                            : formatRemainingTime(remainingTimeSmallLottery)
-                          : "Loading..."}
+                        {selectedPool === "POOL1" ? (
+                          <span>
+                            {remainingTimeSmallLottery !== null
+                              ? remainingTimeSmallLottery < 0
+                                ? "Drawing any moment..."
+                                : formatRemainingTime(remainingTimeSmallLottery)
+                              : "Loading..."}
+                          </span>
+                        ) : (
+                          <span>
+                            {remainingTimeSmallLottery2 !== null
+                              ? remainingTimeSmallLottery2 < 0
+                                ? "Drawing any moment..."
+                                : formatRemainingTime(
+                                    remainingTimeSmallLottery2
+                                  )
+                              : "Loading..."}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-[8px] z-[2] text-35xl font-gilroy-bold">
                       <div className="self-stretch tracking-[-0.03em] leading-[120.41%] inline-block h-[47px] shrink-0">
-                        <span>
-                          {smallLotteryYield !== null
-                            ? (
-                                smallLotteryYield.toFixed(0) / LAMPORTS_PER_SOL
-                              ).toFixed(3)
-                            : "0"}
-                        </span>{" "}
+                        {selectedPool === "POOL1" ? (
+                          <span>
+                            {smallLotteryYield !== null
+                              ? (
+                                  smallLotteryYield.toFixed(0) /
+                                  LAMPORTS_PER_SOL
+                                ).toFixed(3)
+                              : "0"}
+                          </span>
+                        ) : (
+                          <span>
+                            {smallLotteryYield2 !== null
+                              ? (
+                                  smallLotteryYield2.toFixed(0) /
+                                  LAMPORTS_PER_SOL
+                                ).toFixed(3)
+                              : "0"}
+                          </span>
+                        )}
                         {/* Small Lottery APY */}{" "}
                         <span className="text-13xl">SOL</span>
                       </div>
@@ -3062,29 +3874,57 @@ const Lottery: FC = () => {
                   </div>
                   <div
                     className="self-stretch rounded-2xl flex flex-col items-start justify-center p-6 gap-[24px]"
-                    style={bigLotteryBgStyle}
+                    style={
+                      selectedPool === "POOL1"
+                        ? bigLotteryBgStyle
+                        : bigLotteryBgStyle2
+                    }
                   >
                     <div className="self-stretch flex flex-row items-start justify-between ">
                       <div className="tracking-[-0.03em] leading-[120.41%]">
                         Big Lottery
                       </div>
                       <div className="tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold">
-                        {remainingTimeBigLottery !== null
-                          ? remainingTimeBigLottery < 0
-                            ? "Drawing any moment..."
-                            : formatRemainingTime(remainingTimeBigLottery)
-                          : "Loading..."}
+                        {selectedPool === "POOL1" ? (
+                          <span>
+                            {" "}
+                            {remainingTimeBigLottery !== null
+                              ? remainingTimeBigLottery < 0
+                                ? "Drawing any moment..."
+                                : formatRemainingTime(remainingTimeBigLottery)
+                              : "Loading..."}
+                          </span>
+                        ) : (
+                          <span>
+                            {" "}
+                            {remainingTimeBigLottery2 !== null
+                              ? remainingTimeBigLottery2 < 0
+                                ? "Drawing any moment..."
+                                : formatRemainingTime(remainingTimeBigLottery2)
+                              : "Loading..."}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-[8px]  text-35xl font-gilroy-bold">
                       <div className="self-stretch tracking-[-0.03em] leading-[120.41%] inline-block h-[47px] shrink-0">
-                        <span>
-                          {bigLotteryYield !== null
-                            ? (
-                                bigLotteryYield.toFixed(0) / LAMPORTS_PER_SOL
-                              ).toFixed(3)
-                            : "0"}
-                        </span>{" "}
+                        {selectedPool === "POOL1" ? (
+                          <span>
+                            {bigLotteryYield !== null
+                              ? (
+                                  bigLotteryYield.toFixed(0) / LAMPORTS_PER_SOL
+                                ).toFixed(3)
+                              : "0"}
+                          </span>
+                        ) : (
+                          <span>
+                            {bigLotteryYield2 !== null
+                              ? (
+                                  bigLotteryYield2.toFixed(0) / LAMPORTS_PER_SOL
+                                ).toFixed(3)
+                              : "0"}
+                          </span>
+                        )}
                         {/* Small Lottery APY */}{" "}
                         <span className="text-13xl">SOL</span>
                       </div>

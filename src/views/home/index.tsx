@@ -1,7 +1,7 @@
 import React from "react";
 import Head from "next/head";
 import Link from "next/link";
-import { useState, useEffect, useRef, FC } from "react";
+import { useState, useEffect, useRef, FC, useCallback } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { FunctionComponent } from "react";
 import FrameComponent9 from "./components/FrameComponent3";
@@ -19,8 +19,23 @@ import {
   LotteryAccount,
   LotteryAccountJSON,
 } from "../../out/accounts/LotteryAccount";
+import {
+  LotteryAccount as LotteryAccount2,
+  LotteryAccountJSON as LotteryAccountJSON2,
+} from "../../output/accounts/LotteryAccount";
 import Frame1 from "./components/Frame1";
 import axios from "axios";
+import Decimal from "decimal.js";
+import {
+  buildWhirlpoolClient,
+  ORCA_WHIRLPOOL_PROGRAM_ID,
+  WhirlpoolContext,
+  PriceMath,
+} from "@orca-so/whirlpools-sdk";
+
+const whirlpoolAddress = new PublicKey(
+  "DxD41srN8Xk9QfYjdNXF9tTnP6qQxeF2bZF8s1eN62Pe"
+);
 
 // Dynamically import the StarfieldAnimationComponent with SSR disabled
 const fetchHistoricalPriceUpdates = async (timestamp, ids) => {
@@ -52,10 +67,49 @@ export const HomeView: FC = ({}) => {
   const [lotteryAccountData, setLotteryAccountData] =
     useState<LotteryAccountJSON | null>(null);
   const [totalParticipants, setTotalParticipants] = useState(0);
+  const [lotteryAccountData2, setLotteryAccountData2] =
+    useState<LotteryAccountJSON2 | null>(null);
+  const [totalParticipants2, setTotalParticipants2] = useState(0);
 
   const [windowWidth, setWindowWidth] = useState(0);
   const [openPrices, setopenPrices] = useState({});
   const [prices, setPrices] = useState({});
+  const [currentPrice, setCurrentPrice] = useState<Decimal | null>(null);
+  const wallet = useWallet();
+
+  const getWhirlpoolClient = useCallback(() => {
+    const ctx = WhirlpoolContext.from(
+      connection,
+      wallet,
+      ORCA_WHIRLPOOL_PROGRAM_ID
+    );
+    const client = buildWhirlpoolClient(ctx);
+    return client;
+  }, [connection, wallet]);
+
+  const getWhirlpoolData = useCallback(
+    async (whirlpoolAddress: PublicKey) => {
+      const client = getWhirlpoolClient();
+      const whirlpool = await client.getPool(whirlpoolAddress);
+      const sqrtPriceX64 = whirlpool.getData().sqrtPrice;
+      const price = PriceMath.sqrtPriceX64ToPrice(sqrtPriceX64, 9, 9); // Update decimals based on token pairs
+      return { whirlpool, price };
+    },
+    [getWhirlpoolClient]
+  );
+
+  const fetchWhirlpoolData = async () => {
+    try {
+      const { whirlpool, price } = await getWhirlpoolData(whirlpoolAddress);
+      setCurrentPrice(price);
+    } catch (error) {
+      console.error("Failed to fetch whirlpool data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchWhirlpoolData();
+  }, []);
 
   useEffect(() => {
     const currentDate = new Date();
@@ -85,7 +139,55 @@ export const HomeView: FC = ({}) => {
   }, []);
 
   const solPrice =
-    Number((prices["Crypto.SOL/USD"] / 100000000).toFixed(2)) || 34.35;
+    Number((prices["Crypto.SOL/USD"] / 100000000).toFixed(2)) || 150.35;
+
+  async function checkLotteryAccount2(
+    connection: Connection
+  ): Promise<LotteryAccountJSON2> {
+    const lotteryAcc = new PublicKey(
+      "AnmXvJgAto11nm75RiUTEKAR3Ad2ZzzogxmhdUE4rdUA"
+    ); // Replace with actual account
+    const lotteryAccount = await LotteryAccount2.fetch(connection, lotteryAcc);
+
+    if (!lotteryAccount) {
+      return {
+        isInitialized: false,
+        totalDeposits: "0",
+        lstTotalDeposits: "0",
+        lstYieldDeposits: "0",
+        lstLotteryDeposits: "0",
+        participants: [],
+        smallCommitSlot: "0",
+        smallRandomnessAccount: "0",
+        bigLotteryTime: "0",
+        bigLotteryHappened: false,
+        smallLotteryTime: "0",
+        smallLotteryHappened: false,
+        bigCommitSlot: "0",
+        bigRandomnessAccount: "0",
+        teamYield: "0",
+        bigLotteryYield: "0",
+        smallLotteryToBig: 0,
+        solIncentive: "0",
+        lstIncentive: "0",
+        bigSolIncentive: "0",
+        bigLstIncentive: "0",
+        bigLstLotteryYield: "0",
+        teamLstYield: "0",
+        bigCommitTime: "0",
+        smallCommitTime: "0",
+        isBigCommitted: false,
+        isSmallComitted: false,
+        weeklyHour: 0,
+        monthlyHour: 0,
+        maxWeeklyHour: 0,
+        maxMonthlyHour: 0,
+        hourlyTimestamp: "0",
+      };
+    }
+
+    return lotteryAccount.toJSON();
+  }
 
   async function checkLotteryAccount(
     connection: Connection
@@ -137,12 +239,39 @@ export const HomeView: FC = ({}) => {
     fetchLotteryAccountData();
   }, [connection]);
 
+  const mergeParticipants = (participants1, participants2) => {
+    const mergedParticipants = {};
+
+    // Iterate over the participants of lotteryAccount
+    for (const participant of participants1) {
+      const pubkeyStr = participant.pubkey.toString();
+      mergedParticipants[pubkeyStr] = participant;
+    }
+
+    // Iterate over the participants of lotteryAccount2 and merge, if not already present
+    for (const participant of participants2) {
+      const pubkeyStr = participant.pubkey.toString();
+
+      // If the participant exists in lotteryAccount1, don't double count
+      if (!mergedParticipants[pubkeyStr]) {
+        mergedParticipants[pubkeyStr] = participant;
+      }
+    }
+
+    return Object.values(mergedParticipants); // Return merged participants as an array
+  };
+
   const fetchLotteryAccountData = async () => {
     try {
       const data = await checkLotteryAccount(connection);
-      console.log("rawdata", data);
       setLotteryAccountData(data);
-      const totalParticipants = data.participants.length;
+      const data2 = await checkLotteryAccount2(connection);
+      setLotteryAccountData2(data2);
+      const mergedParticipants = mergeParticipants(
+        data.participants,
+        data2.participants
+      );
+      const totalParticipants = mergedParticipants.length;
       // Store the total number of participants
       setTotalParticipants(totalParticipants);
     } catch (error) {
@@ -273,7 +402,24 @@ export const HomeView: FC = ({}) => {
                     frameDivMinWidth="159px"
                     users="TVL"
                     usersColor="rgba(255, 255, 255, 0.75)"
-                    prop={`$${isNaN(Number(lotteryAccountData?.totalDeposits) / LAMPORTS_PER_SOL) ? "0.00" : ((solPrice * Number(lotteryAccountData?.totalDeposits)) / LAMPORTS_PER_SOL).toFixed(2)}`}
+                    prop={`$${
+                      isNaN(Number(currentPrice)) ||
+                      currentPrice === null ||
+                      isNaN(
+                        Number(lotteryAccountData?.totalDeposits) /
+                          LAMPORTS_PER_SOL +
+                          Number(lotteryAccountData2?.lstTotalDeposits) /
+                            LAMPORTS_PER_SOL
+                      )
+                        ? "0.00"
+                        : (
+                            ((Number(lotteryAccountData?.totalDeposits) +
+                              Number(lotteryAccountData2?.lstTotalDeposits) /
+                                Number(currentPrice)) /
+                              LAMPORTS_PER_SOL) *
+                            solPrice
+                          ).toFixed(2)
+                    }`}
                     divFontSize="32px"
                     divColor="#fff"
                     className="w-full"
