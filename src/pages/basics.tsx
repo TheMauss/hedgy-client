@@ -6,8 +6,8 @@ const Basics: NextPage = () => {
   return (
     <div>
       <Head>
-        <title>Stakera</title>
-        <meta name="description" content="Stakera" />
+        <title>Hedgy</title>
+        <meta name="description" content="Hedgy" />
       </Head>
       <BasicsView />
     </div>

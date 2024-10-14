@@ -22,26 +22,19 @@ export const Footer: FC = () => {
   }, []);
 
   return (
-    <div className="flex justify-center bg-layer-1 ">
+    <div className="flex justify-center">
       <div className="h-20 text-gray-200 flex items-center justify-between  w-[95%] max-w-[1550px] flex flex-row items-center justify-between text-mini-7">
         <a href="/" className="no-underline">
           <div className="flex flex-row items-center justify-start gap-[5px]">
-            <img
-              className="ml-1 w-[18.1px] relative h-[19.5px]"
-              alt=""
-              src="/group-11.svg"
-            />
-            <div className="font-gilroy-semibold text-white w-[50.2px] relative tracking-[-0.03em] leading-[120.41%] inline-block h-[14.6px] shrink-0">
-              Neutra
-            </div>
+            <img className="ml-1 w-[60px] relative " alt="" src="/hedgy.png" />
           </div>
         </a>
         <div className="hidden sm:flex px-2 relative justify-center items-center text-center text-sm leading-[150%] font-gilroy-regular opacity-[0.5]">
-          Neutra is currently in beta. Please proceed with caution and be aware
+          Hedgy is currently in beta. Please proceed with caution and be aware
           of potential risks.
         </div>
         <div className="sm:hidden px-2 relative flex justify-center items-center text-center text-sm leading-[150%] font-gilroy-regular opacity-[0.5]">
-          Neutra is currently in beta.
+          Hedgy is currently in beta.
         </div>
         <div className="flex flex-row items-center justify-start gap-[13px] opacity-[0.5]">
           <a

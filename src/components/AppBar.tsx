@@ -97,18 +97,11 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
   const [position, setPosition] = useState({ top: "0px", left: "0px" });
 
   return (
-    <div className="Gilroy-Semibold flex justify-center bg-layer-1">
+    <div className="Gilroy-Semibold flex justify-center">
       <div className="h-[92px] flex flex-row justify-between items-center w-[95%] max-w-[1550px]">
         <a href="/lottery" className="no-underline">
           <div className="flex flex-row items-center justify-start gap-[7.4px]">
-            <img
-              className="ml-1 w-[40.2px] relative h-[40.2px]"
-              alt=""
-              src="/hedgehog.svg"
-            />
-            <div className="text-[22px] text-white justify-center items-start tracking-[-0.01em] leading-[120.41%] inline-block shrink-0 pt-0.5">
-              Neutra
-            </div>
+            <img className="ml-1 w-[90px] relative" alt="" src="/hedgy.png" />
           </div>
         </a>
         <div className="flex flex-row justify-center items-center gap-2 md:gap-10">
@@ -124,18 +117,19 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
             </div>
           </Link> */}
           <WalletMultiButtonDynamic
-            className="bg-primary box-border flex flex-row items-center justify-center btn-ghost"
+            className="[background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] text-black box-border flex flex-row items-center justify-center btn-ghost"
             style={{
               width: "100%",
               height: 38,
               borderRadius: 8,
+              background: "linear-gradient(45deg, #1cc5de, #c7ee89)", // Use `background` for gradients
               backgroundColor: "#0C1E1B",
               // color: "black",
             }}
           >
             {" "}
             {connected ? (
-              <div className="Gilroy-Medium text-white w-full flex flex-col h-full items-center justify-center text-[16px]">
+              <div className="Gilroy-Medium text-black w-full flex flex-col h-full items-center justify-center text-[16px]">
                 <div className="h-1/3 text-[10px] w-full">
                   {wallet.publicKey.toBase58().slice(0, 3)}...
                   {wallet.publicKey.toBase58().slice(-3)}
@@ -148,7 +142,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
                 </div>
               </div>
             ) : (
-              <div className="rounded-lg bg-bg h-8 overflow-hidden flex flex-row items-center justify-center py-1 px-0.5 box-border gap-[8px] text-mini Gilroy-Medium">
+              <div className="rounded-lg text-black h-8 overflow-hidden flex flex-row items-center justify-center py-1 px-0.5 box-border gap-[8px] text-mini Gilroy-Medium">
                 <img
                   className="w-4 relative h-4"
                   alt=""

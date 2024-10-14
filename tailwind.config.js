@@ -4,7 +4,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "layer-1": "#193a31",
+        "layer-1": "#141414",
+        "layer-2": "#2e3035",
         "neutral-06": "#fff",
         gray: {
           100: "#091613",
@@ -13,7 +14,7 @@ module.exports = {
           400: "rgba(255, 255, 255, 0.15)",
           500: "rgba(255, 255, 255, 0.1)",
         },
-        bg: "#0c1e1b",
+        bg: "#24262b",
         mediumslateblue: "rgba(115, 99, 243, 0.5)",
         secondary: "#7363f3",
         mediumspringgreen: {

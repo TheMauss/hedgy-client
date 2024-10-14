@@ -599,7 +599,7 @@ export const HomeView: FC = () => {
     }
   }, [vaultDepositor, connection]);
 
-  const defaultImage = "/cat4.png"; // Default image
+  const defaultImage = "/jup.png"; // Default image
   const [profileImage, setProfileImage] = useState(defaultImage);
   const fileInputRef = useRef(null); // Reference to the file input
 
@@ -753,7 +753,7 @@ export const HomeView: FC = () => {
   return (
     <div className="overflow-hidden">
       <Head>
-        <title>Neutra</title>
+        <title>Hedgy</title>
         <meta name="description" content="" />
         <meta name="keywords" content="" /> {/* SEO keywords */}
         <meta name="author" content="" />
@@ -767,104 +767,163 @@ export const HomeView: FC = () => {
         <meta name="twitter:title" content="" />
         <meta name="twitter:description" content="" />
         <meta name="twitter:image" content="/" />
-        <link rel="icon" href="/hedgehog.svg" />
+        <link rel="icon" href="/hedgy.svg" />
       </Head>
 
-      <div className="flex justify-center items-top min-h-[calc(100vh-172px)] z-100 bg-layer-1 ">
+      <div className="flex justify-center items-top min-h-[calc(100vh-172px)] z-100 ">
         <div className="w-[95%] max-w-[1550px]">
-          <div className="w-full overflow-hidden text-left text-base text-neutral-06 font-gilroy-bold">
-            <div
-              className="lg:flex rounded-2xl w-full flex lg:flex-row flex-col lg:gap-0 md:gap-4 items-center justify-between py-2 px-6 box-border text-13xl font-gilroy-semibold"
-              style={{
-                backgroundImage: "url('/frame-2085660298@3x.png')",
-                backgroundSize: "cover",
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "top",
-              }}
-            >
-              <div className="flex flex-row items-center justify-start py-6 px-2 gap-[16px] md:rounded-2xl  lg:[backdrop-filter:blur(0px)] md:[backdrop-filter:blur(20px)] rounded-2xl">
-                <div className="relative group profile-picture-container w-16 h-16">
-                  {/* Display the current profile image */}
-                  <img
-                    className={`w-16 h-16 rounded-full object-cover cursor-pointer ${
-                      profileImage === defaultImage
-                        ? "drop-shadow-[0_0_20px_rgba(111,255,144,0.6)]"
-                        : ""
-                    }`}
-                    alt="Profile"
-                    src={profileImage}
-                    onClick={handleImageClick} // Trigger file input when image is clicked
-                  />
+          <div className=" flex md:flex-row flex-col gap-6">
+            <div className="lg:w-[68%] md:w-[58%] flex flex-col">
+              <div className="w-full rounded-2xl overflow-hidden text-left text-base  text-neutral-06 font-gilroy-bold [background:linear-gradient(130deg,_#101011,_#1d1d22_49.21%,_#0f1011)] border-layer-2 border-[1px] border-solid">
+                <div className="lg:flex  w-full flex lg:flex-row flex-col lg:gap-0 md:gap-4  px-10 items-center justify-between box-border text-[20px] font-gilroy-semibold">
+                  <div className="flex flex-row items-center justify-start py-6 px-2 gap-[16px] md:rounded-2xl  lg:[backdrop-filter:blur(0px)] md:[backdrop-filter:blur(20px)] rounded-2xl">
+                    <div className="relative group profile-picture-container w-16 h-16">
+                      {/* Display the current profile image */}
+                      <img
+                        className={`w-16 h-16 rounded-full object-cover`}
+                        alt="Profile"
+                        src={profileImage}
+                      />
 
-                  {/* Hidden file input to select new image */}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    ref={fileInputRef} // Attach reference to file input
-                    style={{ display: "none" }} // Hide the file input
-                    onChange={handleImageChange} // Handle image selection
-                  />
-                  {profileImage !== defaultImage && (
-                    <div
-                      className="absolute text-sm top-0 right-0 p-0 bg-transparent text-white rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={handleRemoveImage}
-                    >
-                      ✕
+                      {/* Hidden file input to select new image */}
                     </div>
-                  )}
-                </div>
-                <div className="flex flex-col items-start justify-start gap-[4px] ">
-                  <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%]">
-                    JLP Hedge Bot
-                  </div>
-
-                  <div className=" text-lg tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block">
-                    Maximize your JLP Yield
-                  </div>
-                </div>
-              </div>
-              <div className="lg:w-[40%] md:w-4/5 py-2 px-8 [backdrop-filter:blur(20px)] rounded-2xl bg-darkslategray-200 h-[90px] flex flex-col items-center justify-center  box-border text-base font-gilroy-medium">
-                <div className="self-stretch flex md:flex-row flex-col items-start justify-center gap-[32px] ">
-                  <div className="w-1/2 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
-                    <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
-                      Pool TVL
-                    </div>
-                    <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
-                      <span></span>
-                      <span className="text-lg">USDC</span>
-                    </div>
-                  </div>
-                  <div className="w-full md:w-2/3 flex flex-row">
-                    <div className="md:w-full w-1/2 flex-1 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
-                      <div className=" tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
-                        Your Deposit
+                    <div className="flex flex-col items-start justify-center gap-[4px] ">
+                      <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%]">
+                        JLP Delta Neutral Strategy
                       </div>
-                      <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
-                        <span></span>
-                        <span className="text-lg">
-                          {isNaN(Number(depositorData?.netDeposits) / 10e5)
+
+                      <div className="opacity-[0.4] text-[15px] tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block">
+                        Maximize your JLP Yield
+                      </div>
+                    </div>
+                  </div>
+                  <div className=" rounded-2xl  h-[90px] flex flex-col items-center justify-center  box-border text-base font-gilroy-medium">
+                    <div className="flex flex-col items-start justify-start gap-[4px] ">
+                      <div className="text-[36px] self-stretch relative tracking-[-0.03em] leading-[120.41%]">
+                        50.64% <span className="opacity-[0.4]">APY</span>
+                      </div>
+
+                      <div className="opacity-[0.4] text-[15px] justify-end text-end tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block">
+                        Projected Yield
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="w-full  py-2 px-8 rounded-2xl h-[90px] flex flex-col items-center justify-center  box-border text-base font-gilroy-medium">
+                  <div className="border-t-layer-2 border-t-[1px] py-3 border-solid self-stretch flex md:flex-row flex-col items-start justify-center gap-[32px] ">
+                    <div className="w-1/2 flex flex-col justify-center items-center text-center justify-center gap-[4px]">
+                      <div className="tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
+                        <span className="text-[21px]">
+                          $
+                          {isNaN(
+                            ((Number(vaultData?.totalDeposits) /
+                              Number(vaultData?.totalShares)) *
+                              Number(vaultData?.totalDeposits)) /
+                              10e5
+                          )
                             ? 0
                             : (
-                                Number(depositorData?.netDeposits) / 10e5
+                                ((Number(vaultData?.totalDeposits) /
+                                  Number(vaultData?.totalShares)) *
+                                  Number(vaultData?.totalDeposits)) /
+                                10e5
                               ).toFixed(1)}{" "}
-                          USDC
                         </span>
+                      </div>
+                      <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
+                        Vault TVL
+                      </div>
+                    </div>
+                    <div className="border-r-layer-2 border-r-[1px] border-solid w-1/2 flex flex-col justify-center items-center text-center justify-center gap-[4px]">
+                      <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
+                        <span></span>
+                        <span className="text-[21px]">
+                          $
+                          {isNaN(
+                            Number(vaultData?.managerTotalProfitShare) /
+                              0.15 /
+                              10e5
+                          )
+                            ? 0
+                            : (
+                                Number(vaultData?.managerTotalProfitShare) /
+                                0.15 /
+                                10e5
+                              ).toFixed(1)}{" "}
+                        </span>
+                      </div>
+                      <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
+                        Total Profit
+                      </div>
+                    </div>
+
+                    <div className="w-full w-1/2 flex flex-row">
+                      <div className="w-1/2 flex flex-col justify-center items-center text-center justify-center gap-[4px]">
+                        <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
+                          <span></span>
+                          <span className="text-[21px]">
+                            $
+                            {isNaN(
+                              ((Number(depositorData?.netDeposits) /
+                                Number(depositorData?.vaultShares)) *
+                                Number(depositorData?.netDeposits)) /
+                                10e5
+                            )
+                              ? 0
+                              : (
+                                  ((Number(depositorData?.netDeposits) /
+                                    Number(depositorData?.vaultShares)) *
+                                    Number(depositorData?.netDeposits)) /
+                                  10e5
+                                ).toFixed(1)}{" "}
+                          </span>
+                        </div>
+                        <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
+                          Your Deposit
+                        </div>
+                      </div>
+                      <div className="w-1/2 flex flex-col justify-center items-center text-center justify-center gap-[4px]">
+                        <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
+                          <span></span>
+                          <span className="text-[21px]">
+                            {" "}
+                            $
+                            {isNaN(
+                              ((Number(depositorData?.netDeposits) /
+                                Number(depositorData?.vaultShares)) *
+                                Number(
+                                  depositorData?.cumulativeProfitShareAmount
+                                )) /
+                                10e5
+                            )
+                              ? 0
+                              : (
+                                  ((Number(depositorData?.netDeposits) /
+                                    Number(depositorData?.vaultShares)) *
+                                    Number(
+                                      depositorData?.cumulativeProfitShareAmount
+                                    )) /
+                                  10e5
+                                ).toFixed(1)}{" "}
+                          </span>
+                        </div>
+                        <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
+                          Your Profit
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className=" flex md:flex-row flex-col gap-6 mt-6">
-            <div className="flex flex-col gap-6 lg:w-[34%] md:w-[44%]">
-              <div className=" flex-1 rounded-2xl bg-bg flex flex-col items-between justify-start py-6 px-5 md:p-6 box-border gap-[16px] text-gray-200 font-gilroy-regular">
-                <div className="self-stretch rounded-lg bg-gray-100 flex flex-row items-center justify-start p-1 text-neutral-06 font-gilroy-semibold">
+            <div className="flex flex-col gap-8 lg:w-[32%] md:w-[42%]   rounded-2xl [background:linear-gradient(115.04deg,_#101011,_#1d1d22_49.21%,_#0f1011)] border-layer-2 border-[1px] border-solid flex flex-col items-center justify-center">
+              <div className="w-full flex-1 rounded-2xl flex flex-col items-between justify-start py-6 px-5 md:p-8 box-border gap-5 text-gray-200 font-gilroy-regular">
+                <div className="border-layer-2 border-[1px] border-solid self-stretch rounded-lg bg-layer-1 flex flex-row items-center justify-start p-1 text-neutral-06 font-gilroy-semibold">
                   <div
                     className={`cursor-pointer flex-1 rounded-lg overflow-hidden flex flex-row items-center justify-center p-2 transition-background ${
                       selectedStake === "DEPOSIT"
-                        ? "bg-bg text-white"
-                        : "bg-gray-100 text-gray-200 hover:text-white transition-all duration-200"
+                        ? "bg-bg  text-white"
+                        : " bg-layer-1 opacity-40 hover:text-white transition-all duration-200"
                     }`}
                     onClick={() => setSelectedStake("DEPOSIT")}
                   >
@@ -873,46 +932,16 @@ export const HomeView: FC = () => {
                   <div
                     className={`cursor-pointer flex-1 rounded-lg flex flex-row items-center justify-center p-2 transition-background ${
                       selectedStake === "WITHDRAW"
-                        ? "bg-bg text-white"
-                        : "bg-gray-100 text-gray-200 hover:text-white transition-all duration-200"
+                        ? "bg-bg  text-white"
+                        : " bg-layer-1 opacity-40 hover:text-white transition-all duration-200"
                     }`}
                     onClick={() => setSelectedStake("WITHDRAW")}
                   >
                     Withdraw
                   </div>
                 </div>
-                <div className="self-stretch flex flex-row items-center justify-between">
-                  <div className="w-[74px] tracking-[-0.03em] leading-[100%] flex items-end h-5 shrink-0">
-                    Balance
-                  </div>
-                  <div className="flex flex-row items-center justify-start gap-[8px]">
-                    <div className="tracking-[-0.03em] leading-[120.41%] inline-block h-[18px] shrink-0">
-                      {usdcbalance.toFixed(1)} USDC
-                    </div>
-                    {/* <img
-                        className="w-4 h-4"
-                        alt=""
-                        src="/vuesaxboldwallet2.svg"
-                      /> */}
-                  </div>
-                </div>
-                <div className="self-stretch flex flex-row items-center justify-between">
-                  <div className="tracking-[-0.03em] leading-[100%] flex items-end h-5 shrink-0">
-                    Minimum Deposit
-                  </div>
-                  <div className="flex flex-row items-center justify-start gap-[8px]">
-                    <div className="tracking-[-0.03em] leading-[120.41%] inline-block h-[18px] shrink-0">
-                      100 USDC
-                    </div>
-                    {/* <img
-                        className="w-4 h-4"
-                        alt=""
-                        src="/vuesaxboldwallet2.svg"
-                      /> */}
-                  </div>
-                </div>
-                <div className="self-stretch flex flex-col items-start justify-start text-sm">
-                  <div className="self-stretch rounded-2xl bg-gray-100 flex flex-row items-center justify-between gap-[2] p-4 box-border">
+                <div className="rounded-2xl border-layer-2 border-[1px] border-solid self-stretch flex flex-col items-start justify-start text-sm">
+                  <div className="self-stretch rounded-2xl flex flex-row items-center justify-between gap-[2] p-4 box-border">
                     <div className="flex flex-col items-start justify-center gap-[8px]">
                       <div className="tracking-[-0.03em] leading-[120.41%]">
                         You are{" "}
@@ -924,7 +953,7 @@ export const HomeView: FC = () => {
                         <img
                           className="w-8 rounded-981xl h-8 overflow-hidden shrink-0 object-cover"
                           alt=""
-                          src="/paypal.svg"
+                          src="/usdc.png"
                         />
                         <div className="tracking-[-0.21px]">USDC</div>
                       </div>
@@ -932,18 +961,18 @@ export const HomeView: FC = () => {
                     <div className="flex flex-col items-end justify-end gap-1">
                       <div className="flex flew-row gap-2">
                         <div
-                          className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-50 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary"
+                          className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-40 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary"
                           onClick={() => handleAmountClick("HALF")}
                         >
-                          <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center">
+                          <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
                             HALF
                           </div>
                         </div>
                         <div
-                          className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-50 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary"
+                          className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-40 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary"
                           onClick={() => handleAmountClick("MAX")}
                         >
-                          <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center">
+                          <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
                             MAX
                           </div>
                         </div>
@@ -959,6 +988,36 @@ export const HomeView: FC = () => {
                       />
                     </div>
                   </div>{" "}
+                </div>
+                <div className="self-stretch flex flex-row items-center justify-between">
+                  <div className="w-[74px] tracking-[-0.03em] leading-[100%] flex items-end h-5 shrink-0">
+                    Balance
+                  </div>
+                  <div className="flex flex-row items-center justify-start gap-[8px]">
+                    <div className="text-white tracking-[-0.03em] leading-[120.41%] inline-block h-[18px] shrink-0">
+                      {usdcbalance.toFixed(1)} USDC
+                    </div>
+                    {/* <img
+                        className="w-4 h-4"
+                        alt=""
+                        src="/vuesaxboldwallet2.svg"
+                      /> */}
+                  </div>
+                </div>
+                <div className="self-stretch flex flex-row items-center justify-between">
+                  <div className="tracking-[-0.03em] leading-[100%] flex items-end h-5 shrink-0">
+                    Minimum Deposit
+                  </div>
+                  <div className="flex flex-row items-center justify-start gap-[8px]">
+                    <div className="tracking-[-0.03em] text-white leading-[120.41%] inline-block h-[18px] shrink-0">
+                      100 USDC
+                    </div>
+                    {/* <img
+                        className="w-4 h-4"
+                        alt=""
+                        src="/vuesaxboldwallet2.svg"
+                      /> */}
+                  </div>
                 </div>
                 <>
                   {!publicKey ? (

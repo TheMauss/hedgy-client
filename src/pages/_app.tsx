@@ -65,34 +65,22 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
   return (
     <>
       <Head>
-        <title>Stakera</title>
-        <meta
-          name="description"
-          content="A lossless lottery platform built on Solana Liquidity Staking"
-        />
-        <meta
-          name="keywords"
-          content="Stakera, lottery, lossless, crypto, win, blockchain, solana"
-        />{" "}
+        <title>Hedgy</title>
+        <meta name="description" content="" />
+        <meta name="keywords" content="Hedgy, JLP, hedge, crypto, yield" />{" "}
         {/* SEO keywords */}
-        <meta name="author" content="Stakera Team" />
+        <meta name="author" content="Hedgy Team" />
         {/* Open Graph and Twitter meta tags as mentioned above */}
-        <meta property="og:title" content="Stakera | Lottery" />
-        <meta
-          property="og:description"
-          content="A lossless lottery platform built on Solana Liquidity Staking"
-        />
+        <meta property="og:title" content="Hedgy" />
+        <meta property="og:description" content="" />
         <meta property="og:image" content="/stakerameta.png" />
         <meta property="og:url" content="https://stakera.io" />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Stakera" />
-        <meta
-          name="twitter:description"
-          content="A lossless lottery platform built on Solana Liquidity Staking"
-        />
+        <meta name="twitter:title" content="Hedgy" />
+        <meta name="twitter:description" content="" />
         <meta name="twitter:image" content="/stakerameta.png" />
-        <link rel="icon" href="/hedgehog.svg" />
+        <link rel="icon" href="/hedgy.svg" />
       </Head>
       <Script
         async
@@ -114,7 +102,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
       />
       <ContextProvider>
         <PriorityFeeProvider>
-          <div className="flex flex-col min-h-screen overflow-hidden">
+          <div className="flex flex-col min-h-screen overflow-hidden [background:linear-gradient(130deg,_#0a0a0a,_#141414)]">
             {showCss && (
               <div>
                 <div
