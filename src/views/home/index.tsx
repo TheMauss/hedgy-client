@@ -18,7 +18,7 @@ import axios from "axios";
 import dynamic from "next/dynamic";
 import { usePriorityFee } from "../../contexts/PriorityFee";
 import { VaultDepositor, VaultDepositorJSON } from "idl/accounts";
-
+import { Vault, VaultJSON } from "idl/accounts";
 import { initializeVaultDepositor as initVaultDepositor } from "../../idl/instructions"; // Update with the correct path
 import { cancelRequestWithdraw } from "../../idl/instructions"; // Update with the correct path
 
@@ -135,6 +135,20 @@ async function checkVaultDepositor(
   return vaultDepositorData.toJSON();
 }
 
+async function checkVaultData(
+  vault: PublicKey,
+  connection: Connection
+): Promise<VaultJSON | null> {
+  const vaultData = await Vault.fetch(connection, vault);
+
+  if (!vaultData) {
+    console.log("Vault depositor account not found.");
+    return null;
+  }
+
+  return vaultData.toJSON();
+}
+
 require("dotenv").config();
 
 export const HomeView: FC = () => {
@@ -151,6 +165,7 @@ export const HomeView: FC = () => {
   const [depositorData, setDepositorData] = useState<VaultDepositorJSON | null>(
     null
   );
+  const [vaultData, setVaultData] = useState<VaultJSON | null>(null);
   const wallet = useWallet();
   const [waves, setWaves] = useState([]);
   const { isPriorityFee, setPriorityFee } = usePriorityFee();
@@ -163,6 +178,11 @@ export const HomeView: FC = () => {
     setDepositorData(data);
   };
 
+  const fetchVaultData = async () => {
+    const data = await checkVaultData(VAULT_ADDRESS, connection);
+    setVaultData(data);
+  };
+
   const handleAmountClick = (type) => {
     let tokenBalance;
 
@@ -173,6 +193,13 @@ export const HomeView: FC = () => {
         tokenBalance = type === "HALF" ? usdcbalance / 2 : usdcbalance;
         tokenBalance = tokenBalance;
       } else {
+        const participantDepositTotal =
+          Number(depositorData?.vaultSharesBase) *
+          Number(depositorData?.vaultShares);
+        console.log(depositorData?.vaultSharesBase);
+        console.log(depositorData?.vaultShares);
+
+        tokenBalance = participantDepositTotal;
       }
     }
     const maxValue = Math.max(Number(tokenBalance), 0);
@@ -290,6 +317,7 @@ export const HomeView: FC = () => {
       // Refresh user data after deposit
       setTimeout(() => {
         fetchDepositorData();
+        fetchVaultData();
       }, 1200);
     } catch (error) {
       console.error(error);
@@ -379,6 +407,7 @@ export const HomeView: FC = () => {
       // Refresh user data after deposit
       setTimeout(() => {
         fetchDepositorData();
+        fetchVaultData();
       }, 1200);
     } catch (error) {
       console.error(error);
@@ -519,6 +548,7 @@ export const HomeView: FC = () => {
       // Refresh user data after deposit
       setTimeout(() => {
         fetchDepositorData();
+        fetchVaultData();
       }, 1200);
     } catch (error) {
       console.error(error);
@@ -551,13 +581,20 @@ export const HomeView: FC = () => {
   }, [publicKey, connection]);
 
   useEffect(() => {
+    if (connection) {
+      const fetchVaultData = async () => {
+        const data = await checkVaultData(VAULT_ADDRESS, connection);
+        setVaultData(data);
+        console.log("vault", data);
+      };
+      fetchVaultData();
+    }
     if (vaultDepositor) {
       const fetchDepositorData = async () => {
         const data = await checkVaultDepositor(vaultDepositor, connection);
         setDepositorData(data);
         console.log("rawdata", data);
       };
-
       fetchDepositorData();
     }
   }, [vaultDepositor, connection]);
@@ -737,94 +774,7 @@ export const HomeView: FC = () => {
         <div className="w-[95%] max-w-[1550px]">
           <div className="w-full overflow-hidden text-left text-base text-neutral-06 font-gilroy-bold">
             <div
-              className="lg:hidden flex rounded-2xl w-full flex lg:flex-row flex-col lg:gap-0 md:gap-4 items-center justify-between p-4 box-border text-13xl  font-gilroy-semibold"
-              style={{
-                backgroundImage: "url('/frame-2085660298@3x.png')",
-                backgroundSize: "cover",
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "top",
-              }}
-            >
-              <div className="w-full flex flex-col md:items-center items-start justify-between py-4 gap-[8px] md:rounded-2xl [backdrop-filter:blur(20px)] rounded-2xl">
-                <div className="px-4 flex flex-row gap-[16px]">
-                  <div className="relative group profile-picture-container w-16 h-16">
-                    {/* Display the current profile image */}
-                    <img
-                      className={`w-16 h-16 rounded-full object-cover cursor-pointer ${
-                        profileImage === defaultImage
-                          ? "drop-shadow-[0_0_20px_rgba(111,255,144,0.7)]"
-                          : ""
-                      }`}
-                      alt="Profile"
-                      src={profileImage}
-                      onClick={handleImageClick} // Trigger file input when image is clicked
-                    />
-
-                    {/* Hidden file input to select new image */}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      ref={fileInputRef} // Attach reference to file input
-                      style={{ display: "none" }} // Hide the file input
-                      onChange={handleImageChange} // Handle image selection
-                    />
-                    {profileImage !== defaultImage && (
-                      <div
-                        className="absolute text-sm top-0 right-0 p-0 bg-transparent text-white rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={handleRemoveImage}
-                      >
-                        ✕
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-col items-start justify-start gap-[4px] ">
-                    <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%]">
-                      Welcome{" "}
-                    </div>
-
-                    <div className=" text-lg tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block">
-                      May the odds be in your favour
-                    </div>
-                  </div>
-                </div>
-                <div className="w-full md:w-4/5 py-2 px-4 rounded-2xl flex flex-col items-center justify-center  box-border text-base font-gilroy-medium ">
-                  <div className="self-stretch flex md:flex-row flex-col items-start justify-center gap-[32px] ">
-                    <div className="w-1/3 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
-                      <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
-                        Pool TVL
-                      </div>
-                      <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
-                        <span></span>
-
-                        <span className="text-lg">USDC</span>
-                      </div>
-                    </div>
-                    <div className="w-full md:w-2/3 flex flex-row">
-                      <div className="md:w-full w-1/2 flex-1 flex flex-col items-start justify-start lg:gap-[9px] gap-[4px]">
-                        <div className=" tracking-[-0.03em] leading-[120.41%] opacity-[0.5]">
-                          Your Stake
-                        </div>
-                        <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
-                          <span></span>
-
-                          <span className="text-lg">
-                            {" "}
-                            {isNaN(Number(depositorData?.netDeposits) / 10e5)
-                              ? 0
-                              : (
-                                  Number(depositorData?.netDeposits) / 10e5
-                                ).toFixed(1)}{" "}
-                            USDC
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              className="hidden lg:flex rounded-2xl w-full flex lg:flex-row flex-col lg:gap-0 md:gap-4 items-center justify-between py-2 px-6 box-border text-13xl font-gilroy-semibold"
+              className="lg:flex rounded-2xl w-full flex lg:flex-row flex-col lg:gap-0 md:gap-4 items-center justify-between py-2 px-6 box-border text-13xl font-gilroy-semibold"
               style={{
                 backgroundImage: "url('/frame-2085660298@3x.png')",
                 backgroundSize: "cover",
@@ -865,10 +815,12 @@ export const HomeView: FC = () => {
                 </div>
                 <div className="flex flex-col items-start justify-start gap-[4px] ">
                   <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%]">
-                    Welcome{" "}
+                    JLP Hedge Bot
                   </div>
 
-                  <div className=" text-lg tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block"></div>
+                  <div className=" text-lg tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block">
+                    Maximize your JLP Yield
+                  </div>
                 </div>
               </div>
               <div className="lg:w-[40%] md:w-4/5 py-2 px-8 [backdrop-filter:blur(20px)] rounded-2xl bg-darkslategray-200 h-[90px] flex flex-col items-center justify-center  box-border text-base font-gilroy-medium">
