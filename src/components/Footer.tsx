@@ -38,7 +38,7 @@ export const Footer: FC = () => {
         </div>
         <div className="flex flex-row items-center justify-start gap-[13px] opacity-[0.5]">
           <a
-            href={`https://docs.stakera.io`}
+            // href={`https://docs.stakera.io`}
             target="_blank"
             rel="noreferrer"
             className="hover:underline"
@@ -47,7 +47,7 @@ export const Footer: FC = () => {
           </a>
 
           <a
-            href={`https://discord.gg/cpJ2GF6Skc`}
+            // href={`https://discord.gg/cpJ2GF6Skc`}
             target="_blank"
             rel="noreferrer"
             className="hover:underline"
@@ -59,7 +59,7 @@ export const Footer: FC = () => {
             />
           </a>
           <a
-            href="https://x.com/stakera_io"
+            // href="https://x.com/stakera_io"
             target="_blank"
             rel="noreferrer"
             className="hover:underline"
