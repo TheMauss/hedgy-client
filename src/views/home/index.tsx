@@ -197,9 +197,7 @@ export const HomeView: FC = () => {
         tokenBalance = type === "HALF" ? usdcbalance / 2 : usdcbalance;
         tokenBalance = tokenBalance;
       } else {
-        const participantDepositTotal =
-          Number(depositorData?.vaultSharesBase) *
-          Number(depositorData?.vaultShares);
+        const participantDepositTotal = Number(depositorEquity / 10e5);
         console.log(depositorData?.vaultSharesBase);
         console.log(depositorData?.vaultShares);
 
@@ -207,7 +205,7 @@ export const HomeView: FC = () => {
       }
     }
     const maxValue = Math.max(Number(tokenBalance), 0);
-    const displayMax = Math.max(Number(tokenBalance), 0).toFixed(3);
+    const displayMax = Math.max(Number(tokenBalance), 0).toFixed(2);
 
     setAmount(maxValue.toString()); // Update the state, which will update the input value reactively
     setDispleyAmount(displayMax.toString()); // Update the state, which will update the input value reactively
@@ -390,6 +388,97 @@ export const HomeView: FC = () => {
 
       // 3. Create deposit instruction and add to transaction
       const depositIx = cancelRequestWithdraw(RequestAccounts);
+      tx.add(COMPUTE_BUDGET_IX).add(depositIx).add(PRIORITY_FEE_IX);
+
+      // 4. Send transaction
+      const signature = await sendTransaction(tx, connection);
+      notify({
+        type: "info",
+        message: "Deposit transaction sent!",
+        txid: signature,
+      });
+
+      // 5. Confirm transaction
+      await connection.confirmTransaction(signature, "processed");
+      notify({
+        type: "success",
+        message: "Deposit transaction successful!",
+        txid: signature,
+      });
+
+      // Refresh user data after deposit
+      setTimeout(() => {
+        fetchDepositorData();
+        fetchVaultData();
+      }, 1200);
+    } catch (error) {
+      console.error(error);
+      notify({
+        type: "error",
+        message: "Deposit transaction failed!",
+        description: error.message,
+      });
+    }
+  };
+
+  const handleClaimWithdrawal = async () => {
+    if (!publicKey || !vaultDepositor || !USDCAddress) {
+      console.error(
+        "Required data missing (publicKey, vaultDepositor, USDCAddress)."
+      );
+      return;
+    }
+    let PRIORITY_FEE_IX;
+
+    if (isPriorityFee) {
+      const priorityfees = await getPriorityFeeEstimate();
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: priorityfees,
+      });
+    } else {
+      PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: 0,
+      });
+    }
+
+    const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 300000,
+    });
+
+    const RequestAccounts = {
+      vault: VAULT_ADDRESS, // Replace with actual vault public key
+      vaultDepositor: vaultDepositor, // Replace with actual depositor public key
+      authority: publicKey, // User's public key (from wallet adapter)
+      vaultTokenAccount: VAULT_USDC_ADDRESS, // Replace with actual vault token account
+      driftUserStats: new PublicKey(
+        "GV3F3CaTj1rQnCJbHuvAF4fMXYrEBaoaB7BFRJZuZFjF"
+      ), // Replace with drift user stats account
+      driftUser: new PublicKey("GfixmLMU3eGVpf3Go7A51rvdyjBnJoryNotTiqpWpoFs"), // Replace with drift user account
+      driftState: DRIFT_STATE, // Replace with drift state account
+      driftSpotMarketVault: DRIFT_SPOT_MARKET_USDC, // Replace with spot market vault account
+      driftSigner: new PublicKey("JCNCMFXo5M5qwUPg2Utu1u6YWp3MbygxqBsBeXXJfrw"), // Replace with drift user account
+      userTokenAccount: USDCAddress, // User's token account for depositing tokens
+      driftProgram: DRIFT_PROGRAM, // Replace with actual Drift program ID
+      tokenProgram: TOKEN_PROGRAM, // Standard SPL token program ID
+      oracleAddress: DRIFT_SPOT_ORACLE,
+      acc12: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 12 PublicKey
+      acc13: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 13 PublicKey
+      acc14: new PublicKey("BAtFj4kQttZRVep3UZS2aZRDixkGYgWsbqTBVDbnSsPF"), // Replace with actual account 14 PublicKey
+      acc15: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 15 PublicKey
+      acc16: new PublicKey("6bEp2MiyoiiiDxcVqE8rUHQWwHirXUXtKfAEATTVqNzT"), // Replace with actual account 16 PublicKey
+      spotMarketAddress: DRIFT_SPOT, // Replace with actual spot market address (e.g., USDC market)
+      acc17: new PublicKey("DVYXHwLhwALZm94pChALZDJ2b6a7uZTKPXntAGMQtRoM"), // Replace with actual account 17 PublicKey
+      acc18: new PublicKey("GyyHYVCrZGc2AQPuvNbcP1babmU3L42ptmxZthUfD9q"), // Replace with actual account 18 PublicKey
+      acc19: new PublicKey("8UJgxaiQx5nTrdDgph5FiahMmzduuLTLf5WmsPegYA6W"), // Replace with actual account 19 PublicKey
+      acc20: new PublicKey("2UZMvVTBQR9yWxrEdzEQzXWE61bUjqQ5VpJAGqVb3B19"),
+      acc21: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"),
+    };
+
+    try {
+      let tx = new Transaction();
+
+      // 3. Create deposit instruction and add to transaction
+      const depositIx = withdraw(RequestAccounts);
       tx.add(COMPUTE_BUDGET_IX).add(depositIx).add(PRIORITY_FEE_IX);
 
       // 4. Send transaction
@@ -815,9 +904,9 @@ export const HomeView: FC = () => {
         <div className="w-[95%] max-w-[1550px]">
           <div className=" flex md:flex-row flex-col gap-6">
             <div className="lg:w-[68%] md:w-[58%] flex flex-col">
-              <div className="w-full rounded-2xl overflow-hidden text-left text-base  text-neutral-06 font-gilroy-bold [background:linear-gradient(130deg,_#101011,_#1d1d22_49.21%,_#0f1011)] border-layer-2 border-[1px] border-solid">
+              <div className="w-full rounded-2xl overflow-hidden text-left text-base py-6 text-neutral-06 font-gilroy-bold [background:linear-gradient(130deg,_#101011,_#1d1d22_49.21%,_#0f1011)] border-layer-2 border-[1px] border-solid">
                 <div className="lg:flex  w-full flex lg:flex-row flex-col lg:gap-0 md:gap-4  px-10 items-center justify-between box-border text-[20px] font-gilroy-semibold">
-                  <div className="flex flex-row items-center justify-start py-6 px-2 gap-[16px] md:rounded-2xl  lg:[backdrop-filter:blur(0px)] md:[backdrop-filter:blur(20px)] rounded-2xl">
+                  <div className="flex flex-col md:flex-row items-center justify-start  px-2 md:gap-[16px] md:rounded-2xl  lg:[backdrop-filter:blur(0px)] md:[backdrop-filter:blur(20px)] rounded-2xl">
                     <div className="relative group profile-picture-container w-16 h-16">
                       {/* Display the current profile image */}
                       <img
@@ -828,7 +917,7 @@ export const HomeView: FC = () => {
 
                       {/* Hidden file input to select new image */}
                     </div>
-                    <div className="flex flex-col items-start justify-center gap-[4px] ">
+                    <div className="flex flex-col items-center justify-center md:items-start md:justify-center gap-[4px] ">
                       <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%]">
                         JLP Delta Neutral Strategy
                       </div>
@@ -837,9 +926,20 @@ export const HomeView: FC = () => {
                         Maximize your JLP Yield
                       </div>
                     </div>
+                    <div className="md:hidden rounded-2xl  h-[90px] flex flex-col items-center justify-center  box-border text-base font-gilroy-medium">
+                      <div className="flex flex-col items-center justify-center md:items-end md:justify-center gap-[4px] ">
+                        <div className="text-[36px] self-stretch relative tracking-[-0.03em] leading-[120.41%]">
+                          50.64% <span className="opacity-[0.4]">APY</span>
+                        </div>
+
+                        <div className="opacity-[0.4] text-[15px] justify-end text-end tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block">
+                          Projected Yield
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className=" rounded-2xl  h-[90px] flex flex-col items-center justify-center  box-border text-base font-gilroy-medium">
-                    <div className="flex flex-col items-start justify-start gap-[4px] ">
+                  <div className="hidden md:flex rounded-2xl  h-[90px] flex flex-col items-center justify-center  box-border text-base font-gilroy-medium">
+                    <div className="flex flex-col items-center justify-center text-center gap-[4px] ">
                       <div className="text-[36px] self-stretch relative tracking-[-0.03em] leading-[120.41%]">
                         50.64% <span className="opacity-[0.4]">APY</span>
                       </div>
@@ -850,43 +950,45 @@ export const HomeView: FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className="w-full  py-2 px-8 rounded-2xl h-[90px] flex flex-col items-center justify-center  box-border text-base font-gilroy-medium">
-                  <div className="border-t-layer-2 border-t-[1px] py-3 border-solid self-stretch flex md:flex-row flex-col items-start justify-center gap-[32px] ">
-                    <div className="w-1/2 flex flex-col justify-center items-center text-center justify-center gap-[4px]">
-                      <div className="tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
-                        <span className="text-[21px]">
-                          $
-                          {isNaN(Number(vaultEquity) / 10e5)
-                            ? 0
-                            : (Number(vaultEquity) / 10e5).toFixed(1)}{" "}
-                        </span>
+                <div className="w-full py-2 px-8 rounded-2xl min-h-[90px] flex flex-row md:flex-col items-center justify-center  box-border text-base font-gilroy-medium">
+                  <div className="w-full border-t-layer-2 border-t-[1px] py-3 md:border-solid self-stretch flex flex-row items-center justify-between gap-[32px] ">
+                    <div className="flex w-1/2 md:flex-row flex-col justify-center items-center text-center">
+                      <div className="w-1/2 flex flex-col justify-center items-center text-center gap-[4px]">
+                        <div className="tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
+                          <span className="text-[21px]">
+                            $
+                            {isNaN(Number(vaultEquity) / 10e5)
+                              ? 0
+                              : (Number(vaultEquity) / 10e5).toFixed(1)}{" "}
+                          </span>
+                        </div>
+                        <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
+                          Vault TVL
+                        </div>
                       </div>
-                      <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
-                        Vault TVL
+                      <div className="w-1/2 border-r-layer-2 border-r-[1px] md:border-solid  flex flex-col justify-center items-center text-center justify-center gap-[4px]">
+                        <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
+                          <span></span>
+                          <span className="text-[21px]">
+                            $
+                            {isNaN(
+                              Number(vaultData?.netDeposits) -
+                                Number(vaultEquity)
+                            )
+                              ? 0
+                              : (
+                                  (Number(vaultEquity) -
+                                    Number(vaultData?.netDeposits)) /
+                                  10e5
+                                ).toFixed(1)}{" "}
+                          </span>
+                        </div>
+                        <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
+                          Total Profit
+                        </div>
                       </div>
                     </div>
-                    <div className="border-r-layer-2 border-r-[1px] border-solid w-1/2 flex flex-col justify-center items-center text-center justify-center gap-[4px]">
-                      <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
-                        <span></span>
-                        <span className="text-[21px]">
-                          $
-                          {isNaN(
-                            Number(vaultData?.netDeposits) - Number(vaultEquity)
-                          )
-                            ? 0
-                            : (
-                                (Number(vaultEquity) -
-                                  Number(vaultData?.netDeposits)) /
-                                10e5
-                              ).toFixed(1)}{" "}
-                        </span>
-                      </div>
-                      <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
-                        Total Profit
-                      </div>
-                    </div>
-
-                    <div className="w-full w-1/2 flex flex-row">
+                    <div className=" w-1/2 flex flex-col md:flex-row justify-center items-center text-center">
                       <div className="w-1/2 flex flex-col justify-center items-center text-center justify-center gap-[4px]">
                         <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
                           <span></span>
@@ -974,8 +1076,8 @@ export const HomeView: FC = () => {
                 <LineChart />
               </div>
             </div>
-            <div className="flex flex-col gap-8 lg:w-[32%] md:w-[42%]   rounded-2xl [background:linear-gradient(115.04deg,_#101011,_#1d1d22_49.21%,_#0f1011)] border-layer-2 border-[1px] border-solid flex flex-col items-center justify-center">
-              <div className="w-full flex-1 rounded-2xl flex flex-col items-between justify-start py-6 px-5 md:p-8 box-border gap-5 text-gray-200 font-gilroy-regular">
+            <div className="flex flex-col gap-8 lg:w-[32%] md:w-[42%] flex flex-col items-start justify-start max-h-[450px]">
+              <div className="[background:linear-gradient(115.04deg,_#101011,_#1d1d22_49.21%,_#0f1011)] border-layer-2 border-[1px] border-solid w-full flex-1 rounded-2xl flex flex-col items-between justify-start py-6 px-5 md:p-8 box-border gap-5 text-gray-200 font-gilroy-regular">
                 <div className="border-layer-2 border-[1px] border-solid self-stretch rounded-lg bg-layer-1 flex flex-row items-center justify-start p-1 text-neutral-06 font-gilroy-semibold">
                   <div
                     className={`cursor-pointer flex-1 rounded-lg overflow-hidden flex flex-row items-center justify-center p-2 transition-background ${
@@ -1079,11 +1181,14 @@ export const HomeView: FC = () => {
                 </div>
                 <div className="self-stretch flex flex-row items-center justify-between">
                   <div className="tracking-[-0.03em] leading-[100%] flex items-end h-5 shrink-0">
-                    JLP Premium
+                    JLP Premium/Discount
                   </div>
                   <div className="flex flex-row items-center justify-start gap-[8px]">
                     <div className="tracking-[-0.03em] text-white leading-[120.41%] inline-block h-[18px] shrink-0">
-                      {isNaN(Number(jlpPremium)) ? 0 : Number(jlpPremium)} %
+                      {isNaN(Number(jlpPremium))
+                        ? 0
+                        : Number(jlpPremium).toFixed(2)}{" "}
+                      %
                     </div>
                     {/* <img
                         className="w-4 h-4"
@@ -1119,26 +1224,45 @@ export const HomeView: FC = () => {
                         </button>
                       ) : selectedStake === "WITHDRAW" ? (
                         depositorData &&
-                        Number(depositorData?.lastWithdrawRequest.value) > 0 &&
-                        Number(depositorData?.lastWithdrawRequest.ts) >
-                          Date.now() / 1000000 ? (
-                          <div className="self-stretch rounded-lg bg-gray-100 p-4 flex flex-col items-center justify-center gap-2">
-                            <div className="text-lg text-primary">
-                              You are withdrawing{" "}
-                              {Number(
-                                depositorData?.lastWithdrawRequest.value
-                              ) / 10e5}{" "}
-                              USDC
-                            </div>
-                            <button
-                              className="button-wrapper hover:opacity-70 transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-red-500 h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
-                              onClick={handleCancelRequest}
-                            >
-                              <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
-                                Cancel Request
+                        Number(depositorData?.lastWithdrawRequest.value) > 0 ? (
+                          Number(depositorData?.lastWithdrawRequest.ts) >
+                          Date.now() / 10000 ? (
+                            <div className="self-stretch rounded-lg bg-gray-100 p-4 flex flex-col items-center justify-center gap-2">
+                              <div className="text-lg text-primary">
+                                You are withdrawing{" "}
+                                {Number(
+                                  depositorData?.lastWithdrawRequest.value
+                                ) / 10e5}{" "}
+                                USDC
                               </div>
-                            </button>
-                          </div>
+                              <button
+                                className="button-wrapper hover:opacity-70 transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-red-500 h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
+                                onClick={handleCancelRequest}
+                              >
+                                <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
+                                  Cancel Request
+                                </div>
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="self-stretch rounded-lg bg-gray-100 p-4 flex flex-col items-center justify-center gap-2">
+                              <div className="text-lg text-primary">
+                                Withdrawal is ready to claim{" "}
+                                {Number(
+                                  depositorData?.lastWithdrawRequest.value
+                                ) / 10e5}{" "}
+                                USDC
+                              </div>
+                              <button
+                                className="button-wrapper hover:opacity-70 transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-green-500 h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
+                                onClick={handleClaimWithdrawal}
+                              >
+                                <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
+                                  Claim Withdrawal
+                                </div>
+                              </button>
+                            </div>
+                          )
                         ) : (
                           <button
                             className="button-wrapper hover:opacity-70 transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"

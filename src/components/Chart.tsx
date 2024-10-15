@@ -65,7 +65,7 @@ const LineChart = () => {
     },
   };
 
-  return <Line data={data} options={options} />;
+  return <Line data={data} options={options} className="md:max-h-[400px]" />;
 };
 
 export default LineChart;
