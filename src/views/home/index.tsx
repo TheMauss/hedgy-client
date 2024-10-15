@@ -21,10 +21,10 @@ import { VaultDepositor, VaultDepositorJSON } from "idl/accounts";
 import { Vault, VaultJSON } from "idl/accounts";
 import { initializeVaultDepositor as initVaultDepositor } from "../../idl/instructions"; // Update with the correct path
 import { cancelRequestWithdraw } from "../../idl/instructions"; // Update with the correct path
-
 import { requestWithdraw } from "../../idl/instructions"; // Update with the correct path
 import { withdraw } from "../../idl/instructions"; // Update with the correct path
 import { Token } from "../../idl/types/WithdrawUnit";
+import LineChart from "../../components/Chart";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -175,6 +175,7 @@ export const HomeView: FC = () => {
 
   const [depositorEquity, setDepositorEquity] = useState(null);
   const [vaultEquity, setVaultEquity] = useState(null);
+  const [jlpPremium, setJLPPremium] = useState(null);
 
   const fetchDepositorData = async () => {
     const data = await checkVaultDepositor(vaultDepositor, connection);
@@ -610,6 +611,8 @@ export const HomeView: FC = () => {
         );
         const data = await response.json();
         setVaultEquity(data.vaultEquity);
+        setJLPPremium(data.jlpPremium);
+
         console.log("Vault Equity:", data.vaultEquity);
       } catch (error) {
         console.error("Error fetching vault equity:", error);
@@ -788,10 +791,6 @@ export const HomeView: FC = () => {
     setDispleyAmount(sanitizedValue);
   };
 
-  const formattedEquity = Number(depositorEquity) / 10e5;
-
-  const displayEquity = isNaN(formattedEquity) ? 0 : formattedEquity.toFixed(1);
-
   return (
     <div className="overflow-hidden">
       <Head>
@@ -931,6 +930,49 @@ export const HomeView: FC = () => {
                   </div>
                 </div>
               </div>
+              <div
+                className="mt-6 p-6 rounded-2xl border-layer-2 border-[1px] border-solid"
+                style={{
+                  backgroundImage: "url('/frames.png')",
+                  backgroundSize: "cover",
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "top",
+                }}
+              >
+                <div className="self-stretch flex flex-col items-start justify-center gap-3 z-[0] text-left text-3xl text-neutral-06">
+                  <b className="relative tracking-[-0.21px]">Bot Performance</b>
+                  <div className="pb-3 flex flex-row items-center justify-start gap-[5px] text-right text-xs text-grey-text">
+                    <div className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-40 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary">
+                      <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+                        1 Year
+                      </div>
+                    </div>
+                    {/* <div
+                          className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-40 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary"
+                        >
+                          <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+                            1 Month
+                          </div>
+                        </div>
+                        <div
+                          className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-40 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary"
+
+                        >
+                          <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+                            1 Week
+                          </div>
+                        </div>
+                        <div
+                          className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-40 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary"
+                        >
+                          <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+                            1 Day
+                          </div>
+                        </div> */}
+                  </div>
+                </div>
+                <LineChart />
+              </div>
             </div>
             <div className="flex flex-col gap-8 lg:w-[32%] md:w-[42%]   rounded-2xl [background:linear-gradient(115.04deg,_#101011,_#1d1d22_49.21%,_#0f1011)] border-layer-2 border-[1px] border-solid flex flex-col items-center justify-center">
               <div className="w-full flex-1 rounded-2xl flex flex-col items-between justify-start py-6 px-5 md:p-8 box-border gap-5 text-gray-200 font-gilroy-regular">
@@ -1027,6 +1069,21 @@ export const HomeView: FC = () => {
                   <div className="flex flex-row items-center justify-start gap-[8px]">
                     <div className="tracking-[-0.03em] text-white leading-[120.41%] inline-block h-[18px] shrink-0">
                       100 USDC
+                    </div>
+                    {/* <img
+                        className="w-4 h-4"
+                        alt=""
+                        src="/vuesaxboldwallet2.svg"
+                      /> */}
+                  </div>
+                </div>
+                <div className="self-stretch flex flex-row items-center justify-between">
+                  <div className="tracking-[-0.03em] leading-[100%] flex items-end h-5 shrink-0">
+                    JLP Premium
+                  </div>
+                  <div className="flex flex-row items-center justify-start gap-[8px]">
+                    <div className="tracking-[-0.03em] text-white leading-[120.41%] inline-block h-[18px] shrink-0">
+                      {isNaN(Number(jlpPremium)) ? 0 : Number(jlpPremium)} %
                     </div>
                     {/* <img
                         className="w-4 h-4"
