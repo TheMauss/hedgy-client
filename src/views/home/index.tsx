@@ -173,6 +173,9 @@ export const HomeView: FC = () => {
     "DEPOSIT"
   );
 
+  const [depositorEquity, setDepositorEquity] = useState(null);
+  const [vaultEquity, setVaultEquity] = useState(null);
+
   const fetchDepositorData = async () => {
     const data = await checkVaultDepositor(vaultDepositor, connection);
     setDepositorData(data);
@@ -581,6 +584,41 @@ export const HomeView: FC = () => {
   }, [publicKey, connection]);
 
   useEffect(() => {
+    if (publicKey && vaultDepositor) {
+      const fetchDepositorEquity = async () => {
+        try {
+          const response = await fetch(
+            `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults/depositor-equity/${vaultDepositor}`
+          );
+          const data = await response.json();
+          setDepositorEquity(data.equity);
+          console.log("Depositor Equity:", data.equity);
+        } catch (error) {
+          console.error("Error fetching depositor equity:", error);
+        }
+      };
+
+      fetchDepositorEquity();
+    }
+  }, [publicKey, vaultDepositor]);
+
+  useEffect(() => {
+    const fetchVaultData = async () => {
+      try {
+        const response = await fetch(
+          `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults/equity`
+        );
+        const data = await response.json();
+        setVaultEquity(data.vaultEquity);
+        console.log("Vault Equity:", data.vaultEquity);
+      } catch (error) {
+        console.error("Error fetching vault equity:", error);
+      }
+    };
+    fetchVaultData();
+  }, []);
+
+  useEffect(() => {
     if (connection) {
       const fetchVaultData = async () => {
         const data = await checkVaultData(VAULT_ADDRESS, connection);
@@ -646,7 +684,7 @@ export const HomeView: FC = () => {
 
   const getRandomImageName = () => {
     // const images = ["ellipse-1@2x.png", "cat1.png", "cat4.png", "cat6.png"];
-    const images = ["cat4.png"];
+    const images = ["jup.png"];
     const randomIndex = Math.floor(Math.random() * images.length);
     return images[randomIndex];
   };
@@ -750,6 +788,10 @@ export const HomeView: FC = () => {
     setDispleyAmount(sanitizedValue);
   };
 
+  const formattedEquity = Number(depositorEquity) / 10e5;
+
+  const displayEquity = isNaN(formattedEquity) ? 0 : formattedEquity.toFixed(1);
+
   return (
     <div className="overflow-hidden">
       <Head>
@@ -782,7 +824,7 @@ export const HomeView: FC = () => {
                       <img
                         className={`w-16 h-16 rounded-full object-cover`}
                         alt="Profile"
-                        src={profileImage}
+                        src="/jup.png"
                       />
 
                       {/* Hidden file input to select new image */}
@@ -815,19 +857,9 @@ export const HomeView: FC = () => {
                       <div className="tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
                         <span className="text-[21px]">
                           $
-                          {isNaN(
-                            ((Number(vaultData?.totalDeposits) /
-                              Number(vaultData?.totalShares)) *
-                              Number(vaultData?.totalDeposits)) /
-                              10e5
-                          )
+                          {isNaN(Number(vaultEquity) / 10e5)
                             ? 0
-                            : (
-                                ((Number(vaultData?.totalDeposits) /
-                                  Number(vaultData?.totalShares)) *
-                                  Number(vaultData?.totalDeposits)) /
-                                10e5
-                              ).toFixed(1)}{" "}
+                            : (Number(vaultEquity) / 10e5).toFixed(1)}{" "}
                         </span>
                       </div>
                       <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
@@ -840,14 +872,12 @@ export const HomeView: FC = () => {
                         <span className="text-[21px]">
                           $
                           {isNaN(
-                            Number(vaultData?.managerTotalProfitShare) /
-                              0.15 /
-                              10e5
+                            Number(vaultData?.netDeposits) - Number(vaultEquity)
                           )
                             ? 0
                             : (
-                                Number(vaultData?.managerTotalProfitShare) /
-                                0.15 /
+                                (Number(vaultEquity) -
+                                  Number(vaultData?.netDeposits)) /
                                 10e5
                               ).toFixed(1)}{" "}
                         </span>
@@ -863,19 +893,11 @@ export const HomeView: FC = () => {
                           <span></span>
                           <span className="text-[21px]">
                             $
-                            {isNaN(
-                              ((Number(depositorData?.netDeposits) /
-                                Number(depositorData?.vaultShares)) *
-                                Number(depositorData?.netDeposits)) /
-                                10e5
-                            )
+                            {isNaN(Number(depositorEquity) / 10e5)
                               ? 0
-                              : (
-                                  ((Number(depositorData?.netDeposits) /
-                                    Number(depositorData?.vaultShares)) *
-                                    Number(depositorData?.netDeposits)) /
-                                  10e5
-                                ).toFixed(1)}{" "}
+                              : (Number(depositorEquity) / 10e5).toFixed(
+                                  1
+                                )}{" "}
                           </span>
                         </div>
                         <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
@@ -889,20 +911,14 @@ export const HomeView: FC = () => {
                             {" "}
                             $
                             {isNaN(
-                              ((Number(depositorData?.netDeposits) /
-                                Number(depositorData?.vaultShares)) *
-                                Number(
-                                  depositorData?.cumulativeProfitShareAmount
-                                )) /
+                              (Number(depositorEquity) -
+                                Number(depositorData?.netDeposits)) /
                                 10e5
                             )
                               ? 0
                               : (
-                                  ((Number(depositorData?.netDeposits) /
-                                    Number(depositorData?.vaultShares)) *
-                                    Number(
-                                      depositorData?.cumulativeProfitShareAmount
-                                    )) /
+                                  (Number(depositorEquity) -
+                                    Number(depositorData?.netDeposits)) /
                                   10e5
                                 ).toFixed(1)}{" "}
                           </span>
