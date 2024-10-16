@@ -269,10 +269,12 @@ export const HomeView: FC = () => {
     const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
       units: 300000,
     });
+    console.log(depositorData.vaultShares);
+    console.log(Number(amount) * 10e5);
 
     const RequestWithdrawArgs = {
       withdrawAmount: maxSet
-        ? new BN(depositorData.vaultShares)
+        ? new BN(Number(depositorData.vaultShares))
         : new BN(Number(amount) * 10e5),
       withdrawUnit: maxSet ? new Shares() : new Token(),
     };
@@ -742,6 +744,7 @@ export const HomeView: FC = () => {
     if (connection) {
       const fetchVaultData = async () => {
         const data = await checkVaultData(VAULT_ADDRESS, connection);
+        console.log(data);
         setVaultData(data);
       };
       fetchVaultData();
@@ -749,6 +752,7 @@ export const HomeView: FC = () => {
     if (vaultDepositor) {
       const fetchDepositorData = async () => {
         const data = await checkVaultDepositor(vaultDepositor, connection);
+        console.log(data);
         setDepositorData(data);
       };
       fetchDepositorData();
@@ -940,19 +944,29 @@ export const HomeView: FC = () => {
     <div className="overflow-hidden">
       <Head>
         <title>Hedgy</title>
-        <meta name="description" content="" />
-        <meta name="keywords" content="" /> {/* SEO keywords */}
+        <meta
+          name="description"
+          content="Hedgy is an advanced delta-neutral strategy built on the JLP token and Drift Trade platform. Designed to maximize returns while minimizing market risks, Hedgy offers an automated approach to optimizing your investment strategy."
+        />
+        <meta name="keywords" content="Delta Neutral, DeFi, JLP, Drift Trade" />{" "}
+        {/* SEO keywords */}
         <meta name="author" content="" />
         {/* Open Graph and Twitter meta tags as mentioned above */}
-        <meta property="og:title" content="" />
-        <meta property="og:description" content="" />
-        <meta property="og:image" content="/" />
-        <meta property="og:url" content="" />
+        <meta property="og:title" content="Hedgy Market" />
+        <meta
+          property="og:description"
+          content="Hedgy is an advanced delta-neutral strategy built on the JLP token and Drift Trade platform. Designed to maximize returns while minimizing market risks, Hedgy offers an automated approach to optimizing your investment strategy."
+        />
+        <meta property="og:image" content="/strat.png" />
+        <meta property="og:url" content="https://hedgy.market/" />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="" />
-        <meta name="twitter:description" content="" />
-        <meta name="twitter:image" content="/" />
+        <meta
+          name="twitter:description"
+          content="Hedgy is an advanced delta-neutral strategy built on the JLP token and Drift Trade platform. Designed to maximize returns while minimizing market risks, Hedgy offers an automated approach to optimizing your investment strategy."
+        />
+        <meta name="twitter:image" content="/strat.png" />
         <link rel="icon" href="/hedgy.svg" />
       </Head>
 
@@ -1257,10 +1271,8 @@ export const HomeView: FC = () => {
                   </div>
                 </div>
                 {depositorData &&
-                  Number(
-                    depositorData?.lastWithdrawRequest.value &&
-                      selectedStake === "WITHDRAW"
-                  ) > 0 && (
+                  Number(depositorData?.lastWithdrawRequest.value) > 0 &&
+                  selectedStake === "WITHDRAW" && (
                     <div className="self-stretch flex flex-row items-center justify-between">
                       <div className="tracking-[-0.03em] leading-[100%] flex items-end h-5 shrink-0">
                         Withdrawal available in
@@ -1319,12 +1331,9 @@ export const HomeView: FC = () => {
                               <div className="text-lg text-white">
                                 You are withdrawing{" "}
                                 {(
-                                  ((Number(depositorEquity) /
-                                    Number(
-                                      depositorData?.lastWithdrawRequest.value
-                                    )) *
-                                    Number(depositorEquity)) /
-                                  10e5
+                                  Number(
+                                    depositorData?.lastWithdrawRequest.value
+                                  ) / 10e5
                                 ).toFixed(1)}{" "}
                                 USDC
                               </div>

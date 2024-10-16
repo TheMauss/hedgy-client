@@ -7,20 +7,30 @@ const Home: NextPage = () => {
     <div>
       <Head>
         <title></title>
-        <meta name="description" content="" />
-        <meta name="keywords" content="" /> {/* SEO keywords */}
+        <meta
+          name="description"
+          content="Hedgy is an advanced delta-neutral strategy built on the JLP token and Drift Trade platform. Designed to maximize returns while minimizing market risks, Hedgy offers an automated approach to optimizing your investment strategy."
+        />
+        <meta name="keywords" content="Delta Neutral, DeFi, JLP, Drift Trade" />{" "}
+        {/* SEO keywords */}
         <meta name="author" content="" />
         {/* Open Graph and Twitter meta tags as mentioned above */}
-        <meta property="og:title" content="" />
-        <meta property="og:description" content="" />
-        <meta property="og:image" content="/meta.png" />
-        <meta property="og:url" content="https://.io/lottery" />
+        <meta property="og:title" content="Hedgy Market" />
+        <meta
+          property="og:description"
+          content="Hedgy is an advanced delta-neutral strategy built on the JLP token and Drift Trade platform. Designed to maximize returns while minimizing market risks, Hedgy offers an automated approach to optimizing your investment strategy."
+        />
+        <meta property="og:image" content="/strat.png" />
+        <meta property="og:url" content="https://hedgy.market/" />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="" />
-        <meta name="twitter:description" content="" />
-        <meta name="twitter:image" content="" />
-        <link rel="icon" href="/logoico.png" />
+        <meta
+          name="twitter:description"
+          content="Hedgy is an advanced delta-neutral strategy built on the JLP token and Drift Trade platform. Designed to maximize returns while minimizing market risks, Hedgy offers an automated approach to optimizing your investment strategy."
+        />
+        <meta name="twitter:image" content="/strat.png" />
+        <link rel="icon" href="/hedgy.svg" />
       </Head>
       <HomeView />
     </div>
