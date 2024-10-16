@@ -1097,7 +1097,7 @@ export const HomeView: FC = () => {
                   backgroundPosition: "top",
                 }}
               >
-                <div className="self-stretch flex flex-col items-start justify-center gap-3 z-[0] text-left text-3xl text-neutral-06">
+                <div className="font-gilroy-regular self-stretch flex flex-col items-start justify-center gap-3 z-[0] text-left text-3xl text-neutral-06">
                   <b className="relative tracking-[-0.21px] ">
                     Strategy Performance
                   </b>
