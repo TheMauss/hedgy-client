@@ -23,8 +23,9 @@ import { initializeVaultDepositor as initVaultDepositor } from "../../idl/instru
 import { cancelRequestWithdraw } from "../../idl/instructions"; // Update with the correct path
 import { requestWithdraw } from "../../idl/instructions"; // Update with the correct path
 import { withdraw } from "../../idl/instructions"; // Update with the correct path
-import { Token } from "../../idl/types/WithdrawUnit";
+import { Token, Shares } from "../../idl/types/WithdrawUnit";
 import LineChart from "../../components/Chart";
+import { time } from "console";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -165,6 +166,7 @@ export const HomeView: FC = () => {
   const [depositorData, setDepositorData] = useState<VaultDepositorJSON | null>(
     null
   );
+  const [maxSet, setMaxSet] = useState<boolean>(false);
   const [vaultData, setVaultData] = useState<VaultJSON | null>(null);
   const wallet = useWallet();
   const [waves, setWaves] = useState([]);
@@ -176,6 +178,9 @@ export const HomeView: FC = () => {
   const [depositorEquity, setDepositorEquity] = useState(null);
   const [vaultEquity, setVaultEquity] = useState(null);
   const [jlpPremium, setJLPPremium] = useState(null);
+  const [dayChart, setDayChart] = useState([]);
+  const [chartLabels, setChartLabels] = useState([]);
+  const [chartDataPoints, setChartDataPoints] = useState([]);
 
   const fetchDepositorData = async () => {
     const data = await checkVaultDepositor(vaultDepositor, connection);
@@ -192,14 +197,15 @@ export const HomeView: FC = () => {
 
     if (type === "HALF" && !isNaN(Number(amount)) && Number(amount) > 0) {
       tokenBalance = Number(amount) / 2;
+      setMaxSet(false);
     } else {
       if (selectedStake === "DEPOSIT") {
         tokenBalance = type === "HALF" ? usdcbalance / 2 : usdcbalance;
         tokenBalance = tokenBalance;
+        setMaxSet(false);
       } else {
         const participantDepositTotal = Number(depositorEquity / 10e5);
-        console.log(depositorData?.vaultSharesBase);
-        console.log(depositorData?.vaultShares);
+        setMaxSet(true);
 
         tokenBalance = participantDepositTotal;
       }
@@ -265,8 +271,10 @@ export const HomeView: FC = () => {
     });
 
     const RequestWithdrawArgs = {
-      withdrawAmount: new BN(Number(amount) * 1e6),
-      withdrawUnit: new Token(),
+      withdrawAmount: maxSet
+        ? new BN(depositorData.vaultShares)
+        : new BN(Number(amount) * 10e5),
+      withdrawUnit: maxSet ? new Shares() : new Token(),
     };
 
     const RequestAccounts = {
@@ -678,11 +686,11 @@ export const HomeView: FC = () => {
       const fetchDepositorEquity = async () => {
         try {
           const response = await fetch(
+            // `http://localhost:3050/api/vaults/depositor-equity/${vaultDepositor}`
             `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults/depositor-equity/${vaultDepositor}`
           );
           const data = await response.json();
           setDepositorEquity(data.equity);
-          console.log("Depositor Equity:", data.equity);
         } catch (error) {
           console.error("Error fetching depositor equity:", error);
         }
@@ -697,12 +705,32 @@ export const HomeView: FC = () => {
       try {
         const response = await fetch(
           `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults/equity`
+          // `http://localhost:3050/api/vaults/equity`
         );
         const data = await response.json();
         setVaultEquity(data.vaultEquity);
+        setDayChart(data.dayChartData);
         setJLPPremium(data.jlpPremium);
 
-        console.log("Vault Equity:", data.vaultEquity);
+        // Process the dayChartData for the chart
+        const labels = data.dayChartData.map((item) => {
+          if (item.timestamp) {
+            const date = new Date(item.timestamp);
+            return date.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }); // Show hours and minutes
+          } else {
+            return ""; // Fallback for missing timestamp
+          }
+        });
+
+        const dataPoints = data.dayChartData.map((item) =>
+          Number(item.priceOfEquity)
+        );
+
+        setChartLabels(labels.reverse()); // Set chart labels
+        setChartDataPoints(dataPoints.reverse()); // Set chart data points
       } catch (error) {
         console.error("Error fetching vault equity:", error);
       }
@@ -715,7 +743,6 @@ export const HomeView: FC = () => {
       const fetchVaultData = async () => {
         const data = await checkVaultData(VAULT_ADDRESS, connection);
         setVaultData(data);
-        console.log("vault", data);
       };
       fetchVaultData();
     }
@@ -723,7 +750,6 @@ export const HomeView: FC = () => {
       const fetchDepositorData = async () => {
         const data = await checkVaultDepositor(vaultDepositor, connection);
         setDepositorData(data);
-        console.log("rawdata", data);
       };
       fetchDepositorData();
     }
@@ -875,10 +901,40 @@ export const HomeView: FC = () => {
         sanitizedValue.lastIndexOf(".")
       );
     }
-
+    setMaxSet(false);
     setAmount(sanitizedValue); // Use maxValue for POOL1
     setDispleyAmount(sanitizedValue);
   };
+
+  const [timeRemaining, setTimeRemaining] = useState(null);
+
+  useEffect(() => {
+    if (depositorData?.lastWithdrawRequest?.ts) {
+      const withdrawTimestamp =
+        Number(depositorData.lastWithdrawRequest.ts) * 1000 +
+        24 * 60 * 60 * 1000; // Convert the timestamp if needed
+
+      const updateCountdown = () => {
+        const now = Date.now();
+        const timeDiff = withdrawTimestamp - now;
+        if (timeDiff > 0) {
+          const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+          const minutes = Math.floor(
+            (timeDiff % (1000 * 60 * 60)) / (1000 * 60)
+          );
+          const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+          setTimeRemaining(`${hours}h ${minutes}m ${seconds}s`);
+        } else {
+          setTimeRemaining("Ready to claim");
+        }
+      };
+
+      updateCountdown(); // Run once on mount
+      const intervalId = setInterval(updateCountdown, 1000); // Update every second
+
+      return () => clearInterval(intervalId); // Cleanup interval on unmount
+    }
+  }, [depositorData]);
 
   return (
     <div className="overflow-hidden">
@@ -1042,14 +1098,16 @@ export const HomeView: FC = () => {
                 }}
               >
                 <div className="self-stretch flex flex-col items-start justify-center gap-3 z-[0] text-left text-3xl text-neutral-06">
-                  <b className="relative tracking-[-0.21px]">Bot Performance</b>
-                  <div className="pb-3 flex flex-row items-center justify-start gap-[5px] text-right text-xs text-grey-text">
-                    <div className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-40 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary">
+                  <b className="relative tracking-[-0.21px] ">
+                    Strategy Performance
+                  </b>
+                  <div className="font-gilroy-regular pb-3 flex flex-row items-center justify-start gap-[5px] text-right text-xs text-grey-text">
+                    {/* <div className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-40 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary">
                       <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
                         1 Year
                       </div>
                     </div>
-                    {/* <div
+                    <div
                           className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-40 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary"
                         >
                           <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
@@ -1063,17 +1121,15 @@ export const HomeView: FC = () => {
                           <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
                             1 Week
                           </div>
-                        </div>
-                        <div
-                          className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-40 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary"
-                        >
-                          <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
-                            1 Day
-                          </div>
                         </div> */}
+                    <div className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-40 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary">
+                      <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+                        1 DAY
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <LineChart />
+                <LineChart labels={chartLabels} dataPoints={chartDataPoints} />
               </div>
             </div>
             <div className="flex flex-col gap-8 lg:w-[32%] md:w-[42%] flex flex-col items-start justify-start max-h-[450px]">
@@ -1164,21 +1220,24 @@ export const HomeView: FC = () => {
                       /> */}
                   </div>
                 </div>
-                <div className="self-stretch flex flex-row items-center justify-between">
-                  <div className="tracking-[-0.03em] leading-[100%] flex items-end h-5 shrink-0">
-                    Minimum Deposit
-                  </div>
-                  <div className="flex flex-row items-center justify-start gap-[8px]">
-                    <div className="tracking-[-0.03em] text-white leading-[120.41%] inline-block h-[18px] shrink-0">
-                      100 USDC
+
+                {selectedStake === "DEPOSIT" && (
+                  <div className="self-stretch flex flex-row items-center justify-between">
+                    <div className="tracking-[-0.03em] leading-[100%] flex items-end h-5 shrink-0">
+                      Minimum Deposit
                     </div>
-                    {/* <img
+                    <div className="flex flex-row items-center justify-start gap-[8px]">
+                      <div className="tracking-[-0.03em] text-white leading-[120.41%] inline-block h-[18px] shrink-0">
+                        100 USDC
+                      </div>
+                      {/* <img
                         className="w-4 h-4"
                         alt=""
                         src="/vuesaxboldwallet2.svg"
                       /> */}
+                    </div>
                   </div>
-                </div>
+                )}
                 <div className="self-stretch flex flex-row items-center justify-between">
                   <div className="tracking-[-0.03em] leading-[100%] flex items-end h-5 shrink-0">
                     JLP Premium/Discount
@@ -1197,9 +1256,27 @@ export const HomeView: FC = () => {
                       /> */}
                   </div>
                 </div>
+                {depositorData &&
+                  Number(
+                    depositorData?.lastWithdrawRequest.value &&
+                      selectedStake === "WITHDRAW"
+                  ) > 0 && (
+                    <div className="self-stretch flex flex-row items-center justify-between">
+                      <div className="tracking-[-0.03em] leading-[100%] flex items-end h-5 shrink-0">
+                        Withdrawal available in
+                      </div>
+                      <div className="flex flex-row items-center justify-start gap-[8px]">
+                        <div className="tracking-[-0.03em] text-white leading-[120.41%] inline-block h-[18px] shrink-0">
+                          {timeRemaining}
+                        </div>
+                        {/* <img className="w-4 h-4" alt="" src="/vuesaxboldwallet2.svg" /> */}
+                      </div>
+                    </div>
+                  )}
+
                 <>
                   {!publicKey ? (
-                    <div className="flex justify-center items-center w-full h-[50px] rounded-lg bg-primary cursor-pointer font-semibold text-center text-lg text-black transition ease-in-out duration-300">
+                    <div className="flex justify-center items-center w-full h-[50px] rounded-lg [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] cursor-pointer font-semibold text-center text-lg text-black transition ease-in-out duration-300">
                       <WalletMultiButtonDynamic
                         style={{
                           width: "100%",
@@ -1215,28 +1292,44 @@ export const HomeView: FC = () => {
                     <>
                       {selectedStake === "DEPOSIT" ? (
                         <button
-                          className="button-wrapper hover:opacity-70 transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
+                          className={`button-wrapper ${
+                            Number(depositorData?.lastWithdrawRequest.value) > 0
+                              ? "cursor-not-allowed opacity-50"
+                              : "hover:opacity-70 cursor-pointer"
+                          } transition ease-in-out duration-300 self-stretch rounded-lg [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold`}
                           onClick={handleDeposit}
+                          disabled={
+                            Number(depositorData?.lastWithdrawRequest.value) > 0
+                          } // Disable if withdrawing
                         >
                           <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
-                            Deposit
+                            {Number(depositorData?.lastWithdrawRequest.value) >
+                            0
+                              ? "Withdrawal in Progress"
+                              : "Deposit"}
                           </div>
                         </button>
                       ) : selectedStake === "WITHDRAW" ? (
                         depositorData &&
                         Number(depositorData?.lastWithdrawRequest.value) > 0 ? (
-                          Number(depositorData?.lastWithdrawRequest.ts) >
-                          Date.now() / 10000 ? (
-                            <div className="self-stretch rounded-lg bg-gray-100 p-4 flex flex-col items-center justify-center gap-2">
-                              <div className="text-lg text-primary">
+                          Number(depositorData.lastWithdrawRequest.ts) * 1000 +
+                            24 * 60 * 60 * 1000 >
+                          Date.now() ? (
+                            <div className="self-stretch rounded-lg bg-bg p-4 flex flex-col items-center justify-center gap-2">
+                              <div className="text-lg text-white">
                                 You are withdrawing{" "}
-                                {Number(
-                                  depositorData?.lastWithdrawRequest.value
-                                ) / 10e5}{" "}
+                                {(
+                                  ((Number(depositorEquity) /
+                                    Number(
+                                      depositorData?.lastWithdrawRequest.value
+                                    )) *
+                                    Number(depositorEquity)) /
+                                  10e5
+                                ).toFixed(1)}{" "}
                                 USDC
                               </div>
                               <button
-                                className="button-wrapper hover:opacity-70 transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-red-500 h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
+                                className="button-wrapper hover:opacity-70 transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
                                 onClick={handleCancelRequest}
                               >
                                 <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
@@ -1245,12 +1338,14 @@ export const HomeView: FC = () => {
                               </button>
                             </div>
                           ) : (
-                            <div className="self-stretch rounded-lg bg-gray-100 p-4 flex flex-col items-center justify-center gap-2">
-                              <div className="text-lg text-primary">
-                                Withdrawal is ready to claim{" "}
-                                {Number(
-                                  depositorData?.lastWithdrawRequest.value
-                                ) / 10e5}{" "}
+                            <div className="self-stretch rounded-lg bg-bg p-4 flex flex-col items-center justify-center gap-2">
+                              <div className="text-lg text-white">
+                                Claim{" "}
+                                {(
+                                  Number(
+                                    depositorData?.lastWithdrawRequest.value
+                                  ) / 10e5
+                                ).toFixed(1)}{" "}
                                 USDC
                               </div>
                               <button
@@ -1265,7 +1360,7 @@ export const HomeView: FC = () => {
                           )
                         ) : (
                           <button
-                            className="button-wrapper hover:opacity-70 transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-primary h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
+                            className="button-wrapper hover:opacity-70 transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
                             onClick={handleWithdrawRequest}
                           >
                             <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
