@@ -1042,9 +1042,7 @@ export const HomeView: FC = () => {
                             $
                             {isNaN(Number(vaultEquity) / 10e5) ||
                             vaultEquity === null ||
-                            vaultData?.netDeposits === undefined ||
-                            depositorEquity === null ||
-                            depositorData?.netDeposits === undefined ? (
+                            vaultData?.netDeposits === undefined ? (
                               <div className="bg-layer-2 spinner-border animate-spin inline-block w-6 h-4 border-2 rounded-full border-t-transparent"></div>
                             ) : (
                               (Number(vaultEquity) / 10e5).toFixed(1)
@@ -1066,9 +1064,7 @@ export const HomeView: FC = () => {
                                 10e5
                             ) ||
                             vaultEquity === null ||
-                            vaultData?.netDeposits === undefined ||
-                            depositorEquity === null ||
-                            depositorData?.netDeposits === undefined ? (
+                            vaultData?.netDeposits === undefined ? (
                               <div className="bg-layer-2 spinner-border animate-spin inline-block w-6 h-4 border-2 rounded-full border-t-transparent"></div>
                             ) : (
                               (
@@ -1091,14 +1087,12 @@ export const HomeView: FC = () => {
                           <span className="text-[21px]">
                             $
                             {isNaN(Number(depositorEquity) / 10e5) ||
-                            vaultEquity === null ||
-                            vaultData?.netDeposits === undefined ||
                             depositorEquity === null ||
-                            depositorData?.netDeposits === undefined ? (
-                              <div className="bg-layer-2 spinner-border animate-spin inline-block w-6 h-4 border-2 rounded-full border-t-transparent"></div>
-                            ) : (
-                              (Number(depositorEquity) / 10e5).toFixed(1)
-                            )}{" "}
+                            depositorData?.netDeposits === undefined
+                              ? 0
+                              : (Number(depositorEquity) / 10e5).toFixed(
+                                  1
+                                )}{" "}
                           </span>
                         </div>
                         <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
@@ -1116,18 +1110,14 @@ export const HomeView: FC = () => {
                                 Number(depositorData?.netDeposits)) /
                                 10e5
                             ) ||
-                            vaultEquity === null ||
-                            vaultData?.netDeposits === undefined ||
                             depositorEquity === null ||
-                            depositorData?.netDeposits === undefined ? (
-                              <div className="bg-layer-2 spinner-border animate-spin inline-block w-6 h-4 border-2 rounded-full border-t-transparent"></div>
-                            ) : (
-                              (
-                                (Number(depositorEquity) -
-                                  Number(depositorData?.netDeposits)) /
-                                10e5
-                              ).toFixed(1)
-                            )}{" "}
+                            depositorData?.netDeposits === undefined
+                              ? 0
+                              : (
+                                  (Number(depositorEquity) -
+                                    Number(depositorData?.netDeposits)) /
+                                  10e5
+                                ).toFixed(1)}{" "}
                           </span>
                         </div>
                         <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
