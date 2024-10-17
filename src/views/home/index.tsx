@@ -25,6 +25,7 @@ import { requestWithdraw } from "../../idl/instructions"; // Update with the cor
 import { withdraw } from "../../idl/instructions"; // Update with the correct path
 import { Token, Shares } from "../../idl/types/WithdrawUnit";
 import LineChart from "../../components/Chart";
+import Dropdown from "../../components/Dropdown";
 import { time } from "console";
 
 const WalletMultiButtonDynamic = dynamic(
@@ -1183,7 +1184,7 @@ export const HomeView: FC = () => {
                 <LineChart labels={chartLabels} dataPoints={chartDataPoints} />
               </div>
             </div>
-            <div className="flex flex-col gap-8 lg:w-[32%] md:w-[42%] flex flex-col items-start justify-start max-h-[450px]">
+            <div className="flex flex-col gap-8 lg:w-[32%] md:w-[42%] flex flex-col items-start justify-start md:max-h-[500px]">
               <div className="[background:linear-gradient(115.04deg,_#101011,_#1d1d22_49.21%,_#0f1011)] border-layer-2 border-[1px] border-solid w-full flex-1 rounded-2xl flex flex-col items-between justify-start py-6 px-5 md:p-8 box-border gap-5 text-gray-200 font-gilroy-regular">
                 <div className="border-layer-2 border-[1px] border-solid self-stretch rounded-lg bg-layer-1 flex flex-row items-center justify-start p-1 text-neutral-06 font-gilroy-semibold">
                   <div
@@ -1419,6 +1420,7 @@ export const HomeView: FC = () => {
                   )}
                 </>
               </div>
+              <Dropdown></Dropdown>
             </div>
           </div>
         </div>
