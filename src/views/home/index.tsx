@@ -181,16 +181,7 @@ export const HomeView: FC = () => {
   const [dayChart, setDayChart] = useState([]);
   const [chartLabels, setChartLabels] = useState([]);
   const [chartDataPoints, setChartDataPoints] = useState([]);
-
-  const fetchDepositorData = async () => {
-    const data = await checkVaultDepositor(vaultDepositor, connection);
-    setDepositorData(data);
-  };
-
-  const fetchVaultData = async () => {
-    const data = await checkVaultData(VAULT_ADDRESS, connection);
-    setVaultData(data);
-  };
+  const [selectedTimeframe, setSelectedTimeframe] = useState("1 WEEK");
 
   const handleAmountClick = (type) => {
     let tokenBalance;
@@ -330,6 +321,8 @@ export const HomeView: FC = () => {
       setTimeout(() => {
         fetchDepositorData();
         fetchVaultData();
+        fetchVaultEquity();
+        fetchDepositorEquity();
       }, 1200);
     } catch (error) {
       console.error(error);
@@ -420,6 +413,8 @@ export const HomeView: FC = () => {
       setTimeout(() => {
         fetchDepositorData();
         fetchVaultData();
+        fetchVaultEquity();
+        fetchDepositorEquity();
       }, 1200);
     } catch (error) {
       console.error(error);
@@ -511,6 +506,8 @@ export const HomeView: FC = () => {
       setTimeout(() => {
         fetchDepositorData();
         fetchVaultData();
+        fetchVaultEquity();
+        fetchDepositorEquity();
       }, 1200);
     } catch (error) {
       console.error(error);
@@ -652,6 +649,8 @@ export const HomeView: FC = () => {
       setTimeout(() => {
         fetchDepositorData();
         fetchVaultData();
+        fetchVaultEquity();
+        fetchDepositorEquity();
       }, 1200);
     } catch (error) {
       console.error(error);
@@ -711,23 +710,54 @@ export const HomeView: FC = () => {
         );
         const data = await response.json();
         setVaultEquity(data.vaultEquity);
-        setDayChart(data.dayChartData);
         setJLPPremium(data.jlpPremium);
+      } catch (error) {
+        console.error("Error fetching vault equity:", error);
+      }
+    };
+    fetchVaultData();
+  }, []);
 
-        // Process the dayChartData for the chart
-        const labels = data.dayChartData.map((item) => {
+  useEffect(() => {
+    const fetchChartData = async () => {
+      try {
+        let apiUrl = "";
+
+        if (selectedTimeframe === "1 WEEK") {
+          // apiUrl = `http://localhost:3050/api/vaults/equity-weekly`; // Weekly data
+          apiUrl = `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults/equity-weekly`;
+        } else if (selectedTimeframe === "1 DAY") {
+          // apiUrl = `http://localhost:3050/api/vaults/equity-daily`; // Daily data
+          apiUrl = `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults/equity-daily`;
+        }
+
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        setDayChart(data.chartData);
+
+        // Process the chartData for the chart
+        const labels = data.chartData.map((item) => {
           if (item.timestamp) {
             const date = new Date(item.timestamp);
-            return date.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            }); // Show hours and minutes
+
+            // Conditionally format the labels based on the selected timeframe
+            if (selectedTimeframe === "1 WEEK") {
+              return date.toLocaleDateString([], {
+                month: "2-digit",
+                day: "2-digit",
+              }); // Show days for weekly data (MM/DD)
+            } else if (selectedTimeframe === "1 DAY") {
+              return date.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              }); // Show hours for daily data (HH:MM)
+            }
           } else {
             return ""; // Fallback for missing timestamp
           }
         });
 
-        const dataPoints = data.dayChartData.map((item) =>
+        const dataPoints = data.chartData.map((item) =>
           Number(item.priceOfEquity)
         );
 
@@ -737,8 +767,48 @@ export const HomeView: FC = () => {
         console.error("Error fetching vault equity:", error);
       }
     };
-    fetchVaultData();
-  }, []);
+    fetchChartData();
+  }, [selectedTimeframe]);
+
+  const fetchVaultData = async () => {
+    const data = await checkVaultData(VAULT_ADDRESS, connection);
+    console.log(data);
+    setVaultData(data);
+  };
+
+  const fetchVaultEquity = async () => {
+    try {
+      const response = await fetch(
+        `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults/equity`
+        // `http://localhost:3050/api/vaults/equity`
+      );
+      const data = await response.json();
+      setVaultEquity(data.vaultEquity);
+      setDayChart(data.chartData);
+      setJLPPremium(data.jlpPremium);
+    } catch (error) {
+      console.error("Error fetching vault equity:", error);
+    }
+  };
+
+  const fetchDepositorEquity = async () => {
+    try {
+      const response = await fetch(
+        // `http://localhost:3050/api/vaults/depositor-equity/${vaultDepositor}`
+        `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults/depositor-equity/${vaultDepositor}`
+      );
+      const data = await response.json();
+      setDepositorEquity(data.equity);
+    } catch (error) {
+      console.error("Error fetching depositor equity:", error);
+    }
+  };
+
+  const fetchDepositorData = async () => {
+    const data = await checkVaultDepositor(vaultDepositor, connection);
+    console.log(data);
+    setDepositorData(data);
+  };
 
   useEffect(() => {
     if (connection) {
@@ -757,64 +827,7 @@ export const HomeView: FC = () => {
       };
       fetchDepositorData();
     }
-  }, [vaultDepositor, connection]);
-
-  const defaultImage = "/jup.png"; // Default image
-  const [profileImage, setProfileImage] = useState(defaultImage);
-  const fileInputRef = useRef(null); // Reference to the file input
-
-  // Load the saved image from local storage when the component mounts
-  useEffect(() => {
-    const savedImage = localStorage.getItem("profileImage");
-    if (savedImage) {
-      setProfileImage(savedImage);
-    }
-  }, []);
-
-  // Handle the file input change and update profile picture
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-
-      // Once the file is read, save it and update the state
-      reader.onload = () => {
-        if (typeof reader.result === "string") {
-          const imageUrl = reader.result;
-          setProfileImage(imageUrl);
-          localStorage.setItem("profileImage", imageUrl); // Save the image in local storage
-        }
-      };
-
-      reader.readAsDataURL(file); // Convert the file to a data URL
-    }
-  };
-
-  // Function to trigger file input click
-  const handleImageClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click(); // Trigger click on hidden file input
-    }
-  };
-
-  const handleRemoveImage = () => {
-    setProfileImage(defaultImage); // Revert back to the default image
-    localStorage.removeItem("profileImage"); // Remove the image from local storage
-  };
-
-  const [randomImage, setRandomImage] = useState("");
-
-  const getRandomImageName = () => {
-    // const images = ["ellipse-1@2x.png", "cat1.png", "cat4.png", "cat6.png"];
-    const images = ["jup.png"];
-    const randomIndex = Math.floor(Math.random() * images.length);
-    return images[randomIndex];
-  };
-
-  useEffect(() => {
-    const randomImageName = getRandomImageName();
-    setRandomImage(randomImageName);
-  }, []);
+  }, [vaultDepositor, connection, publicKey]);
 
   // const fetchParticipantData = async () => {
   //   try {
@@ -1027,9 +1040,15 @@ export const HomeView: FC = () => {
                         <div className="tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
                           <span className="text-[21px]">
                             $
-                            {isNaN(Number(vaultEquity) / 10e5)
-                              ? 0
-                              : (Number(vaultEquity) / 10e5).toFixed(1)}{" "}
+                            {isNaN(Number(vaultEquity) / 10e5) ||
+                            vaultEquity === null ||
+                            vaultData?.netDeposits === undefined ||
+                            depositorEquity === null ||
+                            depositorData?.netDeposits === undefined ? (
+                              <div className="bg-layer-2 spinner-border animate-spin inline-block w-6 h-4 border-2 rounded-full border-t-transparent"></div>
+                            ) : (
+                              (Number(vaultEquity) / 10e5).toFixed(1)
+                            )}{" "}
                           </span>
                         </div>
                         <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
@@ -1042,15 +1061,22 @@ export const HomeView: FC = () => {
                           <span className="text-[21px]">
                             $
                             {isNaN(
-                              Number(vaultData?.netDeposits) -
-                                Number(vaultEquity)
-                            )
-                              ? 0
-                              : (
-                                  (Number(vaultEquity) -
-                                    Number(vaultData?.netDeposits)) /
-                                  10e5
-                                ).toFixed(1)}{" "}
+                              (Number(vaultEquity) -
+                                Number(vaultData?.netDeposits)) /
+                                10e5
+                            ) ||
+                            vaultEquity === null ||
+                            vaultData?.netDeposits === undefined ||
+                            depositorEquity === null ||
+                            depositorData?.netDeposits === undefined ? (
+                              <div className="bg-layer-2 spinner-border animate-spin inline-block w-6 h-4 border-2 rounded-full border-t-transparent"></div>
+                            ) : (
+                              (
+                                (Number(vaultEquity) -
+                                  Number(vaultData?.netDeposits)) /
+                                10e5
+                              ).toFixed(1)
+                            )}{" "}
                           </span>
                         </div>
                         <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
@@ -1064,11 +1090,15 @@ export const HomeView: FC = () => {
                           <span></span>
                           <span className="text-[21px]">
                             $
-                            {isNaN(Number(depositorEquity) / 10e5)
-                              ? 0
-                              : (Number(depositorEquity) / 10e5).toFixed(
-                                  1
-                                )}{" "}
+                            {isNaN(Number(depositorEquity) / 10e5) ||
+                            vaultEquity === null ||
+                            vaultData?.netDeposits === undefined ||
+                            depositorEquity === null ||
+                            depositorData?.netDeposits === undefined ? (
+                              <div className="bg-layer-2 spinner-border animate-spin inline-block w-6 h-4 border-2 rounded-full border-t-transparent"></div>
+                            ) : (
+                              (Number(depositorEquity) / 10e5).toFixed(1)
+                            )}{" "}
                           </span>
                         </div>
                         <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
@@ -1085,13 +1115,19 @@ export const HomeView: FC = () => {
                               (Number(depositorEquity) -
                                 Number(depositorData?.netDeposits)) /
                                 10e5
-                            )
-                              ? 0
-                              : (
-                                  (Number(depositorEquity) -
-                                    Number(depositorData?.netDeposits)) /
-                                  10e5
-                                ).toFixed(1)}{" "}
+                            ) ||
+                            vaultEquity === null ||
+                            vaultData?.netDeposits === undefined ||
+                            depositorEquity === null ||
+                            depositorData?.netDeposits === undefined ? (
+                              <div className="bg-layer-2 spinner-border animate-spin inline-block w-6 h-4 border-2 rounded-full border-t-transparent"></div>
+                            ) : (
+                              (
+                                (Number(depositorEquity) -
+                                  Number(depositorData?.netDeposits)) /
+                                10e5
+                              ).toFixed(1)
+                            )}{" "}
                           </span>
                         </div>
                         <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
@@ -1127,16 +1163,27 @@ export const HomeView: FC = () => {
                           <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
                             1 Month
                           </div>
-                        </div>
-                        <div
-                          className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-40 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary"
-
-                        >
-                          <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
-                            1 Week
-                          </div>
                         </div> */}
-                    <div className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-40 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary">
+                    <div
+                      className={`cursor-pointer rounded-lg py-1 px-2 text-sm text-primary transition-all duration-200 ease-in-out flex flex-row items-center justify-center ${
+                        selectedTimeframe === "1 WEEK"
+                          ? "bg-mediumspringgreen-50 opacity-100"
+                          : "bg-mediumspringgreen-50 opacity-70 hover:opacity-40"
+                      }`}
+                      onClick={() => setSelectedTimeframe("1 WEEK")}
+                    >
+                      <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+                        1 WEEK
+                      </div>
+                    </div>
+                    <div
+                      className={`cursor-pointer rounded-lg py-1 px-2 text-sm text-primary transition-all duration-200 ease-in-out flex flex-row items-center justify-center ${
+                        selectedTimeframe === "1 DAY"
+                          ? "bg-mediumspringgreen-50 opacity-100"
+                          : "bg-mediumspringgreen-50 opacity-70 hover:opacity-40"
+                      }`}
+                      onClick={() => setSelectedTimeframe("1 DAY")}
+                    >
                       <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
                         1 DAY
                       </div>
