@@ -48,7 +48,7 @@ export const Dropdown = () => {
             <span>
               You can track the portfolio on
               <a
-                href="https://app.drift.trade/overview/portfolio?authority=H77yKTWRUQjx9rDzeSdEL98msMinE7E1A5Zs9tfiP6yU&fbclid/"
+                href="https://app.drift.trade/overview/portfolio?authority=GcGx7VBJX9AxW2EKayVVovpPXvfjpCdjGkKXa27Ryg3a&fbclid/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"
