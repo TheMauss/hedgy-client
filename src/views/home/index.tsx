@@ -1319,7 +1319,7 @@ export const HomeView: FC = () => {
                         <div className="tracking-[-0.03em] text-white leading-[120.41%] inline-block h-[18px] shrink-0">
                           {timeRemaining}
                         </div>
-                        {/* <img className="w-4 h-4" alt="" src="/vuesaxboldwallet2.svgasd" /> */}
+                        {/* <img className="w-4 h-4" alt="" src="/vuesaxboldwallet2.svgasds" /> */}
                       </div>
                     </div>
                   )}
