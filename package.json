@@ -100,7 +100,7 @@
     "rsuite": "^5.40.0",
     "seamless-scroll-polyfill": "^2.3.4",
     "socket.io-client": "^4.7.5",
-    "worker-timers": "^7.1.1",
+    "worker-timers": "^8.0.8",
     "zustand": "^3.6.9"
   },
   "devDependencies": {
