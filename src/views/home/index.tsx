@@ -182,7 +182,7 @@ export const HomeView: FC = () => {
   const [dayChart, setDayChart] = useState([]);
   const [chartLabels, setChartLabels] = useState([]);
   const [chartDataPoints, setChartDataPoints] = useState([]);
-  const [selectedTimeframe, setSelectedTimeframe] = useState("1 WEEK");
+  const [selectedTimeframe, setSelectedTimeframe] = useState("1 DAY");
 
   const handleAmountClick = (type) => {
     let tokenBalance;
