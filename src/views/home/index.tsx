@@ -276,9 +276,9 @@ export const HomeView: FC = () => {
       vaultDepositor: vaultDepositor,
       authority: publicKey,
       driftUserStats: new PublicKey(
-        "GV3F3CaTj1rQnCJbHuvAF4fMXYrEBaoaB7BFRJZuZFjF"
+        "6N9L5W8kKWvgvmS4qCZnB9goFuBsVCmbdjzyQPEFihUn"
       ),
-      driftUser: new PublicKey("GfixmLMU3eGVpf3Go7A51rvdyjBnJoryNotTiqpWpoFs"),
+      driftUser: new PublicKey("DPW6P1DqMA2zEHb7yD2whcvbm9ERk9wHoNMjm95mrTr1"),
       driftState: DRIFT_STATE,
       oracleAddress: DRIFT_SPOT_ORACLE,
       acc11: new PublicKey("En8hkHLkRe9d9DraYmBTrus518BvmVH448YcvmrFM6Ce"), // Replace with actual account 12 PublicKey
@@ -368,9 +368,9 @@ export const HomeView: FC = () => {
       vaultDepositor: vaultDepositor,
       authority: publicKey,
       driftUserStats: new PublicKey(
-        "GV3F3CaTj1rQnCJbHuvAF4fMXYrEBaoaB7BFRJZuZFjF"
+        "6N9L5W8kKWvgvmS4qCZnB9goFuBsVCmbdjzyQPEFihUn"
       ),
-      driftUser: new PublicKey("GfixmLMU3eGVpf3Go7A51rvdyjBnJoryNotTiqpWpoFs"),
+      driftUser: new PublicKey("DPW6P1DqMA2zEHb7yD2whcvbm9ERk9wHoNMjm95mrTr1"),
       driftState: DRIFT_STATE,
       oracleAddress: DRIFT_SPOT_ORACLE,
       acc11: new PublicKey("En8hkHLkRe9d9DraYmBTrus518BvmVH448YcvmrFM6Ce"), // Replace with actual account 12 PublicKey
@@ -457,9 +457,9 @@ export const HomeView: FC = () => {
       authority: publicKey, // User's public key (from wallet adapter)
       vaultTokenAccount: VAULT_USDC_ADDRESS, // Replace with actual vault token account
       driftUserStats: new PublicKey(
-        "GV3F3CaTj1rQnCJbHuvAF4fMXYrEBaoaB7BFRJZuZFjF"
+        "6N9L5W8kKWvgvmS4qCZnB9goFuBsVCmbdjzyQPEFihUn"
       ), // Replace with drift user stats account
-      driftUser: new PublicKey("GfixmLMU3eGVpf3Go7A51rvdyjBnJoryNotTiqpWpoFs"), // Replace with drift user account
+      driftUser: new PublicKey("DPW6P1DqMA2zEHb7yD2whcvbm9ERk9wHoNMjm95mrTr1"), // Replace with drift user account
       driftState: DRIFT_STATE, // Replace with drift state account
       driftSpotMarketVault: DRIFT_SPOT_MARKET_USDC, // Replace with spot market vault account
       driftSigner: new PublicKey("JCNCMFXo5M5qwUPg2Utu1u6YWp3MbygxqBsBeXXJfrw"), // Replace with drift user account
@@ -583,9 +583,9 @@ export const HomeView: FC = () => {
       authority: publicKey, // User's public key (from wallet adapter)
       vaultTokenAccount: VAULT_USDC_ADDRESS, // Replace with actual vault token account
       driftUserStats: new PublicKey(
-        "GV3F3CaTj1rQnCJbHuvAF4fMXYrEBaoaB7BFRJZuZFjF"
+        "6N9L5W8kKWvgvmS4qCZnB9goFuBsVCmbdjzyQPEFihUn"
       ), // Replace with drift user stats account
-      driftUser: new PublicKey("GfixmLMU3eGVpf3Go7A51rvdyjBnJoryNotTiqpWpoFs"), // Replace with drift user account
+      driftUser: new PublicKey("DPW6P1DqMA2zEHb7yD2whcvbm9ERk9wHoNMjm95mrTr1"), // Replace with drift user account
       driftState: DRIFT_STATE, // Replace with drift state account
       driftSpotMarketVault: DRIFT_SPOT_MARKET_USDC, // Replace with spot market vault account
       userTokenAccount: USDCAddress, // User's token account for depositing tokens
@@ -1363,6 +1363,8 @@ export const HomeView: FC = () => {
                         depositorData &&
                         Number(depositorData?.lastWithdrawRequest.value) > 0 ? (
                           Number(depositorData.lastWithdrawRequest.ts) * 1000 +
+                            // Number(depositorData.lastWithdrawRequest.ts)  +
+
                             24 * 60 * 60 * 1000 >
                           Date.now() ? (
                             <div className="self-stretch rounded-lg bg-bg p-4 flex flex-col items-center justify-center gap-2">

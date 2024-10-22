@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const Dropdown = () => {
+export const Dropdown = () => {
   // State for each dropdown
   const [isOpen1, setIsOpen1] = useState(true);
   const [isOpen2, setIsOpen2] = useState(false);
@@ -48,7 +48,7 @@ const Dropdown = () => {
             <span>
               You can track the portfolio on
               <a
-                href="https://trade.drift.trade/"
+                href="https://app.drift.trade/overview/portfolio?authority=H77yKTWRUQjx9rDzeSdEL98msMinE7E1A5Zs9tfiP6yU&fbclid/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"
