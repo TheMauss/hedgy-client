@@ -1319,11 +1319,10 @@ export const HomeView: FC = () => {
                         <div className="tracking-[-0.03em] text-white leading-[120.41%] inline-block h-[18px] shrink-0">
                           {timeRemaining}
                         </div>
-                        {/* <img className="w-4 h-4" alt="" src="/vuesaxboldwallet2.svg" /> */}
+                        {/* <img className="w-4 h-4" alt="" src="/vuesaxboldwallet2.svgasd" /> */}
                       </div>
                     </div>
                   )}
-
                 <>
                   {!publicKey ? (
                     <div className="flex justify-center items-center w-full h-[50px] rounded-lg [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] cursor-pointer font-semibold text-center text-lg text-black transition ease-in-out duration-300">
