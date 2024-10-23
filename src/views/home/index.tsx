@@ -322,7 +322,7 @@ export const HomeView: FC = () => {
       const signature = await sendTransaction(tx, connection);
       notify({
         type: "info",
-        message: "Deposit transaction sent!",
+        message: "Withdraw Request transaction sent!",
         txid: signature,
       });
 
@@ -330,7 +330,7 @@ export const HomeView: FC = () => {
       await connection.confirmTransaction(signature, "processed");
       notify({
         type: "success",
-        message: "Deposit transaction successful!",
+        message: "Withdraw Request transaction successful!",
         txid: signature,
       });
 
@@ -345,7 +345,7 @@ export const HomeView: FC = () => {
       console.error(error);
       notify({
         type: "error",
-        message: "Deposit transaction failed!",
+        message: "Withdraw Request transaction failed!",
         description: error.message,
       });
     }
@@ -414,7 +414,7 @@ export const HomeView: FC = () => {
       const signature = await sendTransaction(tx, connection);
       notify({
         type: "info",
-        message: "Deposit transaction sent!",
+        message: "Cancel transaction sent!",
         txid: signature,
       });
 
@@ -422,7 +422,7 @@ export const HomeView: FC = () => {
       await connection.confirmTransaction(signature, "processed");
       notify({
         type: "success",
-        message: "Deposit transaction successful!",
+        message: "Cancel transaction successful!",
         txid: signature,
       });
 
@@ -437,7 +437,7 @@ export const HomeView: FC = () => {
       console.error(error);
       notify({
         type: "error",
-        message: "Deposit transaction failed!",
+        message: "Cancel transaction failed!",
         description: error.message,
       });
     }
@@ -507,7 +507,7 @@ export const HomeView: FC = () => {
       const signature = await sendTransaction(tx, connection);
       notify({
         type: "info",
-        message: "Deposit transaction sent!",
+        message: "Withdrawal transaction sent!",
         txid: signature,
       });
 
@@ -515,7 +515,7 @@ export const HomeView: FC = () => {
       await connection.confirmTransaction(signature, "processed");
       notify({
         type: "success",
-        message: "Deposit transaction successful!",
+        message: "Withdrawal transaction successful!",
         txid: signature,
       });
 
@@ -530,7 +530,7 @@ export const HomeView: FC = () => {
       console.error(error);
       notify({
         type: "error",
-        message: "Deposit transaction failed!",
+        message: "Withdrawal transaction failed!",
         description: error.message,
       });
     }
