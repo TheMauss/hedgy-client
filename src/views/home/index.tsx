@@ -264,11 +264,27 @@ export const HomeView: FC = () => {
     console.log(depositorData.vaultShares);
     console.log(Number(amount) * 10e5);
 
+    let withdrawAmount;
+    let withdrawUnit;
+
+    if (maxSet) {
+      // Fetch the depositor's equity when maxSet is true
+      const depositorEquity = await fetchDepositorEquitys();
+      console.log(Number(depositorEquity));
+
+      // Set the withdraw amount and unit based on the equity
+      withdrawAmount = new BN(Number(depositorEquity));
+      withdrawUnit = new Token();
+    } else {
+      // Use the provided amount directly when maxSet is false
+      withdrawAmount = new BN(Number(amount) * 10e5);
+      withdrawUnit = new Token();
+    }
+
+    // Construct the RequestWithdrawArgs object
     const RequestWithdrawArgs = {
-      withdrawAmount: maxSet
-        ? new BN(Number(depositorData.vaultShares))
-        : new BN(Number(amount) * 10e5),
-      withdrawUnit: maxSet ? new Shares() : new Token(),
+      withdrawAmount,
+      withdrawUnit,
     };
 
     const RequestAccounts = {
@@ -789,6 +805,19 @@ export const HomeView: FC = () => {
       setJLPPremium(data.jlpPremium);
     } catch (error) {
       console.error("Error fetching vault equity:", error);
+    }
+  };
+
+  const fetchDepositorEquitys = async () => {
+    try {
+      const response = await fetch(
+        `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults/depositor-equity/${vaultDepositor}`
+      );
+      const data = await response.json();
+      return data.equity; // Return the equity value
+    } catch (error) {
+      console.error("Error fetching depositor equity:", error);
+      throw error; // Re-throw the error to handle it upstream
     }
   };
 
