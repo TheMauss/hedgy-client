@@ -23,7 +23,7 @@ import { initializeVaultDepositor as initVaultDepositor } from "../../idl/instru
 import { cancelRequestWithdraw } from "../../idl/instructions"; // Update with the correct path
 import { requestWithdraw } from "../../idl/instructions"; // Update with the correct path
 import { withdraw } from "../../idl/instructions"; // Update with the correct path
-import { Token, Shares } from "../../idl/types/WithdrawUnit";
+import { Token, Shares, SharesPercent } from "../../idl/types/WithdrawUnit";
 import LineChart from "../../components/Chart";
 import Dropdown from "../../components/Dropdown";
 import { time } from "console";
@@ -273,8 +273,8 @@ export const HomeView: FC = () => {
       console.log(Number(depositorEquity));
 
       // Set the withdraw amount and unit based on the equity
-      withdrawAmount = new BN(Number(depositorEquity));
-      withdrawUnit = new Token();
+      withdrawAmount = new BN(1000000);
+      withdrawUnit = new SharesPercent();
     } else {
       // Use the provided amount directly when maxSet is false
       withdrawAmount = new BN(Number(amount) * 10e5);
