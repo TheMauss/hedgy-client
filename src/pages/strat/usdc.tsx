@@ -10,7 +10,7 @@ import {
   LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
 import { notify } from "utils/notifications";
-import { deposit as depositInstruction } from "../../idl/instructions"; // Update with the correct path
+import { deposit as depositInstruction } from "../../idl/instructions/deposit"; // Update with the correct path
 import "react-tooltip/dist/react-tooltip.css";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import useUserSOLBalanceStore from "../../stores/useUserSOLBalanceStore";
@@ -20,13 +20,12 @@ import { usePriorityFee } from "../../contexts/PriorityFee";
 import { VaultDepositor, VaultDepositorJSON } from "idl/accounts";
 import { Vault, VaultJSON } from "idl/accounts";
 import { initializeVaultDepositor as initVaultDepositor } from "../../idl/instructions"; // Update with the correct path
-import { cancelRequestWithdraw } from "../../idl/instructions"; // Update with the correct path
-import { requestWithdraw } from "../../idl/instructions"; // Update with the correct path
-import { withdraw } from "../../idl/instructions"; // Update with the correct path
+import { cancelRequestWithdraw } from "../../idl/instructions/cancelRequestWithdraw"; // Update with the correct path
+import { requestWithdraw } from "../../idl/instructions/requestWithdraw"; // Update with the correct path
+import { withdraw } from "../../idl/instructions/withdraw"; // Update with the correct path
 import { Token, Shares, SharesPercent } from "../../idl/types/WithdrawUnit";
 import LineChart from "../../components/Chart";
 import Dropdown from "../../components/Dropdown";
-import { time } from "console";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -182,7 +181,7 @@ const USDC: FC = () => {
   const [dayChart, setDayChart] = useState([]);
   const [chartLabels, setChartLabels] = useState([]);
   const [chartDataPoints, setChartDataPoints] = useState([]);
-  const [selectedTimeframe, setSelectedTimeframe] = useState("1 DAY");
+  const [selectedTimeframe, setSelectedTimeframe] = useState("1 WEEK");
 
   const handleAmountClick = (type) => {
     let tokenBalance;

@@ -9,8 +9,13 @@ import {
   ComputeBudgetProgram,
   LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
+import {
+  NATIVE_MINT,
+  createAssociatedTokenAccountInstruction,
+  createSyncNativeInstruction,
+} from "@solana/spl-token";
 import { notify } from "utils/notifications";
-import { deposit as depositInstruction } from "../../idl/instructions"; // Update with the correct path
+import { deposit as depositInstruction } from "../../idl/instructions/depositSOL"; // Update with the correct path
 import "react-tooltip/dist/react-tooltip.css";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import useUserSOLBalanceStore from "../../stores/useUserSOLBalanceStore";
@@ -20,13 +25,16 @@ import { usePriorityFee } from "../../contexts/PriorityFee";
 import { VaultDepositor, VaultDepositorJSON } from "idl/accounts";
 import { Vault, VaultJSON } from "idl/accounts";
 import { initializeVaultDepositor as initVaultDepositor } from "../../idl/instructions"; // Update with the correct path
-import { cancelRequestWithdraw } from "../../idl/instructions"; // Update with the correct path
-import { requestWithdraw } from "../../idl/instructions"; // Update with the correct path
-import { withdraw } from "../../idl/instructions"; // Update with the correct path
-import { Token, Shares, SharesPercent } from "../../idl/types/WithdrawUnit";
+import { cancelRequestWithdraw } from "../../idl/instructions/cancelRequestWithdrawSOL"; // Update with the correct path
+import { requestWithdraw } from "../../idl/instructions/requestWithdrawSOL"; // Update with the correct path
+import { withdraw } from "../../idl/instructions/withdrawSOL"; // Update with the correct path
+import {
+  Token as TokenWithdraw,
+  Shares,
+  SharesPercent,
+} from "../../idl/types/WithdrawUnit";
 import LineChart from "../../components/Chart";
-import Dropdown from "../../components/Dropdown";
-import { time } from "console";
+import Dropdown from "../../components/DropdownSol";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -37,32 +45,88 @@ const WalletMultiButtonDynamic = dynamic(
 const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT5;
 
 const DRIFT_VAULTS = new PublicKey(process.env.NEXT_PUBLIC_DRIFT_VAULTS);
-const VAULT_ADDRESS = new PublicKey(process.env.NEXT_PUBLIC_VAULT_ADDRESS);
-const VAULT_USDC_ADDRESS = new PublicKey(
-  process.env.NEXT_PUBLIC_VAULT_USDC_ADDRESS
-);
-const VAULT_MANAGER = new PublicKey(process.env.NEXT_PUBLIC_VAULT_MANAGER);
-const TOKEN_PROGRAM = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_PROGRAM);
 const ASSOCIATED_TOKENPROGRAM = new PublicKey(
   process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM
 );
-const DRIFT_STATE = new PublicKey(process.env.NEXT_PUBLIC_DRIFT_STATE);
-const DRIFT_SPOT = new PublicKey(process.env.NEXT_PUBLIC_DRIFT_SPOT);
-const DRIFT_SPOT_USDC = new PublicKey(process.env.NEXT_PUBLIC_DRIFT_SPOT_USDC);
-const DRIFT_PROGRAM = new PublicKey(process.env.NEXT_PUBLIC_DRIFT_PROGRAM);
-const USDCMINT = new PublicKey(process.env.NEXT_PUBLIC_USDC_MINT);
+const WSOL_MINT = new PublicKey(process.env.NEXT_PUBLIC_WSOL_MINT);
+
+const SOL_VAULT = new PublicKey(process.env.NEXT_PUBLIC_SOL_VAULT);
+const SOL_AUTHORITY = new PublicKey(process.env.NEXT_PUBLIC_SOL_AUTHORITY);
+const SOL_VAULT_TOKEN_ADDRESS = new PublicKey(
+  process.env.NEXT_PUBLIC_SOL_VAULT_TOKEN_ADDRESS
+);
+const SOL_DRIFT_STATS = new PublicKey(process.env.NEXT_PUBLIC_SOL_DRIFT_STATS);
+const SOL_DRIFT_USER = new PublicKey(process.env.NEXT_PUBLIC_SOL_DRIFT_USER);
+const SOL_DRIFT_STATE = new PublicKey(process.env.NEXT_PUBLIC_SOL_DRIFT_STATE);
+const SOL_DRIFT_SPOT_MARKET_VAULT = new PublicKey(
+  process.env.NEXT_PUBLIC_SOL_DRIFT_SPOT_MARKET_VAULT
+);
+const SOL_DRIFT_PROGRAM = new PublicKey(
+  process.env.NEXT_PUBLIC_SOL_DRIFT_PROGRAM
+);
+const SOL_TOKEN_PROGRAM = new PublicKey(
+  process.env.NEXT_PUBLIC_SOL_TOKEN_PROGRAM
+);
+const SOL_DRIFT_USDC_SPOT_MARKET = new PublicKey(
+  process.env.NEXT_PUBLIC_SOL_DRIFT_USDC_SPOT_MARKET
+);
+const SOL_DRIFT_SOL_SPOT_MARKET = new PublicKey(
+  process.env.NEXT_PUBLIC_SOL_DRIFT_SOL_SPOT_MARKET
+);
+const SOL_DRIFT_DSOL_SPOT_MARKET = new PublicKey(
+  process.env.NEXT_PUBLIC_SOL_DRIFT_DSOL_SPOT_MARKET
+);
 const RENT = new PublicKey("SysvarRent111111111111111111111111111111111");
 const SYSTEM_PROGRAM = new PublicKey("11111111111111111111111111111111");
-const DRIFT_SPOT_MARKET_USDC = new PublicKey(
-  process.env.NEXT_PUBLIC_DRIFT_SPOT_MARKET_USDC
-);
-const DRIFT_SPOT_ORACLE = new PublicKey(
-  process.env.NEXT_PUBLIC_DRIFT_SPOT_ORACLE
-);
+
+async function prepareWrapSOLInstruction(
+  connection,
+  associatedTokenAccount,
+  walletPublicKey,
+  amount
+) {
+  // Convert the specified amount of SOL to lamports
+  const lamports = amount * LAMPORTS_PER_SOL;
+
+  const wrapInstruction = new Transaction();
+
+  // Check if the associated token account already exists
+  const accountInfo = await connection.getAccountInfo(associatedTokenAccount);
+
+  if (!accountInfo) {
+    // If it doesn't exist, add instruction to create the associated token account for wSOL
+    wrapInstruction.add(
+      createAssociatedTokenAccountInstruction(
+        walletPublicKey, // Funding wallet (payer)
+        associatedTokenAccount, // wSOL associated token account
+        walletPublicKey, // Owner of the account
+        NATIVE_MINT // Mint for wrapped SOL
+      )
+    );
+  }
+
+  // Add the transfer instruction to wrap SOL in the token account
+  wrapInstruction.add(
+    SystemProgram.transfer({
+      fromPubkey: walletPublicKey,
+      toPubkey: associatedTokenAccount,
+      lamports,
+    })
+  );
+
+  // Sync the token account’s native SOL balance
+  wrapInstruction.add(createSyncNativeInstruction(associatedTokenAccount));
+
+  return wrapInstruction;
+}
 
 async function usdcSplTokenAccountSync(walletAddress) {
   const [splTokenAccount] = PublicKey.findProgramAddressSync(
-    [walletAddress.toBuffer(), TOKEN_PROGRAM.toBuffer(), USDCMINT.toBuffer()],
+    [
+      walletAddress.toBuffer(),
+      SOL_TOKEN_PROGRAM.toBuffer(),
+      WSOL_MINT.toBuffer(),
+    ],
     ASSOCIATED_TOKENPROGRAM
   );
   return splTokenAccount;
@@ -196,7 +260,7 @@ const SOL: FC = () => {
         tokenBalance = tokenBalance;
         setMaxSet(false);
       } else {
-        const participantDepositTotal = Number(depositorEquity / 10e5);
+        const participantDepositTotal = Number(depositorEquity / 10e8);
         setMaxSet(true);
 
         tokenBalance = participantDepositTotal;
@@ -262,7 +326,7 @@ const SOL: FC = () => {
       units: 300000,
     });
     console.log(depositorData.vaultShares);
-    console.log(Number(amount) * 10e5);
+    console.log(Number(amount) * 10e8);
 
     let withdrawAmount;
     let withdrawUnit;
@@ -277,8 +341,8 @@ const SOL: FC = () => {
       withdrawUnit = new SharesPercent();
     } else {
       // Use the provided amount directly when maxSet is false
-      withdrawAmount = new BN(Number(amount) * 10e5);
-      withdrawUnit = new Token();
+      withdrawAmount = new BN(Number(amount) * 10e8);
+      withdrawUnit = new TokenWithdraw();
     }
 
     // Construct the RequestWithdrawArgs object
@@ -288,27 +352,26 @@ const SOL: FC = () => {
     };
 
     const RequestAccounts = {
-      vault: VAULT_ADDRESS,
+      vault: SOL_VAULT,
       vaultDepositor: vaultDepositor,
       authority: publicKey,
-      driftUserStats: new PublicKey(
-        "6N9L5W8kKWvgvmS4qCZnB9goFuBsVCmbdjzyQPEFihUn"
-      ),
-      driftUser: new PublicKey("DPW6P1DqMA2zEHb7yD2whcvbm9ERk9wHoNMjm95mrTr1"),
-      driftState: DRIFT_STATE,
-      oracleAddress: DRIFT_SPOT_ORACLE,
+      driftUserStats: SOL_DRIFT_STATS,
+      driftUser: SOL_DRIFT_USER,
+      driftState: SOL_DRIFT_STATE,
       acc11: new PublicKey("En8hkHLkRe9d9DraYmBTrus518BvmVH448YcvmrFM6Ce"), // Replace with actual account 12 PublicKey
-      acc12: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 12 PublicKey
-      acc13: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 13 PublicKey
-      acc14: new PublicKey("BAtFj4kQttZRVep3UZS2aZRDixkGYgWsbqTBVDbnSsPF"), // Replace with actual account 14 PublicKey
-      acc15: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 15 PublicKey
+      acc12: new PublicKey("BAtFj4kQttZRVep3UZS2aZRDixkGYgWsbqTBVDbnSsPF"), // Replace with actual account 12 PublicKey
+      acc13: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 13 PublicKey
+      acc14: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 14 PublicKey
+      acc15: new PublicKey("7QJ6e57t3yM8HYVg6bAnJiCiZ3wQQ5CSVsa6GA16nJuK"), // Replace with actual account 15 PublicKey
       acc16: new PublicKey("6bEp2MiyoiiiDxcVqE8rUHQWwHirXUXtKfAEATTVqNzT"), // Replace with actual account 16 PublicKey
-      spotMarketAddress: DRIFT_SPOT, // Replace with actual spot market address (e.g., USDC market)
+      acc10: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 16 PublicKey
+      spotMarketAddress: SOL_DRIFT_USDC_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
+      spotMarketSOLAddress: SOL_DRIFT_SOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
       acc17: new PublicKey("DVYXHwLhwALZm94pChALZDJ2b6a7uZTKPXntAGMQtRoM"), // Replace with actual account 17 PublicKey
       acc18: new PublicKey("GyyHYVCrZGc2AQPuvNbcP1babmU3L42ptmxZthUfD9q"), // Replace with actual account 18 PublicKey
-      acc19: new PublicKey("8UJgxaiQx5nTrdDgph5FiahMmzduuLTLf5WmsPegYA6W"), // Replace with actual account 17 PublicKey
+      spotMarketdSOLAddress: SOL_DRIFT_DSOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
+      acc19: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"), // Replace with actual account 18 PublicKey
       acc20: new PublicKey("2UZMvVTBQR9yWxrEdzEQzXWE61bUjqQ5VpJAGqVb3B19"), // Replace with actual account 18 PublicKey
-      acc21: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"), // Replace with actual account 18 PublicKey
     };
 
     try {
@@ -380,27 +443,26 @@ const SOL: FC = () => {
     };
 
     const RequestAccounts = {
-      vault: VAULT_ADDRESS,
+      vault: SOL_VAULT,
       vaultDepositor: vaultDepositor,
       authority: publicKey,
-      driftUserStats: new PublicKey(
-        "6N9L5W8kKWvgvmS4qCZnB9goFuBsVCmbdjzyQPEFihUn"
-      ),
-      driftUser: new PublicKey("DPW6P1DqMA2zEHb7yD2whcvbm9ERk9wHoNMjm95mrTr1"),
-      driftState: DRIFT_STATE,
-      oracleAddress: DRIFT_SPOT_ORACLE,
+      driftUserStats: SOL_DRIFT_STATS,
+      driftUser: SOL_DRIFT_USER,
+      driftState: SOL_DRIFT_STATE,
       acc11: new PublicKey("En8hkHLkRe9d9DraYmBTrus518BvmVH448YcvmrFM6Ce"), // Replace with actual account 12 PublicKey
-      acc12: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 12 PublicKey
-      acc13: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 13 PublicKey
-      acc14: new PublicKey("BAtFj4kQttZRVep3UZS2aZRDixkGYgWsbqTBVDbnSsPF"), // Replace with actual account 14 PublicKey
-      acc15: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 15 PublicKey
+      acc12: new PublicKey("BAtFj4kQttZRVep3UZS2aZRDixkGYgWsbqTBVDbnSsPF"), // Replace with actual account 12 PublicKey
+      acc13: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 13 PublicKey
+      acc14: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 14 PublicKey
+      acc15: new PublicKey("7QJ6e57t3yM8HYVg6bAnJiCiZ3wQQ5CSVsa6GA16nJuK"), // Replace with actual account 15 PublicKey
       acc16: new PublicKey("6bEp2MiyoiiiDxcVqE8rUHQWwHirXUXtKfAEATTVqNzT"), // Replace with actual account 16 PublicKey
-      spotMarketAddress: DRIFT_SPOT, // Replace with actual spot market address (e.g., USDC market)
+      acc10: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 16 PublicKey
+      spotMarketAddress: SOL_DRIFT_USDC_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
+      spotMarketSOLAddress: SOL_DRIFT_SOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
       acc17: new PublicKey("DVYXHwLhwALZm94pChALZDJ2b6a7uZTKPXntAGMQtRoM"), // Replace with actual account 17 PublicKey
       acc18: new PublicKey("GyyHYVCrZGc2AQPuvNbcP1babmU3L42ptmxZthUfD9q"), // Replace with actual account 18 PublicKey
-      acc19: new PublicKey("8UJgxaiQx5nTrdDgph5FiahMmzduuLTLf5WmsPegYA6W"), // Replace with actual account 17 PublicKey
+      spotMarketdSOLAddress: SOL_DRIFT_DSOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
+      acc19: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"), // Replace with actual account 18 PublicKey
       acc20: new PublicKey("2UZMvVTBQR9yWxrEdzEQzXWE61bUjqQ5VpJAGqVb3B19"), // Replace with actual account 18 PublicKey
-      acc21: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"), // Replace with actual account 18 PublicKey
     };
 
     try {
@@ -468,32 +530,31 @@ const SOL: FC = () => {
     });
 
     const RequestAccounts = {
-      vault: VAULT_ADDRESS, // Replace with actual vault public key
+      vault: SOL_VAULT, // Replace with actual vault public key
       vaultDepositor: vaultDepositor, // Replace with actual depositor public key
       authority: publicKey, // User's public key (from wallet adapter)
-      vaultTokenAccount: VAULT_USDC_ADDRESS, // Replace with actual vault token account
-      driftUserStats: new PublicKey(
-        "6N9L5W8kKWvgvmS4qCZnB9goFuBsVCmbdjzyQPEFihUn"
-      ), // Replace with drift user stats account
-      driftUser: new PublicKey("DPW6P1DqMA2zEHb7yD2whcvbm9ERk9wHoNMjm95mrTr1"), // Replace with drift user account
-      driftState: DRIFT_STATE, // Replace with drift state account
-      driftSpotMarketVault: DRIFT_SPOT_MARKET_USDC, // Replace with spot market vault account
-      driftSigner: new PublicKey("JCNCMFXo5M5qwUPg2Utu1u6YWp3MbygxqBsBeXXJfrw"), // Replace with drift user account
+      vaultTokenAccount: SOL_VAULT_TOKEN_ADDRESS, // Replace with actual vault token account
+      driftUserStats: SOL_DRIFT_STATS, // Replace with drift user stats account
+      driftUser: SOL_DRIFT_USER, // Replace with drift user account
+      driftState: SOL_DRIFT_STATE, // Replace with drift state account
+      driftSpotMarketVault: SOL_DRIFT_SPOT_MARKET_VAULT, // Replace with spot market vault account
       userTokenAccount: USDCAddress, // User's token account for depositing tokens
-      driftProgram: DRIFT_PROGRAM, // Replace with actual Drift program ID
-      tokenProgram: TOKEN_PROGRAM, // Standard SPL token program ID
-      oracleAddress: DRIFT_SPOT_ORACLE,
+      driftProgram: SOL_DRIFT_PROGRAM, // Replace with actual Drift program ID
+      tokenProgram: SOL_TOKEN_PROGRAM, // Standard SPL token program ID
+      acc10: new PublicKey("En8hkHLkRe9d9DraYmBTrus518BvmVH448YcvmrFM6Ce"), // Replace with actual account 12 PublicKey
+      acc11: new PublicKey("BAtFj4kQttZRVep3UZS2aZRDixkGYgWsbqTBVDbnSsPF"), // Replace with actual account 13 PublicKey
       acc12: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 12 PublicKey
       acc13: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 13 PublicKey
-      acc14: new PublicKey("BAtFj4kQttZRVep3UZS2aZRDixkGYgWsbqTBVDbnSsPF"), // Replace with actual account 14 PublicKey
-      acc15: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 15 PublicKey
-      acc16: new PublicKey("6bEp2MiyoiiiDxcVqE8rUHQWwHirXUXtKfAEATTVqNzT"), // Replace with actual account 16 PublicKey
-      spotMarketAddress: DRIFT_SPOT, // Replace with actual spot market address (e.g., USDC market)
+      acc14: new PublicKey("7QJ6e57t3yM8HYVg6bAnJiCiZ3wQQ5CSVsa6GA16nJuK"), // Replace with actual account 14 PublicKey
+      acc15: new PublicKey("6bEp2MiyoiiiDxcVqE8rUHQWwHirXUXtKfAEATTVqNzT"), // Replace with actual account 15 PublicKey
+      acc16: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 16 PublicKey
+      spotMarketAddress: SOL_DRIFT_USDC_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
+      spotMarketAddressSOL: SOL_DRIFT_SOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
       acc17: new PublicKey("DVYXHwLhwALZm94pChALZDJ2b6a7uZTKPXntAGMQtRoM"), // Replace with actual account 17 PublicKey
       acc18: new PublicKey("GyyHYVCrZGc2AQPuvNbcP1babmU3L42ptmxZthUfD9q"), // Replace with actual account 18 PublicKey
-      acc19: new PublicKey("8UJgxaiQx5nTrdDgph5FiahMmzduuLTLf5WmsPegYA6W"), // Replace with actual account 19 PublicKey
+      spotMarketAddressdSOL: SOL_DRIFT_DSOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
+      acc19: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"), // Replace with actual account 19 PublicKey
       acc20: new PublicKey("2UZMvVTBQR9yWxrEdzEQzXWE61bUjqQ5VpJAGqVb3B19"),
-      acc21: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"),
     };
 
     try {
@@ -588,41 +649,50 @@ const SOL: FC = () => {
     });
 
     const depositArgs = {
-      marketIndex: 0,
-      amount: new BN(Number(amount) * 1e6), // Adjust precision based on the token
+      marketIndex: 1,
+      amount: new BN(Number(amount) * 1e9), // Adjust precision based on the token
       reduceOnly: false,
     };
 
     const depositAccounts = {
-      vault: VAULT_ADDRESS, // Replace with actual vault public key
+      vault: SOL_VAULT, // Replace with actual vault public key
       vaultDepositor: vaultDepositor, // Replace with actual depositor public key
       authority: publicKey, // User's public key (from wallet adapter)
-      vaultTokenAccount: VAULT_USDC_ADDRESS, // Replace with actual vault token account
-      driftUserStats: new PublicKey(
-        "6N9L5W8kKWvgvmS4qCZnB9goFuBsVCmbdjzyQPEFihUn"
-      ), // Replace with drift user stats account
-      driftUser: new PublicKey("DPW6P1DqMA2zEHb7yD2whcvbm9ERk9wHoNMjm95mrTr1"), // Replace with drift user account
-      driftState: DRIFT_STATE, // Replace with drift state account
-      driftSpotMarketVault: DRIFT_SPOT_MARKET_USDC, // Replace with spot market vault account
+      vaultTokenAccount: SOL_VAULT_TOKEN_ADDRESS, // Replace with actual vault token account
+      driftUserStats: SOL_DRIFT_STATS, // Replace with drift user stats account
+      driftUser: SOL_DRIFT_USER, // Replace with drift user account
+      driftState: SOL_DRIFT_STATE, // Replace with drift state account
+      driftSpotMarketVault: SOL_DRIFT_SPOT_MARKET_VAULT, // Replace with spot market vault account
       userTokenAccount: USDCAddress, // User's token account for depositing tokens
-      driftProgram: DRIFT_PROGRAM, // Replace with actual Drift program ID
-      tokenProgram: TOKEN_PROGRAM, // Standard SPL token program ID
-      oracleAddress: DRIFT_SPOT_ORACLE,
+      driftProgram: SOL_DRIFT_PROGRAM, // Replace with actual Drift program ID
+      tokenProgram: SOL_TOKEN_PROGRAM, // Standard SPL token program ID
+      acc10: new PublicKey("En8hkHLkRe9d9DraYmBTrus518BvmVH448YcvmrFM6Ce"), // Replace with actual account 12 PublicKey
+      acc11: new PublicKey("BAtFj4kQttZRVep3UZS2aZRDixkGYgWsbqTBVDbnSsPF"), // Replace with actual account 13 PublicKey
       acc12: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 12 PublicKey
       acc13: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 13 PublicKey
-      acc14: new PublicKey("BAtFj4kQttZRVep3UZS2aZRDixkGYgWsbqTBVDbnSsPF"), // Replace with actual account 14 PublicKey
-      acc15: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 15 PublicKey
-      acc16: new PublicKey("6bEp2MiyoiiiDxcVqE8rUHQWwHirXUXtKfAEATTVqNzT"), // Replace with actual account 16 PublicKey
-      spotMarketAddress: DRIFT_SPOT, // Replace with actual spot market address (e.g., USDC market)
+      acc14: new PublicKey("7QJ6e57t3yM8HYVg6bAnJiCiZ3wQQ5CSVsa6GA16nJuK"), // Replace with actual account 14 PublicKey
+      acc15: new PublicKey("6bEp2MiyoiiiDxcVqE8rUHQWwHirXUXtKfAEATTVqNzT"), // Replace with actual account 15 PublicKey
+      acc16: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 16 PublicKey
+      spotMarketAddress: SOL_DRIFT_USDC_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
+      spotMarketAddressSOL: SOL_DRIFT_SOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
       acc17: new PublicKey("DVYXHwLhwALZm94pChALZDJ2b6a7uZTKPXntAGMQtRoM"), // Replace with actual account 17 PublicKey
       acc18: new PublicKey("GyyHYVCrZGc2AQPuvNbcP1babmU3L42ptmxZthUfD9q"), // Replace with actual account 18 PublicKey
-      acc19: new PublicKey("8UJgxaiQx5nTrdDgph5FiahMmzduuLTLf5WmsPegYA6W"), // Replace with actual account 19 PublicKey
+      spotMarketAddressdSOL: SOL_DRIFT_DSOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
+      acc19: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"), // Replace with actual account 19 PublicKey
       acc20: new PublicKey("2UZMvVTBQR9yWxrEdzEQzXWE61bUjqQ5VpJAGqVb3B19"),
-      acc21: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"),
     };
 
     try {
+      console.log(USDCAddress.toString());
       let tx = new Transaction();
+
+      const wrapIx = await prepareWrapSOLInstruction(
+        connection,
+        USDCAddress,
+        wallet.publicKey,
+        amount
+      );
+      tx.add(wrapIx);
 
       // 1. Check if the vaultDepositor account exists
       const depositorInfo = await connection.getAccountInfo(vaultDepositor);
@@ -631,7 +701,7 @@ const SOL: FC = () => {
         // 2. Initialize vaultDepositor if it doesn't exist
 
         const vaultAccounts = {
-          vault: VAULT_ADDRESS, // Replace with actual vault public key
+          vault: SOL_VAULT, // Replace with actual vault public key
           vaultDepositor: vaultDepositor, // Replace with actual depositor public key
           authority: publicKey, // User's public key (from wallet adapter)
           payer: publicKey, // Replace with actual vault token account
@@ -685,7 +755,7 @@ const SOL: FC = () => {
       getUserUSDCBalance(publicKey, connection);
       const Depositor = getVaultDepositorAddressSync(
         DRIFT_VAULTS,
-        VAULT_ADDRESS,
+        SOL_VAULT,
         publicKey
       );
       setVaultDepositor(Depositor);
@@ -704,8 +774,8 @@ const SOL: FC = () => {
       const fetchDepositorEquity = async () => {
         try {
           const response = await fetch(
-            // `http://localhost:3050/api/vaults/depositor-equity/${vaultDepositor}`
-            `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults/depositor-equity/${vaultDepositor}`
+            // `http://localhost:3050/api/vaults-sol/depositor-equity/${vaultDepositor}`
+            `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults-sol/depositor-equity/${vaultDepositor}`
           );
           const data = await response.json();
           setDepositorEquity(data.equity);
@@ -722,8 +792,8 @@ const SOL: FC = () => {
     const fetchVaultData = async () => {
       try {
         const response = await fetch(
-          `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults/equity`
-          // `http://localhost:3050/api/vaults/equity`
+          `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults-sol/equity`
+          // `http://localhost:3050/api/vaults-sol/equity`
         );
         const data = await response.json();
         setVaultEquity(data.vaultEquity);
@@ -741,11 +811,11 @@ const SOL: FC = () => {
         let apiUrl = "";
 
         if (selectedTimeframe === "1 WEEK") {
-          // apiUrl = `http://localhost:3050/api/vaults/equity-weekly`; // Weekly data
-          apiUrl = `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults/equity-weekly`;
+          // apiUrl = `http://localhost:3050/api/vaults-sol/equity-weekly`; // Weekly data
+          apiUrl = `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults-sol/equity-weekly`;
         } else if (selectedTimeframe === "1 DAY") {
           // apiUrl = `http://localhost:3050/api/vaults/equity-daily`; // Daily data
-          apiUrl = `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults/equity-daily`;
+          apiUrl = `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults-sol/equity-daily`;
         }
 
         const response = await fetch(apiUrl);
@@ -788,7 +858,7 @@ const SOL: FC = () => {
   }, [selectedTimeframe]);
 
   const fetchVaultData = async () => {
-    const data = await checkVaultData(VAULT_ADDRESS, connection);
+    const data = await checkVaultData(SOL_VAULT, connection);
     console.log(data);
     setVaultData(data);
   };
@@ -843,7 +913,7 @@ const SOL: FC = () => {
   useEffect(() => {
     if (connection) {
       const fetchVaultData = async () => {
-        const data = await checkVaultData(VAULT_ADDRESS, connection);
+        const data = await checkVaultData(SOL_VAULT, connection);
         console.log(data);
         setVaultData(data);
       };
@@ -1032,7 +1102,7 @@ const SOL: FC = () => {
                     </div>
                     <div className="flex flex-col items-center justify-center md:items-start md:justify-center gap-[4px] ">
                       <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%]">
-                        JLP Delta Neutral Strategy
+                        JLP - SOL Max Exposure Strategy
                       </div>
 
                       <div className="opacity-[0.4] text-[15px] tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block">
@@ -1069,14 +1139,14 @@ const SOL: FC = () => {
                       <div className="w-1/2 flex flex-col justify-center items-center text-center gap-[4px]">
                         <div className="tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
                           <span className="text-[21px]">
-                            $
-                            {isNaN(Number(vaultEquity) / 10e5) ||
+                            {isNaN(Number(vaultEquity) / 10e8) ||
                             vaultEquity === null ||
                             vaultData?.netDeposits === undefined ? (
                               <div className="bg-layer-2 spinner-border animate-spin inline-block w-6 h-4 border-2 rounded-full border-t-transparent"></div>
                             ) : (
-                              (Number(vaultEquity) / 10e5).toFixed(1)
-                            )}{" "}
+                              (Number(vaultEquity) / 10e8).toFixed(2)
+                            )}
+                            {" SOL"}
                           </span>
                         </div>
                         <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
@@ -1087,11 +1157,10 @@ const SOL: FC = () => {
                         <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
                           <span></span>
                           <span className="text-[21px]">
-                            $
                             {isNaN(
                               (Number(vaultEquity) -
                                 Number(vaultData?.netDeposits)) /
-                                10e5
+                                10e8
                             ) ||
                             vaultEquity === null ||
                             vaultData?.netDeposits === undefined ? (
@@ -1100,9 +1169,10 @@ const SOL: FC = () => {
                               (
                                 (Number(vaultEquity) -
                                   Number(vaultData?.netDeposits)) /
-                                10e5
-                              ).toFixed(1)
-                            )}{" "}
+                                10e8
+                              ).toFixed(2)
+                            )}
+                            {" SOL"}
                           </span>
                         </div>
                         <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
@@ -1115,14 +1185,12 @@ const SOL: FC = () => {
                         <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
                           <span></span>
                           <span className="text-[21px]">
-                            $
-                            {isNaN(Number(depositorEquity) / 10e5) ||
+                            {isNaN(Number(depositorEquity) / 10e8) ||
                             depositorEquity === null ||
                             depositorData?.netDeposits === undefined
                               ? 0
-                              : (Number(depositorEquity) / 10e5).toFixed(
-                                  1
-                                )}{" "}
+                              : (Number(depositorEquity) / 10e8).toFixed(2)}
+                            {" SOL"}
                           </span>
                         </div>
                         <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
@@ -1134,11 +1202,10 @@ const SOL: FC = () => {
                           <span></span>
                           <span className="text-[21px]">
                             {" "}
-                            $
                             {isNaN(
                               (Number(depositorEquity) -
                                 Number(depositorData?.netDeposits)) /
-                                10e5
+                                10e8
                             ) ||
                             depositorEquity === null ||
                             depositorData?.netDeposits === undefined
@@ -1146,8 +1213,9 @@ const SOL: FC = () => {
                               : (
                                   (Number(depositorEquity) -
                                     Number(depositorData?.netDeposits)) /
-                                  10e5
-                                ).toFixed(1)}{" "}
+                                  10e8
+                                ).toFixed(2)}
+                            {" SOL"}
                           </span>
                         </div>
                         <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
@@ -1401,8 +1469,8 @@ const SOL: FC = () => {
                                 {(
                                   Number(
                                     depositorData?.lastWithdrawRequest.value
-                                  ) / 10e5
-                                ).toFixed(1)}{" "}
+                                  ) / 10e8
+                                ).toFixed(2)}{" "}
                                 SOL
                               </div>
                               <button
