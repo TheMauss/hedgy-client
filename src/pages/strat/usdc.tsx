@@ -1035,7 +1035,7 @@ const USDC: FC = () => {
                       </div>
 
                       <div className="opacity-[0.4] text-[15px] tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block">
-                        Maximize your JLP Yield
+                        Maximize your USDC Yield
                       </div>
                     </div>
                     <div className="md:hidden rounded-2xl  h-[90px] flex flex-col items-center justify-center  box-border text-base font-gilroy-medium">
