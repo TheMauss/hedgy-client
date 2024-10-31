@@ -1050,7 +1050,7 @@ const USDC: FC = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="hidden md:flex rounded-2xl  h-[90px] flex flex-col items-center justify-center  box-border text-base font-gilroy-medium">
+                  <div className="hidden md:flex rounded-2xl  h-[90px] flex flex-col items-center justify-center  box-border text-base font-gilroy-medium ">
                     <div className="flex flex-col items-center justify-center text-center gap-[4px] ">
                       <div className="text-[36px] self-stretch relative tracking-[-0.03em] leading-[120.41%]">
                         50.64% <span className="opacity-[0.4]">APY</span>
@@ -1064,8 +1064,8 @@ const USDC: FC = () => {
                 </div>
                 <div className="w-full py-2 px-8 rounded-2xl min-h-[90px] flex flex-row md:flex-col items-center justify-center  box-border text-base font-gilroy-medium">
                   <div className="w-full border-t-layer-2 border-t-[1px] py-3 md:border-solid self-stretch flex flex-row items-center justify-between gap-[32px] ">
-                    <div className="flex w-1/2 md:flex-row flex-col justify-center items-center text-center">
-                      <div className="w-1/2 flex flex-col justify-center items-center text-center gap-[4px]">
+                    <div className="flex w-1/2 md:flex-row flex-col justify-center items-center text-center gap-2 md:gap-0">
+                      <div className="md:w-1/2 flex flex-col justify-center items-center text-center md:gap-[4px]">
                         <div className="tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
                           <span className="text-[21px]">
                             $
@@ -1082,7 +1082,7 @@ const USDC: FC = () => {
                           Vault TVL
                         </div>
                       </div>
-                      <div className="w-1/2 border-r-layer-2 border-r-[1px] md:border-solid  flex flex-col justify-center items-center text-center justify-center gap-[4px]">
+                      <div className="md:w-1/2 border-r-layer-2 border-r-[1px] md:border-solid  flex flex-col justify-center items-center text-center justify-center md:gap-[4px]">
                         <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
                           <span></span>
                           <span className="text-[21px]">
@@ -1109,8 +1109,8 @@ const USDC: FC = () => {
                         </div>
                       </div>
                     </div>
-                    <div className=" w-1/2 flex flex-col md:flex-row justify-center items-center text-center">
-                      <div className="w-1/2 flex flex-col justify-center items-center text-center justify-center gap-[4px]">
+                    <div className=" w-1/2 flex flex-col md:flex-row justify-center items-center text-center gap-2 md:gap-0">
+                      <div className="md:w-1/2 flex flex-col justify-center items-center text-center justify-center md:gap-[4px]">
                         <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
                           <span></span>
                           <span className="text-[21px]">
@@ -1128,7 +1128,7 @@ const USDC: FC = () => {
                           Your Deposit
                         </div>
                       </div>
-                      <div className="w-1/2 flex flex-col justify-center items-center text-center justify-center gap-[4px]">
+                      <div className="md:w-1/2 flex flex-col justify-center items-center text-center justify-center md:gap-[4px]">
                         <div className="self-stretch  tracking-[-0.03em] leading-[120.41%] font-gilroy-semibold text-5xl">
                           <span></span>
                           <span className="text-[21px]">

@@ -35,41 +35,8 @@ const WalletMultiButtonDynamic = dynamic(
   { ssr: false }
 );
 
-const ENDPOINT5 = process.env.NEXT_PUBLIC_ENDPOINT5;
-
-const DRIFT_VAULTS = new PublicKey(process.env.NEXT_PUBLIC_DRIFT_VAULTS);
 const VAULT_ADDRESS = new PublicKey(process.env.NEXT_PUBLIC_VAULT_ADDRESS);
 const SOL_VAULT_ADDRESS = new PublicKey(process.env.NEXT_PUBLIC_SOL_VAULT);
-
-const VAULT_USDC_ADDRESS = new PublicKey(
-  process.env.NEXT_PUBLIC_VAULT_USDC_ADDRESS
-);
-const VAULT_MANAGER = new PublicKey(process.env.NEXT_PUBLIC_VAULT_MANAGER);
-const TOKEN_PROGRAM = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_PROGRAM);
-const ASSOCIATED_TOKENPROGRAM = new PublicKey(
-  process.env.NEXT_PUBLIC_ASSOCIATED_TOKENPROGRAM
-);
-const DRIFT_STATE = new PublicKey(process.env.NEXT_PUBLIC_DRIFT_STATE);
-const DRIFT_SPOT = new PublicKey(process.env.NEXT_PUBLIC_DRIFT_SPOT);
-const DRIFT_SPOT_USDC = new PublicKey(process.env.NEXT_PUBLIC_DRIFT_SPOT_USDC);
-const DRIFT_PROGRAM = new PublicKey(process.env.NEXT_PUBLIC_DRIFT_PROGRAM);
-const USDCMINT = new PublicKey(process.env.NEXT_PUBLIC_USDC_MINT);
-const RENT = new PublicKey("SysvarRent111111111111111111111111111111111");
-const SYSTEM_PROGRAM = new PublicKey("11111111111111111111111111111111");
-const DRIFT_SPOT_MARKET_USDC = new PublicKey(
-  process.env.NEXT_PUBLIC_DRIFT_SPOT_MARKET_USDC
-);
-const DRIFT_SPOT_ORACLE = new PublicKey(
-  process.env.NEXT_PUBLIC_DRIFT_SPOT_ORACLE
-);
-
-async function usdcSplTokenAccountSync(walletAddress) {
-  const [splTokenAccount] = PublicKey.findProgramAddressSync(
-    [walletAddress.toBuffer(), TOKEN_PROGRAM.toBuffer(), USDCMINT.toBuffer()],
-    ASSOCIATED_TOKENPROGRAM
-  );
-  return splTokenAccount;
-}
 
 function getVaultDepositorAddressSync(
   programId: PublicKey,
