@@ -869,7 +869,7 @@ const SOL: FC = () => {
   const fetchVaultEquity = async () => {
     try {
       const response = await fetch(
-        `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults/equity`
+        `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults-sol/equity`
         // `http://localhost:3050/api/vaults/equity`
       );
       const data = await response.json();
