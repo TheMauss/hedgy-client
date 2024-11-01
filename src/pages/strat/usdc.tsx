@@ -195,7 +195,10 @@ const USDC: FC = () => {
         tokenBalance = tokenBalance;
         setMaxSet(false);
       } else {
-        const participantDepositTotal = Number(depositorEquity / 10e5);
+        const participantDepositTotal = depositorEquity
+          ? Number(depositorEquity / 10e5)
+          : 0;
+
         setMaxSet(true);
 
         tokenBalance = participantDepositTotal;

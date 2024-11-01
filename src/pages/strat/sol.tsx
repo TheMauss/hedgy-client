@@ -256,11 +256,13 @@ const SOL: FC = () => {
       setMaxSet(false);
     } else {
       if (selectedStake === "DEPOSIT") {
-        tokenBalance = type === "HALF" ? usdcbalance / 2 : usdcbalance;
+        tokenBalance = type === "HALF" ? balance / 2 : balance;
         tokenBalance = tokenBalance;
         setMaxSet(false);
       } else {
-        const participantDepositTotal = Number(depositorEquity / 10e8);
+        const participantDepositTotal = depositorEquity
+          ? Number(depositorEquity / 10e8)
+          : 0;
         setMaxSet(true);
 
         tokenBalance = participantDepositTotal;
@@ -538,6 +540,7 @@ const SOL: FC = () => {
       driftUser: SOL_DRIFT_USER, // Replace with drift user account
       driftState: SOL_DRIFT_STATE, // Replace with drift state account
       driftSpotMarketVault: SOL_DRIFT_SPOT_MARKET_VAULT, // Replace with spot market vault account
+      driftSigner: new PublicKey("JCNCMFXo5M5qwUPg2Utu1u6YWp3MbygxqBsBeXXJfrw"), // Replace with drift user account
       userTokenAccount: USDCAddress, // User's token account for depositing tokens
       driftProgram: SOL_DRIFT_PROGRAM, // Replace with actual Drift program ID
       tokenProgram: SOL_TOKEN_PROGRAM, // Standard SPL token program ID
@@ -881,7 +884,7 @@ const SOL: FC = () => {
   const fetchDepositorEquitys = async () => {
     try {
       const response = await fetch(
-        `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults/depositor-equity/${vaultDepositor}`
+        `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults-sol/depositor-equity/${vaultDepositor}`
       );
       const data = await response.json();
       return data.equity; // Return the equity value
@@ -895,7 +898,7 @@ const SOL: FC = () => {
     try {
       const response = await fetch(
         // `http://localhost:3050/api/vaults/depositor-equity/${vaultDepositor}`
-        `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults/depositor-equity/${vaultDepositor}`
+        `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults-sol/depositor-equity/${vaultDepositor}`
       );
       const data = await response.json();
       setDepositorEquity(data.equity);
@@ -1489,7 +1492,7 @@ const SOL: FC = () => {
                                 {(
                                   Number(
                                     depositorData?.lastWithdrawRequest.value
-                                  ) / 10e5
+                                  ) / 10e8
                                 ).toFixed(1)}{" "}
                                 SOL
                               </div>

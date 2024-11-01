@@ -17,6 +17,7 @@ export interface WithdrawAccounts {
   driftUser: PublicKey;
   driftState: PublicKey;
   driftSpotMarketVault: PublicKey;
+  driftSigner: PublicKey;
   userTokenAccount: PublicKey;
   driftProgram: PublicKey;
   tokenProgram: PublicKey;
@@ -53,6 +54,7 @@ export function withdraw(
       isSigner: false,
       isWritable: true,
     },
+    { pubkey: accounts.driftSigner, isSigner: false, isWritable: false },
     { pubkey: accounts.userTokenAccount, isSigner: false, isWritable: true },
     { pubkey: accounts.driftProgram, isSigner: false, isWritable: false },
     { pubkey: accounts.tokenProgram, isSigner: false, isWritable: false },
