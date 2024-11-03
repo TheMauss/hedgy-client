@@ -14,6 +14,8 @@ import {
   createAssociatedTokenAccountInstruction,
   createSyncNativeInstruction,
 } from "@solana/spl-token";
+import { FaQuestionCircle } from "react-icons/fa";
+import { Tooltip } from "react-tooltip";
 import { notify } from "utils/notifications";
 import { deposit as depositInstruction } from "../../idl/instructions/depositSOL"; // Update with the correct path
 import "react-tooltip/dist/react-tooltip.css";
@@ -857,15 +859,18 @@ const SOL: FC = () => {
 
         // Calculate APY if the timeframe is "1 WEEK"
         if (selectedTimeframe === "1 WEEK" && dataPoints.length > 1) {
-          const firstEquity = dataPoints[dataPoints.length - 1]; // First in reversed list
-          const lastEquity = dataPoints[0]; // Last in reversed list
+          const firstEquity = dataPoints[dataPoints.length - 1];
+          const lastEquity = dataPoints[0];
           const weeklyReturn = (firstEquity - lastEquity) / lastEquity;
 
-          // const apy = weeklyReturn * 52 * 100;
-          const apy = (Math.pow(1 + weeklyReturn, 52) - 1) * 100 * 0.82;
+          // Deduct performance fee from weekly return
+          const netWeeklyReturn = weeklyReturn * 0.82;
 
-          // Compound APY calculation with weekly reinvestment
-          // const apy = (Math.pow(1 + weeklyReturn, 52) - 1) * 100;
+          // Convert to monthly return with 4 weeks per month
+          const monthlyReturn = netWeeklyReturn * 4;
+
+          // Calculate compounded APY with monthly compounding
+          const apy = (Math.pow(1 + monthlyReturn, 12) - 1) * 100;
 
           console.log("Compound APY:", apy);
           setApy(apy); // Store APY with compounding in the state
@@ -1144,8 +1149,20 @@ const SOL: FC = () => {
                           </div>{" "}
                         </div>
 
-                        <div className="opacity-[0.4] text-[15px] justify-end text-end tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block">
-                          Projected Yield
+                        <Tooltip
+                          anchorSelect="#Yield"
+                          place="bottom"
+                          className="font-gilroy-regular max-w-xs p-2 text-sm bg-gray-800 text-white rounded-lg shadow-lg"
+                        >
+                          APY compounded monthly after performance fees, based
+                          on the last 7 days performance
+                        </Tooltip>
+                        <div
+                          id="Yield"
+                          className="opacity-[0.4] text-[15px] justify-end text-end tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block"
+                        >
+                          Projected Yield{" "}
+                          <FaQuestionCircle className="mt-0.5 text-[12px]" />
                         </div>
                       </div>
                     </div>
@@ -1165,8 +1182,20 @@ const SOL: FC = () => {
                         </div>{" "}
                       </div>
 
-                      <div className="opacity-[0.4] text-[15px] justify-end text-end tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block">
-                        Projected Yield
+                      <Tooltip
+                        anchorSelect="#Yield"
+                        place="bottom"
+                        className="font-gilroy-regular max-w-xs p-2 text-sm bg-gray-800 text-white rounded-lg shadow-lg"
+                      >
+                        APY compounded monthly after performance fees, based on
+                        the last 7 days performance
+                      </Tooltip>
+                      <div
+                        id="Yield"
+                        className="opacity-[0.4] text-[15px] justify-end text-end tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block"
+                      >
+                        Projected Yield{" "}
+                        <FaQuestionCircle className="mt-0.5 text-[12px]" />
                       </div>
                     </div>
                   </div>
