@@ -246,7 +246,8 @@ const SOL: FC = () => {
   const [dayChart, setDayChart] = useState([]);
   const [chartLabels, setChartLabels] = useState([]);
   const [chartDataPoints, setChartDataPoints] = useState([]);
-  const [selectedTimeframe, setSelectedTimeframe] = useState("1 DAY");
+  const [selectedTimeframe, setSelectedTimeframe] = useState("1 WEEK");
+  const [apy, setApy] = useState(null);
 
   const handleAmountClick = (type) => {
     let tokenBalance;
@@ -853,6 +854,22 @@ const SOL: FC = () => {
 
         setChartLabels(labels.reverse()); // Set chart labels
         setChartDataPoints(dataPoints.reverse()); // Set chart data points
+
+        // Calculate APY if the timeframe is "1 WEEK"
+        if (selectedTimeframe === "1 WEEK" && dataPoints.length > 1) {
+          const firstEquity = dataPoints[dataPoints.length - 1]; // First in reversed list
+          const lastEquity = dataPoints[0]; // Last in reversed list
+          const weeklyReturn = (firstEquity - lastEquity) / lastEquity;
+
+          // const apy = weeklyReturn * 52 * 100;
+          const apy = (Math.pow(1 + weeklyReturn, 52) - 1) * 100 * 0.82;
+
+          // Compound APY calculation with weekly reinvestment
+          // const apy = (Math.pow(1 + weeklyReturn, 52) - 1) * 100;
+
+          console.log("Compound APY:", apy);
+          setApy(apy); // Store APY with compounding in the state
+        }
       } catch (error) {
         console.error("Error fetching vault equity:", error);
       }
@@ -1115,7 +1132,16 @@ const SOL: FC = () => {
                     <div className="md:hidden rounded-2xl  h-[90px] flex flex-col items-center justify-center  box-border text-base font-gilroy-medium">
                       <div className="flex flex-col items-center justify-center md:items-end md:justify-center gap-[4px] ">
                         <div className="text-[36px] self-stretch relative tracking-[-0.03em] leading-[120.41%]">
-                          30.64% <span className="opacity-[0.4]">APY</span>
+                          <div>
+                            {apy !== null ? (
+                              <span>
+                                {apy.toFixed(2)}%{" "}
+                                <span className="opacity-[0.4]">APY</span>
+                              </span>
+                            ) : (
+                              <div className="bg-layer-2 spinner-border animate-spin inline-block w-6 h-4 border-2 rounded-full border-t-transparent"></div>
+                            )}
+                          </div>{" "}
                         </div>
 
                         <div className="opacity-[0.4] text-[15px] justify-end text-end tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block">
@@ -1127,7 +1153,16 @@ const SOL: FC = () => {
                   <div className="hidden md:flex rounded-2xl  h-[90px] flex flex-col items-center justify-center  box-border text-base font-gilroy-medium">
                     <div className="flex flex-col items-center justify-center text-center gap-[4px] ">
                       <div className="text-[36px] self-stretch relative tracking-[-0.03em] leading-[120.41%]">
-                        30.64% <span className="opacity-[0.4]">APY</span>
+                        <div>
+                          {apy !== null ? (
+                            <span>
+                              {apy.toFixed(2)}%{" "}
+                              <span className="opacity-[0.4]">APY</span>
+                            </span>
+                          ) : (
+                            <div className="bg-layer-2 spinner-border animate-spin inline-block w-6 h-4 border-2 rounded-full border-t-transparent"></div>
+                          )}
+                        </div>{" "}
                       </div>
 
                       <div className="opacity-[0.4] text-[15px] justify-end text-end tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block">
