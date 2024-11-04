@@ -183,7 +183,7 @@ const USDC: FC = () => {
   const [dayChart, setDayChart] = useState([]);
   const [chartLabels, setChartLabels] = useState([]);
   const [chartDataPoints, setChartDataPoints] = useState([]);
-  const [selectedTimeframe, setSelectedTimeframe] = useState("1 WEEK");
+  const [selectedTimeframe, setSelectedTimeframe] = useState("1 MONTH");
   const [apy, setApy] = useState(null);
 
   const handleAmountClick = (type) => {
@@ -752,6 +752,9 @@ const USDC: FC = () => {
         } else if (selectedTimeframe === "1 DAY") {
           // apiUrl = `http://localhost:3050/api/vaults/equity-daily`; // Daily data
           apiUrl = `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults/equity-daily`;
+        } else if (selectedTimeframe === "1 MONTH") {
+          // apiUrl = `http://localhost:3050/api/vaults/equity-daily`; // Daily data
+          apiUrl = `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults/equity-monthly`;
         }
 
         const response = await fetch(apiUrl);
@@ -774,6 +777,11 @@ const USDC: FC = () => {
                 hour: "2-digit",
                 minute: "2-digit",
               }); // Show hours for daily data (HH:MM)
+            } else if (selectedTimeframe === "1 MONTH") {
+              return date.toLocaleDateString([], {
+                month: "2-digit",
+                day: "2-digit",
+              }); // Show days for weekly data (MM/DD)
             }
           } else {
             return ""; // Fallback for missing timestamp
@@ -1232,6 +1240,18 @@ const USDC: FC = () => {
                             1 Month
                           </div>
                         </div> */}
+                    <div
+                      className={`cursor-pointer rounded-lg py-1 px-2 text-sm text-primary transition-all duration-200 ease-in-out flex flex-row items-center justify-center ${
+                        selectedTimeframe === "1 MONTH"
+                          ? "bg-mediumspringgreen-50 opacity-100"
+                          : "bg-mediumspringgreen-50 opacity-70 hover:opacity-40"
+                      }`}
+                      onClick={() => setSelectedTimeframe("1 MONTH")}
+                    >
+                      <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+                        1 MONTH
+                      </div>
+                    </div>
                     <div
                       className={`cursor-pointer rounded-lg py-1 px-2 text-sm text-primary transition-all duration-200 ease-in-out flex flex-row items-center justify-center ${
                         selectedTimeframe === "1 WEEK"
