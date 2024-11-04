@@ -804,6 +804,7 @@ const SOL: FC = () => {
         const data = await response.json();
         setVaultEquity(data.vaultEquity);
         setJLPPremium(data.jlpPremium);
+        setApy(Number(data.apy)); // Store APY with compounding in the state
       } catch (error) {
         console.error("Error fetching vault equity:", error);
       }
@@ -856,25 +857,6 @@ const SOL: FC = () => {
 
         setChartLabels(labels.reverse()); // Set chart labels
         setChartDataPoints(dataPoints.reverse()); // Set chart data points
-
-        // Calculate APY if the timeframe is "1 WEEK"
-        if (selectedTimeframe === "1 WEEK" && dataPoints.length > 1) {
-          const firstEquity = dataPoints[dataPoints.length - 1];
-          const lastEquity = dataPoints[0];
-          const weeklyReturn = (firstEquity - lastEquity) / lastEquity;
-
-          // Deduct performance fee from weekly return
-          const netWeeklyReturn = weeklyReturn * 0.82;
-
-          // Convert to monthly return with 4 weeks per month
-          const monthlyReturn = netWeeklyReturn * 4;
-
-          // Calculate compounded APY with monthly compounding
-          const apy = (Math.pow(1 + monthlyReturn, 12) - 1) * 100;
-
-          console.log("Compound APY:", apy);
-          setApy(apy); // Store APY with compounding in the state
-        }
       } catch (error) {
         console.error("Error fetching vault equity:", error);
       }
@@ -898,6 +880,7 @@ const SOL: FC = () => {
       setVaultEquity(data.vaultEquity);
       setDayChart(data.chartData);
       setJLPPremium(data.jlpPremium);
+      setApy(Number(data.apy)); // Store APY with compounding in the state
     } catch (error) {
       console.error("Error fetching vault equity:", error);
     }
