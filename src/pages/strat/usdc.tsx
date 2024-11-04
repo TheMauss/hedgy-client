@@ -9,6 +9,7 @@ import {
   ComputeBudgetProgram,
   LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
+import { createAssociatedTokenAccountInstruction } from "@solana/spl-token";
 import { FaQuestionCircle } from "react-icons/fa";
 import { notify } from "utils/notifications";
 import { Tooltip } from "react-tooltip";
@@ -503,10 +504,25 @@ const USDC: FC = () => {
 
     try {
       let tx = new Transaction();
+      tx.add(COMPUTE_BUDGET_IX);
+      // Check if the associated token account already exists
+      const accountInfo = await connection.getAccountInfo(USDCAddress);
+
+      if (!accountInfo) {
+        // If it doesn't exist, add instruction to create the associated token account for USDC
+        tx.add(
+          createAssociatedTokenAccountInstruction(
+            publicKey, // Funding wallet (payer)
+            USDCAddress, // USDC associated token account
+            publicKey, // Owner of the account
+            USDCMINT // Mint for USDC
+          )
+        );
+      }
 
       // 3. Create deposit instruction and add to transaction
       const depositIx = withdraw(RequestAccounts);
-      tx.add(COMPUTE_BUDGET_IX).add(depositIx).add(PRIORITY_FEE_IX);
+      tx.add(depositIx).add(PRIORITY_FEE_IX);
 
       // 4. Send transaction
       const signature = await sendTransaction(tx, connection);
