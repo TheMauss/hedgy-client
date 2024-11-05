@@ -523,7 +523,7 @@ export const HomeView: FC = () => {
             </div>
           </div>
           <div className="w-full flex flex-col md:flex-row items-center justify-between gap-4 text-5xl md:pt-16">
-            <div className="text-[52px] md:hidden flex flex-col items-center justify-center tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] w-[496.4px]">
+            <div className="font-gilroy-semibold text-[52px] md:hidden flex flex-col items-center justify-center tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] w-[496.4px]">
               <div className="m-0">Follow Us On X</div>
               {/* <div className="m-0">Join the Discord</div> */}
             </div>
