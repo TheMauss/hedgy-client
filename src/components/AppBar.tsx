@@ -97,7 +97,7 @@ export const AppBar: React.FC<Props> = ({ isNavOpen, setIsNavOpen }) => {
   const [position, setPosition] = useState({ top: "0px", left: "0px" });
 
   return (
-    <div className="Gilroy-Semibold flex justify-center">
+    <div className="z-10 Gilroy-Semibold flex justify-center">
       <div className="h-[92px] flex flex-row justify-between items-center w-[95%] max-w-[1550px]">
         <a href="/" className="no-underline">
           <div className="flex flex-row items-center justify-start gap-[7.4px]">

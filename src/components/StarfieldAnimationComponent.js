@@ -11,7 +11,7 @@ const StarfieldAnimationComponent = () => {
 
     ReactDOM.render(
       <StarfieldAnimation
-        numParticles={800}
+        numParticles={100}
         style={{
           position: "absolute",
           top: 0,
@@ -21,7 +21,7 @@ const StarfieldAnimationComponent = () => {
           margin: "auto",
           width: "100%",
           height: "100%",
-          zIndex: -1,
+          zIndex: 1,
         }}
       />,
       wrapper
