@@ -26,7 +26,7 @@ export const Footer: FC = () => {
       <div className="h-20 text-gray-200 flex items-center justify-between  w-[95%] max-w-[1550px] flex flex-row items-center justify-between text-mini-7">
         <a href="/" className="no-underline">
           <div className="flex flex-row items-center justify-start gap-[5px]">
-            <img className="ml-1 w-[60px] relative " alt="" src="/hedgy.png" />
+            <img className="ml-1 w-[70px] relative " alt="" src="/hedgy.png" />
           </div>
         </a>
         <div className="hidden sm:flex px-2 relative justify-center items-center text-center text-sm leading-[150%] font-gilroy-regular opacity-[0.5]">
@@ -36,14 +36,19 @@ export const Footer: FC = () => {
         <div className="sm:hidden px-2 relative flex justify-center items-center text-center text-sm leading-[150%] font-gilroy-regular opacity-[0.5]">
           Hedgy is currently in beta.
         </div>
-        <div className="flex flex-row items-center justify-start gap-[13px] opacity-[0.5]">
+
+        <div className="flex flex-row items-center justify-start gap-[13px]">
           <a
             href={`https://docs.hedgy.market/`}
             target="_blank"
             rel="noreferrer"
             className="hover:underline"
           >
-            <IoDocumentText className="cursor-pointer text-[#97a4a0] w-[20px] relative h-[17px] overflow-hidden shrink-0 object-cover"></IoDocumentText>
+            <img
+              className="w-[20px] relative h-[20px] overflow-hidden shrink-0"
+              alt=""
+              src="/gitbook--icon--light-1.svg"
+            />{" "}
           </a>
 
           <a
@@ -53,9 +58,9 @@ export const Footer: FC = () => {
             className="hover:underline"
           >
             <img
-              className="cursor-pointer w-[20px] relative h-[20px] overflow-hidden shrink-0 object-cover"
+              className="w-[22px] relative h-[16px] overflow-hidden shrink-0"
               alt=""
-              src="/icon--youtube@2x.png"
+              src="/discord-symbolsvg.svg"
             />
           </a>
           <a
@@ -65,9 +70,9 @@ export const Footer: FC = () => {
             className="hover:underline"
           >
             <img
-              className="cursor-pointer w-[20px] relative h-[20px] overflow-hidden shrink-0"
+              className="w-[22px] relative h-[16px] overflow-hidden shrink-0"
               alt=""
-              src="/icon--x.svg"
+              src="/x-logosvg.svg"
             />
           </a>
         </div>

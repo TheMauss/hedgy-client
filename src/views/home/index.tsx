@@ -147,98 +147,266 @@ export const HomeView: FC = () => {
         <meta name="twitter:image" content="/strat.png" />
         <link rel="icon" href="/hedgy.svg" />
       </Head>
-
-      <div className="flex justify-center items-top min-h-[calc(100vh-172px)] z-100 ">
-        <div className="gap-4 max-w-[1550px] flex flex-col md:flex-row justify-center items-start pt-8">
-          <div className="self-stretch w-full min-w-[330px] md:w-1/2">
-            <Link
-              href="/strat/usdc"
-              passHref
-              className="hover:no-underline no-underline"
-            >
-              <div className="rounded-2xl no-underline flex flex-col gap-6 cursor-pointer transition-shadow duration-300 hover:shadow-[0px_2px_20px_rgba(255,255,255,0.2)]">
-                <div className="w-full md:min-w-[380px] flex flex-col">
-                  <div className="w-full rounded-2xl overflow-hidden text-left text-base py-6 text-neutral-06 font-gilroy-bold [background:linear-gradient(130deg,_#101011,_#1d1d22_49.21%,_#0f1011)] border-layer-2 border-[1px] border-solid">
-                    <div className="lg:flex  w-full flex flex-col lg:gap-0 md:gap-4  md:px-10 items-center justify-between box-border text-[20px] font-gilroy-semibold">
-                      <div className="flex flex-col items-center justify-start  px-2 md:gap-[16px] md:rounded-2xl  lg:[backdrop-filter:blur(0px)] md:[backdrop-filter:blur(20px)] rounded-2xl">
-                        <div className="relative group profile-picture-container w-16 h-16">
-                          {/* Display the current profile image */}
-                          <img
-                            className={`w-16 h-16 rounded-full object-cover`}
-                            alt="Profile"
-                            src="/usdc.png"
-                          />
-
-                          {/* Hidden file input to select new image */}
+      <div className="flex flex-col items-center justify-start font-gilroy-regular w-full overflow-hidden text-37xl text-neutral-06 gap-6">
+        <div className="w-[60%] flex flex-col items-center justify-start gap-32">
+          <div className="w-full flex flex-col items-center justify-center gap-3 text-center text-[64px] text-grey-text pt-12">
+            <div className="font-gilroy-semibold self-stretch relative tracking-[-0.21px] text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+              Maximize Your Yield
+            </div>
+            <div className="self-stretch relative text-xl tracking-[-0.21px] text-center">
+              Multiply your yields with delta-neutral market making and
+              liquidity provision strategies
+            </div>
+            <div className="flex flex-row items-center justify-start gap-20 text-13xl pt-12">
+              <div className="w-[207.5px] flex flex-row items-center justify-center">
+                <div className="flex flex-col items-center justify-start">
+                  <div className="relative tracking-[-0.21px] font-medium">
+                    $233,432.43
+                  </div>
+                  <div className="relative text-lg text-grey-text">
+                    Total Value Locked
+                  </div>
+                </div>
+              </div>
+              <div className="w-[207.5px] flex flex-row items-center justify-center">
+                <div className="flex flex-col items-center justify-start">
+                  <div className="relative tracking-[-0.21px] font-medium">
+                    $56,752.87
+                  </div>
+                  <div className="relative text-lg text-grey-text">
+                    Total P&L
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="w-full flex flex-row items-center justify-center gap-8 pt-12 text-5xl">
+              <div className="w-1/2 rounded-2xl [background:linear-gradient(115.04deg,_#101011,_#1d1d22_49.21%,_#0f1011)] border-layer-2 border-[1px] border-solid box-border flex flex-col items-start justify-start p-6 gap-6 cursor-pointer transition-shadow duration-300 hover:shadow-[0px_2px_20px_rgba(255,255,255,0.2)]">
+                <Link
+                  href="/strat/usdc"
+                  passHref
+                  className="w-full text-white hover:no-underline no-underline self-stretch flex flex-col items-center justify-center gap-2"
+                >
+                  <div className="self-stretch flex flex-col items-center justify-center gap-2">
+                    <div className="rounded-lg overflow-hidden flex flex-col items-center justify-center gap-2">
+                      <img
+                        className="w-20 relative rounded-1981xl h-20 overflow-hidden shrink-0 object-cover"
+                        alt=""
+                        src="/usdc.png"
+                      />
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="relative tracking-[-0.21px]">
+                          JLP Delta Neutral Strategy
                         </div>
-                        <div className="flex flex-col items-center justify-center gap-[4px] ">
-                          <div className="self-stretch relative tracking-[-0.03em] leading-[120.41%]  text-center">
-                            JLP Delta Neutral Strategy
+                        <div className="relative text-base text-grey-text">
+                          Maximize your JLP yield
+                        </div>
+                      </div>
+                    </div>
+                    <div className="self-stretch flex flex-col items-center justify-center text-19xl-4">
+                      <div className="relative">
+                        <span>{`50.64% `}</span>
+                        <span className="text-grey-text">APY</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="self-stretch relative border-layer-2 border-t-[1px] border-solid box-border h-px" />
+                  <div className="self-stretch flex flex-col items-start justify-start text-xl">
+                    <div className="self-stretch flex flex-row items-start justify-start">
+                      <div className="flex-1 flex flex-row items-center justify-center">
+                        <div className="flex flex-col items-center justify-start">
+                          <div className="relative tracking-[-0.21px]">
+                            $233,432.43
                           </div>
-
-                          <div className="opacity-[0.4] text-[15px] tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block">
-                            Maximize your USDC Yield
+                          <div className="relative text-sm text-grey-text">
+                            TVL
                           </div>
                         </div>
-                        <div className="rounded-2xl flex flex-col items-center justify-center  box-border text-base font-gilroy-medium">
-                          <div className="flex flex-col items-center justify-center md:items-end md:justify-center gap-[4px] ">
-                            <div className="text-[36px] self-stretch relative tracking-[-0.03em] leading-[120.41%]">
-                              {"> "}50%{" "}
-                              <span className="opacity-[0.4]">APY</span>
-                            </div>
-                          </div>
+                      </div>
+                      <div className="flex-1 flex flex-col items-center justify-center">
+                        <div className="relative tracking-[-0.21px]">
+                          $22,987.87
+                        </div>
+                        <div className="relative text-sm text-grey-text">
+                          Profit
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                  <div className="self-stretch rounded-lg [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] h-12 flex flex-row items-center justify-center p-2 box-border text-lg text-bg1">
+                    <div className="relative leading-[120.41%]">View</div>
+                  </div>{" "}
+                </Link>
               </div>
-            </Link>
+
+              <div className="w-1/2 rounded-2xl [background:linear-gradient(115.04deg,_#101011,_#1d1d22_49.21%,_#0f1011)] border-layer-2 border-[1px] border-solid box-border flex flex-col items-start justify-start p-6 gap-6 cursor-pointer transition-shadow duration-300 hover:shadow-[0px_2px_20px_rgba(255,255,255,0.2)]">
+                <Link
+                  href="/strat/sol"
+                  passHref
+                  className="w-full text-white hover:no-underline no-underline self-stretch flex flex-col items-center justify-center gap-2"
+                >
+                  <div className="self-stretch flex flex-col items-center justify-center gap-2">
+                    <div className="rounded-lg overflow-hidden flex flex-col items-center justify-center gap-2">
+                      <img
+                        className="w-20 relative rounded-1981xl h-20 overflow-hidden shrink-0 object-cover"
+                        alt=""
+                        src="/sol.png"
+                      />
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="relative tracking-[-0.21px]">
+                          JLP-SOL Exposure Strategy
+                        </div>
+                        <div className="relative text-base text-grey-text">
+                          Maximize your SOL yield
+                        </div>
+                      </div>
+                    </div>
+                    <div className="self-stretch flex flex-col items-center justify-center text-19xl-4">
+                      <div className="relative">
+                        <span>{`25% `}</span>
+                        <span className="text-grey-text">APY</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="self-stretch relative border-layer-2 border-t-[1px] border-solid box-border h-px" />
+                  <div className="self-stretch flex flex-col items-start justify-start text-xl">
+                    <div className="self-stretch flex flex-row items-start justify-start">
+                      <div className="flex-1 flex flex-row items-center justify-center">
+                        <div className="flex flex-col items-center justify-start">
+                          <div className="relative tracking-[-0.21px]">
+                            $233,432.43
+                          </div>
+                          <div className="relative text-sm text-grey-text">
+                            TVL
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex-1 flex flex-col items-center justify-center">
+                        <div className="relative tracking-[-0.21px]">
+                          $22,987.87
+                        </div>
+                        <div className="relative text-sm text-grey-text">
+                          Profit
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="self-stretch rounded-lg [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] h-12 flex flex-row items-center justify-center p-2 box-border text-lg text-bg1">
+                    <div className="relative leading-[120.41%]">View</div>
+                  </div>{" "}
+                </Link>
+              </div>
+            </div>
           </div>
-          <div className="self-stretch w-full md:w-1/2">
-            <Link
-              href="/strat/sol"
-              passHref
-              className="hover:no-underline no-underline"
-            >
-              <div className="rounded-2xl no-underline flex flex-col gap-6 cursor-pointer transition-shadow duration-300 hover:shadow-[0px_2px_20px_rgba(255,255,255,0.2)]">
-                <div className="w-full md:min-w-[380px] flex flex-col">
-                  <div className="w-full rounded-2xl overflow-hidden text-left text-base py-6 text-neutral-06 font-gilroy-bold [background:linear-gradient(130deg,_#101011,_#1d1d22_49.21%,_#0f1011)] border-layer-2 border-[1px] border-solid">
-                    <div className="lg:flex  w-full flex flex-col lg:gap-0 md:gap-4  px-2 md:px-10 items-center justify-between box-border text-[20px] font-gilroy-semibold">
-                      <div className="flex flex-col items-center justify-start  px-2 md:gap-[16px] md:rounded-2xl  lg:[backdrop-filter:blur(0px)] md:[backdrop-filter:blur(20px)] rounded-2xl">
-                        <div className="relative group profile-picture-container w-16 h-16">
-                          {/* Display the current profile image */}
-                          <img
-                            className={`w-16 h-16 rounded-full object-cover`}
-                            alt="Profile"
-                            src="/sol.png"
-                          />
 
-                          {/* Hidden file input to select new image */}
-                        </div>
-                        <div className="flex flex-col items-center justify-center gap-[4px]  text-center">
-                          <div className="relative tracking-[-0.03em] leading-[120.41%] text-center">
-                            JLP - SOL Exposure Strategy
-                          </div>
-
-                          <div className="opacity-[0.4] text-[15px] tracking-[-0.03em] leading-[120.41%] font-gilroy-regular inline-block">
-                            Maximize your SOL Yield
-                          </div>
-                        </div>
-                        <div className="rounded-2xl flex flex-col items-center justify-center  box-border text-base font-gilroy-medium">
-                          <div className="flex flex-col items-center justify-center md:items-end md:justify-center gap-[4px] ">
-                            <div className="text-[36px] self-stretch relative tracking-[-0.03em] leading-[120.41%] text-center ">
-                              {"> "}25%{" "}
-                              <span className="opacity-[0.4]">APY</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+          <div className="w-full flex flex-row items-center justify-start gap-4 text-5xl pt-16">
+            <div className="items-center justify-center tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] w-[496.4px]">
+              How Does It Work?
+            </div>
+            <div className="flex flex-col">
+              <div className="self-stretch rounded-2xl [background:linear-gradient(115.04deg,_#101011,_#1d1d22_49.21%,_#0f1011)] border-layer-2 border-[1px] border-solid flex flex-row items-center justify-start p-6 gap-6">
+                <img
+                  className="w-20 relative rounded-1981xl h-20 overflow-hidden shrink-0"
+                  alt=""
+                  src="/tokeneth.svg"
+                />
+                <div className="flex-1 flex flex-col items-start justify-center gap-1">
+                  <div className="relative">Depositor</div>
+                  <div className="self-stretch relative text-xl inline-block h-12 shrink-0">
+                    Deposits USDC or SOL into Hedgy’s vault on Drift.
                   </div>
                 </div>
               </div>
-            </Link>
+              <div className="gap-6 self-stretch rounded-2xl [background:linear-gradient(115.04deg,_#101011,_#1d1d22_49.21%,_#0f1011)] border-layer-2 border-[1px] border-solid flex flex-row items-center justify-start p-6 gap-6">
+                <img
+                  className="w-20 relative rounded-1981xl h-20 overflow-hidden shrink-0"
+                  alt=""
+                  src="/hedgyss.png"
+                />
+                <div className="flex-1 flex flex-col items-start justify-center gap-1">
+                  <div className="relative">Hedgy</div>
+                  <div className="self-stretch relative text-xl inline-block h-12 shrink-0">
+                    Swaps into JLP and balances the strategy.
+                  </div>
+                </div>
+              </div>
+              <div className="self-stretch rounded-2xl [background:linear-gradient(115.04deg,_#101011,_#1d1d22_49.21%,_#0f1011)] border-layer-2 border-[1px] border-solid flex flex-row items-center justify-start p-6 gap-6">
+                <img
+                  className="w-20 relative rounded-1981xl h-20 overflow-hidden shrink-0 object-cover"
+                  alt=""
+                  src="/tokeneth7@2x.png"
+                />
+                <div className="flex-1 flex flex-col items-start justify-center gap-1">
+                  <div className="relative">Yield</div>
+                  <div className="self-stretch relative text-xl inline-block h-12 shrink-0">
+                    Hourly yield distributed to JLP holders.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="w-full flex flex-row items-center justify-between gap-4 text-5xl pt-16">
+            <div className="md:hidden flex flex-col items-center justify-center tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] w-[496.4px]">
+              <div className="m-0">Follow Us On X</div>
+              <div className="m-0">Join the Discord</div>
+            </div>
+            <div className="flex flex-row">
+              <div className="flex flex-col items-center justify-center gap-4 text-lg">
+                <img
+                  className="self-stretch relative rounded-2xl max-w-full overflow-hidden h-[182px] shrink-0"
+                  alt=""
+                  src="/frame-20856603621.svg"
+                />
+                <div className="self-stretch rounded-lg [background:linear-gradient(90.72deg,_rgba(73,_246,_255,_0.1),_rgba(98,_143,_255,_0.1))] border-aqua border-[2px] border-solid box-border h-12 flex flex-row items-center justify-center p-2">
+                  <div className="relative leading-[120.41%] text-transparent !bg-clip-text [background:linear-gradient(90.72deg,_#49f6ff,_#628fff)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+                    Follow
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col items-start justify-start gap-4 text-lg">
+                <img
+                  className="self-stretch relative rounded-2xl max-w-full overflow-hidden h-[182px] shrink-0"
+                  alt=""
+                  src="/frame-2085660363.svg"
+                />
+                <div className="self-stretch rounded-lg [background:linear-gradient(90.72deg,_rgba(143,_73,_255,_0.1),_rgba(203,_98,_255,_0.1))] border-blueviolet border-[2px] border-solid box-border h-12 flex flex-row items-center justify-center p-2">
+                  <div className="relative leading-[120.41%] text-transparent !bg-clip-text [background:linear-gradient(90.72deg,_#8f49ff,_#cb62ff)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+                    Join
+                  </div>
+                </div>
+              </div>{" "}
+            </div>
+            <div className="text-end hidden md:flex flex-col  tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+              <div className="m-0">Follow Us On X</div>
+              <div className="m-0">Join the Discord</div>
+            </div>
+          </div>
+          <div className="w-full flex flex-row justify-between items-center py-16">
+            <div className="w-1/2 tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] w-[400.8px]">
+              Documentation
+            </div>
+            <div className="w-1/2 rounded-2xl [background:linear-gradient(115.04deg,_#101011,_#1d1d22_49.21%,_#0f1011)] border-layer-2 border-[1px] border-solid box-border flex flex-col items-start justify-center p-6 gap-6 text-21xl">
+              <img
+                className="self-stretch relative rounded-lg overflow-hidden shrink-0"
+                alt=""
+                src="/frame-2085660362.svg"
+              />
+              <div className="self-stretch flex flex-col items-start justify-start gap-4">
+                <div className="self-stretch relative inline-block h-12 shrink-0">
+                  Gitbook
+                </div>
+                <div className="relative text-xl">Learn more about Hedgy</div>
+              </div>
+              <div className="self-stretch rounded-lg border-primary1 border-[2px] border-solid box-border h-12 flex flex-row items-center justify-center p-2 gap-2 text-lg">
+                <div className="relative leading-[120.41%] text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+                  View
+                </div>
+                <img
+                  className="w-5 relative h-5"
+                  alt=""
+                  src="/vuesaxlinearexport.svg"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
