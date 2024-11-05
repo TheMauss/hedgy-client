@@ -493,7 +493,7 @@ export const HomeView: FC = () => {
             </div>
 
             <div className="z-10 w-full flex flex-col md:flex-row items-center justify-start gap-4 text-5xl md:pt-16">
-              <div className="font-gilroy-semibold w-full md:w-1/2 text-center md:text-left text-[52px] items-center justify-center tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] w-[496.4px]">
+              <div className="font-gilroy-semibold w-full md:w-1/2 text-center md:text-left md:text-[52px] text-[42px] items-center justify-center tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] w-[496.4px]">
                 How Does It Work?
               </div>
               <div className="flex flex-col gap-6">
@@ -539,7 +539,7 @@ export const HomeView: FC = () => {
               </div>
             </div>
             <div className="w-full flex flex-col md:flex-row items-center justify-between gap-4 text-5xl md:pt-16">
-              <div className="font-gilroy-semibold text-[52px] md:hidden flex flex-col items-center justify-center tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] w-[496.4px]">
+              <div className="font-gilroy-semibold md:text-[52px] text-[42px] md:hidden flex flex-col items-center justify-center tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] w-[496.4px]">
                 <div className="m-0">Follow Us On X</div>
                 {/* <div className="m-0">Join the Discord</div> */}
               </div>
@@ -582,13 +582,13 @@ export const HomeView: FC = () => {
                 </div> </a>
               </div>{" "}  */}
               </div>
-              <div className="font-gilroy-semibold text-[52px] text-end hidden md:flex flex-col  tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+              <div className="font-gilroy-semibold md:text-[52px] text-[42px] text-end hidden md:flex flex-col  tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
                 <div className="m-0">Follow Us On X</div>
                 {/* <div className="m-0">Join the Discord</div> */}
               </div>
             </div>
             <div className="w-full flex flex-col md:flex-row justify-between items-center pb-8 md:py-16">
-              <div className="font-gilroy-semibold w-full md:w-1/2 text-[52px] text-center md:text-left w-1/2 tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] w-[400.8px]">
+              <div className="font-gilroy-semibold w-full md:w-1/2 md:text-[52px] text-[42px] text-center md:text-left w-1/2 tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] w-[400.8px]">
                 Documentation
               </div>
               <div className="w-full md:w-1/2 rounded-2xl [background:linear-gradient(115.04deg,_#101011,_#1d1d22_49.21%,_#0f1011)] border-layer-2 border-[1px] border-solid box-border flex flex-col items-start justify-center p-6 gap-6 text-21xl">
