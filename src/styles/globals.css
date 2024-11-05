@@ -68,31 +68,31 @@
 body::-webkit-scrollbar,
 html::-webkit-scrollbar {
   width: 5px;
-  background: #6fff900f;
+  background: #1b1b1b;
 }
 
 /* Handle */
 body::-webkit-scrollbar-thumb,
 html::-webkit-scrollbar-thumb {
-  background: #193a31;
+  background: rgb(56, 56, 56);
 }
 
 /* Handle on hover */
 body::-webkit-scrollbar-thumb:hover,
 html::-webkit-scrollbar-thumb:hover {
-  background: #193a31;
+  background: rgb(76, 76, 76);
 }
 
 /* The scrollbar rail */
 .custom-scrollbar::-webkit-scrollbar {
   scroll-behavior: smooth;
   width: 0px;
-  height: 5px;
+  height: 8px;
 }
 
 /* Handle */
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #193a31;
+  background: #1b1b1b;
 }
 
 /* Handle on hover */

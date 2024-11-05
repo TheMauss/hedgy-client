@@ -23,6 +23,9 @@ module.exports = {
           200: "rgba(111, 255, 144, 0.5)",
         },
         primary: "#6fff90",
+        blueviolet: "#8f49ff",
+        aqua: "#49f6ff",
+        primary1: "#1cc5de",
         darkslategray: {
           100: "#255146",
           200: "rgba(26, 62, 53, 0.36)",
