@@ -54,7 +54,7 @@
     "dotenv": "^16.3.1",
     "emoji-mart": "^5.5.2",
     "emoji-picker-react": "^4.4.10",
-    "framer-motion": "^10.12.18",
+    "framer-motion": "^10.18.0",
     "fs": "^0.0.1-security",
     "html-to-image": "^1.11.11",
     "html2canvas": "^1.4.1",

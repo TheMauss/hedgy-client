@@ -71,6 +71,21 @@ html::-webkit-scrollbar {
   background: #1b1b1b;
 }
 
+/* styles/globals.css */
+
+.trail {
+  position: absolute;
+  width: 5px; /* Smaller initial size */
+  height: 5px; /* Smaller initial size */
+  border-radius: 50%;
+  pointer-events: none;
+  transition:
+    transform 0.4s,
+    opacity 0.4s;
+  will-change: transform, opacity;
+  z-index: 1000; /* Ensure the trail is above other elements */
+}
+
 /* Handle */
 body::-webkit-scrollbar-thumb,
 html::-webkit-scrollbar-thumb {

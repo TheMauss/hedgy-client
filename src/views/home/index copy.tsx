@@ -197,11 +197,6 @@ export const HomeView: FC = () => {
     }
   }, [connection]);
 
-  const fadeInUp = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-  };
-
   return (
     <>
       <>
@@ -502,9 +497,7 @@ export const HomeView: FC = () => {
             <motion.div
               className="z-10 w-full flex flex-col md:flex-row items-center justify-start gap-4 text-5xl md:pt-16"
               initial="hidden"
-              whileInView="visible" // Trigger animation when in view
-              viewport={{ once: true, amount: 1 }} // Animate once, when 20% of the element is in view
-              variants={fadeInUp} // Apply the fadeInUp variant
+              animate="visible"
             >
               <div className="font-gilroy-semibold w-full md:w-1/2 text-center md:text-left md:text-[52px] text-[42px] items-center justify-center tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
                 How Does It Work?
@@ -551,13 +544,7 @@ export const HomeView: FC = () => {
                 </div>
               </div>
             </motion.div>
-            <motion.div
-              className="w-full flex flex-col md:flex-row justify-between items-center pb-8 md:py-16"
-              initial="hidden"
-              whileInView="visible" // Trigger animation when in view
-              viewport={{ once: true, amount: 0.7 }} // Animate once, when 20% of the element is in view
-              variants={fadeInUp} // Apply the fadeInUp variant
-            >
+            <div className="w-full flex flex-col md:flex-row justify-between items-center pb-8 md:py-16">
               <div className="md:hidden font-gilroy-semibold w-full md:w-1/2 md:text-[52px] text-[42px] text-center md:text-left w-1/2 tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] ">
                 Documentation
               </div>
@@ -596,14 +583,8 @@ export const HomeView: FC = () => {
               <div className="justify-end hidden md:flex font-gilroy-semibold w-full md:w-1/2 md:text-[52px] text-[42px] text-center md:text-right w-1/2 tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] ">
                 Documentation
               </div>
-            </motion.div>
-            <motion.div
-              className="w-full flex flex-col md:flex-row items-center justify-between gap-4 text-5xl md:pt-16"
-              initial="hidden"
-              whileInView="visible" // Trigger animation when in view
-              viewport={{ once: true, amount: 0.7 }} // Animate once, when 20% of the element is in view
-              variants={fadeInUp} // Apply the fadeInUp variant
-            >
+            </div>
+            <div className="w-full flex flex-col md:flex-row items-center justify-between gap-4 text-5xl md:pt-16">
               <div className="font-gilroy-semibold md:text-[52px] text-[42px] flex flex-col items-center justify-center tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] ">
                 <div className="m-0">Follow Us On X</div>
                 {/* <div className="m-0">Join the Discord</div> */}
@@ -647,7 +628,7 @@ export const HomeView: FC = () => {
                 </div> </a>
               </div>{" "}  */}
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>{" "}
