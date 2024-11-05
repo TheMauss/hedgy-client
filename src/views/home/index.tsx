@@ -601,7 +601,7 @@ export const HomeView: FC = () => {
               className="w-full flex flex-col md:flex-row items-center justify-between gap-4 text-5xl md:pt-16"
               initial="hidden"
               whileInView="visible" // Trigger animation when in view
-              viewport={{ once: true, amount: 0.7 }} // Animate once, when 20% of the element is in view
+              viewport={{ once: true, amount: 0.4 }} // Animate once, when 20% of the element is in view
               variants={fadeInUp} // Apply the fadeInUp variant
             >
               <div className="font-gilroy-semibold md:text-[52px] text-[42px] flex flex-col items-center justify-center tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] ">
