@@ -113,6 +113,30 @@ export const HomeView: FC = () => {
   const [openPrices, setopenPrices] = useState({});
   const [prices, setPrices] = useState({});
 
+  const [viewportAmount, setViewportAmount] = useState(1); // Default for PC
+
+  useEffect(() => {
+    // Function to set viewport amount based on screen width
+    const updateViewportAmount = () => {
+      if (window.innerWidth <= 768) {
+        // Mobile screen
+        setViewportAmount(0.3);
+      } else {
+        // PC screen
+        setViewportAmount(1);
+      }
+    };
+
+    // Set the initial viewport amount
+    updateViewportAmount();
+
+    // Update the viewport amount on window resize
+    window.addEventListener("resize", updateViewportAmount);
+
+    // Cleanup event listener on component unmount
+    return () => window.removeEventListener("resize", updateViewportAmount);
+  }, []);
+
   useEffect(() => {
     if (publicKey) {
       getUserSOLBalance(publicKey, connection);
@@ -503,7 +527,7 @@ export const HomeView: FC = () => {
               className="z-10 w-full flex flex-col md:flex-row items-center justify-start gap-4 text-5xl md:pt-16"
               initial="hidden"
               whileInView="visible" // Trigger animation when in view
-              viewport={{ once: true, amount: 1 }} // Animate once, when 20% of the element is in view
+              viewport={{ once: true, amount: viewportAmount }} // Animate once, when 20% of the element is in view
               variants={fadeInUp} // Apply the fadeInUp variant
             >
               <div className="font-gilroy-semibold w-full md:w-1/2 text-center md:text-left md:text-[52px] text-[42px] items-center justify-center tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
@@ -555,7 +579,7 @@ export const HomeView: FC = () => {
               className="w-full flex flex-col md:flex-row justify-between items-center pb-8 md:py-16"
               initial="hidden"
               whileInView="visible" // Trigger animation when in view
-              viewport={{ once: true, amount: 0.7 }} // Animate once, when 20% of the element is in view
+              viewport={{ once: true, amount: 0.5 }} // Animate once, when 20% of the element is in view
               variants={fadeInUp} // Apply the fadeInUp variant
             >
               <div className="md:hidden font-gilroy-semibold w-full md:w-1/2 md:text-[52px] text-[42px] text-center md:text-left w-1/2 tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] ">
@@ -601,7 +625,7 @@ export const HomeView: FC = () => {
               className="w-full flex flex-col md:flex-row items-center justify-between gap-4 text-5xl md:pt-16"
               initial="hidden"
               whileInView="visible" // Trigger animation when in view
-              viewport={{ once: true, amount: 0.4 }} // Animate once, when 20% of the element is in view
+              viewport={{ once: true, amount: 0.5 }} // Animate once, when 20% of the element is in view
               variants={fadeInUp} // Apply the fadeInUp variant
             >
               <div className="font-gilroy-semibold md:text-[52px] text-[42px] flex flex-col items-center justify-center tracking-[-0.21px] leading-[120%] inline-block text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] ">
