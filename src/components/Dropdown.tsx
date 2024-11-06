@@ -59,6 +59,11 @@ export const Dropdown = () => {
               .
             </span>
           </span>
+          <div className="relative mt-2 opacity-70">
+            Deposited funds are subject to a 1-day redemption period due to
+            arbitrage trading. Funds will become available for withdrawal at the
+            conclusion of the redemption period.
+          </div>
         </div>
       </div>
 
