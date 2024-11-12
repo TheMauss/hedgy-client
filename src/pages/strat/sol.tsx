@@ -78,6 +78,10 @@ const SOL_DRIFT_SOL_SPOT_MARKET = new PublicKey(
 const SOL_DRIFT_DSOL_SPOT_MARKET = new PublicKey(
   process.env.NEXT_PUBLIC_SOL_DRIFT_DSOL_SPOT_MARKET
 );
+
+const SOL_DRIFT_JITOSOL_SPOT_MARKET = new PublicKey(
+  "6Aq7WBtsZVyumcRxpAoKNyWb97gAzp3be2LeQ9yE6SVX"
+);
 const RENT = new PublicKey("SysvarRent111111111111111111111111111111111");
 const SYSTEM_PROGRAM = new PublicKey("11111111111111111111111111111111");
 
@@ -368,6 +372,7 @@ const SOL: FC = () => {
       acc13: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 13 PublicKey
       acc14: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 14 PublicKey
       acc15: new PublicKey("7QJ6e57t3yM8HYVg6bAnJiCiZ3wQQ5CSVsa6GA16nJuK"), // Replace with actual account 15 PublicKey
+      accjito: new PublicKey("9QE1P5EfzthYDgoQ9oPeTByCEKaRJeZbVVqKJfgU9iau"),
       acc16: new PublicKey("6bEp2MiyoiiiDxcVqE8rUHQWwHirXUXtKfAEATTVqNzT"), // Replace with actual account 16 PublicKey
       acc10: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 16 PublicKey
       spotMarketAddress: SOL_DRIFT_USDC_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
@@ -375,6 +380,7 @@ const SOL: FC = () => {
       acc17: new PublicKey("DVYXHwLhwALZm94pChALZDJ2b6a7uZTKPXntAGMQtRoM"), // Replace with actual account 17 PublicKey
       acc18: new PublicKey("GyyHYVCrZGc2AQPuvNbcP1babmU3L42ptmxZthUfD9q"), // Replace with actual account 18 PublicKey
       spotMarketdSOLAddress: SOL_DRIFT_DSOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
+      spotMarketAddressdJITOSOL: SOL_DRIFT_JITOSOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
       acc19: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"), // Replace with actual account 18 PublicKey
       acc20: new PublicKey("2UZMvVTBQR9yWxrEdzEQzXWE61bUjqQ5VpJAGqVb3B19"), // Replace with actual account 18 PublicKey
     };
@@ -459,6 +465,7 @@ const SOL: FC = () => {
       acc13: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 13 PublicKey
       acc14: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 14 PublicKey
       acc15: new PublicKey("7QJ6e57t3yM8HYVg6bAnJiCiZ3wQQ5CSVsa6GA16nJuK"), // Replace with actual account 15 PublicKey
+      accjito: new PublicKey("9QE1P5EfzthYDgoQ9oPeTByCEKaRJeZbVVqKJfgU9iau"),
       acc16: new PublicKey("6bEp2MiyoiiiDxcVqE8rUHQWwHirXUXtKfAEATTVqNzT"), // Replace with actual account 16 PublicKey
       acc10: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 16 PublicKey
       spotMarketAddress: SOL_DRIFT_USDC_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
@@ -466,6 +473,7 @@ const SOL: FC = () => {
       acc17: new PublicKey("DVYXHwLhwALZm94pChALZDJ2b6a7uZTKPXntAGMQtRoM"), // Replace with actual account 17 PublicKey
       acc18: new PublicKey("GyyHYVCrZGc2AQPuvNbcP1babmU3L42ptmxZthUfD9q"), // Replace with actual account 18 PublicKey
       spotMarketdSOLAddress: SOL_DRIFT_DSOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
+      spotMarketAddressdJITOSOL: SOL_DRIFT_JITOSOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
       acc19: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"), // Replace with actual account 18 PublicKey
       acc20: new PublicKey("2UZMvVTBQR9yWxrEdzEQzXWE61bUjqQ5VpJAGqVb3B19"), // Replace with actual account 18 PublicKey
     };
@@ -552,6 +560,7 @@ const SOL: FC = () => {
       acc12: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 12 PublicKey
       acc13: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 13 PublicKey
       acc14: new PublicKey("7QJ6e57t3yM8HYVg6bAnJiCiZ3wQQ5CSVsa6GA16nJuK"), // Replace with actual account 14 PublicKey
+      accjito: new PublicKey("9QE1P5EfzthYDgoQ9oPeTByCEKaRJeZbVVqKJfgU9iau"),
       acc15: new PublicKey("6bEp2MiyoiiiDxcVqE8rUHQWwHirXUXtKfAEATTVqNzT"), // Replace with actual account 15 PublicKey
       acc16: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 16 PublicKey
       spotMarketAddress: SOL_DRIFT_USDC_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
@@ -559,6 +568,7 @@ const SOL: FC = () => {
       acc17: new PublicKey("DVYXHwLhwALZm94pChALZDJ2b6a7uZTKPXntAGMQtRoM"), // Replace with actual account 17 PublicKey
       acc18: new PublicKey("GyyHYVCrZGc2AQPuvNbcP1babmU3L42ptmxZthUfD9q"), // Replace with actual account 18 PublicKey
       spotMarketAddressdSOL: SOL_DRIFT_DSOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
+      spotMarketAddressdJITOSOL: SOL_DRIFT_JITOSOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
       acc19: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"), // Replace with actual account 19 PublicKey
       acc20: new PublicKey("2UZMvVTBQR9yWxrEdzEQzXWE61bUjqQ5VpJAGqVb3B19"),
     };
@@ -692,6 +702,7 @@ const SOL: FC = () => {
       acc12: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 12 PublicKey
       acc13: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 13 PublicKey
       acc14: new PublicKey("7QJ6e57t3yM8HYVg6bAnJiCiZ3wQQ5CSVsa6GA16nJuK"), // Replace with actual account 14 PublicKey
+      accjito: new PublicKey("9QE1P5EfzthYDgoQ9oPeTByCEKaRJeZbVVqKJfgU9iau"),
       acc15: new PublicKey("6bEp2MiyoiiiDxcVqE8rUHQWwHirXUXtKfAEATTVqNzT"), // Replace with actual account 15 PublicKey
       acc16: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 16 PublicKey
       spotMarketAddress: SOL_DRIFT_USDC_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
@@ -699,6 +710,7 @@ const SOL: FC = () => {
       acc17: new PublicKey("DVYXHwLhwALZm94pChALZDJ2b6a7uZTKPXntAGMQtRoM"), // Replace with actual account 17 PublicKey
       acc18: new PublicKey("GyyHYVCrZGc2AQPuvNbcP1babmU3L42ptmxZthUfD9q"), // Replace with actual account 18 PublicKey
       spotMarketAddressdSOL: SOL_DRIFT_DSOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
+      spotMarketAddressdJITOSOL: SOL_DRIFT_JITOSOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
       acc19: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"), // Replace with actual account 19 PublicKey
       acc20: new PublicKey("2UZMvVTBQR9yWxrEdzEQzXWE61bUjqQ5VpJAGqVb3B19"),
     };
@@ -1347,7 +1359,7 @@ const SOL: FC = () => {
               </div>
             </div>
             <div className="flex flex-col gap-8 lg:w-[32%] md:w-[42%] flex flex-col items-start justify-start">
-              <div className="md:max-h-[420px] [background:linear-gradient(115.04deg,_#101011,_#1d1d22_49.21%,_#0f1011)] border-layer-2 border-[1px] border-solid w-full flex-1 rounded-2xl flex flex-col items-between justify-start py-6 px-5 md:p-8 box-border gap-5 text-gray-200 font-gilroy-regular">
+              <div className="md:max-h-[480px] [background:linear-gradient(115.04deg,_#101011,_#1d1d22_49.21%,_#0f1011)] border-layer-2 border-[1px] border-solid w-full flex-1 rounded-2xl flex flex-col items-between justify-start py-6 px-5 md:p-8 box-border gap-5 text-gray-200 font-gilroy-regular">
                 <div className="border-layer-2 border-[1px] border-solid self-stretch rounded-lg bg-layer-1 flex flex-row items-center justify-start p-1 text-neutral-06 font-gilroy-semibold">
                   <div
                     className={`cursor-pointer flex-1 rounded-lg overflow-hidden flex flex-row items-center justify-center p-2 transition-background ${
@@ -1559,7 +1571,7 @@ const SOL: FC = () => {
                                 SOL
                               </div>
                               <button
-                                className="button-wrapper hover:opacity-70 transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg bg-green-500 h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
+                                className="button-wrapper hover:opacity-70 transition ease-in-out duration-300 cursor-pointer self-stretch rounded-lg [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] h-12 flex flex-row items-center justify-center p-2 box-border opacity-1 text-lg text-bg font-gilroy-semibold"
                                 onClick={handleClaimWithdrawal}
                               >
                                 <div className="mt-0.5 tracking-[-0.03em] leading-[120.41%]">
