@@ -12,13 +12,14 @@ import { useRouter } from "next/router";
 import ReactGA from "react-ga";
 import { Analytics } from "@vercel/analytics/react";
 import { PriorityFeeProvider } from "../contexts/PriorityFee";
+import withAccessControl from "../components/withAccessControl";
 
 require("@solana/wallet-adapter-react-ui/styles.css");
 require("../styles/globals.css");
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
   const [isNavOpen, setIsNavOpen] = useState(false);
-
+  const ProtectedComponent = withAccessControl(Component);
   const router = useRouter();
   const hideFooterFor = ["/futures", "/trade", "/stats", "/vault"]; // Add paths where you don't want to show the footer
   const hideCss = ["/"]; // Add paths where you don't want to show the footer
@@ -147,7 +148,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
                     setIsNavOpen={setIsNavOpen}
                     setIsContentContainerOpen={setIsContentContainerOpen}
                   > */}
-              <Component />
+              <ProtectedComponent {...pageProps} />
               {showFooter && <Footer />}
               {/* </ContentContainer> */}
             </div>
