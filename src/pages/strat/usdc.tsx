@@ -28,6 +28,8 @@ import { requestWithdraw } from "../../idl/instructions/requestWithdraw"; // Upd
 import { withdraw } from "../../idl/instructions/withdraw"; // Update with the correct path
 import { Token, Shares, SharesPercent } from "../../idl/types/WithdrawUnit";
 import LineChart from "../../components/Chart";
+import LineChartAPY from "../../components/ChartAPY";
+
 import Dropdown from "../../components/Dropdown";
 
 const WalletMultiButtonDynamic = dynamic(
@@ -771,10 +773,14 @@ const USDC: FC = () => {
         } else if (selectedTimeframe === "1 MONTH") {
           // apiUrl = `http://localhost:3050/api/vaults/equity-daily`; // Daily data
           apiUrl = `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults/equity-monthly`;
+        } else if (selectedTimeframe === "APY") {
+          // apiUrl = `http://localhost:3050/api/vaults/apy`; // Daily data
+          apiUrl = `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults/apy`;
         }
 
         const response = await fetch(apiUrl);
         const data = await response.json();
+
         setDayChart(data.chartData);
 
         // Process the chartData for the chart
@@ -798,6 +804,12 @@ const USDC: FC = () => {
                 month: "2-digit",
                 day: "2-digit",
               }); // Show days for weekly data (MM/DD)
+            } else if (selectedTimeframe === "APY") {
+              return date.toLocaleDateString([], {
+                month: "2-digit",
+                day: "2-digit",
+                year: "2-digit",
+              }); // Use a default label format for APY
             }
           } else {
             return ""; // Fallback for missing timestamp
@@ -805,9 +817,12 @@ const USDC: FC = () => {
         });
 
         const dataPoints = data.chartData.map((item) =>
-          Number(item.priceOfEquity)
+          selectedTimeframe === "APY"
+            ? Number(item.apy)
+            : Number(item.priceOfEquity)
         );
 
+        console.log(labels);
         setChartLabels(labels.reverse()); // Set chart labels
         setChartDataPoints(dataPoints.reverse()); // Set chart data points
       } catch (error) {
@@ -1241,7 +1256,7 @@ const USDC: FC = () => {
               >
                 <div className="font-gilroy-regular self-stretch flex flex-col items-start justify-center gap-3 z-[0] text-left text-3xl text-neutral-06">
                   <b className="relative tracking-[-0.21px] ">
-                    Strategy Performance
+                    Vault Performance
                   </b>
                   <div className="font-gilroy-regular pb-3 flex flex-row items-center justify-start gap-[5px] text-right text-xs text-grey-text">
                     {/* <div className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-40 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary">
@@ -1292,9 +1307,31 @@ const USDC: FC = () => {
                         1 DAY
                       </div>
                     </div>
+                    <div
+                      className={`cursor-pointer rounded-lg py-1 px-2 text-sm text-primary transition-all duration-200 ease-in-out flex flex-row items-center justify-center ${
+                        selectedTimeframe === "APY"
+                          ? "bg-mediumspringgreen-50 opacity-100"
+                          : "bg-mediumspringgreen-50 opacity-70 hover:opacity-40"
+                      }`}
+                      onClick={() => setSelectedTimeframe("APY")}
+                    >
+                      <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+                        APY
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <LineChart labels={chartLabels} dataPoints={chartDataPoints} />
+                {selectedTimeframe === "APY" ? (
+                  <LineChartAPY
+                    labels={chartLabels}
+                    dataPoints={chartDataPoints}
+                  />
+                ) : (
+                  <LineChart
+                    labels={chartLabels}
+                    dataPoints={chartDataPoints}
+                  />
+                )}
               </div>
             </div>
             <div className="flex flex-col gap-8 lg:w-[32%] md:w-[42%] flex flex-col items-start justify-start ">
