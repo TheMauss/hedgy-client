@@ -383,6 +383,7 @@ const SOL: FC = () => {
       spotMarketdSOLAddress: SOL_DRIFT_DSOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
       spotMarketAddressdJITOSOL: SOL_DRIFT_JITOSOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
       acc19: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"), // Replace with actual account 18 PublicKey
+      acc21: new PublicKey("8UJgxaiQx5nTrdDgph5FiahMmzduuLTLf5WmsPegYA6W"), // Replace with actual account 18 PublicKey
       acc20: new PublicKey("2UZMvVTBQR9yWxrEdzEQzXWE61bUjqQ5VpJAGqVb3B19"), // Replace with actual account 18 PublicKey
     };
 
@@ -418,10 +419,37 @@ const SOL: FC = () => {
       }, 1200);
     } catch (error) {
       console.error(error);
+
+      let description = error.message;
+
+      // Check if the error is a SendTransactionError with logs available
+      if (error.logs && Array.isArray(error.logs)) {
+        const staleOracleMessage = "oracle invalid";
+        const invalidEquityValue = "InvalidEquityValue";
+
+        // Look for specific logs indicating stale oracle or equity issues
+        const foundStaleOracle = error.logs.some((log) =>
+          log.includes(staleOracleMessage)
+        );
+        const foundInvalidEquity = error.logs.some((log) =>
+          log.includes(invalidEquityValue)
+        );
+
+        if (foundStaleOracle) {
+          description =
+            "Transaction failed due to stale oracle data. Please try again later.";
+        } else if (foundInvalidEquity) {
+          description =
+            "Transaction failed due to invalid equity value. Please check your account state.";
+        } else {
+          // You can add additional log-based error handling as needed
+          description = `Unexpected error occurred. Logs: ${error.logs.join(", ")}`;
+        }
+      }
       notify({
         type: "error",
         message: "Withdraw Request transaction failed!",
-        description: error.message,
+        description,
       });
     }
   };
@@ -476,6 +504,7 @@ const SOL: FC = () => {
       spotMarketdSOLAddress: SOL_DRIFT_DSOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
       spotMarketAddressdJITOSOL: SOL_DRIFT_JITOSOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
       acc19: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"), // Replace with actual account 18 PublicKey
+      acc21: new PublicKey("8UJgxaiQx5nTrdDgph5FiahMmzduuLTLf5WmsPegYA6W"), // Replace with actual account 18 PublicKey
       acc20: new PublicKey("2UZMvVTBQR9yWxrEdzEQzXWE61bUjqQ5VpJAGqVb3B19"), // Replace with actual account 18 PublicKey
     };
 
@@ -511,10 +540,37 @@ const SOL: FC = () => {
       }, 1200);
     } catch (error) {
       console.error(error);
+
+      let description = error.message;
+
+      // Check if the error is a SendTransactionError with logs available
+      if (error.logs && Array.isArray(error.logs)) {
+        const staleOracleMessage = "oracle invalid";
+        const invalidEquityValue = "InvalidEquityValue";
+
+        // Look for specific logs indicating stale oracle or equity issues
+        const foundStaleOracle = error.logs.some((log) =>
+          log.includes(staleOracleMessage)
+        );
+        const foundInvalidEquity = error.logs.some((log) =>
+          log.includes(invalidEquityValue)
+        );
+
+        if (foundStaleOracle) {
+          description =
+            "Transaction failed due to stale oracle data. Please try again later.";
+        } else if (foundInvalidEquity) {
+          description =
+            "Transaction failed due to invalid equity value. Please check your account state.";
+        } else {
+          // You can add additional log-based error handling as needed
+          description = `Unexpected error occurred. Logs: ${error.logs.join(", ")}`;
+        }
+      }
       notify({
         type: "error",
         message: "Cancel transaction failed!",
-        description: error.message,
+        description,
       });
     }
   };
@@ -571,6 +627,7 @@ const SOL: FC = () => {
       spotMarketAddressdSOL: SOL_DRIFT_DSOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
       spotMarketAddressdJITOSOL: SOL_DRIFT_JITOSOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
       acc19: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"), // Replace with actual account 19 PublicKey
+      acc21: new PublicKey("8UJgxaiQx5nTrdDgph5FiahMmzduuLTLf5WmsPegYA6W"), // Replace with actual account 18 PublicKey
       acc20: new PublicKey("2UZMvVTBQR9yWxrEdzEQzXWE61bUjqQ5VpJAGqVb3B19"),
     };
 
@@ -621,10 +678,38 @@ const SOL: FC = () => {
       }, 1200);
     } catch (error) {
       console.error(error);
+
+      let description = error.message;
+
+      // Check if the error is a SendTransactionError with logs available
+      if (error.logs && Array.isArray(error.logs)) {
+        const staleOracleMessage = "oracle invalid";
+        const invalidEquityValue = "InvalidEquityValue";
+
+        // Look for specific logs indicating stale oracle or equity issues
+        const foundStaleOracle = error.logs.some((log) =>
+          log.includes(staleOracleMessage)
+        );
+        const foundInvalidEquity = error.logs.some((log) =>
+          log.includes(invalidEquityValue)
+        );
+
+        if (foundStaleOracle) {
+          description =
+            "Transaction failed due to stale oracle data. Please try again later.";
+        } else if (foundInvalidEquity) {
+          description =
+            "Transaction failed due to invalid equity value. Please check your account state.";
+        } else {
+          // You can add additional log-based error handling as needed
+          description = `Unexpected error occurred. Logs: ${error.logs.join(", ")}`;
+        }
+      }
+
       notify({
         type: "error",
         message: "Withdrawal transaction failed!",
-        description: error.message,
+        description,
       });
     }
   };
@@ -713,6 +798,7 @@ const SOL: FC = () => {
       spotMarketAddressdSOL: SOL_DRIFT_DSOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
       spotMarketAddressdJITOSOL: SOL_DRIFT_JITOSOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
       acc19: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"), // Replace with actual account 19 PublicKey
+      acc21: new PublicKey("8UJgxaiQx5nTrdDgph5FiahMmzduuLTLf5WmsPegYA6W"), // Replace with actual account 18 PublicKey
       acc20: new PublicKey("2UZMvVTBQR9yWxrEdzEQzXWE61bUjqQ5VpJAGqVb3B19"),
     };
 
@@ -775,10 +861,37 @@ const SOL: FC = () => {
       }, 1200);
     } catch (error) {
       console.error(error);
+
+      let description = error.message;
+
+      // Check if the error is a SendTransactionError with logs available
+      if (error.logs && Array.isArray(error.logs)) {
+        const staleOracleMessage = "oracle invalid";
+        const invalidEquityValue = "InvalidEquityValue";
+
+        // Look for specific logs indicating stale oracle or equity issues
+        const foundStaleOracle = error.logs.some((log) =>
+          log.includes(staleOracleMessage)
+        );
+        const foundInvalidEquity = error.logs.some((log) =>
+          log.includes(invalidEquityValue)
+        );
+
+        if (foundStaleOracle) {
+          description =
+            "Transaction failed due to stale oracle data. Please try again later.";
+        } else if (foundInvalidEquity) {
+          description =
+            "Transaction failed due to invalid equity value. Please check your account state.";
+        } else {
+          // You can add additional log-based error handling as needed
+          description = `Unexpected error occurred. Logs: ${error.logs.join(", ")}`;
+        }
+      }
       notify({
         type: "error",
         message: "Deposit transaction failed!",
-        description: error.message,
+        description,
       });
     }
   };

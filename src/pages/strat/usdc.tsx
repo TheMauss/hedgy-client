@@ -351,10 +351,37 @@ const USDC: FC = () => {
       }, 1200);
     } catch (error) {
       console.error(error);
+
+      let description = error.message;
+
+      // Check if the error is a SendTransactionError with logs available
+      if (error.logs && Array.isArray(error.logs)) {
+        const staleOracleMessage = "oracle invalid";
+        const invalidEquityValue = "InvalidEquityValue";
+
+        // Look for specific logs indicating stale oracle or equity issues
+        const foundStaleOracle = error.logs.some((log) =>
+          log.includes(staleOracleMessage)
+        );
+        const foundInvalidEquity = error.logs.some((log) =>
+          log.includes(invalidEquityValue)
+        );
+
+        if (foundStaleOracle) {
+          description =
+            "Transaction failed due to stale oracle data. Please try again later.";
+        } else if (foundInvalidEquity) {
+          description =
+            "Transaction failed due to invalid equity value. Please check your account state.";
+        } else {
+          // You can add additional log-based error handling as needed
+          description = `Unexpected error occurred. Logs: ${error.logs.join(", ")}`;
+        }
+      }
       notify({
         type: "error",
         message: "Withdraw Request transaction failed!",
-        description: error.message,
+        description,
       });
     }
   };
@@ -443,10 +470,37 @@ const USDC: FC = () => {
       }, 1200);
     } catch (error) {
       console.error(error);
+
+      let description = error.message;
+
+      // Check if the error is a SendTransactionError with logs available
+      if (error.logs && Array.isArray(error.logs)) {
+        const staleOracleMessage = "oracle invalid";
+        const invalidEquityValue = "InvalidEquityValue";
+
+        // Look for specific logs indicating stale oracle or equity issues
+        const foundStaleOracle = error.logs.some((log) =>
+          log.includes(staleOracleMessage)
+        );
+        const foundInvalidEquity = error.logs.some((log) =>
+          log.includes(invalidEquityValue)
+        );
+
+        if (foundStaleOracle) {
+          description =
+            "Transaction failed due to stale oracle data. Please try again later.";
+        } else if (foundInvalidEquity) {
+          description =
+            "Transaction failed due to invalid equity value. Please check your account state.";
+        } else {
+          // You can add additional log-based error handling as needed
+          description = `Unexpected error occurred. Logs: ${error.logs.join(", ")}`;
+        }
+      }
       notify({
         type: "error",
         message: "Cancel transaction failed!",
-        description: error.message,
+        description,
       });
     }
   };
@@ -551,10 +605,37 @@ const USDC: FC = () => {
       }, 1200);
     } catch (error) {
       console.error(error);
+
+      let description = error.message;
+
+      // Check if the error is a SendTransactionError with logs available
+      if (error.logs && Array.isArray(error.logs)) {
+        const staleOracleMessage = "oracle invalid";
+        const invalidEquityValue = "InvalidEquityValue";
+
+        // Look for specific logs indicating stale oracle or equity issues
+        const foundStaleOracle = error.logs.some((log) =>
+          log.includes(staleOracleMessage)
+        );
+        const foundInvalidEquity = error.logs.some((log) =>
+          log.includes(invalidEquityValue)
+        );
+
+        if (foundStaleOracle) {
+          description =
+            "Transaction failed due to stale oracle data. Please try again later.";
+        } else if (foundInvalidEquity) {
+          description =
+            "Transaction failed due to invalid equity value. Please check your account state.";
+        } else {
+          // You can add additional log-based error handling as needed
+          description = `Unexpected error occurred. Logs: ${error.logs.join(", ")}`;
+        }
+      }
       notify({
         type: "error",
         message: "Withdrawal transaction failed!",
-        description: error.message,
+        description,
       });
     }
   };
@@ -694,10 +775,37 @@ const USDC: FC = () => {
       }, 1200);
     } catch (error) {
       console.error(error);
+
+      let description = error.message;
+
+      // Check if the error is a SendTransactionError with logs available
+      if (error.logs && Array.isArray(error.logs)) {
+        const staleOracleMessage = "oracle invalid";
+        const invalidEquityValue = "InvalidEquityValue";
+
+        // Look for specific logs indicating stale oracle or equity issues
+        const foundStaleOracle = error.logs.some((log) =>
+          log.includes(staleOracleMessage)
+        );
+        const foundInvalidEquity = error.logs.some((log) =>
+          log.includes(invalidEquityValue)
+        );
+
+        if (foundStaleOracle) {
+          description =
+            "Transaction failed due to stale oracle data. Please try again later.";
+        } else if (foundInvalidEquity) {
+          description =
+            "Transaction failed due to invalid equity value. Please check your account state.";
+        } else {
+          // You can add additional log-based error handling as needed
+          description = `Unexpected error occurred. Logs: ${error.logs.join(", ")}`;
+        }
+      }
       notify({
         type: "error",
         message: "Deposit transaction failed!",
-        description: error.message,
+        description,
       });
     }
   };

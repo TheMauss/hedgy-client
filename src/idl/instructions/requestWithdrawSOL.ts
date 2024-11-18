@@ -35,6 +35,7 @@ export interface RequestWithdrawAccounts {
   spotMarketdSOLAddress: PublicKey; // Add account 13 (Drift Spot Market)
   spotMarketAddressdJITOSOL: PublicKey; // Add account 13 (Drift Spot Market)
   acc19: PublicKey; // Add account 20
+  acc21: PublicKey; // Add account 20
   acc20: PublicKey; // Add account 20
 }
 
@@ -82,6 +83,7 @@ export function requestWithdraw(
       isWritable: false,
     }, // Add account 18
     { pubkey: accounts.acc19, isSigner: false, isWritable: false }, // Add account 20
+    { pubkey: accounts.acc21, isSigner: false, isWritable: false }, // Add account 20
     { pubkey: accounts.acc20, isSigner: false, isWritable: false }, // Add account 20
   ];
   const identifier = Buffer.from([137, 95, 187, 96, 250, 138, 31, 182]);

@@ -39,6 +39,7 @@ export interface DepositAccounts {
   spotMarketAddressdSOL: PublicKey; // Add account 13 (Drift Spot Market)
   spotMarketAddressdJITOSOL: PublicKey; // Add account 13 (Drift Spot Market)
   acc19: PublicKey; // Add account 21
+  acc21: PublicKey; // Add account 20
   acc20: PublicKey; // Add account 22
 }
 
@@ -92,6 +93,7 @@ export function deposit(
     }, // Add account 18
     { pubkey: accounts.acc18, isSigner: false, isWritable: false }, // Add account 20
     { pubkey: accounts.acc19, isSigner: false, isWritable: false }, // Add account 21
+    { pubkey: accounts.acc21, isSigner: false, isWritable: false }, // Add account 20
     { pubkey: accounts.acc20, isSigner: false, isWritable: false }, // Add account 22
   ];
 
