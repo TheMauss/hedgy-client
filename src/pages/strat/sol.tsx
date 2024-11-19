@@ -1177,7 +1177,7 @@ const SOL: FC = () => {
         );
       }
 
-      return responseData.result.priorityFeeLevels.veryHigh.toFixed(0);
+      return responseData.result.priorityFeeLevels.high.toFixed(0);
     } catch (error) {
       console.error("Error fetching priority fee estimate:", error);
     }
