@@ -646,7 +646,8 @@ const SOL: FC = () => {
 
       // 3. Create deposit instruction and add to transaction
       const depositIx = withdraw(RequestAccounts);
-      tx.add(depositIx).add(PRIORITY_FEE_IX);
+      tx.add(depositIx);
+      // .add(PRIORITY_FEE_IX);
 
       // 4. Send transaction
       const signature = await sendTransaction(tx, connection);
@@ -825,7 +826,8 @@ const SOL: FC = () => {
 
       // 3. Create deposit instruction and add to transaction
       const depositIx = depositInstruction(depositArgs, depositAccounts);
-      tx.add(depositIx).add(PRIORITY_FEE_IX);
+      tx.add(depositIx);
+      // .add(PRIORITY_FEE_IX);
 
       // 4. Send transaction
       const signature = await sendTransaction(tx, connection);
