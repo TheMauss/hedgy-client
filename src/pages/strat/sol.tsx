@@ -610,7 +610,7 @@ const SOL: FC = () => {
     }
 
     const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 300000,
+      units: 500000,
     });
 
     const RequestAccounts = {
@@ -777,6 +777,10 @@ const SOL: FC = () => {
 
     let PRIORITY_FEE_IX;
 
+    const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 500000,
+    });
+
     if (isPriorityFee) {
       const priorityfees = await getPriorityFeeEstimate();
       PRIORITY_FEE_IX = ComputeBudgetProgram.setComputeUnitPrice({
@@ -857,8 +861,7 @@ const SOL: FC = () => {
 
       // 3. Create deposit instruction and add to transaction
       const depositIx = depositInstruction(depositArgs, depositAccounts);
-      tx.add(depositIx);
-      // .add(PRIORITY_FEE_IX);
+      tx.add(COMPUTE_BUDGET_IX).add(depositIx).add(PRIORITY_FEE_IX);
 
       // 4. Send transaction
       const signature = await sendTransaction(tx, connection);
