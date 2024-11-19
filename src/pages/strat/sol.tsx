@@ -596,7 +596,7 @@ const SOL: FC = () => {
     }
 
     const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 300000,
+      units: 50000,
     });
 
     const RequestAccounts = {
