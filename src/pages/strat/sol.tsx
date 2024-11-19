@@ -595,10 +595,6 @@ const SOL: FC = () => {
       });
     }
 
-    const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 50000,
-    });
-
     const RequestAccounts = {
       vault: SOL_VAULT, // Replace with actual vault public key
       vaultDepositor: vaultDepositor, // Replace with actual depositor public key
@@ -633,7 +629,6 @@ const SOL: FC = () => {
 
     try {
       let tx = new Transaction();
-      tx.add(COMPUTE_BUDGET_IX);
       // Check if the associated token account already exists
       const accountInfo = await connection.getAccountInfo(USDCAddress);
 
@@ -761,10 +756,6 @@ const SOL: FC = () => {
       });
     }
 
-    const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 50000,
-    });
-
     const depositArgs = {
       marketIndex: 1,
       amount: new BN(Number(amount) * 1e9), // Adjust precision based on the token
@@ -834,7 +825,7 @@ const SOL: FC = () => {
 
       // 3. Create deposit instruction and add to transaction
       const depositIx = depositInstruction(depositArgs, depositAccounts);
-      tx.add(COMPUTE_BUDGET_IX).add(depositIx).add(PRIORITY_FEE_IX);
+      tx.add(depositIx).add(PRIORITY_FEE_IX);
 
       // 4. Send transaction
       const signature = await sendTransaction(tx, connection);
