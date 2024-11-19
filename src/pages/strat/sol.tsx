@@ -8,6 +8,9 @@ import {
   PublicKey,
   ComputeBudgetProgram,
   LAMPORTS_PER_SOL,
+  AddressLookupTableAccount,
+  TransactionMessage,
+  VersionedTransaction,
 } from "@solana/web3.js";
 import {
   NATIVE_MINT,
@@ -373,7 +376,7 @@ const SOL: FC = () => {
       acc13: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 13 PublicKey
       acc14: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 14 PublicKey
       acc15: new PublicKey("7QJ6e57t3yM8HYVg6bAnJiCiZ3wQQ5CSVsa6GA16nJuK"), // Replace with actual account 15 PublicKey
-      accjito: new PublicKey("9QE1P5EfzthYDgoQ9oPeTByCEKaRJeZbVVqKJfgU9iau"),
+      // accjito: new PublicKey("9QE1P5EfzthYDgoQ9oPeTByCEKaRJeZbVVqKJfgU9iau"),
       acc16: new PublicKey("6bEp2MiyoiiiDxcVqE8rUHQWwHirXUXtKfAEATTVqNzT"), // Replace with actual account 16 PublicKey
       acc10: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 16 PublicKey
       spotMarketAddress: SOL_DRIFT_USDC_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
@@ -388,14 +391,25 @@ const SOL: FC = () => {
     };
 
     try {
-      let tx = new Transaction();
-
       // 3. Create deposit instruction and add to transaction
       const depositIx = requestWithdraw(RequestWithdrawArgs, RequestAccounts);
-      tx.add(COMPUTE_BUDGET_IX).add(depositIx).add(PRIORITY_FEE_IX);
+      const allInstructions = [];
+      allInstructions.push(COMPUTE_BUDGET_IX);
+      allInstructions.push(PRIORITY_FEE_IX);
+      allInstructions.push(depositIx);
 
       // 4. Send transaction
-      const signature = await sendTransaction(tx, connection);
+      const recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+      const message = new TransactionMessage({
+        payerKey: publicKey, // Wallet public key
+        recentBlockhash,
+        instructions: allInstructions,
+      }).compileToV0Message();
+
+      const versionedTx = new VersionedTransaction(message);
+
+      const signature = await sendTransaction(versionedTx, connection);
+
       notify({
         type: "info",
         message: "Withdraw Request transaction sent!",
@@ -494,7 +508,7 @@ const SOL: FC = () => {
       acc13: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 13 PublicKey
       acc14: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 14 PublicKey
       acc15: new PublicKey("7QJ6e57t3yM8HYVg6bAnJiCiZ3wQQ5CSVsa6GA16nJuK"), // Replace with actual account 15 PublicKey
-      accjito: new PublicKey("9QE1P5EfzthYDgoQ9oPeTByCEKaRJeZbVVqKJfgU9iau"),
+      // accjito: new PublicKey("9QE1P5EfzthYDgoQ9oPeTByCEKaRJeZbVVqKJfgU9iau"),
       acc16: new PublicKey("6bEp2MiyoiiiDxcVqE8rUHQWwHirXUXtKfAEATTVqNzT"), // Replace with actual account 16 PublicKey
       acc10: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 16 PublicKey
       spotMarketAddress: SOL_DRIFT_USDC_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
@@ -595,6 +609,10 @@ const SOL: FC = () => {
       });
     }
 
+    const COMPUTE_BUDGET_IX = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 300000,
+    });
+
     const RequestAccounts = {
       vault: SOL_VAULT, // Replace with actual vault public key
       vaultDepositor: vaultDepositor, // Replace with actual depositor public key
@@ -613,7 +631,7 @@ const SOL: FC = () => {
       acc12: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 12 PublicKey
       acc13: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 13 PublicKey
       acc14: new PublicKey("7QJ6e57t3yM8HYVg6bAnJiCiZ3wQQ5CSVsa6GA16nJuK"), // Replace with actual account 14 PublicKey
-      accjito: new PublicKey("9QE1P5EfzthYDgoQ9oPeTByCEKaRJeZbVVqKJfgU9iau"),
+      // accjito: new PublicKey("9QE1P5EfzthYDgoQ9oPeTByCEKaRJeZbVVqKJfgU9iau"),
       acc15: new PublicKey("6bEp2MiyoiiiDxcVqE8rUHQWwHirXUXtKfAEATTVqNzT"), // Replace with actual account 15 PublicKey
       acc16: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 16 PublicKey
       spotMarketAddress: SOL_DRIFT_USDC_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
@@ -628,16 +646,19 @@ const SOL: FC = () => {
     };
 
     try {
-      let tx = new Transaction();
       // Check if the associated token account already exists
       const accountInfo = await connection.getAccountInfo(USDCAddress);
 
+      const allInstructions = [];
+      allInstructions.push(COMPUTE_BUDGET_IX);
+      allInstructions.push(PRIORITY_FEE_IX);
+
       if (!accountInfo) {
-        // If it doesn't exist, add instruction to create the associated token account for wSOL
-        tx.add(
+        // Add instruction to create the associated token account for wSOL if it doesn't exist
+        allInstructions.push(
           createAssociatedTokenAccountInstruction(
             publicKey, // Funding wallet (payer)
-            USDCAddress, // wSOL associated token account
+            USDCAddress, // Associated token account
             publicKey, // Owner of the account
             NATIVE_MINT // Mint for wrapped SOL
           )
@@ -645,12 +666,22 @@ const SOL: FC = () => {
       }
 
       // 3. Create deposit instruction and add to transaction
-      const depositIx = withdraw(RequestAccounts);
-      tx.add(depositIx);
-      // .add(PRIORITY_FEE_IX);
+      // Add withdrawal instruction
+      const depositIx = withdraw(RequestAccounts); // Replace with your actual withdraw logic
+      allInstructions.push(depositIx);
+
+      // 3. Build a VersionedTransaction
+      const recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+      const message = new TransactionMessage({
+        payerKey: publicKey, // Wallet public key
+        recentBlockhash,
+        instructions: allInstructions,
+      }).compileToV0Message();
+
+      const versionedTx = new VersionedTransaction(message);
 
       // 4. Send transaction
-      const signature = await sendTransaction(tx, connection);
+      const signature = await sendTransaction(versionedTx, connection);
       notify({
         type: "info",
         message: "Withdrawal transaction sent!",
@@ -780,7 +811,7 @@ const SOL: FC = () => {
       acc12: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 12 PublicKey
       acc13: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 13 PublicKey
       acc14: new PublicKey("7QJ6e57t3yM8HYVg6bAnJiCiZ3wQQ5CSVsa6GA16nJuK"), // Replace with actual account 14 PublicKey
-      accjito: new PublicKey("9QE1P5EfzthYDgoQ9oPeTByCEKaRJeZbVVqKJfgU9iau"),
+      // accjito: new PublicKey("9QE1P5EfzthYDgoQ9oPeTByCEKaRJeZbVVqKJfgU9iau"),
       acc15: new PublicKey("6bEp2MiyoiiiDxcVqE8rUHQWwHirXUXtKfAEATTVqNzT"), // Replace with actual account 15 PublicKey
       acc16: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 16 PublicKey
       spotMarketAddress: SOL_DRIFT_USDC_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)

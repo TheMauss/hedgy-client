@@ -26,7 +26,7 @@ export interface WithdrawAccounts {
   acc12: PublicKey; // Add account 14
   acc13: PublicKey; // Add account 15
   acc14: PublicKey; // Add account 16
-  accjito: PublicKey; // Add account 16
+  // accjito: PublicKey; // Add account 16
   acc15: PublicKey; // Add account 17
   acc16: PublicKey; // Add account 18
   spotMarketAddress: PublicKey; // Add account 13 (Drift Spot Market)
@@ -66,7 +66,7 @@ export function withdraw(
     { pubkey: accounts.acc12, isSigner: false, isWritable: false }, // Add account 14
     { pubkey: accounts.acc13, isSigner: false, isWritable: false }, // Add account 15
     { pubkey: accounts.acc14, isSigner: false, isWritable: false }, // Add account 16
-    { pubkey: accounts.accjito, isSigner: false, isWritable: false }, // Add account 16
+    // { pubkey: accounts.accjito, isSigner: false, isWritable: false }, // Add account 16
     { pubkey: accounts.acc15, isSigner: false, isWritable: false }, // Add account 17
     { pubkey: accounts.acc16, isSigner: false, isWritable: false }, // Add account 18
     { pubkey: accounts.spotMarketAddress, isSigner: false, isWritable: false }, // Add account 18
