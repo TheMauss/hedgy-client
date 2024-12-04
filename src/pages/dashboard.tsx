@@ -210,7 +210,7 @@ const Dashboard: FC = () => {
       };
 
       return (
-        <div key={assetName} className="w-1/3">
+        <div key={assetName} className="w-full md:w-1/3">
           <h4>{assetName} Fees</h4>
           <Line data={feesChart} />
         </div>
@@ -245,46 +245,48 @@ const Dashboard: FC = () => {
   };
 
   return (
-    <div className="dashboard text-white">
-      <h1>Dashboard</h1>
-
-      {/* Range Selector */}
-      <div className="range-selector mb-4">
-        <button onClick={() => setRange("24h")}>24h</button>
-        <button onClick={() => setRange("7d")}>7d</button>
-        <button onClick={() => setRange("30d")}>30d</button>
-        <button onClick={() => setRange("all")}>All</button>
-      </div>
-
-      {/* Show loading spinner if data is loading */}
-      {loading && <p>Loading...</p>}
-
-      {/* Charts */}
-      {!loading && data && (
-        <div>
-          <div className="w-full flex flex-row md:flex-row mb-4">
-            <div className="w-full md:w-1/2">
-              <h2>TVL in Billions</h2>
-              <Line data={tvlChart} />
-            </div>
-            <div className="w-full md:w-1/2">
-              <h2>Premium</h2>
-              <Line data={premiumChart} />
-            </div>
-          </div>
-
-          <h2>Asset-Specific Graphs</h2>
-          {renderAssetGraphs()}
-          <div className=" mb-4">
-            <button onClick={() => setRange("24h")}>24h</button>
-            <button onClick={() => setRange("7d")}>7d</button>
-            <button onClick={() => setRange("30d")}>30d</button>
-            <button onClick={() => setRange("all")}>All</button>
-          </div>
-          <h2>All Fees</h2>
-          <div className="w-full flex flex-wrap">{renderFeesCharts()}</div>
+    <div className="text-white flex justify-center items-top min-h-[calc(100vh-172px)] z-100 ">
+      <div className="w-[95%] max-w-[1550px]">
+        {" "}
+        <h1>Dashboard</h1>
+        {/* Range Selector */}
+        <div className="range-selector mb-4">
+          <button onClick={() => setRange("24h")}>24h</button>
+          <button onClick={() => setRange("7d")}>7d</button>
+          <button onClick={() => setRange("30d")}>30d</button>
+          <button onClick={() => setRange("all")}>All</button>
         </div>
-      )}
+        {/* Show loading spinner if data is loading */}
+        {loading && <p>Loading...</p>}
+        {/* Charts */}
+        {!loading && data && (
+          <div>
+            <div className="flex flex-col items-center justify-center ">
+              <div className="w-full flex flex-col md:flex-row mb-4">
+                <div className="w-full md:w-1/2">
+                  <h2>TVL in Billions</h2>
+                  <Line data={tvlChart} />
+                </div>
+                <div className="w-full md:w-1/2">
+                  <h2>Premium</h2>
+                  <Line data={premiumChart} />
+                </div>
+              </div>
+
+              <h2>Asset-Specific Graphs</h2>
+              {renderAssetGraphs()}
+              <div className=" mb-4">
+                <button onClick={() => setRange("24h")}>24h</button>
+                <button onClick={() => setRange("7d")}>7d</button>
+                <button onClick={() => setRange("30d")}>30d</button>
+                <button onClick={() => setRange("all")}>All</button>
+              </div>
+              <h2>All Fees</h2>
+              <div className="w-full flex flex-wrap">{renderFeesCharts()}</div>
+            </div>
+          </div>
+        )}
+      </div>{" "}
     </div>
   );
 };
