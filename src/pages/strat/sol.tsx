@@ -256,7 +256,7 @@ const SOL: FC = () => {
   const [dayChart, setDayChart] = useState([]);
   const [chartLabels, setChartLabels] = useState([]);
   const [chartDataPoints, setChartDataPoints] = useState([]);
-  const [selectedTimeframe, setSelectedTimeframe] = useState("1 WEEK");
+  const [selectedTimeframe, setSelectedTimeframe] = useState("ALL TIME");
   const [apy, setApy] = useState(null);
 
   const handleAmountClick = (type) => {
@@ -991,6 +991,12 @@ const SOL: FC = () => {
         } else if (selectedTimeframe === "1 DAY") {
           // apiUrl = `http://localhost:3050/api/vaults/equity-daily`; // Daily data
           apiUrl = `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults-sol/equity-daily`;
+        } else if (selectedTimeframe === "1 MONTH") {
+          // apiUrl = `http://localhost:3050/api/vaults-sol/equity-daily`; // Daily data
+          apiUrl = `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults-sol/equity-monthly`;
+        } else if (selectedTimeframe === "ALL TIME") {
+          // apiUrl = `http://localhost:3050/api/vaults-sol/equity-all-time`; // Daily data
+          apiUrl = `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults-sol/equity-all-time`;
         } else if (selectedTimeframe === "APY") {
           // apiUrl = `http://localhost:3050/api/vaults/apy`; // Daily data
           apiUrl = `https://hedgy-data-26a7de9add15.herokuapp.com/api/vaults-sol/apy`;
@@ -1015,6 +1021,16 @@ const SOL: FC = () => {
                 hour: "2-digit",
                 minute: "2-digit",
               }); // Show hours for daily data (HH:MM)
+            } else if (selectedTimeframe === "1 MONTH") {
+              return date.toLocaleDateString([], {
+                month: "2-digit",
+                day: "2-digit",
+              }); // Show days for weekly data (MM/DD)
+            } else if (selectedTimeframe === "ALL TIME") {
+              return date.toLocaleDateString([], {
+                month: "2-digit",
+                day: "2-digit",
+              }); // Show days for weekly data (MM/DD)
             } else if (selectedTimeframe === "APY") {
               return date.toLocaleDateString([], {
                 month: "2-digit",
@@ -1468,18 +1484,30 @@ const SOL: FC = () => {
                     Vault Performance
                   </b>
                   <div className="font-gilroy-regular pb-3 flex flex-row items-center justify-start gap-[5px] text-right text-xs text-grey-text">
-                    {/* <div className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-40 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary">
+                    <div
+                      className={`cursor-pointer rounded-lg py-1 px-2 text-sm text-primary transition-all duration-200 ease-in-out flex flex-row items-center justify-center ${
+                        selectedTimeframe === "ALL TIME"
+                          ? "bg-mediumspringgreen-50 opacity-100"
+                          : "bg-mediumspringgreen-50 opacity-70 hover:opacity-40"
+                      }`}
+                      onClick={() => setSelectedTimeframe("ALL TIME")}
+                    >
                       <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
-                        1 Year
+                        ALL TIME
                       </div>
                     </div>
                     <div
-                          className="cursor-pointer rounded-lg bg-mediumspringgreen-50 hover:opacity-40 transition-all duration-200 ease-in-out flex flex-row items-center justify-center py-1 px-2 text-sm text-primary"
-                        >
-                          <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
-                            1 Month
-                          </div>
-                        </div> */}
+                      className={`cursor-pointer rounded-lg py-1 px-2 text-sm text-primary transition-all duration-200 ease-in-out flex flex-row items-center justify-center ${
+                        selectedTimeframe === "1 MONTH"
+                          ? "bg-mediumspringgreen-50 opacity-100"
+                          : "bg-mediumspringgreen-50 opacity-70 hover:opacity-40"
+                      }`}
+                      onClick={() => setSelectedTimeframe("1 MONTH")}
+                    >
+                      <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+                        1 MONTH
+                      </div>
+                    </div>
                     <div
                       className={`cursor-pointer rounded-lg py-1 px-2 text-sm text-primary transition-all duration-200 ease-in-out flex flex-row items-center justify-center ${
                         selectedTimeframe === "1 WEEK"
@@ -1492,7 +1520,7 @@ const SOL: FC = () => {
                         1 WEEK
                       </div>
                     </div>
-                    <div
+                    {/* <div
                       className={`cursor-pointer rounded-lg py-1 px-2 text-sm text-primary transition-all duration-200 ease-in-out flex flex-row items-center justify-center ${
                         selectedTimeframe === "1 DAY"
                           ? "bg-mediumspringgreen-50 opacity-100"
@@ -1503,7 +1531,7 @@ const SOL: FC = () => {
                       <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
                         1 DAY
                       </div>
-                    </div>
+                    </div> */}
                     <div
                       className={`cursor-pointer rounded-lg py-1 px-2 text-sm text-primary transition-all duration-200 ease-in-out flex flex-row items-center justify-center ${
                         selectedTimeframe === "APY"
