@@ -1520,8 +1520,8 @@ const SOL: FC = () => {
                         1 WEEK
                       </div>
                     </div>
-                    {/* <div
-                      className={`cursor-pointer rounded-lg py-1 px-2 text-sm text-primary transition-all duration-200 ease-in-out flex flex-row items-center justify-center ${
+                    <div
+                      className={`hidden cursor-pointer rounded-lg py-1 px-2 text-sm text-primary transition-all duration-200 ease-in-out md:flex flex-row items-center justify-center ${
                         selectedTimeframe === "1 DAY"
                           ? "bg-mediumspringgreen-50 opacity-100"
                           : "bg-mediumspringgreen-50 opacity-70 hover:opacity-40"
@@ -1531,7 +1531,7 @@ const SOL: FC = () => {
                       <div className="mt-0.5 leading-[120%] inline-block h-3.5 flex justify-center items-center text-transparent !bg-clip-text [background:linear-gradient(45deg,_#1cc5de,_#c7ee89)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
                         1 DAY
                       </div>
-                    </div> */}
+                    </div>
                     <div
                       className={`cursor-pointer rounded-lg py-1 px-2 text-sm text-primary transition-all duration-200 ease-in-out flex flex-row items-center justify-center ${
                         selectedTimeframe === "APY"
