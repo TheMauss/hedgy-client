@@ -43,6 +43,7 @@ export async function hasAccess(publicKey: PublicKey | null): Promise<boolean> {
     "656TeseqzeaATZCR32uqj8UUk6GB7u9KPubmZbksRyWM",
     "BzacChrDhjnp1UF29dxUwj9AtcW4bBHU8idSu1WQuoM",
     "5JUm3KySSrgctgiH5fz9qKKtkjQEEZgmBJ4mNRSZeZVK",
+    "E92bhtH7iLWEPkvrvoMe43MgDecCH2nArPck5xVmroAx",
   ];
 
   return allowedPublicKeys.includes(publicKey.toBase58());
