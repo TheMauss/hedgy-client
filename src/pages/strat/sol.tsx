@@ -1437,8 +1437,26 @@ const SOL: FC = () => {
                             {" SOL"}
                           </span>
                         </div>
-                        <div className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]">
-                          Your Deposit
+                        <Tooltip
+                          anchorSelect="#Totaldeposit"
+                          place="bottom"
+                          className="font-gilroy-regular max-w-xs p-2 text-sm bg-gray-800 text-white rounded-lg shadow-lg"
+                        >
+                          {`Original deposit amount (excluding profits): ${
+                            isNaN(Number(depositorData?.netDeposits) / 10e5) ||
+                            depositorData?.netDeposits === undefined
+                              ? 0
+                              : (
+                                  Number(depositorData?.netDeposits) / 10e5
+                                ).toFixed(1)
+                          } SOL`}
+                        </Tooltip>
+                        <div
+                          id="Totaldeposit"
+                          className="font-gilroy-regular self-stretch text-[15px] tracking-[-0.03em] leading-[120.41%] opacity-[0.4]"
+                        >
+                          Your Deposit{" "}
+                          <FaQuestionCircle className="mt-0.5 text-[12px]" />
                         </div>
                       </div>
                       <div className="md:w-1/2 flex flex-col justify-center items-center text-center justify-center md:gap-[4px]">
