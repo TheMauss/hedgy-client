@@ -33,7 +33,7 @@ const Dashboard: FC = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `https://riskboard-76585405e3d7.herokuapp.com/data?range=${range}`
+        `https://riskboard-new-17956dce8e79.herokuapp.com/data?range=${range}`
         // `http://localhost:3090/data?range=${range}`
       );
       setData(response.data);
