@@ -16,6 +16,7 @@ import {
   NATIVE_MINT,
   createAssociatedTokenAccountInstruction,
   createSyncNativeInstruction,
+  // s
 } from "@solana/spl-token";
 import { FaQuestionCircle } from "react-icons/fa";
 import { Tooltip } from "react-tooltip";
