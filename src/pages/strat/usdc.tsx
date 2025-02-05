@@ -538,7 +538,7 @@ const USDC: FC = () => {
         "6N9L5W8kKWvgvmS4qCZnB9goFuBsVCmbdjzyQPEFihUn"
       ), // Replace with drift user stats account
       driftUser: new PublicKey("DPW6P1DqMA2zEHb7yD2whcvbm9ERk9wHoNMjm95mrTr1"), // Replace with drift user account
-      driftState: DRIFT_STATE, // Replace with drift state account
+      driftState: new PublicKey("5zpq7DvB6UdFFvpmBPspGPNfUGoBRRCE2HHg5u3gxcsN"), // Replace with drift state account
       driftSpotMarketVault: DRIFT_SPOT_MARKET_USDC, // Replace with spot market vault account
       driftSigner: new PublicKey("JCNCMFXo5M5qwUPg2Utu1u6YWp3MbygxqBsBeXXJfrw"), // Replace with drift user account
       userTokenAccount: USDCAddress, // User's token account for depositing tokens
@@ -706,7 +706,7 @@ const USDC: FC = () => {
         "6N9L5W8kKWvgvmS4qCZnB9goFuBsVCmbdjzyQPEFihUn"
       ), // Replace with drift user stats account
       driftUser: new PublicKey("DPW6P1DqMA2zEHb7yD2whcvbm9ERk9wHoNMjm95mrTr1"), // Replace with drift user account
-      driftState: DRIFT_STATE, // Replace with drift state account
+      driftState: new PublicKey("5zpq7DvB6UdFFvpmBPspGPNfUGoBRRCE2HHg5u3gxcsN"), // Replace with drift state account
       driftSpotMarketVault: DRIFT_SPOT_MARKET_USDC, // Replace with spot market vault account
       userTokenAccount: USDCAddress, // User's token account for depositing tokens
       driftProgram: DRIFT_PROGRAM, // Replace with actual Drift program ID
