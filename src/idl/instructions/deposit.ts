@@ -25,6 +25,9 @@ export interface DepositAccounts {
   driftProgram: PublicKey;
   tokenProgram: PublicKey;
   oracleAddress: PublicKey; // Add account 12
+  acc27: PublicKey; // Add account 14
+  acc26: PublicKey; // Add account 14
+  acc25: PublicKey; // Add account 14
   acc12: PublicKey; // Add account 14
   acc13: PublicKey; // Add account 15
   acc14: PublicKey; // Add account 16
@@ -62,6 +65,9 @@ export function deposit(
     { pubkey: accounts.driftProgram, isSigner: false, isWritable: false },
     { pubkey: accounts.tokenProgram, isSigner: false, isWritable: false },
     { pubkey: accounts.oracleAddress, isSigner: false, isWritable: false }, // Add account 12
+    { pubkey: accounts.acc27, isSigner: false, isWritable: false }, // Add account 14
+    { pubkey: accounts.acc26, isSigner: false, isWritable: false }, // Add account 14
+    { pubkey: accounts.acc25, isSigner: false, isWritable: false }, // Add account 14
     { pubkey: accounts.acc12, isSigner: false, isWritable: false }, // Add account 14
     { pubkey: accounts.acc13, isSigner: false, isWritable: false }, // Add account 15
     { pubkey: accounts.acc14, isSigner: false, isWritable: false }, // Add account 16

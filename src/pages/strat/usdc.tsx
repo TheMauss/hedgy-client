@@ -305,6 +305,9 @@ const USDC: FC = () => {
       driftUser: new PublicKey("DPW6P1DqMA2zEHb7yD2whcvbm9ERk9wHoNMjm95mrTr1"),
       driftState: DRIFT_STATE,
       oracleAddress: DRIFT_SPOT_ORACLE,
+      acc27: new PublicKey("93FG52TzNKCnMiasV14Ba34BYcHDb9p4zK4GjZnLwqWR"), // Replace with actual account 16 PublicKey
+      acc26: new PublicKey("5QZMnsyndmphvZF4BNgoMHwVZaREXeE2rpBoCPMxgCCd"), // Replace with actual account 16 PublicKey
+      acc25: new PublicKey("9VCioxmni2gDLv11qufWzT3RDERhQE4iY5Gf7NTfYyAV"), // Replace with actual account 16 PublicKey
       acc11: new PublicKey("En8hkHLkRe9d9DraYmBTrus518BvmVH448YcvmrFM6Ce"), // Replace with actual account 12 PublicKey
       acc12: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 12 PublicKey
       acc13: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 13 PublicKey
@@ -424,6 +427,9 @@ const USDC: FC = () => {
       driftUser: new PublicKey("DPW6P1DqMA2zEHb7yD2whcvbm9ERk9wHoNMjm95mrTr1"),
       driftState: DRIFT_STATE,
       oracleAddress: DRIFT_SPOT_ORACLE,
+      acc27: new PublicKey("93FG52TzNKCnMiasV14Ba34BYcHDb9p4zK4GjZnLwqWR"), // Replace with actual account 16 PublicKey
+      acc26: new PublicKey("5QZMnsyndmphvZF4BNgoMHwVZaREXeE2rpBoCPMxgCCd"), // Replace with actual account 16 PublicKey
+      acc25: new PublicKey("9VCioxmni2gDLv11qufWzT3RDERhQE4iY5Gf7NTfYyAV"), // Replace with actual account 16 PublicKey
       acc11: new PublicKey("En8hkHLkRe9d9DraYmBTrus518BvmVH448YcvmrFM6Ce"), // Replace with actual account 12 PublicKey
       acc12: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 12 PublicKey
       acc13: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 13 PublicKey
@@ -545,6 +551,9 @@ const USDC: FC = () => {
       driftProgram: DRIFT_PROGRAM, // Replace with actual Drift program ID
       tokenProgram: TOKEN_PROGRAM, // Standard SPL token program ID
       oracleAddress: DRIFT_SPOT_ORACLE,
+      acc27: new PublicKey("93FG52TzNKCnMiasV14Ba34BYcHDb9p4zK4GjZnLwqWR"), // Replace with actual account 16 PublicKey
+      acc26: new PublicKey("5QZMnsyndmphvZF4BNgoMHwVZaREXeE2rpBoCPMxgCCd"), // Replace with actual account 16 PublicKey
+      acc25: new PublicKey("9VCioxmni2gDLv11qufWzT3RDERhQE4iY5Gf7NTfYyAV"), // Replace with actual account 16 PublicKey
       acc12: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 12 PublicKey
       acc13: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 13 PublicKey
       acc14: new PublicKey("BAtFj4kQttZRVep3UZS2aZRDixkGYgWsbqTBVDbnSsPF"), // Replace with actual account 14 PublicKey
@@ -712,6 +721,9 @@ const USDC: FC = () => {
       driftProgram: DRIFT_PROGRAM, // Replace with actual Drift program ID
       tokenProgram: TOKEN_PROGRAM, // Standard SPL token program ID
       oracleAddress: DRIFT_SPOT_ORACLE,
+      acc27: new PublicKey("93FG52TzNKCnMiasV14Ba34BYcHDb9p4zK4GjZnLwqWR"), // Replace with actual account 16 PublicKey
+      acc26: new PublicKey("5QZMnsyndmphvZF4BNgoMHwVZaREXeE2rpBoCPMxgCCd"), // Replace with actual account 16 PublicKey
+      acc25: new PublicKey("9VCioxmni2gDLv11qufWzT3RDERhQE4iY5Gf7NTfYyAV"), // Replace with actual account 16 PublicKey
       acc12: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 12 PublicKey
       acc13: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 13 PublicKey
       acc14: new PublicKey("BAtFj4kQttZRVep3UZS2aZRDixkGYgWsbqTBVDbnSsPF"), // Replace with actual account 14 PublicKey
