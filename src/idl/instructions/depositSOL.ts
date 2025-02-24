@@ -24,6 +24,9 @@ export interface DepositAccounts {
   userTokenAccount: PublicKey;
   driftProgram: PublicKey;
   tokenProgram: PublicKey;
+  acc101: PublicKey; // Add account 12
+  acc112: PublicKey; // Add account 12
+  acc113: PublicKey; // Add account 14
   acc10: PublicKey; // Add account 12
   acc11: PublicKey; // Add account 12
   acc12: PublicKey; // Add account 14
@@ -66,6 +69,9 @@ export function deposit(
     { pubkey: accounts.userTokenAccount, isSigner: false, isWritable: true },
     { pubkey: accounts.driftProgram, isSigner: false, isWritable: false },
     { pubkey: accounts.tokenProgram, isSigner: false, isWritable: false },
+    { pubkey: accounts.acc101, isSigner: false, isWritable: false }, // Add account 14
+    { pubkey: accounts.acc112, isSigner: false, isWritable: false }, // Add account 15
+    { pubkey: accounts.acc113, isSigner: false, isWritable: false }, // Add account 14
     { pubkey: accounts.acc10, isSigner: false, isWritable: false }, // Add account 14
     { pubkey: accounts.acc11, isSigner: false, isWritable: false }, // Add account 15
     { pubkey: accounts.acc12, isSigner: false, isWritable: false }, // Add account 14

@@ -15,6 +15,9 @@ export interface CancelRequestWithdrawAccounts {
   driftUserStats: PublicKey;
   driftUser: PublicKey;
   driftState: PublicKey;
+  acc101: PublicKey; // Add account 12
+  acc112: PublicKey; // Add account 12
+  acc113: PublicKey; // Add account 14
   acc11: PublicKey; // Add account 14
   acc12: PublicKey; // Add account 14
   acc13: PublicKey; // Add account 15
@@ -45,6 +48,9 @@ export function cancelRequestWithdraw(
     { pubkey: accounts.driftUserStats, isSigner: false, isWritable: false },
     { pubkey: accounts.driftUser, isSigner: false, isWritable: false },
     { pubkey: accounts.driftState, isSigner: false, isWritable: false },
+    { pubkey: accounts.acc101, isSigner: false, isWritable: false }, // Add account 14
+    { pubkey: accounts.acc112, isSigner: false, isWritable: false }, // Add account 15
+    { pubkey: accounts.acc113, isSigner: false, isWritable: false }, // Add account 14
     { pubkey: accounts.acc11, isSigner: false, isWritable: false }, // Add account 14
     { pubkey: accounts.acc12, isSigner: false, isWritable: false }, // Add account 14
     { pubkey: accounts.acc13, isSigner: false, isWritable: false }, // Add account 15
