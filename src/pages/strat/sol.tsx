@@ -731,9 +731,6 @@ const SOL: FC = () => {
         } else if (foundInvalidEquity) {
           description =
             "Transaction failed due to invalid equity value. Please check your account state.";
-        } else {
-          // You can add additional log-based error handling as needed
-          description = `Unexpected error occurred. Logs: ${error.logs.join(", ")}`;
         }
       }
 
