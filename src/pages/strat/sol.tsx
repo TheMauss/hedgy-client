@@ -621,7 +621,7 @@ const SOL: FC = () => {
       vaultTokenAccount: SOL_VAULT_TOKEN_ADDRESS, // Replace with actual vault token account
       driftUserStats: SOL_DRIFT_STATS, // Replace with drift user stats account
       driftUser: SOL_DRIFT_USER, // Replace with drift user account
-      driftState: SOL_DRIFT_STATE, // Replace with drift state account
+      driftState: new PublicKey("5zpq7DvB6UdFFvpmBPspGPNfUGoBRRCE2HHg5u3gxcsN"), // Replace with drift user account
       driftSpotMarketVault: SOL_DRIFT_SPOT_MARKET_VAULT, // Replace with spot market vault account
       driftSigner: new PublicKey("JCNCMFXo5M5qwUPg2Utu1u6YWp3MbygxqBsBeXXJfrw"), // Replace with drift user account
       userTokenAccount: USDCAddress, // User's token account for depositing tokens
