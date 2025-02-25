@@ -73,6 +73,7 @@ export function withdraw(
       isWritable: true,
     }, // Add account 13
     { pubkey: accounts.acc17, isSigner: false, isWritable: false }, // Add account 19
+    { pubkey: accounts.acc18, isSigner: false, isWritable: false }, // Add account 21
     {
       pubkey: accounts.spotMarketAddressdSOL,
       isSigner: false,
