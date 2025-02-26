@@ -552,6 +552,7 @@ const USDC: FC = () => {
       tokenProgram: TOKEN_PROGRAM, // Standard SPL token program ID
       oracleAddress: DRIFT_SPOT_ORACLE,
       acc28: new PublicKey("3m6i4RFWEDw2Ft4tFHPJtYgmpPe21k56M3FHeWYrgGBz"), // Replace with actual account 16 PublicKey
+      acc29: new PublicKey("35MbvS1Juz2wf7GsyHrkCw8yfKciRLxVpEhfZDZFrB4R"), // Replace with actual account 16 PublicKey
       acc27: new PublicKey("93FG52TzNKCnMiasV14Ba34BYcHDb9p4zK4GjZnLwqWR"), // Replace with actual account 16 PublicKey
       acc26: new PublicKey("5QZMnsyndmphvZF4BNgoMHwVZaREXeE2rpBoCPMxgCCd"), // Replace with actual account 16 PublicKey
       acc25: new PublicKey("9VCioxmni2gDLv11qufWzT3RDERhQE4iY5Gf7NTfYyAV"), // Replace with actual account 16 PublicKey
