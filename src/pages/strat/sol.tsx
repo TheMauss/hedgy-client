@@ -372,12 +372,12 @@ const SOL: FC = () => {
       driftUserStats: SOL_DRIFT_STATS,
       driftUser: SOL_DRIFT_USER,
       driftState: SOL_DRIFT_STATE,
-      acc11: new PublicKey("BAtFj4kQttZRVep3UZS2aZRDixkGYgWsbqTBVDbnSsPF"), // Replace with actual account 12 PublicKey
+      acc11: new PublicKey("3m6i4RFWEDw2Ft4tFHPJtYgmpPe21k56M3FHeWYrgGBz"), // Replace with actual account 12 PublicKey
       acc12: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 12 PublicKey
       acc13: new PublicKey("5QZMnsyndmphvZF4BNgoMHwVZaREXeE2rpBoCPMxgCCd"), // Replace with actual account 13 PublicKey
       acc14: new PublicKey("4YstsHafLyDbYFxmJbgoEr33iJJEp6rNPgLTQRgXDkG2"), // Replace with actual account 14 PublicKey
       acc15: new PublicKey("93FG52TzNKCnMiasV14Ba34BYcHDb9p4zK4GjZnLwqWR"), // Replace with actual account 15 PublicKey
-      acc16: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 16 PublicKey
+      acc16: new PublicKey("35MbvS1Juz2wf7GsyHrkCw8yfKciRLxVpEhfZDZFrB4R"), // Replace with actual account 16 PublicKey
       spotMarketAddress: SOL_DRIFT_USDC_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
       spotMarketSOLAddress: SOL_DRIFT_SOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
       acc17: new PublicKey("DVYXHwLhwALZm94pChALZDJ2b6a7uZTKPXntAGMQtRoM"), // Replace with actual account 17 PublicKey
@@ -501,13 +501,13 @@ const SOL: FC = () => {
       driftUserStats: SOL_DRIFT_STATS,
       driftUser: SOL_DRIFT_USER,
       driftState: SOL_DRIFT_STATE,
-      acc101: new PublicKey("9VCioxmni2gDLv11qufWzT3RDERhQE4iY5Gf7NTfYyAV"), // Replace with actual account 12 PublicKey
-      acc112: new PublicKey("5QZMnsyndmphvZF4BNgoMHwVZaREXeE2rpBoCPMxgCCd"), // Replace with actual account 13 PublicKey
-      acc113: new PublicKey("93FG52TzNKCnMiasV14Ba34BYcHDb9p4zK4GjZnLwqWR"), // Replace with actual account 12 PublicKey
-      acc11: new PublicKey("En8hkHLkRe9d9DraYmBTrus518BvmVH448YcvmrFM6Ce"), // Replace with actual account 12 PublicKey
-      acc12: new PublicKey("BAtFj4kQttZRVep3UZS2aZRDixkGYgWsbqTBVDbnSsPF"), // Replace with actual account 12 PublicKey
-      acc13: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 13 PublicKey
-      acc14: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 14 PublicKey
+      acc101: new PublicKey("3m6i4RFWEDw2Ft4tFHPJtYgmpPe21k56M3FHeWYrgGBz"), // Replace with actual account 12 PublicKey
+      acc112: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 13 PublicKey
+      acc113: new PublicKey("5QZMnsyndmphvZF4BNgoMHwVZaREXeE2rpBoCPMxgCCd"), // Replace with actual account 12 PublicKey
+      acc11: new PublicKey("4YstsHafLyDbYFxmJbgoEr33iJJEp6rNPgLTQRgXDkG2"), // Replace with actual account 12 PublicKey
+      acc12: new PublicKey("93FG52TzNKCnMiasV14Ba34BYcHDb9p4zK4GjZnLwqWR"), // Replace with actual account 12 PublicKey
+      acc13: new PublicKey("35MbvS1Juz2wf7GsyHrkCw8yfKciRLxVpEhfZDZFrB4R"), // Replace with actual account 13 PublicKey
+      acc14: new PublicKey("9VCioxmni2gDLv11qufWzT3RDERhQE4iY5Gf7NTfYyAV"), // Replace with actual account 14 PublicKey
       acc15: new PublicKey("4YstsHafLyDbYFxmJbgoEr33iJJEp6rNPgLTQRgXDkG2"), // Replace with actual account 15 PublicKey
       // accjito: new PublicKey("9QE1P5EfzthYDgoQ9oPeTByCEKaRJeZbVVqKJfgU9iau"),
       acc16: new PublicKey("6bEp2MiyoiiiDxcVqE8rUHQWwHirXUXtKfAEATTVqNzT"), // Replace with actual account 16 PublicKey
@@ -627,13 +627,13 @@ const SOL: FC = () => {
       userTokenAccount: USDCAddress, // User's token account for depositing tokens
       driftProgram: SOL_DRIFT_PROGRAM, // Replace with actual Drift program ID
       tokenProgram: SOL_TOKEN_PROGRAM, // Standard SPL token program ID
-      acc101: new PublicKey("9VCioxmni2gDLv11qufWzT3RDERhQE4iY5Gf7NTfYyAV"), // Replace with actual account 12 PublicKey
-      acc112: new PublicKey("BAtFj4kQttZRVep3UZS2aZRDixkGYgWsbqTBVDbnSsPF"), // Replace with actual account 13 PublicKey
-      acc113: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 12 PublicKey
-      acc10: new PublicKey("5QZMnsyndmphvZF4BNgoMHwVZaREXeE2rpBoCPMxgCCd"), // Replace with actual account 12 PublicKey
-      acc11: new PublicKey("4YstsHafLyDbYFxmJbgoEr33iJJEp6rNPgLTQRgXDkG2"), // Replace with actual account 13 PublicKey
-      acc12: new PublicKey("93FG52TzNKCnMiasV14Ba34BYcHDb9p4zK4GjZnLwqWR"), // Replace with actual account 12 PublicKey
-      acc13: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 13 PublicKey
+      acc101: new PublicKey("3m6i4RFWEDw2Ft4tFHPJtYgmpPe21k56M3FHeWYrgGBz"), // Replace with actual account 12 PublicKey
+      acc112: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 13 PublicKey
+      acc113: new PublicKey("5QZMnsyndmphvZF4BNgoMHwVZaREXeE2rpBoCPMxgCCd"), // Replace with actual account 12 PublicKey
+      acc10: new PublicKey("4YstsHafLyDbYFxmJbgoEr33iJJEp6rNPgLTQRgXDkG2"), // Replace with actual account 12 PublicKey
+      acc11: new PublicKey("93FG52TzNKCnMiasV14Ba34BYcHDb9p4zK4GjZnLwqWR"), // Replace with actual account 13 PublicKey
+      acc12: new PublicKey("35MbvS1Juz2wf7GsyHrkCw8yfKciRLxVpEhfZDZFrB4R"), // Replace with actual account 12 PublicKey
+      acc13: new PublicKey("9VCioxmni2gDLv11qufWzT3RDERhQE4iY5Gf7NTfYyAV"), // Replace with actual account 13 PublicKey
       // accjito: new PublicKey("9QE1P5EfzthYDgoQ9oPeTByCEKaRJeZbVVqKJfgU9iau"),
       spotMarketAddress: SOL_DRIFT_USDC_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
       spotMarketAddressSOL: SOL_DRIFT_SOL_SPOT_MARKET, // Replace with actual spot market address (e.g., USDC market)
