@@ -305,23 +305,23 @@ const USDC: FC = () => {
       driftUser: new PublicKey("DPW6P1DqMA2zEHb7yD2whcvbm9ERk9wHoNMjm95mrTr1"),
       driftState: DRIFT_STATE,
       oracleAddress: DRIFT_SPOT_ORACLE,
-      acc28: new PublicKey("3m6i4RFWEDw2Ft4tFHPJtYgmpPe21k56M3FHeWYrgGBz"), // Replace with actual account 16 PublicKey
-      acc29: new PublicKey("35MbvS1Juz2wf7GsyHrkCw8yfKciRLxVpEhfZDZFrB4R"), // Replace with actual account 16 PublicKey
-      acc27: new PublicKey("93FG52TzNKCnMiasV14Ba34BYcHDb9p4zK4GjZnLwqWR"), // Replace with actual account 16 PublicKey
+      acc28: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 16 PublicKey
+      acc29: new PublicKey("5QZMnsyndmphvZF4BNgoMHwVZaREXeE2rpBoCPMxgCCd"), // Replace with actual account 16 PublicKey
+      acc27: new PublicKey("3m6i4RFWEDw2Ft4tFHPJtYgmpPe21k56M3FHeWYrgGBz"), // Replace with actual account 16 PublicKey
       acc26: new PublicKey("5QZMnsyndmphvZF4BNgoMHwVZaREXeE2rpBoCPMxgCCd"), // Replace with actual account 16 PublicKey
-      acc25: new PublicKey("9VCioxmni2gDLv11qufWzT3RDERhQE4iY5Gf7NTfYyAV"), // Replace with actual account 16 PublicKey
-      acc11: new PublicKey("En8hkHLkRe9d9DraYmBTrus518BvmVH448YcvmrFM6Ce"), // Replace with actual account 12 PublicKey
+      acc25: new PublicKey("93FG52TzNKCnMiasV14Ba34BYcHDb9p4zK4GjZnLwqWR"), // Replace with actual account 16 PublicKey
+      acc11: new PublicKey("35MbvS1Juz2wf7GsyHrkCw8yfKciRLxVpEhfZDZFrB4R"), // Replace with actual account 12 PublicKey
       acc12: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 12 PublicKey
       acc13: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 13 PublicKey
       acc14: new PublicKey("BAtFj4kQttZRVep3UZS2aZRDixkGYgWsbqTBVDbnSsPF"), // Replace with actual account 14 PublicKey
       acc15: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 15 PublicKey
-      acc16: new PublicKey("6bEp2MiyoiiiDxcVqE8rUHQWwHirXUXtKfAEATTVqNzT"), // Replace with actual account 16 PublicKey
+      acc16: new PublicKey("9VCioxmni2gDLv11qufWzT3RDERhQE4iY5Gf7NTfYyAV"), // Replace with actual account 16 PublicKey
       spotMarketAddress: DRIFT_SPOT, // Replace with actual spot market address (e.g., USDC market)
       acc17: new PublicKey("DVYXHwLhwALZm94pChALZDJ2b6a7uZTKPXntAGMQtRoM"), // Replace with actual account 17 PublicKey
       acc18: new PublicKey("GyyHYVCrZGc2AQPuvNbcP1babmU3L42ptmxZthUfD9q"), // Replace with actual account 18 PublicKey
       acc19: new PublicKey("8UJgxaiQx5nTrdDgph5FiahMmzduuLTLf5WmsPegYA6W"), // Replace with actual account 17 PublicKey
-      acc20: new PublicKey("2UZMvVTBQR9yWxrEdzEQzXWE61bUjqQ5VpJAGqVb3B19"), // Replace with actual account 18 PublicKey
-      acc21: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"), // Replace with actual account 18 PublicKey
+      acc20: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"), // Replace with actual account 18 PublicKey
+      acc21: new PublicKey("2UZMvVTBQR9yWxrEdzEQzXWE61bUjqQ5VpJAGqVb3B19"), // Replace with actual account 18 PublicKey
     };
 
     try {
@@ -555,10 +555,10 @@ const USDC: FC = () => {
       driftProgram: DRIFT_PROGRAM, // Replace with actual Drift program ID
       tokenProgram: TOKEN_PROGRAM, // Standard SPL token program ID
       oracleAddress: DRIFT_SPOT_ORACLE,
-      acc28: new PublicKey("3m6i4RFWEDw2Ft4tFHPJtYgmpPe21k56M3FHeWYrgGBz"), // Replace with actual account 16 PublicKey
-      acc29: new PublicKey("35MbvS1Juz2wf7GsyHrkCw8yfKciRLxVpEhfZDZFrB4R"), // Replace with actual account 16 PublicKey
-      acc27: new PublicKey("93FG52TzNKCnMiasV14Ba34BYcHDb9p4zK4GjZnLwqWR"), // Replace with actual account 16 PublicKey
-      acc26: new PublicKey("5QZMnsyndmphvZF4BNgoMHwVZaREXeE2rpBoCPMxgCCd"), // Replace with actual account 16 PublicKey
+      acc28: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 16 PublicKey
+      acc29: new PublicKey("5QZMnsyndmphvZF4BNgoMHwVZaREXeE2rpBoCPMxgCCd"), // Replace with actual account 16 PublicKey
+      acc27: new PublicKey("3m6i4RFWEDw2Ft4tFHPJtYgmpPe21k56M3FHeWYrgGBz"), // Replace with actual account 16 PublicKey
+      acc26: new PublicKey("93FG52TzNKCnMiasV14Ba34BYcHDb9p4zK4GjZnLwqWR"), // Replace with actual account 16 PublicKey
       acc25: new PublicKey("9VCioxmni2gDLv11qufWzT3RDERhQE4iY5Gf7NTfYyAV"), // Replace with actual account 16 PublicKey
       acc12: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 12 PublicKey
       acc13: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 13 PublicKey
@@ -568,9 +568,9 @@ const USDC: FC = () => {
       spotMarketAddress: DRIFT_SPOT, // Replace with actual spot market address (e.g., USDC market)
       acc17: new PublicKey("DVYXHwLhwALZm94pChALZDJ2b6a7uZTKPXntAGMQtRoM"), // Replace with actual account 17 PublicKey
       acc18: new PublicKey("GyyHYVCrZGc2AQPuvNbcP1babmU3L42ptmxZthUfD9q"), // Replace with actual account 18 PublicKey
-      acc19: new PublicKey("8UJgxaiQx5nTrdDgph5FiahMmzduuLTLf5WmsPegYA6W"), // Replace with actual account 19 PublicKey
-      acc20: new PublicKey("2UZMvVTBQR9yWxrEdzEQzXWE61bUjqQ5VpJAGqVb3B19"),
-      acc21: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"),
+      acc19: new PublicKey("8UJgxaiQx5nTrdDgph5FiahMmzduuLTLf5WmsPegYA6W"), // Replace with actual account 17 PublicKey
+      acc20: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"), // Replace with actual account 18 PublicKey
+      acc21: new PublicKey("2UZMvVTBQR9yWxrEdzEQzXWE61bUjqQ5VpJAGqVb3B19"), // Replace with actual account 18 PublicKey
     };
 
     try {
@@ -727,20 +727,20 @@ const USDC: FC = () => {
       driftProgram: DRIFT_PROGRAM, // Replace with actual Drift program ID
       tokenProgram: TOKEN_PROGRAM, // Standard SPL token program ID
       oracleAddress: DRIFT_SPOT_ORACLE,
-      acc27: new PublicKey("93FG52TzNKCnMiasV14Ba34BYcHDb9p4zK4GjZnLwqWR"), // Replace with actual account 16 PublicKey
+      acc27: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 16 PublicKey
       acc26: new PublicKey("5QZMnsyndmphvZF4BNgoMHwVZaREXeE2rpBoCPMxgCCd"), // Replace with actual account 16 PublicKey
-      acc25: new PublicKey("9VCioxmni2gDLv11qufWzT3RDERhQE4iY5Gf7NTfYyAV"), // Replace with actual account 16 PublicKey
-      acc12: new PublicKey("5Mb11e5rt1Sp6A286B145E4TmgMzsM2UX9nCF2vas5bs"), // Replace with actual account 12 PublicKey
-      acc13: new PublicKey("HpMoKp3TCd3QT4MWYUKk2zCBwmhr5Df45fB6wdxYqEeh"), // Replace with actual account 13 PublicKey
+      acc25: new PublicKey("3m6i4RFWEDw2Ft4tFHPJtYgmpPe21k56M3FHeWYrgGBz"), // Replace with actual account 16 PublicKey
+      acc12: new PublicKey("93FG52TzNKCnMiasV14Ba34BYcHDb9p4zK4GjZnLwqWR"), // Replace with actual account 12 PublicKey
+      acc13: new PublicKey("35MbvS1Juz2wf7GsyHrkCw8yfKciRLxVpEhfZDZFrB4R"), // Replace with actual account 13 PublicKey
       acc14: new PublicKey("BAtFj4kQttZRVep3UZS2aZRDixkGYgWsbqTBVDbnSsPF"), // Replace with actual account 14 PublicKey
       acc15: new PublicKey("486kr3pmFPfTsS4aZgcsQ7kS4i9rjMsYYZup6HQNSTT4"), // Replace with actual account 15 PublicKey
-      acc16: new PublicKey("6bEp2MiyoiiiDxcVqE8rUHQWwHirXUXtKfAEATTVqNzT"), // Replace with actual account 16 PublicKey
+      acc16: new PublicKey("9VCioxmni2gDLv11qufWzT3RDERhQE4iY5Gf7NTfYyAV"), // Replace with actual account 16 PublicKey
       spotMarketAddress: DRIFT_SPOT, // Replace with actual spot market address (e.g., USDC market)
       acc17: new PublicKey("DVYXHwLhwALZm94pChALZDJ2b6a7uZTKPXntAGMQtRoM"), // Replace with actual account 17 PublicKey
       acc18: new PublicKey("GyyHYVCrZGc2AQPuvNbcP1babmU3L42ptmxZthUfD9q"), // Replace with actual account 18 PublicKey
-      acc19: new PublicKey("8UJgxaiQx5nTrdDgph5FiahMmzduuLTLf5WmsPegYA6W"), // Replace with actual account 19 PublicKey
-      acc20: new PublicKey("2UZMvVTBQR9yWxrEdzEQzXWE61bUjqQ5VpJAGqVb3B19"),
-      acc21: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"),
+      acc19: new PublicKey("8UJgxaiQx5nTrdDgph5FiahMmzduuLTLf5WmsPegYA6W"), // Replace with actual account 17 PublicKey
+      acc20: new PublicKey("25Eax9W8SA3wpCQFhJEGyHhQ2NDHEshZEDzyMNtthR8D"), // Replace with actual account 18 PublicKey
+      acc21: new PublicKey("2UZMvVTBQR9yWxrEdzEQzXWE61bUjqQ5VpJAGqVb3B19"), // Replace with actual account 18 PublicKey
     };
 
     try {
